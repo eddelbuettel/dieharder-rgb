@@ -58,10 +58,15 @@ double rgb_bitdist(int ntuple)
 
  unsigned int b,t,i,j,k,l,m,n;   /* loop indices */
  unsigned int value;         /* value of ntuple (as an integer) */
- unsigned int *count;        /* count of any ntuple per bitstring */
+ unsigned int *count,ctotal; /* count of any ntuple per bitstring */
  unsigned int ntuple_max;    /* largest ntuple value */
  double *pvalue,pks,ntuple_prob,pbin;  /* probabilities */
  Btest *btest;               /* A vector of binomial test bins */
+
+ /*
+  * For debugging only.
+  */
+ ntuple = 2;
 
  if(!quiet){
    printf("#==================================================================\n");
@@ -70,6 +75,8 @@ double rgb_bitdist(int ntuple)
    printf("# of random integers and compares the distribution thus generated\n");
    printf("# with the theoretical (binomial) histogram, forming chisq and the\n");
    printf("# associated p-value.\n");
+   printf("#\n");
+   printf("# Currently testing %u-tuples out of %u bit strings\n",ntuple,bits);
    printf("#==================================================================\n");
  }
 
@@ -79,12 +86,8 @@ double rgb_bitdist(int ntuple)
   * returns for large n -- I have difficulty with the raw formula
   * around n = 128, but they may be able to do better.  The following
   * code fragment will prevent over/underflow problems if they can't.
-  if(bits > 128){
-   nbits = bits = 128;
- } else {
-   nbits = bits;
- }
  */
+  if(bits > 128) bits = 128;
 
 
  /*
@@ -99,6 +102,9 @@ double rgb_bitdist(int ntuple)
   */
  size = 0;
  while(size*rmax_bits < bits) size++;
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# rgb_bitdist(): size = %u\n",size);
+ }
 
  /*
   * Largest ntuple value is 2^ntuple-1 (they range from 0 to 2^ntuple - 1).
@@ -106,6 +112,9 @@ double rgb_bitdist(int ntuple)
   * 2^ntuple and start indices from 0 as usual.
   */
  ntuple_max = pow(2,ntuple);
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# rgb_bitdist(): ntuple_max = %u\n",ntuple_max);
+ }
 
  /*
   * Allocate memory for ntuple_max vector of Btest structs and counts.
@@ -135,13 +144,42 @@ double rgb_bitdist(int ntuple)
   * with a corresponding sigma.  Etc.
   */
  ntuple_prob = 1.0/(double)ntuple_max;
- for(n=0;n<ntuple_max;n++){
-   Btest_create(&btest[n],bits+1,"rgb_binomial",gsl_rng_name(rng));
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# rgb_bitdist(): ntuple_prob = %f\n",ntuple_prob);
+   printf("# rgb_bitdist(): Testing %u samples of %u bit strings\n",tsamples,bits);
+   printf("# rgb_bitdist():=====================================================\n");
+   printf("# rgb_bitdist():            btest table\n");
+   printf("# rgb_bitdist(): Outcome   bit          x           y       sigma\n");
+ }
+ Btest_create(&btest[0],bits+1,"rgb_bitdist",gsl_rng_name(rng));
+ for(b=0;b<=bits;b++){
+   pbin = gsl_ran_binomial_pdf(b,ntuple_prob,bits);
+   btest[0].x[b] = 0.0;
+   btest[0].y[b] = tsamples*pbin;
+   btest[0].sigma[b] = sqrt(btest[0].y[b]*(1.0 - pbin));
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+     printf("# rgb_bitdist():  %3u     %3u   %10.5f  %10.5f  %10.5f\n",
+       0,b,btest[0].x[b],btest[0].y[b],btest[0].sigma[b]);
+   }
+ }
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# rgb_bitdist():            btest table\n");
+   printf("# rgb_bitdist(): Outcome   bit          x           y       sigma\n");
+   printf("# rgb_bitdist():=====================================================\n");
+ }
+ for(n=1;n<ntuple_max;n++){
+   Btest_create(&btest[n],bits+1,"rgb_bitdist",gsl_rng_name(rng));
    for(b=0;b<=bits;b++){
-     pbin = tsamples*gsl_ran_binomial_pdf(k,ntuple_prob,bits);
-     btest[n].x[b] = 0.0;
-     btest[n].y[b] = tsamples*pbin;
-     btest[n].sigma[b] = sqrt(btest[b].y[b]*(1.0 - pbin));
+     btest[n].x[b] = btest[0].x[b];
+     btest[n].y[b] = btest[0].y[b];
+     btest[n].sigma[b] = btest[0].sigma[b];
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("# rgb_bitdist():  %3u     %3u   %10.5f  %10.5f  %10.5f\n",
+         n,b,btest[n].x[b],btest[n].y[b],btest[n].sigma[b]);
+     }
+   }
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+     printf("# rgb_bitdist():=====================================================\n");
    }
  }
 
@@ -157,13 +195,13 @@ double rgb_bitdist(int ntuple)
     * Fill vector of "random" integers with selected generator.
     * NOTE WELL:  This can also be done by reading in a file!
     */
-   if(verbose){
-     printf("Generating %u bits in rand_int[]\n",size*sizeof(uint)*8);
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+     printf("# rgb_bitdist(): Generating %u bits in rand_int[]\n",size*sizeof(uint)*8);
    }
    for(i=0;i<size;i++) {
      rand_int[i] = gsl_rng_get(rng);
-     if(verbose){
-       printf("rand_int[%d] = %u = ",i,rand_int[i]);
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("# rgb_bitdist(): rand_int[%d] = %u = ",i,rand_int[i]);
        dumpbits(&rand_int[i],8*sizeof(uint));
      }
    }
@@ -172,7 +210,7 @@ double rgb_bitdist(int ntuple)
    /*
     * Here is where we do the actual counting of the ntuples.
     */
-   if(verbose){
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
      printf("# Counting ntuples in bitstring: ");
    }
 
@@ -192,17 +230,39 @@ double rgb_bitdist(int ntuple)
       * We increment the count of this ntuple for this string of bits
       */
      count[value]++;
-     if(verbose){
-       printf("count[%u] = %u\n",value,count[value]);
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("# rgb_bitdist(): count[%u] = %u\n",value,count[value]);
      }
    }
    /*
     * Increment the counter for the resulting numbers of patterns.
     */
-   btest[value].x[count[value]]++;
-   if(verbose){
-     printf("\n# Sample %u: btest[%u].x[%u] = %u\n",t,value,count[value],(uint)btest[value].x[count[value]]);
+   ctotal = 0;
+   for(n=0;n<ntuple_max;n++){
+     btest[n].x[count[n]]++;
+     ctotal += count[n];
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("# rgb_bitdist(): btest[%u].x[%u] = %u\n",n,count[n],(uint)btest[n].x[count[n]]);
+     }
    }
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+     printf("# rgb_bitdist(): Sample %u: total count = %u (should be %u, count of bits)\n",t,ctotal,bits);
+   }
+ }
+
+ /*
+  * At this point btest should contain one test histogram per ntuple,
+  * ready to be compared to the reference test and turned into a
+  * p-value.  This test RETURNS a p-value, though.  Hmmm, possibly
+  * a problem.  Maybe tests should return a vector of pvalues?
+  * I dunno.
+  *
+  * Anyway, for the moment let's see what the p-values are.
+  */
+
+ for(n=0;n<ntuple_max;n++){
+   Btest_eval(&btest[n]);
+   printf(" pvalue[%u] = %10.5f\n",n,btest[n].pvalue);
  }
 
 }

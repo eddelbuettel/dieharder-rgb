@@ -17,7 +17,7 @@ void parsecl(int argc, char **argv)
  tsamples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
  iterations = -1;	/* This should be just enough to do empty accurately */
  size = 1024;		/* Small enough to easily fit into any cache */
- bits = 0;              /* Start at zero */
+ bits = 128;            /* Maximum size bitstring is default */
  verbose = 0;		/* Default is not to be verbose. */
  quiet = 0;		/* Default is ALSO not to be quiet (output control). */
  testnum = 0;		/* Default is to list rng's */
@@ -106,7 +106,6 @@ void Usage()
  fprintf(stdout, "     %d RGB bitmask (tests for frozen/unchanging bits).\n",RGB_PERSIST);
  fprintf(stdout, "     %d RGB binomial (number of 1's in bitstrings rel to binomial dist).\n",RGB_BINOMIAL);
  fprintf(stdout, "       and STS monobit (number of 1's in bitstring rel to expected val).\n");
- fprintf(stdout, "     %d RGB bitdist (tests frequency of 2-bit patterns:\n",RGB_BIT2);
  fprintf(stdout, "     %d RGB bitdist (tests frequency of all n-bit patterns:\n",RGB_BITDIST);
  fprintf(stdout, "       note that this is an extremely powerful master test and can \n");
  fprintf(stdout, "       replace a whole raft of weaker tests in STS and Diehard).\n");

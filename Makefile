@@ -73,7 +73,6 @@ SOURCES = $(SOURCE)\
     diehard_3dsphere.c \
     rgb_binomial.c \
     rgb_bitdist.c \
-    rgb_bit2.c \
     rgb_persist.c \
     sts_monobit.c \
     sts_runs.c \

@@ -39,6 +39,9 @@
    D_ALL,
    D_SEED,
    D_SAMPLE,
+   D_BITS,
+   D_RGB_BITDIST,
+   D_BTEST,
    N_DEBUG
  } Debug;
 
@@ -58,7 +61,6 @@
    DIEHARD_3DSPHERE,
    RGB_PERSIST,
    RGB_BINOMIAL,
-   RGB_BIT2,
    RGB_BITDIST,
    STS_MONOBIT,
    STS_RUNS,
@@ -171,7 +173,7 @@
  } Ntest;
 
  typedef struct {
-   unsigned int npts;
+   unsigned int bins;
    double p;
    double *x;
    double *y;

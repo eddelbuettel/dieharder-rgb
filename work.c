@@ -58,9 +58,6 @@ void rand_rate_work()
    case RGB_BINOMIAL:
      rgb_binomial();
      break;
-   case RGB_BIT2:
-     rgb_bit2();
-     break;
    case RGB_BITDIST:
      rgb_bitdist();
      break;

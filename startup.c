@@ -94,23 +94,6 @@ void rand_rate_startup()
    rmax_bits++;
  }
 
- /*
-  * Now, if bits were specified, we need to allocate a size large enough
-  * to accumulate at least enough bits, given the number of VALID bits
-  * per unsigned int.  If size was specified, we compute the exact number
-  * of valid bits it will contain (which might NOT be
-  * size*sizeof(unsigned int)).
-  *
-  * Actually, this is nasty code in here to get rid of problems that
-  * occur when one tries to specify bits on a test where one should
-  * specify size.  I need to work this out much better.
-  */
- if(bits && testnum != RGB_BIT2 && testnum != RGB_BITDIST && testnum != RGB_BINOMIAL){
-   size = bits/rmax_bits + 1;
- } else {
-   bits = size*rmax_bits;
- }
-		
  rand_int = (int *) malloc((size_t) (size*sizeof(unsigned int)));
 
 }
