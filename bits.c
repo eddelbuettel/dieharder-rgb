@@ -31,9 +31,18 @@ double chisq_eval(double *x,double *y,double *sigma, unsigned int n)
   *
   * We'll have to see how this handles sigma[i] = 0.0.  Probably badly...
   */
+
+ if(!quiet){
+   printf("# chisq summary\n");
+   printf("# %3s %10s %10s %10s %10s %12s\n","bit","    X","    Y"," sigma","del-chisq"," chisq");
+   printf("#------------------------------------------------------------------\n");
+ }
  for (i=0;i<n;i++) {
    chi = (y[i]-x[i])/sigma[i];
    chisq += chi*chi;
+   if(!quiet){
+     printf("%4d: %10.1f %10.1f %10.3f %10.3f %12.8f\n",i,x[i],y[i],sigma[i],chi*chi,chisq);
+   }
  }
 
  return(chisq);

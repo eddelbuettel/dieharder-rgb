@@ -65,6 +65,7 @@
  void measure_rate();
  void Usage();
  double binomial(unsigned int n, unsigned int k, double p);
+ double chisq_eval(double *x,double *y,double *sigma, unsigned int n);
 
  /*
   *========================================================================
