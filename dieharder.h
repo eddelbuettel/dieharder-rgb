@@ -81,6 +81,8 @@
  int sts_monobit();
  int sts_runs();
  void dumpbits(unsigned int *data, unsigned int nbits);
+ double kstest(double *pvalue,int count);
+ double q_ks(double x);
 
  /*
   *========================================================================
@@ -121,6 +123,7 @@
  unsigned int rmax_mask;        /* Mask for valid section of uint */
  double *rand_uniform;          /* vector of "random" uniform deviates */
  int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
+ double q_ks(double x);
 
  /*
   * Looks like we'll need certain structs in order to be able to really

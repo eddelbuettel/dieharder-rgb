@@ -34,7 +34,7 @@ int diehard_3dsphere()
  int i,j,k,l,m;
  C3 *c3;
  double r1,r2,r3,rmin,r3min;
- double *pvalue;
+ double *pvalue,pks;
  double xdelta,ydelta,zdelta;
 
  /*
@@ -86,7 +86,6 @@ int diehard_3dsphere()
    }
    pvalue[i] = 1.0 - exp(-r3min/30.0);
    printf("p-value[%d] = %f\n",i,pvalue[i]);
-
  }
 
  if(!quiet){
@@ -100,6 +99,15 @@ int diehard_3dsphere()
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
    printf("# Number of points tested = %u\n",POINTS);
  }
+
+ pks = kstest(pvalue,samples);
+ printf("p = %6.3f from Komogorov-Smirnov test on %d samples.\n",pks,samples);
+ if(pks>0.1){
+   printf("Generator appears to be good\n");
+ } else {
+   printf("Generator appears to be bad\n");
+ }
+ 
 
 }
 

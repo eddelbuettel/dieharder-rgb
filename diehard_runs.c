@@ -80,7 +80,7 @@ int diehard_runs()
  int i,j,k,ns;
  unsigned int ucount,dcount,increased;
  int upruns[RUN_MAX],downruns[RUN_MAX];
- double uv,dv;
+ double uv,dv,up_pks,down_pks;
  double *uv_pvalue,*dv_pvalue;
 
  /* Initialize b explicitly */
@@ -203,6 +203,22 @@ int diehard_runs()
  confidence(dv_pvalue,samples,0.01);
  if(!quiet){
    printf("#==================================================================\n");
+ }
+
+ up_pks = kstest(uv_pvalue,samples);
+ printf("p = %6.3f from Komogorov-Smirnov test on %d up samples.\n",up_pks,samples);
+ if(up_pks>0.1){
+   printf("Generator appears to be good\n");
+ } else {
+   printf("Generator appears to be bad\n");
+ }
+ 
+ down_pks = kstest(dv_pvalue,samples);
+ printf("p = %6.3f from Komogorov-Smirnov test on %d down samples.\n",down_pks,samples);
+ if(down_pks>0.1){
+   printf("Generator appears to be good\n");
+ } else {
+   printf("Generator appears to be bad\n");
  }
 
 }

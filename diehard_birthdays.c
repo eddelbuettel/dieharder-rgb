@@ -54,7 +54,7 @@ int diehard_birthdays()
  unsigned int rmask;
  unsigned int *rand_list,*intervals;
  unsigned int **js;
- double lambda,*pvalue;
+ double lambda,*pvalue,pks;
 
  /*
   * Should be 512, but we'll do it this way in case we want to vary it.
@@ -244,7 +244,6 @@ int diehard_birthdays()
     pvalue[nc] = chisq_poisson(js[nc],lambda,kmax);
     printf("p-value[%u] = %f\n",nc,pvalue[nc]);    
  }
- 
 
  if(!quiet){
    printf("#==================================================================\n");
@@ -258,5 +257,13 @@ int diehard_birthdays()
    printf("# lambda = %f\n",lambda);
  }
 
+ pks = kstest(pvalue,rmax_bits);
+ printf("p = %6.3f from Komogorov-Smirnov test on %d bits.\n",pks,rmax_bits);
+ if(pks>0.1){
+   printf("Generator appears to be good\n");
+ } else {
+   printf("Generator appears to be bad\n");
+ }
+ 
 }
 
