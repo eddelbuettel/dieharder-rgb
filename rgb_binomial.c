@@ -45,17 +45,11 @@ void rgb_binomial()
   * Note that the expected distribution is the "half normal" centered
   * on 0.0.
   *
-  * Number of total bits (from EITHER -b bits OR -s size, -b overrides -s)
   */
- if(bits){
-   nbits = bits;
- } else {
-   nbits = 8*sizeof(unsigned int)*size;
- }
+ nbits = bits;
  mtest.y = 0.0;
  /* The total number of bits checked should be nbits*samples */
- mtest.npts = nbits*samples;
- mtest.sigma = sqrt((double)mtest.npts);
+ mtest.npts = 0;
  strncpy(mtest.testname,"sts_monobit",128);
  strncpy(mtest.rngname,gsl_rng_name(random),128);
 
@@ -79,6 +73,22 @@ void rgb_binomial()
  /*
   * Next we run the sampling loop to accumulate num_bit results
   * in btest.x[k].  For the moment we print out each sample as well.
+  *
+  * NOTE WELL!  We have to be very careful when running this to only
+  * sample VALID bits returned by the rng.  Some rng's return
+  * unsigned ints, some signed ints, some 16 bit ints.  Checking e.g.
+  * bit frequencies on all bits in an unsigned int when only half of
+  * them are valid is a significant problem and obviously many tests
+  * will fail when testing whatever garbage is in the invalid bits.
+  *
+  * We also would like to test/present the bits we DO look at from
+  * left (most significant) to right (least significant) as this is
+  * the natural order we expect to read them.  Right now we're working
+  * right to left.
+  *
+  * The solution to both problems is to be found in the code in rgb_persist
+  * and dumpbits.  We only have to implement it, taking especial care with
+  * how we get "enough data" in the input vector (see above).
   */
  mtest.x = 0;
  for(i=0;i<samples;i++){
@@ -96,7 +106,10 @@ void rgb_binomial()
     */
    for(j=0;j<size;j++) {
      rand_int[j] = gsl_rng_get(random);
-     printf("rand_int[%d] = %u\n",j,rand_int[j]);
+     if(verbose){
+       printf("rand_int[%d] = %u\n",j,rand_int[j]);
+       dumpbits(&rand_int[j],32);
+     }
    }
    /*
     * Count the 1 bits and the 0 bits
@@ -107,6 +120,7 @@ void rgb_binomial()
    num_ones = 0;
    num_zeros = 0;
    for(j=0;j<nbits;j++){
+     mtest.npts++;
      if(thisbit = get_bit(j)) {
        num_ones++;
        mtest.x++;
@@ -116,7 +130,7 @@ void rgb_binomial()
      }
    }
    if(verbose){
-     printf("\n# Total number of ones = %d, total number of bits = %d\n",mtest.x,mtest.npts);
+     printf("\n# Total number of ones = %d, total number of bits = %d\n",(int)mtest.x,mtest.npts);
    }
    /*
     * Increment the counter for the resulting number of ones.
@@ -148,6 +162,7 @@ void rgb_binomial()
   * Print out monobit test results first (why not)?
   */
  mtest.x = 2*mtest.x - mtest.npts;
+ mtest.sigma = sqrt((double)mtest.npts);
  Xtest_eval(&mtest);
  Xtest_conclusion(&mtest);
  /*

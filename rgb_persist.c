@@ -39,6 +39,7 @@ void rgb_persist()
   * so even with 32 bit slots, repeatedly, we aren't horribly likely
   * to see it in our lifetime unless we run this test continuously for
   * months at a time (yes, a dumb idea).
+  */
  rand_uint = (unsigned int*)malloc(256 * sizeof(unsigned int));
 
  /*
@@ -55,6 +56,7 @@ void rgb_persist()
  } else {
    csamples = 1;
  }
+
  cumulative_mask = 0;
  for(j=0;j<csamples;j++){
    seed = random_seed();
@@ -81,7 +83,7 @@ void rgb_persist()
      }
 
    }
-   and_mask = and_mask & random_max;
+   and_mask = and_mask & rmax_mask;
    cumulative_mask = cumulative_mask | and_mask;
  }
  printf("#==================================================================\n");
@@ -102,7 +104,7 @@ void rgb_persist()
  printf("# and the extracted mask cumulated to show all the possible bit\n");
  printf("# positions that might be repeated for different seeds.\n");
  printf("#==================================================================\n");
- printf("# Results for %s rgb:\n",gsl_rng_name(random));
+ printf("# Results for %s rng, using its %d valid bits:\n",gsl_rng_name(random),rmax_bits);
  if(cumulative_mask){
    printf("rgb_persist test FAILED (bits repeat)\n");
  } else {
@@ -115,8 +117,12 @@ void rgb_persist()
    printf("and_mask = %u = ",and_mask);
    dumpbits(&and_mask,nbits);
  }
+ printf("randm_mask = %u = ",rmax_mask);
+ dumpbits(&rmax_mask,nbits);
  printf("random_max = %u = ",random_max);
  dumpbits(&random_max,nbits);
+
+ free(rand_uint);
 
 }
 

@@ -70,6 +70,7 @@
  double chisq_eval(double *x,double *y,double *sigma, unsigned int n);
  int sts_monobit();
  int sts_runs();
+ void dumpbits(unsigned int *data, unsigned int nbits);
 
  /*
   *========================================================================
@@ -103,7 +104,11 @@
  const gsl_rng_type **types;    /* where all the rng types go */
  gsl_rng *random;               /* global gsl random number generator */
  unsigned int *rand_int;        /* vector of "random" ints */
- unsigned int random_max,seed;  /* parameter and seed of run */
+ unsigned int seed;             /* rng seed of run (?) */
+ unsigned int random_max;       /* maximum rng returned by generator */
+ unsigned int rmax;             /* scratch space for random_max manipulation */
+ unsigned int rmax_bits;        /* Number of valid bits in rng */
+ unsigned int rmax_mask;        /* Mask for valid section of uint */
  double *rand_uniform;          /* vector of "random" uniform deviates */
  int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
 

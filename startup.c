@@ -61,17 +61,52 @@ void rand_rate_startup()
 
  /*
   * We now need to allocate space for at least one vector:  one
-  * for 32-bit integer deviates and/or a vector of 64-bit uniform
+  * for unsigned int integer deviates and/or a vector of (double) uniform
   * deviates.  This will need to be done from information passed on
-  * the command line as to the size (number of ints, bits, doubles).
+  * the command line as to the size or number of bits.  size indicates
+  * the length of the vectors directly; bits indicates the number of
+  * bits to be tested (in bit tests), which then determines the size.
   *
-  * We'll start by using "size" for this, and do just ints (into
-  * the vector rand_int[]).
+  * HOWEVER, we have to correct (either way) for the number of bits that
+  * are SIGNIFICANT or VALID in the given rng, derived from random_max.
+  * This isn't particularly simple to do, since random_max is not always
+  * power of 2 (in particular see ran3, for example).  We have to count
+  * the number of signficant bits returned by the rng and adjust our
+  * bits and size allocations accordingly.
   */
  if(size < 1) {
    fprintf(stderr,"Warning:  size = %d too small, using size = 1\n",size);
    size = 1;
  }
+
+ /*
+  * Simultaneously count the number of significant bits in the rng
+  * AND create a mask (which we need in e.g. rgb_persist and possibly
+  * elsewhere).
+  */
+ rmax = random_max;
+ rmax_bits = 0;
+ rmax_mask = 0;
+ while(rmax){
+   rmax >>= 1;
+   rmax_mask = rmax_mask << 1;
+   rmax_mask++;
+   rmax_bits++;
+ }
+
+ /*
+  * Now, if bits were specified, we need to allocate a size large enough
+  * to accumulate at least enough bits, given the number of VALID bits
+  * per unsigned int.  If size was specified, we compute the exact number
+  * of valid bits it will contain (which might NOT be
+  * size*sizeof(unsigned int)).
+  */
+ if(bits){
+   size = bits/rmax_bits + 1;
+ } else {
+   bits = size*rmax_bits;
+ }
+		
  rand_int = (int *) malloc((size_t) (size*sizeof(unsigned int)));
 
 }
