@@ -123,54 +123,54 @@ double chisq_pearson(double *observed,double *expected,int kmax)
 
 }
 
-double chisq_binomial(double *observed,uint kmax,uint nsamp)
+double chisq_binomial(double *observed,double prob,uint kmax,uint nsamp)
 {
 
- uint n,nmax;
- double expected,sigma,chi,chisq,pvalue,bprob,obstotal,exptotal,sigtotal;
+ uint n,nmax,ndof;
+ double expected,delchisq,chisq,pvalue,bprob,obstotal,exptotal;
 
  chisq = 0.0;
  obstotal = 0.0;
  exptotal = 0.0;
- sigtotal = 0.0;
+ ndof = 0;
  nmax = kmax;
- if(!quiet){
-   printf("# %8s %3s %10s %10s %10s %10s  %7s\n",
-           "bit/bin","X","Y","bprob","sigma","del-chisq","chisq");
+ if(verbose){
+   printf("# %7s   %3s      %3s %10s      %10s %9s\n",
+           "bit/bin","DoF","X","Y","del-chisq","chisq");
    printf("#==================================================================\n");
  }
  for(n = 0;n <= nmax;n++){
-   bprob = binomial(nmax,n,0.5);
-   expected = nsamp*bprob;
-   sigma = sqrt(expected*(1.0 - bprob));
-   obstotal += observed[n];
-   exptotal += expected;
-   sigtotal += sigma;
-   chi = (observed[n] - expected)/sigma;
-   chisq += chi*chi;
-   if(!quiet){
-     printf("# %3d %10.1f %10.1f %10.8f %10.8f %8.3f %10.4f\n",n,observed[n],
-           expected,bprob,sigma,chi*chi,chisq);
+   if(observed[n] > 10.0){
+     expected = nsamp*binomial(nmax,n,prob);
+     obstotal += observed[n];
+     exptotal += expected;
+     delchisq = (observed[n] - expected)*(observed[n] - expected)/expected;
+     chisq += delchisq;
+     if(verbose){
+       printf("# %5u     %3u   %10.4f %10.4f %10.4f %10.4f\n",
+                  n,ndof,observed[n],expected,delchisq,chisq);
+     }
+     ndof++;
    }
  }
- printf("Total:  %10f  %10f  %10f\n",
-        obstotal,exptotal,sigtotal);
-
- if(verbose == 0){
-   printf("Evaluated chisq = %f for %u n values\n",chisq,nmax);
+ if(verbose){
+   printf("Total:  %10.4f  %10.4f\n",obstotal,exptotal);
+   printf("#==================================================================\n");
+   printf("Evaluated chisq = %f for %u degrees of freedom\n",chisq,ndof);
  }
 
  /*
   * Now evaluate the corresponding pvalue.  The only real question
-  * is what is the correct number of degrees of freedom.  This is
-  * a tough one.
+  * is what is the correct number of degrees of freedom.  I'd argue we
+  * did use a constraint when we set expected = binomial*nsamp, so we'll
+  * go for ndof (count of bins tallied) - 1.
   */
- pvalue = gsl_sf_gamma_inc_Q((double)(nmax)/2.0,chisq/2.0);
- if(verbose == 0){
-   printf("pvalue = %f in chisq_binomial.\n",pvalue);
+ ndof--;
+ pvalue = gsl_sf_gamma_inc_Q((double)(ndof)/2.0,chisq/2.0);
+ if(verbose){
+   printf("Evaluted pvalue = %6.4f in chisq_binomial.\n",pvalue);
  }
 
- exit(0);
  return(pvalue);
 
 }

@@ -57,7 +57,7 @@ void rgb_binomial()
  unsigned int thisbit,tot_1,tot_bits;
  double tot_onefrac,tot_oneexp,tot_onefrac_sigma,tot_onefrac_delta;
  double *pvalue,pks,ptmp;
- Ntest btest;   /* For binomial test results */
+ Btest btest;   /* For binomial test binned results */
 
  if(bits > 128){
    nbits = bits = 128;
@@ -91,7 +91,7 @@ void rgb_binomial()
   * to support the formation of chisq as we run.
   */
  npts = nbits+1;
- Ntest_create(&btest,npts,"rgb_binomial",gsl_rng_name(rng));
+ Btest_create(&btest,npts,"rgb_binomial",gsl_rng_name(rng));
  for(k=0;k<npts;k++){
    ptmp = binomial(nbits,k,0.5);
    btest.y[k] = size*ptmp;
@@ -174,12 +174,12 @@ void rgb_binomial()
 
    /*
     * Finally, we save THIS sample's pvalue in the pvalue vector, and
-    * move on.
+    * move on.  0.5 is the probability for getting 1's.
     */
-   Ntest_eval(&btest);
+   Btest_eval(&btest);
    pvalue[i] = btest.pvalue;
    if(!quiet){
-     printf("  %u        %6.2f\n",i,pvalue[i]);
+     printf("  %u        %6.4f\n",i,pvalue[i]);
    }
 
  }
@@ -202,7 +202,7 @@ void rgb_binomial()
  
  
 
- Ntest_destroy(&btest);
+ Btest_destroy(&btest);
 
 }
 

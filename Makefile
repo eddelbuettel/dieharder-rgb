@@ -56,6 +56,7 @@ SOURCES = $(SOURCE)\
     tensor.c \
     matrix.c \
     block.c \
+    Btest.c \
     Ntest.c \
     Xtest.c \
     confidence.c \

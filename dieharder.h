@@ -79,6 +79,7 @@
  double binomial(unsigned int n, unsigned int k, double p);
  double chisq_eval(double *x,double *y,double *sigma, unsigned int n);
  double chisq_poisson(uint *observed,double lambda,int kmax);
+ double chisq_binomial(double *observed,double prob,uint kmax,uint nsamp);
  int sts_monobit();
  int sts_runs();
  void dumpbits(unsigned int *data, unsigned int nbits);
@@ -146,6 +147,18 @@
    char testname[128];
    char rngname[128];
  } Ntest;
+
+ typedef struct {
+   unsigned int npts;
+   double p;
+   double *x;
+   double *y;
+   double *sigma;
+   double chisq;
+   double pvalue;
+   char testname[128];
+   char rngname[128];
+ } Btest;
 
  typedef struct {
    unsigned int npts;
