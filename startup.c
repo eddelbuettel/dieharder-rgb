@@ -100,8 +100,12 @@ void rand_rate_startup()
   * per unsigned int.  If size was specified, we compute the exact number
   * of valid bits it will contain (which might NOT be
   * size*sizeof(unsigned int)).
+  *
+  * Actually, this is nasty code in here to get rid of problems that
+  * occur when one tries to specify bits on a test where one should
+  * specify size.  I need to work this out much better.
   */
- if(bits){
+ if(bits && testnum != RGB_BIT2 && testnum != RGB_BITDIST){
    size = bits/rmax_bits + 1;
  } else {
    bits = size*rmax_bits;

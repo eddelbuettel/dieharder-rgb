@@ -33,6 +33,7 @@ void rgb_bit2()
 
  nbits = bits;
 
+
  /*
   * ctest will test every successive bitpair AND wrap the final bit
   * back to the first bit for the final bitpair, so there are nbits
