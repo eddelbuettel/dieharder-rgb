@@ -45,6 +45,9 @@ void rand_rate_work()
    case RGB_PERSIST:
      rgb_persist();
      break;
+   case RGB_BITDIST:
+     rgb_bitdist();
+     break;
    case STS_MONOBIT:
      sts_monobit();
      break;
