@@ -40,6 +40,7 @@
    LOUD,
    HELPGEN,
    TST_RNG,
+   MEASURE,
    N_VERBOSE,
  } Verbose;
 

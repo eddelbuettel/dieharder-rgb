@@ -20,7 +20,7 @@ void measure_rate()
 
  /* The answers and a normalization term */
  double avg_nanotime,nanotime_norm;
- double avg_megarate;
+ double avg_megarate,avg_kilorate;
 
 
  /*
@@ -61,6 +61,9 @@ void measure_rate()
    delta = delta_timing();
 
  }
+ if(verbose == MEASURE){
+   printf("measure_rate(): empty_iter = %d, delta = %f\n",empty_iter,delta);
+ }
 
  /*
   * Now we time the empty loop for many samples to get an accurate
@@ -79,7 +82,9 @@ void measure_rate()
    }
    stop_timing();
    delta = delta_timing()/(double)empty_iter;
-   if(verbose == 11) printf("delta = %12.8e\n",delta);
+   if(verbose == MEASURE){
+     printf("measure_rate(): k = %d:  delta = %12.8e\n",k,delta);
+   }
    total_time += delta;
    total_time2 += delta*delta;
  }
@@ -122,6 +127,10 @@ void measure_rate()
    delta = delta_timing();
 
  }
+ if(verbose == MEASURE){
+   printf("measure_rate(): full_iter = %d, delta = %f\n",full_iter,delta);
+ }
+
 
  /*
   * Note that iterations is under control at the command line and CAN
@@ -148,7 +157,9 @@ void measure_rate()
    }
    stop_timing();
    delta = delta_timing()/(double)full_iter;
-   if(verbose == 11) printf("delta = %12.8e\n",delta);
+   if(verbose == MEASURE){
+     printf("measure_rate(): k = %d:  delta = %12.8e\n",k,delta);
+   }
    total_time += delta;
    total_time2 += delta*delta;
  }
@@ -173,17 +184,26 @@ void measure_rate()
   *========================================================================
   */
   vector_length = size*sizeof(unsigned int);
-  nanotime_norm = 1.0;
+  nanotime_norm = 1.0*size;
   avg_nanotime = (avg_time_full - avg_time_empty)*1.e+9/nanotime_norm;
   avg_megarate = 1.0e3/avg_nanotime;
+  avg_kilorate = 1.0e6/avg_nanotime;
   /* This is a comment */
   if(!quiet){
     printf("# Benchmark of the gsl_rnd_int() for the %s generator:\n",gsl_rng_name(random));
-    printf("#    and vector size = %d (%d bytes)\n",size,size*sizeof(unsigned int));
+    printf("#    and vector size = %d (%d bytes)\n",size,vector_length);
     printf("# Average Time: %6.2f nanoseconds\n",avg_nanotime);
-    printf("# BogomegaRate: %6.2f megafloats per second\n",avg_megarate);
+    if(avg_megarate<1.0){
+      printf("# BogokiloRate: %6.2f %s kilorands per second\n",avg_kilorate,gsl_rng_name(random));
+    } else {
+      printf("# BogomegaRate: %6.2f %s megarands per second\n",avg_megarate,gsl_rng_name(random));
+    }
   } else {
-    printf("%12d (bytes)    %6.2f (bogomflops)\n",size*sizeof(unsigned int),avg_megarate);
+    if(avg_megarate<1.0){
+      printf("%12d (bytes)    %6.2f (bogokflops)\n",size*sizeof(unsigned int),avg_kilorate);
+    } else {
+      printf("%12d (bytes)    %6.2f (bogomflops)\n",size*sizeof(unsigned int),avg_megarate);
+    }
   }
 }
 
