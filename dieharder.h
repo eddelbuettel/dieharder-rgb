@@ -28,12 +28,20 @@
 #define NO	0
 #define PI 3.141592653589793238462643
 
+ typedef enum {
+   D_QUIET,
+   D_ALL,
+   D_SEED,
+   N_DEBUG
+ } Debug;
+
+
  /*
   *========================================================================
   * Subroutine Prototypes
   *========================================================================
   */
- unsigned int makeseed();
+ unsigned long int random_seed();
  void start_timing();
  void stop_timing();
  double delta_timing();
@@ -79,6 +87,7 @@
  unsigned int *ai;		/* To do memtest on unsigned int vectors */
 
  gsl_rng *random;  /* global gsl random number generator */
+ int num_gsl_rngs;  /* number of GSL rng's found in current library */
  FILE *fp;         /* pointer to /dev/random, for that benchmark or rng seed */
 
 

@@ -12,7 +12,7 @@
  *========================================================================
  */
 
-#include "cpu_rate.h"
+#include "rand_rate.h"
 
 void cpu_rate_work()
 {

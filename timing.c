@@ -11,7 +11,7 @@
  *========================================================================
  */
 
-#include "cpu_rate.h"
+#include "rand_rate.h"
 
 void start_timing()
 {

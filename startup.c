@@ -14,33 +14,54 @@
  *========================================================================
  */
 
-#include "cpu_rate.h"
+#include "rand_rate.h"
 
 void cpu_rate_startup()
 {
 
- int i,j,k;
- const gsl_rng_type *T;
+
+  
+
+ int i,imax,j,k;
+ const gsl_rng_type **types;
  unsigned int random_max,seed;
 
- gsl_rng_env_setup();
- T = gsl_rng_default;
- random = gsl_rng_alloc (T);
- random_max = gsl_rng_max(random);
- if ((fp = fopen("/dev/random","r")) == NULL) {
-   if(verbose == 10) printf("Cannot open /dev/random, setting seed to 0\n");
-   seed = 0;
- } else {
-   fread(&seed,sizeof(seed),1,fp);
-   if(verbose == 10) printf("Got seed %u from /dev/random\n",seed);
-   /* leave this open if we're going to benchmark /dev/random itself */
-   if(testnum != 10) fclose(fp);
+ /*
+  * List the available, built in gsl generators
+  */
+ types = gsl_rng_types_setup ();
+ printf("Available built-in gsl-linked generators:\n");
+ i = 0;
+ while(types[i] != NULL){
+   printf("%d: %s\n", i, types[i]->name);
+   i++;
  }
+ num_gsl_rngs = i+1;
+ /*
+  * List any homemade or locally linked non-gsl generators.
+  * There will ALWAYS be /dev/random -- many of the rest that
+  * we might want to link are already wrapped in the gsl -- but we'll
+  * still need to add more, I'm sure.  Especially vector generators,
+  * since I'm betting one can double the speed of the fastest generator
+  * here by simply filling a vector all at once, and not calling the
+  * generator in a subroutine wrapper...
+  */
+ printf("Available private generators:\n");
+ printf("%d: /dev/random (always used to reseed selected generator)\n", i);
+ i++;
 
+ /*
+  * The following code is all likely to go away.  It just validates
+  * that gsl_rng's "work" and so forth.
+  */
+ random = gsl_rng_alloc (types[12]);
+ random_max = gsl_rng_max(random);
+ seed = random_seed();
  gsl_rng_set(random,seed);
 
  if(verbose == 10){
    printf("generator type: %s\n", gsl_rng_name(random));
+   printf("seed value: %u\n", seed);
    printf("max value = %u\n", random_max);
    printf("first value = %u\n", gsl_rng_get(random));
    printf("second value = %u\n", gsl_rng_get(random));

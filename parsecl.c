@@ -5,7 +5,7 @@
 *
 */
 
-#include "cpu_rate.h"
+#include "rand_rate.h"
 
 void parsecl(int argc, char **argv)
 {

@@ -19,7 +19,7 @@
 #========================================================================
 # 
 # This should be the name of the binary produced by this package.
-PROGRAM = cpu_rate
+PROGRAM = rand_rate
 # This is the name of the toplevel directory, the CVS repository
 # and goes into e.g. the tarball names.  It will often (but not always)
 # be the name of the main binary.
@@ -44,8 +44,9 @@ RELEASE=1
 SOURCE = $(PROGRAM:=.c)
 SOURCES = $(SOURCE)\
     parsecl.c \
-    cpu_rate_startup.c \
-    cpu_rate_work.c \
+    rand_rate_seed.c \
+    rand_rate_startup.c \
+    rand_rate_work.c \
     measure_rate.c \
     timing.c
 

@@ -1,0 +1,31 @@
+These are some simple design notes to guide further work.
+
+This program is designed to do the following:
+
+  a) Encapsulate every RNG known to humans for testing.  Since GSL
+already does the encapsulation pretty well, we're going to start with
+all the existing GSL routines.  However, we'll add /dev/random (used for
+seeding, until something better shows up) as well as anything else we
+encounter that isn't already there (probably contributing it to the GSL
+if/when we learn how to wrap it).
+
+  b) test speed of the available RNG's.  Both:
+     i) In "native/standard" subroutine calls (with the subroutine call
+        overhead included);
+    ii) In a custom "vector" form, where a whole block of dedicated
+        memory is filled in one pass from a given algorithm, and
+        subsequently accessed via a macro that only calls for a refill
+        when the vector is exhausted.
+
+  c) test quality of the available RNG's.  This means at LEAST:
+     i) DIEHARD, but modified so that we get cold/reproducible
+        statistics and an unambiguous "good/no good" conclusion,
+        per test;
+    ii) NIST STS/FIPS.  Ditto;
+   iii) Plus, of course, anything and everything I can think of.
+
+  d) test quality of any input set of "random" data according to c).
+This will let us test arbitrary RNG's via their data, including and
+especially hardware generators.  Note that hardware generators available
+as "devices" will be interfaced via a).
+
