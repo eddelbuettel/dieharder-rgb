@@ -19,6 +19,8 @@
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_sf.h>
 #include <gsl/gsl_sort.h>
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_matrix.h>
 #include "tensor.h"
 
 /*
@@ -43,7 +45,8 @@
    D_DIEHARD_BDAY,
    D_DIEHARD_2DSPHERE,
    D_DIEHARD_3DSPHERE,
-   D_DIEHARD_BINARY_RANK,
+   D_DIEHARD_RANK_32x32,
+   D_DIEHARD_RANK_6x8,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_STS_MONOBIT,
@@ -54,6 +57,7 @@
    D_KSTEST,
    D_BTEST,
    D_XTEST,
+   D_BRANK,
    N_DEBUG
  } Debug;
 
@@ -71,7 +75,8 @@
    DIEHARD_BDAY,
    DIEHARD_2DSPHERE,
    DIEHARD_3DSPHERE,
-   DIEHARD_BINARY_RANK,
+   DIEHARD_RANK_32x32,
+   DIEHARD_RANK_6x8,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -146,10 +151,14 @@
  double diehard_3dsphere();
  void diehard_3dsphere_test();
  void help_diehard_3dsphere();
- /* diehard "binary rank" test */
- double diehard_binary_rank();
- void diehard_binary_rank_test();
- void help_diehard_binary_rank();
+ /* diehard "binary rank" test 32x32*/
+ double diehard_rank_32x32();
+ void diehard_rank_32x32_test();
+ void help_diehard_rank_32x32();
+ /* diehard "binary rank" test 6x8*/
+ double diehard_rank_6x8();
+ void diehard_rank_6x8_test();
+ void help_diehard_rank_6x8();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();
@@ -232,7 +241,16 @@
   */
  const gsl_rng_type **types;    /* where all the rng types go */
  gsl_rng *rng;               /* global gsl random number generator */
- unsigned int *rand_int;        /* vector of "random" ints */
+ unsigned int *rand_int;        /* vector of "random" uints */
+ unsigned int **rand_mtx;       /* matrix of "random" uints */
+
+ /*
+  * All required for GSL Singular Value Decomposition (to obtain
+  * the rank of the random matrix for diehard rank tests).
+  */
+ gsl_matrix *A,*V;
+ gsl_vector *S,*svdwork;
+
  unsigned int seed;             /* rng seed of run (?) */
  unsigned int random_max;       /* maximum rng returned by generator */
  unsigned int rmax;             /* scratch space for random_max manipulation */
@@ -240,7 +258,7 @@
  unsigned int rmax_mask;        /* Mask for valid section of uint */
  double *rand_uniform;          /* vector of "random" uniform deviates */
  int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
-
+ 
 
  /*
   * Looks like we'll need certain structs in order to be able to really

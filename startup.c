@@ -41,7 +41,8 @@ reasonable amount of time).\n\
    -d 2 Diehard Birthdays test (-t 100, or less than 200) \n\
    -d 3 Diehard Minimum Distance (2D Spheres) test\n\
    -d 4 Diehard 3D Spheres (minimum distance) test\n\
-   -d 5 Diehard Binary Rank test\n\
+   -d 5 Diehard 32x32 Binary Rank test\n\
+   -d 6 Diehard 6x8 Binary Rank test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\

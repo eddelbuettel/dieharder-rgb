@@ -61,6 +61,7 @@ SOURCES = $(SOURCE)\
     Ntest.c \
     Xtest.c \
     sample.c \
+    rank.c \
     confidence.c \
     chisq.c \
     kstest.c \
@@ -70,9 +71,10 @@ SOURCES = $(SOURCE)\
     bits.c \
     diehard_runs.c \
     diehard_birthdays.c \
-    diehard_binary_rank.c \
     diehard_2dsphere.c \
     diehard_3dsphere.c \
+    diehard_rank_32x32.c \
+    diehard_rank_6x8.c \
     rgb_bitdist.c \
     rgb_persist.c \
     sts_monobit.c \

@@ -24,6 +24,8 @@ void work()
    diehard_birthdays();
    diehard_2dsphere();
    diehard_3dsphere();
+   diehard_rank_32x32();
+   diehard_rank_6x8();
    rgb_persist();
    rgb_bitdist();
    sts_monobit();
@@ -48,6 +50,14 @@ void work()
      break;
    case DIEHARD_3DSPHERE:
      diehard_3dsphere();
+     exit(0);
+     break;
+   case DIEHARD_RANK_32x32:
+     diehard_rank_32x32();
+     exit(0);
+     break;
+   case DIEHARD_RANK_6x8:
+     diehard_rank_6x8();
      exit(0);
      break;
  }
