@@ -16,26 +16,26 @@
 
 #include "rand_rate.h"
 
-void rand_rate_work()
+double chisq_eval(double *x,double *y,double *sigma, unsigned int n)
 {
 
- switch(testnum){
-   default:
-   case LIST_RNGS:
-     list_rngs();
-     break;
-   case LIST_RAND:
-     list_rand();
-     break;
-   case BOGORATE:
-     measure_rate();
-     break;
-   case STS_MONOBIT:
-     sts_monobit();
-     break;
-   case RGB_BINOMIAL:
-     rgb_binomial();
-     break;
+ int i;
+ double chi,chisq;
+ chisq=0.0;
+ /*
+  * This routine evaluates chi-squared, where:
+  * x is the trial vector
+  * y is the exact vector
+  * sigma is the vector of expected error for y (the exact true distribution)
+  * n is the vector length(s).
+  *
+  * We'll have to see how this handles sigma[i] = 0.0.  Probably badly...
+  */
+ for (i=0;i<n;i++) {
+   chi = (y[i]-x[i])/sigma[i];
+   chisq += chi*chi;
  }
+
+ return(chisq);
 
 }

@@ -48,6 +48,7 @@
    LIST_RAND,
    BOGORATE,
    STS_MONOBIT,
+   RGB_BINOMIAL,
    N_TEST
  } Tests;
 
@@ -63,7 +64,7 @@
  double delta_timing();
  void measure_rate();
  void Usage();
-
+ double binomial(unsigned int n, unsigned int k, double p);
 
  /*
   *========================================================================

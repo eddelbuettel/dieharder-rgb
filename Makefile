@@ -53,6 +53,7 @@ SOURCES = $(SOURCE)\
     rand_rate_seed.c \
     rand_rate_startup.c \
     rand_rate_work.c \
+    rand_rate_utils.c \
     rgb_binomial.c \
     sts_monobit.c \
     timing.c \
