@@ -375,3 +375,40 @@ accumulated bit values.
 Looks like I >>do<< have some work to do to fully understand everything,
 I do I do...;-)
 
+==============
+
+Whoo, dawgies!  Out of a bit of insight, rgb_persist was born, and it
+explains why a LOT of rng's suck incredibly.  Lots of rng's quite
+literally never change the contents of certain bits (usually lower
+order bits).  One common symptom is for an rng to always return odd
+or even numbers.  Another common symptom is for a rng to fail a
+distributional test when the repeated bits are measured (as repeated 1's
+cause an excess of 1's, repeated 0's an excess of 0's, even repeated
+01's can cause runs/bitpair tests to fail).  Worse, rgb_persist clearly
+shows that MOST rng's that exhibit the problem at all exhibit it
+STRONGLY (LOTS of repeated lower order bits) for at least some seeds.
+Using them, one runs a significant (indeed, a near "sure thing") risk of
+encountering seeds such that as many as 18 bits out of 32 are repeated,
+leaving one with only a fraction of the variation you thought you
+had.
+
+At this point, I'd have to say that rgb_persist is one of the first
+tests to run on ANY rng, and any rng that fails it should probably
+just be rejected out of hand -- even if only the last (least
+significant) bit is repeated, it seems dangerous to use an rng that
+produces only even or only odd numbers from any given seed, even for
+games.
+
+Writing the dumpbits and rgb_persist routines also gave me insight into
+how rgb_binomial and even the sts routines might be failing relative to
+their design goals.  I've been processing bits least to most
+significant, and I've been ignoring random_max when doing so.  This is
+a capital mistake, as of course an rng will fail when it only returns
+e.g. 16 bits in a 32 bit slot (and the other bits are necessarily
+repeated).  I've probably been "passing" only rng's that return a full
+32 "random bits" (and of course don't fail e.g. rgb_persist()).
+
+SO, I need to rewrite sts_monobit, sts_runs, and rgb_binomial (last
+first) so that they only check bits in the valid part of each returned
+word.  This will be modestly annoying, but is of course absolutely
+necessary for the results to mean a damn thing.

@@ -38,7 +38,7 @@ void parsecl(int argc, char **argv)
        exit(0);
        break;
      case 'i':
-       reseed_flag = 0;
+       reseed_flag = 1;
        break;
      case 'n':
        size = strtol(optarg,(char **) NULL,10);

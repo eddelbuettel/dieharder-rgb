@@ -219,5 +219,29 @@ int get_bit(unsigned int n)
    return(0);
  }
  
+}
 
+/*
+ * dumpbits only can dump 8*sizeof(unsigned int) bits at a time.
+ */
+void dumpbits(unsigned int *data, unsigned int nbits)
+{
+
+ int i,j;
+ unsigned int mask;
+
+ if(nbits > 8*sizeof(unsigned int)) {
+   nbits = 8*sizeof(unsigned int);
+ }
+ 
+ mask = (int)pow(2,nbits);
+ for(i=0;i<nbits;i++){
+   if(mask & *data){
+     printf("1");
+   } else {
+     printf("0");
+   }
+   mask = mask >> 1;
+ }
+ printf("\n");
 }
