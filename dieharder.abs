@@ -1,4 +1,4 @@
-<H2>rand_rate Version 0.4.4</H2>
+<H2>rand_rate Version 0.4.41</H2>
 
 <p>Click <a href="./rand_rate">here</a> to see a list of all rand_rate
 files on this repository.</p>
@@ -54,13 +54,20 @@ gsl_ran_poisson_pdf() and the observations per cycle.  Good at solidly
 rejecting bad generators (try -r 40, randu, as the universal "bad
 generator":-).</p>
 
-<li> Diehard: 3d Sphere test.
+<li> Diehard: (2d) Minimum Distance test.
 
-<p>This works well with KS test that unambiguously accepts or rejects
-the rng (Kolmogorov-Smirnov tends to leave little grey area when a
-really bad set of p-values turns up).  Used this test to implement and
-debug (I hope) the KS test code.  I'm using Q to compute p from KS (so
-to speak;-) which may or may not do too well on the tails.</p>
+<p>This works well, uses KS test on lots of samples.  It's relatively
+slow as it has to test a lot of pairs of points to float out the minimum
+distance, and I haven't written this optimally (yet) out of sheer
+laziness.  It requires e.g. an index sort and while doing primary
+development a prefer brute force.</p>
+
+<li> Diehard: (3d) Minimum Distance test. 
+
+<p>This works well also and is in fact the same test as the 2d test
+above but yields a different target distribution.  Again, I'm not
+sorting to find the minimum (yet) and checking all the pairs of points
+is relatively slow, if sure.</p>
 
 <li> rgb: Bitmask test.
 
@@ -82,46 +89,47 @@ fixed and appears to work quite well.</p>
 
 <li> rgb: Pairwise bit binomial distribution test.
 
- <p>This one is exactly the same, only it looks at all 2-bit tuples with
-a cyclic permutation of the starting bit across the words.  There are
-four possible values per tuple, and they too should be binomially
-distributed (each).  Once again one can easily make chisq and pvalues,
-once again I've got to really carefully ensure that my computations of
-chisq are correct for this context.</p>
+ <p>Broken, but now that I have the single bit test running well I
+can rewrite this one as it is identical except that it checks
+bit pairs instead of single bits.  To write it efficiently (and in fact
+to generalize the binomial cod above) I need to combine cycle with
+get_bit to create a cyclic "window" retrieval function that returns the
+integer value of an index-specified bit window on the integer, with
+periodic wraparound.</p>
 
-<p>Obviously I'd like to completely automate this so that one could test
-arbitrary n-tuples of bits for the right frequency distribution, across
-all cyclic permutations of the source words.  I think that this would
-eat several of the Diehard tests and a few of the STS tests which all
-seem to do this same thing, but not as plainly.  Note that doing a
-series of these tests is like testing moments -- if single bits are
-correctly distributed (50/50 binomial) and bitpairs are correctly
-distributed (25/75 binomial for all pairs) and bit triplets are
-correctly distributed and bit octets are correctly distributed (etc) it
-is hard to see how the rands themselves won't be correctly (randomly)
-distributed.</p>
+<p>Then it should be easy to completely automate this so that one can
+test arbitrary n-tuples of bits for the right frequency distribution,
+across all cyclic permutations of the source words.  I think that this
+would eat/replace several of the Diehard tests and a few of the STS
+tests which all seem to do this same thing, but not as plainly and maybe
+not as well.  Note that doing a series of these tests is like testing
+moments -- if single bits are correctly distributed (50/50 binomial) and
+bitpairs are correctly distributed (25/75 binomial for all pairs) and
+bit triplets are correctly distributed and bit octets are correctly
+distributed (etc) it is hard to see how the rands themselves won't be
+correctly (randomly) distributed.</p>
 
 <li> STS: monobit test.
 
- <p>This is a weak (but still powerful) version of the counting of 1's
-in a word of N bits that examines the number of 1's in a very long list
-of bits and compares it to the direct binomial expectation.  Here one
-can be very sure chisq and p are correctly computed, but it still needs
-to collect a vector of p's and apply a KS test rather than force one to
-run it lots of times and visually assess the p distribution as
-"uniform".  Still, it is pretty good at finding weak rng's.  Not so good
-at finding rng's that are less obviously weak (but still very nonrandom)
-as it is quite possible for an rng to yield the right fraction of 1's
-and 0's but still be very nonrandom.</p>
+ <p>This is a weak (but still useful) version of the counting of 1's in
+a word of N bits that examines the number of 1's in a very long list of
+bits and compares it to N/2.  Here one can be very sure chisq and p are
+correctly computed per trial in the STS prescription, but the test now
+collects a vector of p's and applies a KS test rather than forcing you
+to run it lots of times by hand and visually assess the p distribution
+as "uniform" (or using the other methods described in the STS
+documentation).  Weak or not, monobit can definitely find truly weak
+rng's.  Not so good in general, as it is quite possible for an rng to
+yield the right fraction of 1's and 0's but still be very nonrandom.</p>
 
 <li> STS: runs test (counts runs of 0's and 1's).
 
  <p>This is distinct from Diehard's runs.  In fact, this test is TRYING
-to compute what I compute far more directly in the pairwise bit
-distribution, since runs of 0's or 1's always end on a 01 or 10 pair,
-right?  1/4 of all pairs should be 01, 1/4 should be 10, 1/4 should be
-11, 1/4 should be 00.  Why bother calling it "runs"?  Just count the
-damn pairs!</p>
+to compute what I will eventually compute far more directly in the
+pairwise bit distribution, since runs of 0's or 1's always end on a 01
+or 10 pair, right?  1/4 of all pairs should be 01, 1/4 should be 10, 1/4
+should be 11, 1/4 should be 00.  Why bother calling it "runs" (or
+counting the intervening bits)?  Just count the damn pairs!</p>
 
 </ul>
 

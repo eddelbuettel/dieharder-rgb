@@ -67,7 +67,7 @@ int diehard_birthdays()
   * need for the Poissonian tail.
   */
  kmax = 1;
- while(samples*gsl_ran_poisson_pdf(kmax,lambda)>5) kmax++;
+ while(psamples*gsl_ran_poisson_pdf(kmax,lambda)>5) kmax++;
  kmax++;   /* and one to grow on...*/
  printf("# Setting number of bins kmax = %u.\n",kmax);
  
@@ -102,7 +102,7 @@ int diehard_birthdays()
   * the Poissonian statistic for each cyclic rotation of the bits
   * across the 24 bit mask.
   */
- for(ns=0;ns<samples;ns++){
+ for(ns=0;ns<psamples;ns++){
 
    /*
     * Fill vector of rands to begin.
@@ -253,7 +253,7 @@ int diehard_birthdays()
    printf("# Cumulated samples are then converted to chisq and p-values.\n");
    printf("#==================================================================\n");
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# %u samples drawn of %u cyclic permutations.\n",samples,rmax_bits);
+   printf("# %u samples drawn of %u cyclic permutations.\n",psamples,rmax_bits);
    printf("# lambda = %f\n",lambda);
  }
 

@@ -91,15 +91,15 @@ int diehard_runs()
  b[4] = 29.0/5040.0;
  b[5] = 1.0/840.0;
 
- uv_pvalue = (double *)malloc(samples*sizeof(double));
- dv_pvalue = (double *)malloc(samples*sizeof(double));
+ uv_pvalue = (double *)malloc(psamples*sizeof(double));
+ dv_pvalue = (double *)malloc(psamples*sizeof(double));
 
  /*
   * Fill vector of "random" integers with selected generator.
   * Observe that this test does NOT not convert to floats but
   * counts up down and down up on an integer compare.
   */
- for(ns=0;ns<samples;ns++){
+ for(ns=0;ns<psamples;ns++){
 
    /* Fill vector of rands all at once */
    for(j=0;j<size;j++) {
@@ -195,26 +195,26 @@ int diehard_runs()
    printf("# size of vector tested = %u\n",size);
  }
  printf("# Testing runs up:\n");
- confidence(uv_pvalue,samples,0.01);
+ confidence(uv_pvalue,psamples,0.01);
  if(!quiet){
    printf("#==================================================================\n");
  }
  printf("# Testing runs down:\n");
- confidence(dv_pvalue,samples,0.01);
+ confidence(dv_pvalue,psamples,0.01);
  if(!quiet){
    printf("#==================================================================\n");
  }
 
- up_pks = kstest(uv_pvalue,samples);
- printf("p = %6.3f from Komogorov-Smirnov test on %d up samples.\n",up_pks,samples);
+ up_pks = kstest(uv_pvalue,psamples);
+ printf("p = %6.3f from Komogorov-Smirnov test on %d up samples.\n",up_pks,psamples);
  if(up_pks>0.01){
    printf("Generator appears to be ok.\n");
  } else {
    printf("Generator fails at 1%% confidence level.\n");
  }
  
- up_pks = kstest_kuiper(uv_pvalue,samples);
- printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d up samples.\n",up_pks,samples);
+ up_pks = kstest_kuiper(uv_pvalue,psamples);
+ printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d up samples.\n",up_pks,psamples);
  if(up_pks>0.01){
    printf("Generator appears to be ok.\n");
  } else {
@@ -225,16 +225,16 @@ int diehard_runs()
    printf("#==================================================================\n");
  }
 
- down_pks = kstest(dv_pvalue,samples);
- printf("p = %6.3f from Komogorov-Smirnov test on %d down samples.\n",down_pks,samples);
+ down_pks = kstest(dv_pvalue,psamples);
+ printf("p = %6.3f from Komogorov-Smirnov test on %d down samples.\n",down_pks,psamples);
  if(down_pks>0.01){
    printf("Generator appears to be ok.\n");
  } else {
    printf("Generator fails at 1%% confidence level.\n");
  }
 
- down_pks = kstest_kuiper(dv_pvalue,samples);
- printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d down samples.\n",down_pks,samples);
+ down_pks = kstest_kuiper(dv_pvalue,psamples);
+ printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d down samples.\n",down_pks,psamples);
  if(down_pks>0.01){
    printf("Generator appears to be ok.\n");
  } else {

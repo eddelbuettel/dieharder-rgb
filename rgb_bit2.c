@@ -57,7 +57,7 @@ void rgb_bit2()
     * This is pretty standard at this point.  In fact, we could
     * probably do this with the constructor...
     */
-   ctest[i].npts = samples;
+   ctest[i].npts = psamples;
    ctest[i].p = 0.25;
    for(k=0;k<nbits;k++){
      ctest[i].x[k] = 0.0;
@@ -77,7 +77,7 @@ void rgb_bit2()
     */
  }
 
- for(i=0;i<samples;i++){
+ for(i=0;i<psamples;i++){
    /*
     * If this flag is set, reseed the rng on each pass through.
     * This lets us see if some problems are either ameliorated
@@ -213,7 +213,7 @@ void rgb_bit2()
  printf("# %s test of %s summary:\n",ctest[0].testname,ctest[0].rngname);
  printf("# %8s  %8s  %8s  %8s  %8s  %8s\n","samples","bits",
     "p(00)","p(01)","p(10)","p(11)");
- printf(" %10d  %8d  %8.4f  %8.4f  %8.4f  %8.4f\n",samples,nbits,
+ printf(" %10d  %8d  %8.4f  %8.4f  %8.4f  %8.4f\n",psamples,nbits,
     ctest[0].pvalue,ctest[1].pvalue,ctest[2].pvalue,ctest[3].pvalue);
 
 

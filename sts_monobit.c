@@ -88,7 +88,7 @@ int sts_monobit()
  printf("# %11s  %12s  %12s  %12s  %8s\n","Test Name","Generator",
    "# samples","# of bits","p-value");
  printf("  %11s  %12s  %12d  %11d  %8.4f\n",mtest.testname,mtest.rngname,
-   samples,nbits,mtest.pvalue);
+   psamples,nbits,mtest.pvalue);
 
  if(mtest.pvalue<0.01){
    return(0);

@@ -50,7 +50,7 @@ double chisq_poisson(uint *observed,double lambda,int kmax)
 
  expected = (double *)malloc(kmax*sizeof(double));
  for(k = 0;k<kmax;k++){
-   expected[k] = samples*gsl_ran_poisson_pdf(k,lambda);
+   expected[k] = psamples*gsl_ran_poisson_pdf(k,lambda);
  }
 
  /*

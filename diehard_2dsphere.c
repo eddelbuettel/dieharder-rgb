@@ -42,10 +42,10 @@ int diehard_2dsphere()
   * a simple double loop through to float the smallest separation out.
   * Generate p, save in a sample vector.  Apply KS test.
   */
- pvalue = (double *)malloc(samples*sizeof(double));
+ pvalue = (double *)malloc(psamples*sizeof(double));
  c3 = (C3 *)malloc(POINTS*sizeof(C3));
 
- for(i=0;i<samples;i++){
+ for(i=0;i<psamples;i++){
    rmin = 2000.0;
    for(j=0;j<POINTS;j++){
      /*
@@ -92,16 +92,16 @@ int diehard_2dsphere()
    printf("# Number of points tested = %u\n",POINTS);
  }
 
- pks = kstest(pvalue,samples);
- printf("p = %6.3f from Komogorov-Smirnov test on %d samples.\n",pks,samples);
+ pks = kstest(pvalue,psamples);
+ printf("p = %6.3f from Komogorov-Smirnov test on %d samples.\n",pks,psamples);
  if(pks>0.01){
    printf("Generator appears to be ok.\n");
  } else {
    printf("Generator fails at 1%% confidence level.\n");
  }
  
- pks = kstest_kuiper(pvalue,samples);
- printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d samples.\n",pks,samples);
+ pks = kstest_kuiper(pvalue,psamples);
+ printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d samples.\n",pks,psamples);
  if(pks>0.01){
    printf("Generator appears to be ok.\n");
  } else {

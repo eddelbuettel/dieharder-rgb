@@ -73,7 +73,7 @@ void rgb_binomial()
  nsize = 0;
  while(nsize*rmax_bits < nbits) nsize++;
 
- pvalue = (double *)malloc(samples*sizeof(double));
+ pvalue = (double *)malloc(psamples*sizeof(double));
 
  /*
   * Each run checks size bitstrings and generates a binomial pvalue
@@ -105,7 +105,7 @@ void rgb_binomial()
  if(!quiet){
    printf("#==================================================================\n");
    printf("#                 %s Test Description\n",btest.testname);
-   printf("# Evaluates the number of 1's in %d strings of %d bits and\n",samples,nbits);
+   printf("# Evaluates the number of 1's in %d strings of %d bits and\n",psamples,nbits);
    printf("# compares the result histogram to the binomial distribution.\n");
    printf("# From chisq and the incomplete gamma function the probability\n");
    printf("# of this histogram if the rng tested is in fact \"random\" is\n");
@@ -117,7 +117,7 @@ void rgb_binomial()
  if(verbose){
    printf("# sample     pvalue\n");
  }
- for(i=0;i<samples;i++){
+ for(i=0;i<psamples;i++){
 
    /* If requested, reseed the rng per sample */
    if(reseed_flag) {
@@ -187,9 +187,9 @@ void rgb_binomial()
 
  }
 
- pks = kstest(pvalue,samples);
+ pks = kstest(pvalue,psamples);
  if(verbose){
-   printf("p = %6.3f from standard Komogorov-Smirnov test on %u pvalues.\n",pks,samples);
+   printf("p = %6.3f from standard Komogorov-Smirnov test on %u pvalues.\n",pks,psamples);
    if(pks>0.01){
      printf("Generator appears to be ok.\n");
    } else {
@@ -197,9 +197,9 @@ void rgb_binomial()
    }
  }
 
- pks = kstest_kuiper(pvalue,samples);
+ pks = kstest_kuiper(pvalue,psamples);
  if(!quiet){
-   printf("# p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalue.\n",pks,samples);
+   printf("# p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalue.\n",pks,psamples);
    if(pks>0.01){
      printf("# Generator appears to be ok.\n");
    } else {
@@ -210,7 +210,7 @@ void rgb_binomial()
  printf("#==================================================================\n");
  printf("# %s test of %s random number generator:\n",btest.testname,btest.rngname);
  printf("#   %8s  %8s  %8s\n","samples","bits","p-value");
- printf(" %10d  %8d  %8.4f\n",samples,nbits,pks);
+ printf(" %10d  %8d  %8.4f\n",psamples,nbits,pks);
 
  Btest_destroy(&btest);
 

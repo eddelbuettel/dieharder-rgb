@@ -52,7 +52,7 @@ void rgb_persist()
  }
 
  if(reseed_flag) {
-   csamples = samples;
+   csamples = psamples;
  } else {
    csamples = 1;
  }
