@@ -52,7 +52,7 @@ unsigned int get_bit_ntuple(unsigned int *bitstring,
 {
 
  unsigned int b,rlen;
- unsigned int ioffset;
+ int ioffset;
  unsigned int result,carry,nmask;
 
  /*
@@ -71,6 +71,7 @@ unsigned int get_bit_ntuple(unsigned int *bitstring,
  }
  
  if(verbose == D_BITS || verbose == D_ALL){
+   printf("bslen = %u, blen = %u, boffset = %u\n",bslen,blen,boffset);
    printf("nmask =                   ");
    dumpbits(&nmask,32);
  }
@@ -86,7 +87,7 @@ unsigned int get_bit_ntuple(unsigned int *bitstring,
  ioffset = bslen - (uint) boffset/rmax_bits - 1;
  result = bitstring[ioffset];
  if(verbose == D_BITS || verbose == D_ALL){
-   printf("bitstring[%u] = %u\n",ioffset,result);
+   printf("bitstring[%d] = %u\n",ioffset,result);
    printf("Initial result =          ");
    dumpbits(&result,32);
  }
@@ -134,7 +135,7 @@ unsigned int get_bit_ntuple(unsigned int *bitstring,
    if(ioffset < 0) ioffset = bslen-1;
    carry = bitstring[ioffset];
    if(verbose == D_BITS || verbose == D_ALL){
-     printf("bitstring[%u] = %u\n",ioffset,carry);
+     printf("bitstring[%d] = %u\n",ioffset,carry);
      printf("Next carry =              ");
      dumpbits(&carry,32);
    }

@@ -57,6 +57,7 @@ double rgb_bitdist(int ntuple)
 {
 
  unsigned int b,t,i,j,k,l,m,n;   /* loop indices */
+ unsigned int bsamples,boffset;  /* The number of ntuples we pull from bitstring */
  unsigned int value;         /* value of ntuple (as an integer) */
  unsigned int *count,ctotal; /* count of any ntuple per bitstring */
  unsigned int ntuple_max;    /* largest ntuple value */
@@ -87,8 +88,16 @@ double rgb_bitdist(int ntuple)
   * around n = 128, but they may be able to do better.  The following
   * code fragment will prevent over/underflow problems if they can't.
  */
-  if(bits > 128) bits = 128;
+ if(bits > 128) bits = 128;
 
+ /*
+  * We may be getting into SERIOUS TROUBLE doing the full bits samples
+  * from the bitstring, ntuple at a time.  Let's instead try to draw
+  * only bsamples samples, where bsamples = bits/ntuple.  This then
+  * replaces "bits" in all dimension statements and the binomial distribution
+  * itself.
+  */
+ bsamples = bits/ntuple;  /* truncation is perfect */
 
  /*
   * OK, a sample is a string of nbits drawn from the rng, with nbits
@@ -151,9 +160,9 @@ double rgb_bitdist(int ntuple)
    printf("# rgb_bitdist():            btest table\n");
    printf("# rgb_bitdist(): Outcome   bit          x           y       sigma\n");
  }
- Btest_create(&btest[0],bits+1,"rgb_bitdist",gsl_rng_name(rng));
- for(b=0;b<=bits;b++){
-   pbin = gsl_ran_binomial_pdf(b,ntuple_prob,bits);
+ Btest_create(&btest[0],bsamples+1,"rgb_bitdist",gsl_rng_name(rng));
+ for(b=0;b<=bsamples;b++){
+   pbin = gsl_ran_binomial_pdf(b,ntuple_prob,bsamples);
    btest[0].x[b] = 0.0;
    btest[0].y[b] = tsamples*pbin;
    btest[0].sigma[b] = sqrt(btest[0].y[b]*(1.0 - pbin));
@@ -168,8 +177,8 @@ double rgb_bitdist(int ntuple)
    printf("# rgb_bitdist():=====================================================\n");
  }
  for(n=1;n<ntuple_max;n++){
-   Btest_create(&btest[n],bits+1,"rgb_bitdist",gsl_rng_name(rng));
-   for(b=0;b<=bits;b++){
+   Btest_create(&btest[n],bsamples+1,"rgb_bitdist",gsl_rng_name(rng));
+   for(b=0;b<=bsamples;b++){
      btest[n].x[b] = btest[0].x[b];
      btest[n].y[b] = btest[0].y[b];
      btest[n].sigma[b] = btest[0].sigma[b];
@@ -211,7 +220,7 @@ double rgb_bitdist(int ntuple)
     * Here is where we do the actual counting of the ntuples.
     */
    if(verbose == D_RGB_BITDIST || verbose == D_ALL){
-     printf("# Counting ntuples in bitstring: ");
+     printf("# Counting ntuples in bitstring:\n");
    }
 
    /*
@@ -220,12 +229,13 @@ double rgb_bitdist(int ntuple)
    for(n=0;n<ntuple_max;n++){
      count[n] = 0;
    }
-   for(b=0;b<bits;b++){
+   boffset = 0;
+   for(b=0;b<bsamples;b++){
      /*
       * This gets the integer value of the ntuple at index position
       * n in the current bitstring, from a window with cyclic wraparound.
       */
-     value = get_bit_ntuple((void *)rand_int,size,ntuple,b);
+     value = get_bit_ntuple((void *)rand_int,size,ntuple,boffset);
      /*
       * We increment the count of this ntuple for this string of bits
       */
@@ -233,6 +243,7 @@ double rgb_bitdist(int ntuple)
      if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("# rgb_bitdist(): count[%u] = %u\n",value,count[value]);
      }
+     boffset += ntuple;
    }
    /*
     * Increment the counter for the resulting numbers of patterns.
@@ -246,6 +257,10 @@ double rgb_bitdist(int ntuple)
      }
    }
    if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+     if(bits <= 32){
+       printf("# rgb_bitdist(): rand_int[%d] = %u = ",0,rand_int[0]);
+       dumpbits(&rand_int[0],8*sizeof(uint));
+     }
      printf("# rgb_bitdist(): Sample %u: total count = %u (should be %u, count of bits)\n",t,ctotal,bits);
    }
  }
