@@ -5,12 +5,12 @@
 Summary: rand_rate is a random number generator tester and timer
 
 Name: rand_rate
-Version: 0.0.1
+Version: 0.4.0
 Release: 1
 Group: Development/Tools
 Copyright: Open Source (GPL v2b)
 Source: %{name}.tgz
-Buildroot: /var/tmp/%{name}-buildroot
+Buildroot: /var/tmp/%{name}-%{version}-%{release}-root
 
 %description 
 
@@ -54,97 +54,14 @@ rm -rf %{builddir}
 
 %files 
 %defattr(-,root,root)
-# The xmlsysd binary
-%attr(755,root,root) /usr/sbin/xmlsysd
-# The xmlsysd man page
-%attr(644,root,root) /usr/share/man/man8/xmlsysd.8.gz
+# The rand_rate binary
+%attr(755,root,root) /usr/bin/rand_rate
+# The rand_rate man page
+%attr(644,root,root) /usr/share/man/man1/rand_rate.1.gz
 
 # The xmlsysd docs
-%doc README TODO COPYING CHANGES DESIGN
-
-%post
-
-# We now will REQUIRE xinetd.  If it isn't found we will bitch and
-# install anyway, but not ready to run.
-if [ -f /etc/xinetd.conf ]
-then
-
-  XINETD_CONF=/etc/xinetd.d/xmlsysd
-  # This is an xinetd system.  Good.
-
-  # If old xmlsysd config file exists, leave it but install
-  # the new one as xmlsysd.rpmnew
-  if [ -f /etc/xinetd.d/xmlsysd ]
-  then
-     echo "Warning:  /etc/xinetd.d/xmlsysd exists.  Installing /etc/xinetd.xmlsysd.rpmnew"
-     XINETD_CONF=/etc/xinetd.d/xmlsysd.rpmnew
-  fi
-cat > $XINETD_CONF << EOF
-# default: off
-# description:  The xmlsysd daemon, to be managed by xinetd.
-# Uncomment the "only_from" line below and edit it to permit access from
-# only private internal network hosts and/or specific networks.  Or leave
-# it as is and control via ipchains or iptables.  The default is to 
-# permit connections from any host, which may not be right for your site.
-service xmlsysd
-{
-	disable			= yes
-	socket_type		= stream
-	protocol		= tcp
-	wait			= no
-	user			= nobody
-	group			= nobody
-	server			= /usr/sbin/xmlsysd
-	server_args		= -i 7887
-	port			= 7887
-	instances		= 10
-#	only_from		= 10.0.0.0,172.16.0,0,192.168.0.0
-}
-EOF
-  if [ -x /etc/rc.d/init.d/xinetd ]
-  then
-    /etc/rc.d/init.d/xinetd restart
-  else
-    killall -USR1 xinetd
-  fi
-
-else
-
-  # If there is no xinetd, just tell them what to do.
-  cat << EOF
-Help!  
-
-I cannot figure out how to install xmlsysd "ready to run" on your system
-because you don't seem to have /etc/xinetd.conf.  If you want to run
-xmlsysd as a forking daemon (which is fine but which has no intrinsic
-access control) you might want to add a script starting it on whatever
-port you desire to e.g. /etc/rc.d/init.d/xmlsysd.
-
-I'd recommend using ipchains, iptables, or tcpd to control access if you
-do this, although xmlsysd is possibly harmless even if granted
-promiscuous access.  Or you can rpm --erase xmlsysd, install xinetd, and
-reinstall xmlsysd and it should find and install itself as an xinetd
-daemon the second time around.
-
-At this point a reasonable amount of documentation should be available
-in the man page (man xmlsyd) and in /usr/share/doc/xmlsysd*.  If you
-have problems that the documentation doesn't resolve, I'm generally
-available at:
-
-   Robert G. Brown <rgb@phy.duke.edu>
-
-Good Luck.
-
-EOF
-
-fi
-
-exit
-
-%postun
+%doc README COPYING NOTES
 
 %changelog
-* Wed Apr  29 2002 Robert G. Brown <rgb@duke.edu>
-- Releasing v 0.1.0 beta -- this has now been "stable" for weeks.
-* Wed Mar  13 2002 Robert G. Brown <rgb@duke.edu>
-- set up and built for RH 7.2
+* Tue Nov  11 2004 Robert G. Brown <rgb@duke.edu>
+- Releasing v 0.4.0 beta -- first public release.

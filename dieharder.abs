@@ -1,31 +1,33 @@
-<p> This is the current snapshot of the <b>cpu_rate</b>
-<i>Microtimer</i> harness and microbenchmark program.  I use this
-program to do quick-and-dirty benchmarks of a variety of systems
-performance parameters.  The timing harness itself is at least modestly
-advanced -- it uses the CPU cycle counter instead of gettimeofday where
-possible, for example (on all post-Pentium Intels, post-Athlon AMDs).
-There are tests for memory performance, "arithmetic" performance,
-transcendental (savage benchmark) performance.  In many cases
-(specifically those involving vectors and memory) the size of the
-vectors can be varied and the effects of cache size and hierarchical
-memory explored.</p>
+<p>Click <a href="./rand_rate">here</a> to see a list of all rand_rate
+files on this repository.</p>
 
-<p> This version of the code supports the relatively simple and
-"object-like" addition of code fragments to be timed.  There is a
-fairly long list of operations and fragments it already times (enter
-"cpu_rate -l" to get a current list).  It is in <b>beta</b> mode and
-may have bugs.  There may well be better timers out there (e.g.
-lmbench) only perhaps. not so easy to use.</p>
+<p> This is the current snapshot of the <b>rand_rate</b> random number
+tester.  It encapsulates all of the Gnu Scientific Library random number
+generators as well as /dev/random and /dev/urandom in a single harness
+that can time them and subject them to various tests for randomness.
+These tests are variously drawn from Marsaglia's "Diehard" battery of
+random number tests, the NIST STS tests, useful e.g. binning or spectral
+tests that I've found doing research into random number tests or tests
+that I myself have made up or that are improvements on tests from other
+sources.</p>
 
-<p>Because of the nature of this program I recommend that you grab the
-tarball and work with it rather than simply build/install either the
-source rpm or the provided (RH 9) binary rpm.  The latter "should work",
-but part of the fun of a benchmark/timer is playing with build options
-and seeing how it works.  There are also some (probably broken in the
-current release) scripts in the source directory that in previous
-versions scanned e.g. across the -s size option for the vector
-benchmarks; these scripts, with a bit of repair, would make it pretty
-easy to generate a graphable file of e.g. stream or memory read/write
-with and without random shuffling.</p>
+<p> The primary point of this tester is to make it easy to time and test
+(pseudo)random number generators OR hardware or other generators.  Three
+examples are provided of wrapping a random number generator and
+inserting it so that it is can be called via the GSL interface.  An
+interface is planned that would allow random numbers to be read in from
+a file, allowing the tool to be used with any generator (wrappable or
+not) that can generate a table of random numbers.</p>
 
-<p>I hope that you find cpu_rate useful.</p>
+<p>Another important motivation for writing rand_rate is to have the
+entire test code and documentation be fully Gnu Public Licensed and
+hence openly available for adaptation, testing, modification, including
+the addition of new tests.  The primary objections I have towards
+diehard and sts are not that they are or are not adequate and complete;
+it is that the code is obscure and not explicitly published for reuse.
+It is my hope that by providing this tool in autodocumenting source, it
+makes it easy to add new tests, critique older tests, and improve the
+suite in general.
+</p>
+
+<p>I hope that you find rand_rate useful.</p>

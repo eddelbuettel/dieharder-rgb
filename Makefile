@@ -182,8 +182,8 @@ tgz:	$(SOURCES) $(SCSOURCES)
 	# in sync with the VERSION/RELEASE defined ABOVE (only)!
 	# Might need another line or two here, e.g. %Source:
 	cat $(SPEC) | \
-        sed -e 's/^\(%define version\) \(.*\)/\1 $(VERSION_MAJOR).$(VERSION_MINOR)/' \
-            -e 's/^\(%define release\) \(.*\)/\1 $(RELEASE)/' >> $(SPEC).$$
+	sed -e 's/^\(Version:\) \(.*\)/\1 $(VERSION_MAJOR).$(VERSION_MINOR)/' \
+	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' >> $(SPEC).$$
 	mv $(SPEC).$$ $(SPEC)
 	mkdir -p .$(DIR)
 	cp -a * .$(DIR)
@@ -290,18 +290,12 @@ install : $(PROGRAM)
 
 installweb : $(TGZ) $(RPM) $(SRPM)
 	(mkdir $(DIR);\
-	rsync -avz $(DIR) ganesh.phy.duke.edu:public_html/Beowulf/; \
-	rsync -avz $(TGZ) ganesh.phy.duke.edu:public_html/Beowulf/$(DIR)/; \
-	rsync -avz $(WRPM) ganesh.phy.duke.edu:public_html/Beowulf/$(DIR)/; \
-	rsync -avz $(WSRPM) ganesh.phy.duke.edu:public_html/Beowulf/$(DIR)/; \
-	rsync -avz $(ABS) ganesh.phy.duke.edu:public_html/Beowulf/$(DIR)/; \
-	rsync -avz $(PHP) ganesh.phy.duke.edu:public_html/Beowulf/; \
-	rsync -avz $(DIR) ganesh.phy.duke.edu:public_html/brahma/Resources/; \
-	rsync -avz $(TGZ) ganesh.phy.duke.edu:public_html/brahma/Resources/$(DIR)/; \
-	rsync -avz $(WRPM) ganesh.phy.duke.edu:public_html/brahma/Resources/$(DIR)/; \
-	rsync -avz $(WSRPM) ganesh.phy.duke.edu:public_html/brahma/Resources/$(DIR)/; \
-	rsync -avz $(ABS) ganesh.phy.duke.edu:public_html/brahma/Resources/$(DIR)/; \
-	rsync -avz $(PHP) ganesh.phy.duke.edu:public_html/brahma/Resources/;\
+	rsync -avz $(DIR) ganesh.phy.duke.edu:public_html/General/; \
+	rsync -avz $(TGZ) ganesh.phy.duke.edu:public_html/General/$(DIR)/; \
+	rsync -avz $(RPM) ganesh.phy.duke.edu:public_html/General/$(DIR)/; \
+	rsync -avz $(SRPM) ganesh.phy.duke.edu:public_html/General/$(DIR)/; \
+	rsync -avz $(ABS) ganesh.phy.duke.edu:public_html/General/$(DIR)/; \
+	rsync -avz $(PHP) ganesh.phy.duke.edu:public_html/General/; \
 	rmdir $(DIR))
 
 #========================================================================

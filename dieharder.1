@@ -1,25 +1,76 @@
 .\" $Id$
-.TH PROJECT 1 "Copyright 2000 Robert G. Brown" "PROJECT"
+.TH RAND_RATE 1 "Copyright 2000 Robert G. Brown" "RAND_RATE"
 .SH NAME
-cpu_rate \- A simple project template
+rand_rate \- A testing and benchmarking tool for GSL random number 
+generators
 
 .SH SYNOPSIS
-rand_rate [-h] [-v]
+rand_rate [-t testnumber] [-r rngnumber] [-f filename ]
+         [-b number of bits] [-n length] [-s samples] [-i]
+         [-q] [-h] [-v level]
 
-.SH PROJECT OPTIONS
+.SH RAND_RATE OPTIONS
 
--h shows help (command synopsis).
--v makes execution verbose for debugging or the bored.
+  -t testnumber selects the test to be run.  Important test numbers
+     include 0 (which lists the random number generators available)
+     and 1 (which generates a list of 1024 random numbers from the
+     selected generator) and 2 (which times the selected generator.
+     All the tests known to the current version of this development
+     version of the code are listed with the -h option.
+  -r rngnumber selects the rng to be tested (list them with -t 0).
+  -f filename will EVENTUALLY permit random strings to be tested to be
+     read in from a file, but this is not yet implemented!
+  -b controls the number of bits used in bit string tests.
+  -n controls the length of the test vector (int or double) for vector
+     tests.
+  -s controls the number of samples (default 100).
+  -i turns on a new seed for each sample -- better indicates the
+     probability of a "bad seed" existing for an otherwise good
+     generator.
+  -q makes execution quiet for just the bottom line result of any test.
+  -h shows help (command synopsis, including tests that are currently
+     known to the program).
+  -v makes execution verbose for debugging or the bored.
+
+.B NOTE WELL:  
+The "bogomegarates" returned by this tool are BOGUS and may not be even 
+approximately correct in your context.  Also, the quality assessment(s) 
+for the rngs may, in fact, be completely incorrect or misleading.  Use 
+them at your Own Risk!  Be Warned!
+
 
 .SH DESCRIPTION
-.B cpu_rate
-is a program designed to do lots of different benchmarks in one common
-timing harness.  It is constantly changing at this point, so enter
-cpu_rate -h to get a current command summary.  Please report bugs to
-rgb@phy.duke.edu.
+.B rand_rate
+This is the current snapshot of the rand_rate random number
+tester.  It encapsulates all of the Gnu Scientific Library random number
+generators as well as /dev/random and /dev/urandom in a single harness
+that can time them and subject them to various tests for randomness.
+These tests are variously drawn from Marsaglia's "Diehard" battery of
+random number tests, the NIST STS tests, useful e.g. binning or spectral
+tests that I've found doing research into random number tests or tests
+that I myself have made up or that are improvements on tests from other
+sources.
+
+The primary point of this tester is to make it easy to time and test
+(pseudo)random number generators OR hardware or other generators.  Three
+examples are provided of wrapping a random number generator and
+inserting it so that it is can be called via the GSL interface.  An
+interface is planned that would allow random numbers to be read in from
+a file, allowing the tool to be used with any generator (wrappable or
+not) that can generate a table of random numbers.
+
+Another important motivation for writing rand_rate is to have the
+entire test code and documentation be fully Gnu Public Licensed and
+hence openly available for adaptation, testing, modification, including
+the addition of new tests.  The primary objections I have towards
+diehard and sts are not that they are or are not adequate and complete;
+it is that the code is obscure and not explicitly published for reuse.
+It is my hope that by providing this tool in autodocumenting source, it
+makes it easy to add new tests, critique older tests, and improve the
+suite in general.
 
 .SH PUBLICATION RULES
-.B cpu_rate
+.B rand_rate
 can be modified and used at will by any user, provided that:
 
   a) The original copyright notices are maintained and that the source,
