@@ -195,44 +195,15 @@ int diehard_runs()
    printf("# size of vector tested = %u\n",size);
  }
  printf("# Testing runs up:\n");
- test_proportion(uv_pvalue,samples,0.01);
+ confidence(uv_pvalue,samples,0.01);
  if(!quiet){
    printf("#==================================================================\n");
  }
  printf("# Testing runs down:\n");
- test_proportion(dv_pvalue,samples,0.01);
+ confidence(dv_pvalue,samples,0.01);
  if(!quiet){
    printf("#==================================================================\n");
  }
 
-}
-
-int test_proportion(double *pvec,int m,double alpha)
-{
-
- int i,j,k;
- double phat,pcount,proportion,interval,confplus,confminus;
-
- pcount = 0.0;
- for(i=0;i<m;i++){
-   /* printf("pvalue = %f\n",pvec[i]); */
-   if(pvec[i]>alpha) pcount++;
- }
- proportion = pcount/(double) m;
- /* printf("pcount = %f, proportion = %f\n",pcount,proportion); */
- phat = 1.0 - alpha;
- interval = 3.0*sqrt(phat*(1.0-phat)/(double)m);
- confplus  = phat+interval;
- confminus = phat-interval;
- printf("# %4.2f%% confidence interval for %d samples = (%f,%f)\n",
-   phat*100.0,m,confminus,confplus);
- if(proportion > confplus){
-   printf("Failure:  proportion = %f\n",proportion);
- } else if(proportion < confminus){
-   printf("Failure:  proportion = %f\n",proportion);
- } else {
-   printf("Success:  proportion = %f\n",proportion);
- }
- 
 }
 
