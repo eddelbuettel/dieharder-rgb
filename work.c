@@ -21,9 +21,10 @@ void rand_rate_work()
 
  if(testnum<0){
    measure_rate();
+   diehard_runs();
    rgb_persist();
    rgb_binomial();
-   sts_monobit();
+   rgb_bitdist();
    sts_runs();
    exit(0);
  }
@@ -38,6 +39,9 @@ void rand_rate_work()
      break;
    case BOGORATE:
      measure_rate();
+     break;
+   case DIEHARD_RUNS:
+     diehard_runs();
      break;
    case RGB_PERSIST:
      rgb_persist();

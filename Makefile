@@ -52,17 +52,21 @@ SOURCES = $(SOURCE)\
     measure_rate.c \
     parsecl.c \
     prob.c \
+    timing.c \
+    Ntest.c \
+    Xtest.c \
     rand_rate_seed.c \
     rand_rate_startup.c \
     rand_rate_work.c \
     rand_rate_utils.c \
+    diehard_runs.c \
     rgb_binomial.c \
     rgb_bitdist.c \
     rgb_bit2.c \
     rgb_persist.c \
     sts_monobit.c \
     sts_runs.c \
-    timing.c \
+
 
 INCLUDE = $(PROGRAM:=.h)
 INCLUDES = $(INCLUDE)
