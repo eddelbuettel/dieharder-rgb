@@ -25,6 +25,7 @@
 #define GSL_VAR
 /* List new rng types to be added. */
 GSL_VAR const gsl_rng_type *gsl_rng_dev_random;
+GSL_VAR const gsl_rng_type *gsl_rng_empty_random;
 
 void add_my_types()
 {
@@ -41,5 +42,6 @@ void add_my_types()
   * and add the new ones...
   */
  types[i++] = (gsl_rng_dev_random);
+ types[i++] = (gsl_rng_empty_random);
 
 }
