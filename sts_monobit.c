@@ -95,7 +95,6 @@ void sts_monobit_test()
  }
  mtest.x = 0;
  for(i=0;i<tsamples;i++) {
-   /* rand_int[i] = gsl_rng_get(rng); */
    bitstring = gsl_rng_get(rng);
    if(verbose == D_RGB_BITDIST || verbose == D_ALL){
      printf("# rgb_bitdist(): rand_int[%d] = %u = ",i,bitstring);

@@ -60,26 +60,6 @@ void startup()
  gsl_rng_set(rng,seed);
 
  /*
-  * We now need to allocate space for at least one vector:  one
-  * for unsigned int integer deviates and/or a vector of (double) uniform
-  * deviates.  This will need to be done from information passed on
-  * the command line as to the size or number of bits.  size indicates
-  * the length of the vectors directly; bits indicates the number of
-  * bits to be tested (in bit tests), which then determines the size.
-  *
-  * HOWEVER, we have to correct (either way) for the number of bits that
-  * are SIGNIFICANT or VALID in the given rng, derived from random_max.
-  * This isn't particularly simple to do, since random_max is not always
-  * power of 2 (in particular see ran3, for example).  We have to count
-  * the number of signficant bits returned by the rng and adjust our
-  * bits and size allocations accordingly.
-  */
- if(size < 1) {
-   fprintf(stderr,"Warning:  size = %d too small, using size = 1\n",size);
-   size = 1;
- }
-
- /*
   * Simultaneously count the number of significant bits in the rng
   * AND create a mask (which we need in e.g. rgb_persist and possibly
   * elsewhere).
@@ -104,7 +84,12 @@ void startup()
   * to run arbitrary tests, the file will need to be quite large.
   * We may need to write a routine that fills rand_int on demand
   * from either the file or a generator.
+  *
+  * This size is possibly overkill, but otherwise we'd have to
+  * figure out how big it is per test.  This is big enough
+  * for all of them, I'm pretty sure.
   */
+ size = tsamples;
  rand_int = (int *) malloc((size_t) (size*sizeof(unsigned int)));
 
  /*
