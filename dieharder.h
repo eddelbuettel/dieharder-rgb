@@ -82,7 +82,7 @@
 
  /* RGB Tests (by number) */
  typedef enum {
-   RGB_NONE,
+   RGB_TIMING,
    RGB_PERSIST,
    RGB_BITDIST,
    N_RGB_TESTS
@@ -167,6 +167,10 @@
  double rgb_bitdist();
  void rgb_bitdist_test();
  void help_rgb_bitdist();
+ /* rgb "timing" test */
+ double rgb_timing();
+ void rgb_timing_test();
+ void help_rgb_timing();
 
  /* STS "monobit" test */
  double sts_monobit();

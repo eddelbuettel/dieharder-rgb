@@ -65,6 +65,10 @@ void work()
  switch(rgb){
    default:
      break;
+   case RGB_TIMING:
+     rgb_timing();
+     exit(0);
+     break;
    case RGB_PERSIST:
      rgb_persist();
      exit(0);

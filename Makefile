@@ -78,6 +78,7 @@ SOURCES = $(SOURCE)\
     diehard_rank_6x8.c \
     rgb_bitdist.c \
     rgb_persist.c \
+    rgb_timing.c \
     sts_monobit.c \
     sts_runs.c \
 
