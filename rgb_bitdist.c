@@ -55,7 +55,7 @@ void rgb_bitdist()
   * create and initialize btest to test for binomial bit distribution
   * in each bit position.
   */
- Ntest_create(&btest,nbits,"rgb_bitdist",gsl_rng_name(random));
+ Ntest_create(&btest,nbits,"rgb_bitdist",gsl_rng_name(rng));
  btest.npts = samples;
  btest.p = 0.5;   /* presumed binomial probability of getting a 1 */
  for(k=0;k<nbits;k++){
@@ -74,7 +74,7 @@ void rgb_bitdist()
  bxtest.y = (double) bxtest.npts*bxtest.p;
  bxtest.sigma = sqrt(bxtest.y*(1.0 - bxtest.p));
  strncpy(bxtest.testname,"rgb_bit_total",128);
- strncpy(bxtest.rngname,gsl_rng_name(random),128);
+ strncpy(bxtest.rngname,gsl_rng_name(rng),128);
 
  /*
   * ctest will test every successive bitpair AND wrap the final bit
@@ -94,7 +94,7 @@ void rgb_bitdist()
  ctest = (Ntest *) malloc(npairs*sizeof(Ntest));
  cxtest = (Xtest *) malloc(npairs*sizeof(Xtest));
  for(i = 0;i < npairs;i++){
-   Ntest_create(&ctest[i],nbits,"rgb_bitpair",gsl_rng_name(random));
+   Ntest_create(&ctest[i],nbits,"rgb_bitpair",gsl_rng_name(rng));
    /*
     * This is pretty standard at this point.  In fact, we could
     * probably do this with the constructor...
@@ -116,7 +116,7 @@ void rgb_bitdist()
    cxtest[i].y = cxtest[i].npts*cxtest[i].p;
    cxtest[i].sigma = sqrt(cxtest[i].y*(1.0 - cxtest[i].p));
    strncpy(cxtest[i].testname,"rgb_bitpair_total",128);
-   strncpy(cxtest[i].rngname,gsl_rng_name(random),128);
+   strncpy(cxtest[i].rngname,gsl_rng_name(rng),128);
  }
 
  for(i=0;i<samples;i++){
@@ -128,7 +128,7 @@ void rgb_bitdist()
     */
    if(reseed_flag){
      seed = random_seed();
-     gsl_rng_set(random,seed);
+     gsl_rng_set(rng,seed);
    }
 
    /*
@@ -137,7 +137,7 @@ void rgb_bitdist()
     * have no real restrictions on number of bits in this test).
     */
    for(j=0;j<size;j++) {
-     rand_int[j] = gsl_rng_get(random);
+     rand_int[j] = gsl_rng_get(rng);
      if(verbose){
        printf("rand_int[%d] = %u\n",j,rand_int[j]);
        dumpbits(&rand_int[j],32);

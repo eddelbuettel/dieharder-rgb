@@ -42,13 +42,13 @@ int sts_runs()
  mtest.sigma = sqrt((double)nbits/2.0);
  mtest.npts = nbits;
  strncpy(mtest.testname,"sts_runs",128);
- strncpy(mtest.rngname,gsl_rng_name(random),128);
+ strncpy(mtest.rngname,gsl_rng_name(rng),128);
 
  /*
   * Fill vector of "random" integers with selected generator.
   * NOTE WELL:  This can also be done by reading in a file!
   */
- for(j=0;j<size;j++) rand_int[j] = gsl_rng_get(random);
+ for(j=0;j<size;j++) rand_int[j] = gsl_rng_get(rng);
 
  if(verbose) printf("# Tested bitstring:\n#");
  /*

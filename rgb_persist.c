@@ -60,11 +60,11 @@ void rgb_persist()
  cumulative_mask = 0;
  for(j=0;j<csamples;j++){
    seed = random_seed();
-   gsl_rng_set(random,seed);
+   gsl_rng_set(rng,seed);
    /*
     * Fill rand_int with a string of random numbers
     */
-   for(i=0;i<256;i++) rand_uint[i] = gsl_rng_get(random);
+   for(i=0;i<256;i++) rand_uint[i] = gsl_rng_get(rng);
    last_rand = rand_uint[0];  /* to start it */
    and_mask = ~(last_rand ^ rand_uint[0]);
    for(i=0;i<256;i++){
@@ -104,7 +104,7 @@ void rgb_persist()
  printf("# and the extracted mask cumulated to show all the possible bit\n");
  printf("# positions that might be repeated for different seeds.\n");
  printf("#==================================================================\n");
- printf("# Results for %s rng, using its %d valid bits:\n",gsl_rng_name(random),rmax_bits);
+ printf("# Results for %s rng, using its %d valid bits:\n",gsl_rng_name(rng),rmax_bits);
  if(cumulative_mask){
    printf("rgb_persist test FAILED (bits repeat)\n");
  } else {

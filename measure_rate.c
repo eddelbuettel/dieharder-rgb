@@ -121,7 +121,7 @@ void measure_rate()
    for(j=1;j<=full_iter;j++){
      dummy = idiot;	/* pass it on to dummy to force the case */
      for(i=0;i<size;i++){
-       rand_int[i] = gsl_rng_get(random);
+       rand_int[i] = gsl_rng_get(rng);
      }
    }
    stop_timing();
@@ -153,7 +153,7 @@ void measure_rate()
    for(j=1;j<=full_iter;j++){
      dummy = idiot;	/* pass it on to dummy to force the case */
      for(i=0;i<size;i++){
-       rand_int[i] = gsl_rng_get(random);
+       rand_int[i] = gsl_rng_get(rng);
      }
    }
    stop_timing();
@@ -191,19 +191,19 @@ void measure_rate()
   avg_kilorate = 1.0e6/avg_nanotime;
   /* This is a comment */
   if(!quiet){
-    printf("# Benchmark of the gsl_rnd_int() for the %s generator:\n",gsl_rng_name(random));
+    printf("# Benchmark of the gsl_rnd_int() for the %s generator:\n",gsl_rng_name(rng));
     printf("#    and vector size = %d (%d bytes)\n",size,vector_length);
     printf("# Average Time: %6.2f nanoseconds\n",avg_nanotime);
     if(avg_megarate<1.0){
-      printf("# BogokiloRate: %6.2f %s kilorands per second\n",avg_kilorate,gsl_rng_name(random));
+      printf("# BogokiloRate: %6.2f %s kilorands per second\n",avg_kilorate,gsl_rng_name(rng));
     } else {
-      printf("# BogomegaRate: %6.2f %s megarands per second\n",avg_megarate,gsl_rng_name(random));
+      printf("# BogomegaRate: %6.2f %s megarands per second\n",avg_megarate,gsl_rng_name(rng));
     }
   } else {
     if(avg_megarate<1.0){
-      printf("%12d (bytes)    %6.2f (%s bogokflops)\n",size*sizeof(unsigned int),avg_kilorate,gsl_rng_name(random));
+      printf("%12d (bytes)    %6.2f (%s bogokflops)\n",size*sizeof(unsigned int),avg_kilorate,gsl_rng_name(rng));
     } else {
-      printf("%12d (bytes)    %6.2f (%s bogomflops)\n",size*sizeof(unsigned int),avg_megarate,gsl_rng_name(random));
+      printf("%12d (bytes)    %6.2f (%s bogomflops)\n",size*sizeof(unsigned int),avg_megarate,gsl_rng_name(rng));
     }
   }
 }

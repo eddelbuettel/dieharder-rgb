@@ -54,10 +54,10 @@ void rand_rate_startup()
   * to the gsl set above and can now be called with the gsl
   * wrapper!
   */
- random = gsl_rng_alloc (types[randnum]);
- random_max = gsl_rng_max(random);
+ rng = gsl_rng_alloc (types[randnum]);
+ random_max = gsl_rng_max(rng);
  seed = random_seed();
- gsl_rng_set(random,seed);
+ gsl_rng_set(rng,seed);
 
  /*
   * We now need to allocate space for at least one vector:  one

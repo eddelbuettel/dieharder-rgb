@@ -1,0 +1,31 @@
+<p> This is the current snapshot of the <b>cpu_rate</b>
+<i>Microtimer</i> harness and microbenchmark program.  I use this
+program to do quick-and-dirty benchmarks of a variety of systems
+performance parameters.  The timing harness itself is at least modestly
+advanced -- it uses the CPU cycle counter instead of gettimeofday where
+possible, for example (on all post-Pentium Intels, post-Athlon AMDs).
+There are tests for memory performance, "arithmetic" performance,
+transcendental (savage benchmark) performance.  In many cases
+(specifically those involving vectors and memory) the size of the
+vectors can be varied and the effects of cache size and hierarchical
+memory explored.</p>
+
+<p> This version of the code supports the relatively simple and
+"object-like" addition of code fragments to be timed.  There is a
+fairly long list of operations and fragments it already times (enter
+"cpu_rate -l" to get a current list).  It is in <b>beta</b> mode and
+may have bugs.  There may well be better timers out there (e.g.
+lmbench) only perhaps. not so easy to use.</p>
+
+<p>Because of the nature of this program I recommend that you grab the
+tarball and work with it rather than simply build/install either the
+source rpm or the provided (RH 9) binary rpm.  The latter "should work",
+but part of the fun of a benchmark/timer is playing with build options
+and seeing how it works.  There are also some (probably broken in the
+current release) scripts in the source directory that in previous
+versions scanned e.g. across the -s size option for the vector
+benchmarks; these scripts, with a bit of repair, would make it pretty
+easy to generate a graphable file of e.g. stream or memory read/write
+with and without random shuffling.</p>
+
+<p>I hope that you find cpu_rate useful.</p>

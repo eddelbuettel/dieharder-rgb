@@ -50,14 +50,14 @@ int sts_monobit()
  mtest.sigma = sqrt((double)nbits);
  mtest.npts = nbits;
  strncpy(mtest.testname,"sts_monobit",128);
- strncpy(mtest.rngname,gsl_rng_name(random),128);
+ strncpy(mtest.rngname,gsl_rng_name(rng),128);
 
  /*
   * Fill vector of "random" integers with selected generator.
   * NOTE WELL:  This can also be done by reading in a file!  Note
   * that if -b bits is specified, size will be "more than enough".
   */
- for(j=0;j<size;j++) rand_int[j] = gsl_rng_get(random);
+ for(j=0;j<size;j++) rand_int[j] = gsl_rng_get(rng);
  /*
   * Count the 1 bits and the 0 bits
   * We do this by masking out each bit slot, anding the mask with

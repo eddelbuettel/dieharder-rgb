@@ -33,7 +33,7 @@ DIR = $(PROGRAM)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=0
-VERSION_MINOR=3.2
+VERSION_MINOR=4.0
 RELEASE=1
 
 #========================================================================
@@ -64,14 +64,9 @@ SOURCES = $(SOURCE)\
     sts_runs.c \
     timing.c \
 
-# SOURCE2 = $(PROGRAM2:=.c)
-# SOURCES2 = $(SOURCE2) project2_work.c
-
 INCLUDE = $(PROGRAM:=.h)
 INCLUDES = $(INCLUDE)
 
-# INCLUDE2 = $(PROGRAM2:=.h)
-# INCLUDES2 = $(INCLUDE2)
 
 DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
           -DRELEASE=$(RELEASE)
@@ -122,8 +117,8 @@ RPM_TOPDIR=$(HOME)/Src/rpm_tree
 #========================================================================
 # C Compiler
 CC = gcc
-# Compile flags
-CFLAGS = -O3 -ansi -g $(DEFINES)
+# Compile flags (use fairly standard -O3 as default)
+CFLAGS = -O3 $(DEFINES)
 # Or use the following for profiling as well as debugging.
 # CFLAGS = -O3 -ansi -g -p $(DEFINES)
 # Linker flags
@@ -137,9 +132,13 @@ LIBS = -lgsl -lgslcblas -lm
 OBJECTS = $(SOURCES:.c=.o)
 # OBJECTS2 = $(SOURCES2:.c=.o)
 TAR = $(DIR).tar
+ABS = $(DIR).abs
+PHP = $(DIR).php
 TGZ = $(DIR).tgz
 RPM = $(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).i386.rpm
 SRPM = $(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
+WRPM = $(DIR).i386.rpm
+WSRPM = $(DIR).src.rpm
 SPEC = $(DIR:=.spec)
 CVS = $(DIR:=.cvs.time)
 
@@ -148,14 +147,12 @@ CVS = $(DIR:=.cvs.time)
 # presume the simplest of dependencies and remake if includes change
 # for example.
 #========================================================================
-all: $(PROGRAM) # $(PROGRAM2)
+all: $(PROGRAM)
+$(RPM): tgz rpm
+$(TGZ): tgz
 
 $(PROGRAM): $(OBJECTS) $(INCLUDES)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(LIBS) $(OBJECTS)
-
-# $(PROGRAM2): $(OBJECTS2) $(INCLUDES2)
-# 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(LIBS) $(OBJECTS2)
-
 
 #========================================================================
 # Build targets (from commands)
@@ -216,9 +213,11 @@ tgz:	$(SOURCES) $(SCSOURCES)
 rpm:	Makefile $(SPEC) $(SOURCES) $(SOURCES2) $(TGZ)
 	cp $(TGZ) $(RPM_TOPDIR)/SOURCES
 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
-	rpm -ba  $(RPM_TOPDIR)/SPECS/$(SPEC)
+	rpmbuild -ba  $(RPM_TOPDIR)/SPECS/$(SPEC)
 	cp $(RPM_TOPDIR)/RPMS/i386/$(RPM) .
+	cp $(RPM_TOPDIR)/RPMS/i386/$(RPM) $(WRPM)
 	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) .
+	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) $(WSRPM)
 
 #========================================================================
 # It will help greatly if $(CVS) exists, contains and RCS label and
@@ -259,6 +258,7 @@ sync:
 	synccvs $(DIR) ganesh.phy.duke.edu
 	synccvs $(DIR) 209.42.212.5
 
+
 #========================================================================
 # printout makes an enscript -2r printout of SOURCES and
 # and INCLUDES.  Use lpr if you don't have enscript
@@ -272,7 +272,7 @@ printout:
 #  A standard cleanup target
 #========================================================================
 clean:
-	rm -f core $(PROGRAM) $(OBJECTS) $(PROGRAM2) $(OBJECTS2) $(PROGRAM).1.gz
+	rm -f core $(PROGRAM) $(OBJECTS) $(PROGRAM).1.gz
 
 #========================================================================
 # Generic Rule to install.  Note that I presume that ALL applications
@@ -280,7 +280,7 @@ clean:
 # the (Grrr) stupid FHS specification for putting man pages in
 # /usr/share/man.  What a crock.
 #========================================================================
-install :
+install : $(PROGRAM)
 	(strip $(PROGRAM);\
 	install -d $(PREFIX)/bin; \
 	install -d $(PREFIX)/share/man/man1; \
@@ -288,11 +288,21 @@ install :
 	gzip -c $(PROGRAM).1 > $(PROGRAM).1.gz; \
 	install -m 644 $(PROGRAM).1.gz $(PREFIX)/share/man/man1)
 
-# Add these for second program...
-#	install -m 755 $(PROGRAM2) $(PREFIX)/bin; \
-#	gzip -c $(PROGRAM2).1 > $(PROGRAM2).1.gz; \
-#	install -m 644 $(PROGRAM2).1.gz $(PREFIX2)/share/man/man1; \
-
+installweb : $(TGZ) $(RPM) $(SRPM)
+	(mkdir $(DIR);\
+	rsync -avz $(DIR) ganesh.phy.duke.edu:public_html/Beowulf/; \
+	rsync -avz $(TGZ) ganesh.phy.duke.edu:public_html/Beowulf/$(DIR)/; \
+	rsync -avz $(WRPM) ganesh.phy.duke.edu:public_html/Beowulf/$(DIR)/; \
+	rsync -avz $(WSRPM) ganesh.phy.duke.edu:public_html/Beowulf/$(DIR)/; \
+	rsync -avz $(ABS) ganesh.phy.duke.edu:public_html/Beowulf/$(DIR)/; \
+	rsync -avz $(PHP) ganesh.phy.duke.edu:public_html/Beowulf/; \
+	rsync -avz $(DIR) ganesh.phy.duke.edu:public_html/brahma/Resources/; \
+	rsync -avz $(TGZ) ganesh.phy.duke.edu:public_html/brahma/Resources/$(DIR)/; \
+	rsync -avz $(WRPM) ganesh.phy.duke.edu:public_html/brahma/Resources/$(DIR)/; \
+	rsync -avz $(WSRPM) ganesh.phy.duke.edu:public_html/brahma/Resources/$(DIR)/; \
+	rsync -avz $(ABS) ganesh.phy.duke.edu:public_html/brahma/Resources/$(DIR)/; \
+	rsync -avz $(PHP) ganesh.phy.duke.edu:public_html/brahma/Resources/;\
+	rmdir $(DIR))
 
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 

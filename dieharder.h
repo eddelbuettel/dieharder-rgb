@@ -104,7 +104,7 @@
   * rng global vectors and variables for setup and tests.
   */
  const gsl_rng_type **types;    /* where all the rng types go */
- gsl_rng *random;               /* global gsl random number generator */
+ gsl_rng *rng;               /* global gsl random number generator */
  unsigned int *rand_int;        /* vector of "random" ints */
  unsigned int seed;             /* rng seed of run (?) */
  unsigned int random_max;       /* maximum rng returned by generator */

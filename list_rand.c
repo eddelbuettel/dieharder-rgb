@@ -24,11 +24,11 @@ void list_rand()
  int i;
  
  printf("#==================================================================\n");
- printf("# generator type: %s\n", gsl_rng_name(random));
+ printf("# generator type: %s\n", gsl_rng_name(rng));
  printf("# seed value: %u, max value = %u  count = %d\n",seed, random_max,size);
  printf("# Count\t int rand\tuniform rand\n");
  printf("# ==================================================================\n");
- for(i = 1;i<=size;i++) printf("%d\t%u\t %10.8f\n",i,gsl_rng_get(random),gsl_rng_uniform(random));
+ for(i = 1;i<=size;i++) printf("%d\t%u\t %10.8f\n",i,gsl_rng_get(rng),gsl_rng_uniform(rng));
 
 }
 

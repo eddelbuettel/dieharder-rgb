@@ -55,7 +55,7 @@ void rgb_binomial()
  /* The total number of bits checked should be nbits*samples */
  mtest.npts = 0;
  strncpy(mtest.testname,"sts_monobit",128);
- strncpy(mtest.rngname,gsl_rng_name(random),128);
+ strncpy(mtest.rngname,gsl_rng_name(rng),128);
 
  /*
   * btest.x[k] is an accumulator to be used to count the frequency with
@@ -67,7 +67,7 @@ void rgb_binomial()
   * to support the formation of chisq as we run.
   */
  npts = nbits+1;
- Ntest_create(&btest,npts,"rgb_binomial",gsl_rng_name(random));
+ Ntest_create(&btest,npts,"rgb_binomial",gsl_rng_name(rng));
  for(k=0;k<npts;k++){
    ptmp = binomial(nbits,k,0.5);
    btest.y[k] = samples*ptmp;
@@ -101,7 +101,7 @@ void rgb_binomial()
    }
    if(reseed_flag) {
      seed = random_seed();
-     gsl_rng_set(random,seed);
+     gsl_rng_set(rng,seed);
    }
 
    /*
@@ -109,7 +109,7 @@ void rgb_binomial()
     * NOTE WELL:  This can also be done by reading in a file!
     */
    for(j=0;j<size;j++) {
-     rand_int[j] = gsl_rng_get(random);
+     rand_int[j] = gsl_rng_get(rng);
      if(verbose){
        printf("rand_int[%d] = %u\n",j,rand_int[j]);
        dumpbits(&rand_int[j],32);
