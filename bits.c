@@ -209,25 +209,7 @@ int get_bit(unsigned int n)
    fprintf(stderr,"Error: bit offset %d exceeds length %d of bitstring in rand[]\n",n,size*sizeof(unsigned int));
    exit(0);
  }
- if(verbose) {
-    printf("\nDumping rand_int[%d] = %u = ",index,rand_int[index]);
- }
- mask = 1;
- for(i = 0;i<32;i++){
-   if(mask & rand_int[index]){
-     printf("1");
-   } else {
-     printf("0");
-   }
-   mask = mask << 1;
- }
 
- printf("\n & Rand: %u\n",last_rand & rand_int[index]);
- last_rand = rand_int[index];
- 
-   
- 
- 
  offset = n%(8*sizeof(unsigned int));
  mask = 1;
  mask = mask<<offset;
