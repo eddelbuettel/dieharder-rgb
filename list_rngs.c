@@ -23,21 +23,24 @@ void list_rngs()
    printf("list_rngs():\n");
  }
  
- printf("Listing available built-in gsl-linked generators:\n");
- printf("Test Number      Name\n");
- printf("================================\n");
+ printf("              Listing available built-in gsl-linked generators:           |\n");
+ printf("%3s %-20s|%3s %-20s|%3s %-20s|\n"," Id","Test Name",
+         " Id","Test Name"," Id","Test Name");
+ printf("==========================================================================|\n");
  for(i=0;i<num_gsl_rngs;i++){
-   printf(" %d\t\t%s\n", i, types[i]->name);
+   printf("%3d %-20s|", i, types[i]->name);
+   if(((i+1)%3) == 0 && i>0) printf("\n");
  }
-
- printf("Listing available non-gsl generators:\n");
- printf("Test Number      Name\n");
- printf("================================\n");
+ printf("                   Listing available non-gsl generators:                  |\n");
+ printf("%3s %-20s|%3s %-20s|%3s %-20s|\n"," Id","Test Name",
+         " Id","Test Name"," Id","Test Name");
+ printf("==========================================================================|\n");
  while(types[i] != NULL){
-   printf(" %d\t\t%s\n", i, types[i]->name);
+   printf("%3d %-20s|", i, types[i]->name);
+   if(((i+1)%3) == 0 && i>0) printf("\n");
    i++;
  }
-
+ printf("\n");
 
 }
 

@@ -53,16 +53,6 @@ void rand_rate_startup()
  seed = random_seed();
  gsl_rng_set(random,seed);
 
- if(verbose == TST_RNG){
-   printf("#==================================================================\n");
-   printf("# generator type: %s\n", gsl_rng_name(random));
-   printf("# seed value: %u, max value = %u  count = %d\n",seed, random_max,size);
-   printf("# Count\t int rand\tuniform rand\n");
-   printf("# ==================================================================\n");
-   for(i = 1;i<=size;i++) printf("%d\t%u\t %10.8f\n",i,gsl_rng_get(random),gsl_rng_uniform(random));
-   exit(0);
- }
-
  /*
   * We now need to allocate space for at least one vector:  one
   * for 32-bit integer deviates and/or a vector of 64-bit uniform

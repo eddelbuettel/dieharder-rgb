@@ -8,36 +8,27 @@
 
 /*
  *========================================================================
- * This just lists the available rng's.  This is the default action of
- * rand_rate when no test is specified.
+ * This routine generates an output list of random numbers using the
+ * selected generator.  The output goes to stdout and can be redirected
+ * or piped as desired at the shell level.  The output list includes both
+ * integer and uniform deviate output from the routine (one call following
+ * another) and hence is NOT ideal for tests of sequential correlation.
  *========================================================================
  */
 
 #include "rand_rate.h"
 
-void list_rngs()
+void list_rand()
 {
+
  int i;
-
- if(verbose){
-   printf("list_rngs():\n");
- }
  
- printf("Listing available built-in gsl-linked generators:\n");
- printf("Test Number      Name\n");
- printf("================================\n");
- for(i=0;i<num_gsl_rngs;i++){
-   printf(" %d\t\t%s\n", i, types[i]->name);
- }
-
- printf("Listing available non-gsl generators:\n");
- printf("Test Number      Name\n");
- printf("================================\n");
- while(types[i] != NULL){
-   printf(" %d\t\t%s\n", i, types[i]->name);
-   i++;
- }
-
+ printf("#==================================================================\n");
+ printf("# generator type: %s\n", gsl_rng_name(random));
+ printf("# seed value: %u, max value = %u  count = %d\n",seed, random_max,size);
+ printf("# Count\t int rand\tuniform rand\n");
+ printf("# ==================================================================\n");
+ for(i = 1;i<=size;i++) printf("%d\t%u\t %10.8f\n",i,gsl_rng_get(random),gsl_rng_uniform(random));
 
 }
 

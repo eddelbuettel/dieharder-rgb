@@ -39,13 +39,13 @@
 
  typedef enum {
    QUIET,
-   TST_RNG,
    MEASURE,
    N_VERBOSE
  } Verbose;
 
  typedef enum {
    LIST_RNGS,
+   LIST_RAND,
    BOGORATE,
    STS_MONOBIT,
    N_TEST

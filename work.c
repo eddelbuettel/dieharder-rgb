@@ -24,6 +24,9 @@ void rand_rate_work()
    case LIST_RNGS:
      list_rngs();
      break;
+   case LIST_RAND:
+     list_rand();
+     break;
    case BOGORATE:
      measure_rate();
      break;
