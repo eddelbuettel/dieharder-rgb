@@ -14,7 +14,7 @@ void parsecl(int argc, char **argv)
  extern int optind, opterr, optopt;
 
  psamples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
- tsamples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
+ tsamples = 10000;		/* This SHOULD be a lot. */
  iterations = -1;	/* This should be just enough to do empty accurately */
  size = 1024;		/* Small enough to easily fit into any cache */
  bits = 128;            /* Maximum size bitstring is default */
@@ -103,14 +103,16 @@ void Usage()
  fprintf(stdout, "     %d write list of random integers and uniform deviates to stdout with\n",LIST_RAND);
  fprintf(stdout, "       selected rng.\n");
  fprintf(stdout, "     %d time selected generator, determining its bogomegarate.\n",BOGORATE);
+ fprintf(stdout, "     %d Diehard runs (tests ascending/descending runs).\n",DIEHARD_RUNS);
+ fprintf(stdout, "     %d Diehard birthday (tests repeated birthday intervals).\n",DIEHARD_BDAY);
+ fprintf(stdout, "     %d Diehard 2d sphere (tests minimum distance between points in 2D).\n",DIEHARD_2DSPHERE);
+ fprintf(stdout, "     %d Diehard 3d sphere (tests minimum distance between points in 3D).\n",DIEHARD_3DSPHERE);
  fprintf(stdout, "     %d RGB bitmask (tests for frozen/unchanging bits).\n",RGB_PERSIST);
- fprintf(stdout, "     %d RGB binomial (number of 1's in bitstrings rel to binomial dist).\n",RGB_BINOMIAL);
- fprintf(stdout, "       and STS monobit (number of 1's in bitstring rel to expected val).\n");
  fprintf(stdout, "     %d RGB bitdist (tests frequency of all n-bit patterns:\n",RGB_BITDIST);
  fprintf(stdout, "       note that this is an extremely powerful master test and can \n");
  fprintf(stdout, "       replace a whole raft of weaker tests in STS and Diehard).\n");
- fprintf(stdout, "     %d STS monobit (like this one - number of 1's vs 0's).\n",STS_MONOBIT);
- fprintf(stdout, "     %d STS runs (and this one - tests frequency of 2-bit patterns)\n",STS_RUNS);
+ fprintf(stdout, "     %d STS monobit (tests number of 1s only).\n",STS_MONOBIT);
+ fprintf(stdout, "     %d STS runs (de facto tests frequency of 2-bit patterns)\n",STS_RUNS);
  fprintf(stdout, "\n");
  fprintf(stdout, "  -r rngnumber selects the rng to be tested (list them with -t 0).\n");
  fprintf(stdout, "  -f filename will EVENTUALLY permit random strings to be tested to be\n");

@@ -56,10 +56,10 @@ unsigned int get_bit_ntuple(unsigned int *bitstring,
  unsigned int result,carry,nmask;
 
  /*
-  * Some tests for failure or out of bounds.  blen has to be less than
+  * Some tests for failure or out of bounds.  8*blen has to be less than
   * sizeof(uint).
   */
- if(blen > sizeof(uint)) blen = sizeof(uint);
+ if(blen > 8*sizeof(uint)) blen = 8*sizeof(uint);
  /*
   * Now that blen is sane, we can make a mask for the eventual return
   * value of length blen.
