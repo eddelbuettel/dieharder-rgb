@@ -50,6 +50,14 @@ double sample(void *testfunc())
    printf("# samples():    sample\n");
  }
  for(p=0;p<psamples;p++){
+   /*
+    * If -i is set, reseed generator for each toplevel ks sample.
+    */
+   if(reseed_flag){
+     seed = random_seed();
+     gsl_rng_set(rng,seed);
+   }
+     
    if(verbose == D_SAMPLE || verbose == D_ALL){
      printf("# sample():  %6u\n",p);
    }
