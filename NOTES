@@ -316,3 +316,32 @@ and so forth.  A sequence might pass the first and fail the second, pass
 the first two and fail the third, pass the first seven and fail the
 eighth, pass the first eight and fail the 32nd (so that floats formed
 from the inverse are not uniformly distributed).
+
+===============
+
+Addendum to previous note.  The insight has struck me that all that this
+does is give one the actual DISTRIBUTION of outcomes for any given
+experiment.  The distribution of sample means should be -- guess what --
+normal -- provided that there are enough elements in the sample itself.
+For small numbers of elements in the sample, they should be binomial if
+the experiment is framed as a bernoulli trial.  I'll bet that if I
+convert smoothly from binomial into normal as the number of outcome
+states exceeds the threshold where computing binomial probabilities is
+reasonably possible, I'll see no difference in an appropriately computed
+chisq!
+
+This is the solution to the problem of doing long strings.  If I counted
+e.g. bitpair combinations across a string of length 8, (for many
+samples) binomial is appropriate.  If I count bitpair combinations
+across a string of length 2^23 (8 million), I can't do binomial, but
+don't have to.  Outcomes will be normally distributed about the expected
+means.
+
+SO, this is the answer to the bigger problem of why one should ever
+trust "p-value" for a single sample, or even a dozen samples, of a
+random process.  Sure (to quote Marsaglia) "p happens", but it doesn't
+JUST happen, it happens according to a distribution.  Instead of
+wondering if THIS occurrence of p = 0.02 from a single mean value is
+reasonable or not, compute the p of an entire distribution of mean
+values compared to the appropriate normal or binomial distribution, and
+get a p-value one can really trust!

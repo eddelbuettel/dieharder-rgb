@@ -18,7 +18,7 @@
 
 #include "rand_rate.h"
 
-void sts_monobit()
+int sts_monobit()
 {
 
  int i,j,k;
@@ -39,9 +39,13 @@ void sts_monobit()
   * do "samples" here.  Or rather, we could -- for enough bits, the
   * distribution of means should be normal -- but we don't.
   *
-  * Number of total bits:
+  * Number of total bits (from EITHER -b bits OR -s size, -b overrides -s)
   */
- nbits = 8*sizeof(unsigned int)*size;
+ if(bits){
+   nbits = bits;
+ } else {
+   nbits = 8*sizeof(unsigned int)*size;
+ }
  mtest.y = 0.0;
  mtest.sigma = sqrt((double)nbits);
  mtest.npts = nbits;
@@ -50,7 +54,8 @@ void sts_monobit()
 
  /*
   * Fill vector of "random" integers with selected generator.
-  * NOTE WELL:  This can also be done by reading in a file!
+  * NOTE WELL:  This can also be done by reading in a file!  Note
+  * that if -b bits is specified, size will be "more than enough".
   */
  for(j=0;j<size;j++) rand_int[j] = gsl_rng_get(random);
  /*
@@ -59,7 +64,7 @@ void sts_monobit()
   * the rand_int and accumulating the ones.  I think.
   */
  mtest.x = 0;
- if(verbose) printf("# Tested bitstring:\n#");
+ if(verbose) printf("# Testing bitstring: ");
  for(j=0;j<nbits;j++){
    if(get_bit(j) != 0) {
      mtest.x++;
@@ -72,6 +77,13 @@ void sts_monobit()
  mtest.x = 2*mtest.x - nbits;
  Xtest_eval(&mtest);
  Xtest_conclusion(&mtest);
+
+ if(mtest.pvalue<0.01){
+   return(0);
+ } else {
+   return(1);
+ }
+
 
 }
 

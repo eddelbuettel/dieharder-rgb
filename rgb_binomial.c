@@ -30,7 +30,7 @@ void rgb_binomial()
 
  int i,j,k,nbits,npts;
  unsigned int num_ones,num_zeros,num_bits;
- unsigned int mask;
+ unsigned int thisbit;
  double onefrac,ptmp;
  Ntest btest;
 
@@ -42,8 +42,14 @@ void rgb_binomial()
   *
   * We start by creating all three and filling y[k] and sigma[k]
   * to support the formation of chisq as we run.
+  *
+  * Number of total bits (from EITHER -b bits OR -s size, -b overrides -s)
   */
- nbits = 8*sizeof(unsigned int)*size;
+ if(bits){
+   nbits = bits;
+ } else {
+   nbits = 8*sizeof(unsigned int)*size;
+ }
  npts = nbits+1;
  Ntest_create(&btest,npts,"rgb_binomial",gsl_rng_name(random));
  for(k=0;k<npts;k++){
@@ -57,10 +63,14 @@ void rgb_binomial()
   * in btest.x[k].  For the moment we print out each sample as well.
   */
  for(i=0;i<samples;i++){
-   if((i%25) == 0 && verbose){
-     printf("# ones\t\tzeros\t\ttotal bits\t\tPercentage of ones\n");
-     printf("#------------------------------------------------------------------\n");
+   if(verbose){
+     printf("# bitstring: ");
    }
+   if(reseed_flag) {
+     seed = random_seed();
+     gsl_rng_set(random,seed);
+   }
+
    /*
     * Fill vector of "random" integers with selected generator.
     * NOTE WELL:  This can also be done by reading in a file!
@@ -74,18 +84,16 @@ void rgb_binomial()
    num_bits = 0;
    num_ones = 0;
    num_zeros = 0;
-   for(j=0;j<size;j++){
-     mask = 1;
-     for(k=0;k<32;k++){
-       num_bits++;
-       if((mask & rand_int[j]) != 0) num_ones++;
-       mask = mask<<1;
+   for(j=0;j<nbits;j++){
+     if(thisbit = get_bit(j)) num_ones++;
+     if(verbose){
+       printf("%1d",thisbit);
      }
    }
    num_zeros = num_bits - num_ones;
    onefrac = 100.0*(double)num_ones/(double)num_bits;
    if(verbose){
-     printf("%u\t%u\t%u\t\t%10.8f%% ones\n",num_ones,num_zeros,num_bits,onefrac);
+     printf("\n");
    }
    /*
     * Increment the counter for the resulting number of ones.

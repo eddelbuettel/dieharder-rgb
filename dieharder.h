@@ -67,6 +67,8 @@
  void Usage();
  double binomial(unsigned int n, unsigned int k, double p);
  double chisq_eval(double *x,double *y,double *sigma, unsigned int n);
+ int sts_monobit();
+ int sts_runs();
 
  /*
   *========================================================================
@@ -77,6 +79,8 @@
   *      size is the length of the vector being evaluated.
   *      bits is the size of the bitstring being tested (where relevant)
   *      verbose controls the output -- "normal" is verbose=1.
+  *      reseed_flag controls whether or not to reseed for each independent
+  *        sample.
   *      tv_start and tv_stop are used to record timings.
   *      dummy and idiot are there to fool the compiler into not optimizing
   *        empty loops out of existence so we can time one accurately.
@@ -86,7 +90,7 @@
   */
  int samples,iterations,size,bits;
  int quiet,verbose;
- int testnum,randnum;
+ int testnum,randnum,reseed_flag;
  struct timeval tv_start,tv_stop;
  int dummy,idiot;
  char filename[128];

@@ -18,14 +18,26 @@
 
 #include "rand_rate.h"
 
-void sts_runs()
+int sts_runs()
 {
 
  int i,j,k;
  unsigned int nbits,firstbit,lastbit,thisbit;
  Xtest mtest;
 
- nbits = 8*sizeof(unsigned int)*size;
+ /*
+  * Start by running monobit, and quitting if it fails
+  */
+ if(!sts_monobit()) return(0);
+
+ /*
+  * Number of total bits (from EITHER -b bits OR -s size, -b overrides -s)
+  */
+ if(bits){
+   nbits = bits;
+ } else {
+   nbits = 8*sizeof(unsigned int)*size;
+ }
  mtest.y = nbits/2.0;
  mtest.sigma = sqrt((double)nbits/2.0);
  mtest.npts = nbits;
@@ -69,6 +81,12 @@ void sts_runs()
  if(verbose) printf("\n");
  Xtest_eval(&mtest);
  Xtest_conclusion(&mtest);
+
+ if(mtest.pvalue<0.01){
+   return(0);
+ } else {
+   return(1);
+ }
 
 }
 

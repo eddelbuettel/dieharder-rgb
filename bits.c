@@ -21,7 +21,7 @@ void Ntest_create(Ntest *ntest, unsigned int npts,
 {
 
  int i;
- if(verbose){
+ if(verbose > 10){
    printf("Ntest_create(): Creating test struct for %u points.\n",npts);
  }
  ntest->x = (double *) malloc(sizeof(double)*npts);       /* sample results */
@@ -38,7 +38,7 @@ void Ntest_create(Ntest *ntest, unsigned int npts,
  ntest->pvalue = 0.0;
  strncpy(ntest->testname,testname,128);
  strncpy(ntest->rngname,rngname,128);
- if(verbose){
+ if(verbose > 10){
    printf("Ntest_create(): Created test structure for %d points.\n",ntest->npts);
  }
 
@@ -73,7 +73,7 @@ void Ntest_eval(Ntest *ntest)
   * We'll have to see how this handles sigma[i] = 0.0.  Probably badly...
   */
 
- if(verbose){
+ if(verbose > 10){
    printf("Evaluating chisq and pvalue for %d points\n",ntest->npts);
  }
 
@@ -140,10 +140,6 @@ void Xtest_eval(Xtest *xtest)
   * This routine evaluates the p-value from the xtest data.
   * x, y, sigma all must be filled in by the calling routine.
   */
-
- if(verbose){
-   printf("Evaluating pvalue\n");
- }
 
  if(!quiet){
    printf("#==================================================================\n");

@@ -16,13 +16,14 @@ void parsecl(int argc, char **argv)
  samples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
  iterations = -1;	/* This should be just enough to do empty accurately */
  size = 1024;		/* Small enough to easily fit into any cache */
- bits = 32;             /* Unsigned long in, probably */
+ bits = 0;              /* EITHER size OR bits */
  verbose = 0;		/* Default is not to be verbose. */
  quiet = 0;		/* Default is ALSO not to be quiet (output control). */
  testnum = 0;		/* Default is to list rng's */
  randnum = 12;          /* Default is mt19937, as the "best" overall */
+ reseed_flag = 0;       /* Don't reseed for every sample (default) */
 
- while ((c = getopt(argc,argv,"b:f:hi:n:qr:s:t:v:")) != EOF){
+ while ((c = getopt(argc,argv,"b:f:hin:qr:s:t:v:")) != EOF){
    switch (c){
      case 'h':
        Usage();
@@ -37,7 +38,7 @@ void parsecl(int argc, char **argv)
        exit(0);
        break;
      case 'i':
-       iterations = strtol(optarg,(char **) NULL,10);
+       reseed_flag = 0;
        break;
      case 'n':
        size = strtol(optarg,(char **) NULL,10);
@@ -61,6 +62,10 @@ void parsecl(int argc, char **argv)
      case '?':
        errflg++;
    }
+ }
+
+ if(bits){
+   size = bits/(8*sizeof(unsigned int)) + 1;  /* more than enough */
  }
 
  if(errflg){
@@ -90,7 +95,7 @@ void Usage()
  fprintf(stdout, "
 Usage:
   rand_rate [-t testnumber] [-r rngnumber] [-f filename ]
-           [-b number of bits] [-n length] [-s samples] [-i iterations]
+           [-b number of bits] [-n length] [-s samples] [-i]
            [-q] [-h] [-v level]
 
   -t testnumber selects the test to be performed.  Available tests:
@@ -110,8 +115,10 @@ Usage:
   -n controls the length of the test vector (int or double) for vector
      tests
   -s controls the number of samples (default 100)
-  -i controls the number of TIMING iterations
-     If omitted, iterations are automatically scaled in timing runs (best).
+
+  -i turns on a new seed for each sample -- better indicates the
+     probability of a \"bad seed\" existing for an otherwise good
+     generator.
 
   -v controls verbosity of output for debugging or amusement purposes.
   -q selects \"quiet\" operation: results only are printed on a single line
