@@ -91,6 +91,10 @@
  double q_ks(double x);
  double q_ks_kuiper(double x);
 
+ double rgb_bitdist();
+ double rgb_bitdist_test(int ntuple,int np);
+
+
  /*
   *========================================================================
   *                           Global Variables

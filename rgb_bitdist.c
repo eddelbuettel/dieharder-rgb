@@ -53,21 +53,11 @@
 
 #include "rand_rate.h"
 
-double rgb_bitdist(int ntuple)
+double rgb_bitdist()
 {
 
- unsigned int b,t,i,j,k,l,m,n;   /* loop indices */
- unsigned int bsamples,boffset;  /* The number of ntuples we pull from bitstring */
- unsigned int value;         /* value of ntuple (as an integer) */
- unsigned int *count,ctotal; /* count of any ntuple per bitstring */
- unsigned int ntuple_max;    /* largest ntuple value */
- double *pvalue,pks,ntuple_prob,pbin;  /* probabilities */
- Btest *btest;               /* A vector of binomial test bins */
-
- /*
-  * For debugging only.
-  */
- ntuple = 2;
+ int ntuple,ntuple_max,n,p,pcnt;
+ double *pvalue,pks;
 
  if(!quiet){
    printf("#==================================================================\n");
@@ -77,10 +67,52 @@ double rgb_bitdist(int ntuple)
    printf("# with the theoretical (binomial) histogram, forming chisq and the\n");
    printf("# associated p-value.\n");
    printf("#\n");
-   printf("# Currently testing %u-tuples out of %u bit strings\n",ntuple,bits);
    printf("#==================================================================\n");
  }
 
+ pvalue = (double *)malloc(4*psamples*sizeof(double));
+
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# sample     pvalue\n");
+ }
+ ntuple = 2;
+ ntuple_max = 4;
+ pcnt = 0;
+ for(n=0;n<ntuple_max;n++){
+   for(p=0;p<psamples;p++){
+     pvalue[pcnt] = rgb_bitdist_test(ntuple,n);
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
+     }
+     pcnt++;
+   }
+ }
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf(" Evaluating Kuiper Kolmogorov-Smirnov test for pvalues.\n");
+ }
+
+ /*
+  * pvalue now holds a vector of p-values from test testfunc().
+  * We perform a KS test, or (with an appropriate case switch
+  * or other control mechanism) perform other tests as well.
+  */
+ pks = kstest_kuiper(pvalue,pcnt);
+ printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
+
+ return(pks);
+
+}
+
+double rgb_bitdist_test(int ntuple,int np)
+{
+
+ unsigned int b,t,i,j,k,l,m,n;   /* loop indices */
+ unsigned int bsamples,boffset;  /* The number of ntuples we pull from bitstring */
+ unsigned int value;         /* value of ntuple (as an integer) */
+ unsigned int *count,ctotal; /* count of any ntuple per bitstring */
+ unsigned int ntuple_max;    /* largest ntuple value */
+ double pvalue,ntuple_prob,pbin;  /* probabilities */
+ Btest *btest;               /* A vector of binomial test bins */
 
  /*
   * Let's see what gsl_ran_binomial_pdf(k,p,n) (for k hits in n trials)
@@ -277,8 +309,18 @@ double rgb_bitdist(int ntuple)
 
  for(n=0;n<ntuple_max;n++){
    Btest_eval(&btest[n]);
-   printf(" pvalue[%u] = %10.5f\n",n,btest[n].pvalue);
+   if(n == np){
+     pvalue = btest[n].pvalue;
+   }
+   Btest_destroy(&btest[n]);
  }
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# rgb_bitdist(): Returning pvalue[%u] = %10.5f\n",np,pvalue);
+ }
+ return(pvalue);
+
+ free(btest);
+ free(count);
 
 }
 
