@@ -110,8 +110,11 @@ void rgb_binomial()
    printf("# From chisq and the incomplete gamma function the probability\n");
    printf("# of this histogram if the rng tested is in fact \"random\" is\n");
    printf("# obtained.  If this p-value is low the hypothesis that it is\n");
-   printf("# random safely can be rejected\n");
+   printf("# random cannot be confirmed.  If it is very low it can be rejected.\n");
    printf("#==================================================================\n");
+ }
+
+ if(verbose){
    printf("# sample     pvalue\n");
  }
  for(i=0;i<samples;i++){
@@ -178,29 +181,36 @@ void rgb_binomial()
     */
    Btest_eval(&btest);
    pvalue[i] = btest.pvalue;
-   if(!quiet){
+   if(verbose){
      printf("  %u        %6.4f\n",i,pvalue[i]);
    }
 
  }
 
  pks = kstest(pvalue,samples);
- printf("p = %6.3f from standard Komogorov-Smirnov test on %u pvalues.\n",pks,samples);
- if(pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
+ if(verbose){
+   printf("p = %6.3f from standard Komogorov-Smirnov test on %u pvalues.\n",pks,samples);
+   if(pks>0.01){
+     printf("Generator appears to be ok.\n");
+   } else {
+     printf("Generator fails at 1%% confidence level.\n");
+   }
  }
 
  pks = kstest_kuiper(pvalue,samples);
- printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalue.\n",pks,samples);
- if(pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
+ if(!quiet){
+   printf("# p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalue.\n",pks,samples);
+   if(pks>0.01){
+     printf("# Generator appears to be ok.\n");
+   } else {
+     printf("# Generator fails at 1%% confidence level.\n");
+   }
  }
  
- 
+ printf("#==================================================================\n");
+ printf("# %s test of %s random number generator:\n",btest.testname,btest.rngname);
+ printf("#   %8s  %8s  %8s\n","samples","bits","p-value");
+ printf(" %10d  %8d  %8.4f\n",samples,nbits,pks);
 
  Btest_destroy(&btest);
 

@@ -41,7 +41,7 @@ double kstest(double *pvalue,int count)
   * and transform it into a p-value at the end.
   */
  dmax = 0.0;
- if(!quiet){
+ if(verbose){
    printf("    p       y       d       dmax\n");
  }
  for(i=0;i<count;i++){
