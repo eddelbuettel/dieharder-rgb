@@ -1,0 +1,9 @@
+startup3
+	define xmin 0
+	define xmax 1.6
+	define ymin -2.12
+	define ymax -1.98
+	macro read showrand.sm
+reread
+	macro read default.sm
+	startup3

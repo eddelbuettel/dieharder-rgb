@@ -6,12 +6,13 @@ This program is designed to do the following:
 already does the encapsulation pretty well, we're going to start with
 all the existing GSL routines.  However, we'll add /dev/random (used for
 seeding, until something better shows up) as well as anything else we
-encounter that isn't already there (probably contributing it to the GSL
-if/when we learn how to wrap it).
+encounter that isn't already there.  [We will use the GSL encapsulation
+for any new RNG's we add -- /dev/random is already encapsulated and can
+serve as a template for future work, 1/16/03, rgb]
 
   b) test speed of the available RNG's.  Both:
      i) In "native/standard" subroutine calls (with the subroutine call
-        overhead included);
+        overhead included).  [This is done, 1/16/03, rgb]
     ii) In a custom "vector" form, where a whole block of dedicated
         memory is filled in one pass from a given algorithm, and
         subsequently accessed via a macro that only calls for a refill

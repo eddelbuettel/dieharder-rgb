@@ -61,41 +61,23 @@ void rand_rate_startup()
  if(verbose == HELPGEN) exit(0);
 
  /*
-  * This extracts the index of a homebrew test.  Eventually we'll
-  * need to put initialization calls for its wrapper here as well.
-  * In fact, we may want to just plain steal the entire wrapper
-  * structure from gsl, and add tests to "it" instead of write
-  * our own.  This would prevent us from having to mess with porting
-  * any we discover that are "good" to the gsl...
-*/
-
- /* if(randnum>=num_gsl_rngs) {
-   hbrandnum = randnum - num_gsl_rngs;
-   printf(" randnum = %d, hbrandnum = %d\n",randnum,hbrandnum);
- } else   { */
-   /*
-    * Initialize the selected gsl rng
-    */
-   if(verbose) {
-     printf("Boo! randnum = %d\n",randnum);
-     printf("Initializing random number generator %s\n",types[randnum]->name);
-   }
-   random = gsl_rng_alloc (types[randnum]);
-   random_max = gsl_rng_max(random);
-   seed = random_seed();
-   gsl_rng_set(random,seed);
-/* } */
+  * Initialize the selected gsl rng.  random_seed() seeds from
+  * /dev/random.  Note that any locally defined rng's were "added"
+  * to the gsl set above and can now be called with the gsl
+  * wrapper!
+  */
+ random = gsl_rng_alloc (types[randnum]);
+ random_max = gsl_rng_max(random);
+ seed = random_seed();
+ gsl_rng_set(random,seed);
 
  if(verbose == TST_RNG){
-/*   if(randnum >= num_gsl_rngs) {
-     printf("hbrandnum = %d\n",hbrandnum);
-     printf("generator type: %s\n", homebrews[hbrandnum]);
-   } else { */
-     printf("generator type: %s\n", gsl_rng_name(random));
-     printf("seed value: %u\n", seed);
-     printf("max value = %u\n", random_max);
-     for(i = 0;i<15;i++) printf("%d:  %u\n", i, gsl_rng_get(random));
-/*   } */
+   printf("#==================================================================\n");
+   printf("# generator type: %s\n", gsl_rng_name(random));
+   printf("# seed value: %u, max value = %u  count = %d\n",seed, random_max,size);
+   printf("# Count\t int rand\tuniform rand\n");
+   printf("# ==================================================================\n");
+   for(i = 1;i<=size;i++) printf("%d\t%u\t %10.8f\n",i,gsl_rng_get(random),gsl_rng_uniform(random));
    exit(0);
  }
 
