@@ -5,7 +5,7 @@
 Summary: rand_rate is a random number generator tester and timer
 
 Name: rand_rate
-Version: 0.4.41
+Version: 0.4.42
 Release: 1
 Group: Development/Tools
 Copyright: Open Source (GPL v2b)

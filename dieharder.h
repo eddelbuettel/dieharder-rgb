@@ -42,6 +42,7 @@
    D_BITS,
    D_RGB_BITDIST,
    D_BTEST,
+   D_KSTEST,
    N_DEBUG
  } Debug;
 
@@ -85,13 +86,16 @@
  int sts_monobit();
  int sts_runs();
  void dumpbits(unsigned int *data, unsigned int nbits);
+ double sample(void *testfunc());
  double kstest(double *pvalue,int count);
  double kstest_kuiper(double *pvalue,int count);
  double q_ks(double x);
  double q_ks_kuiper(double x);
-
+ /*
+  * Tests.
+  */
  double rgb_bitdist();
- double rgb_bitdist_test(int ntuple,int np);
+ void rgb_bitdist_test();
 
 
  /*
@@ -119,6 +123,17 @@
   * to be 4 (the number of random integers required to produce a string of
   * 128 random bits).
   *
+  *      ks_pvalue is the master list of p-values returned by tests. kspi
+  * is the globel index/pointer into this list, so that all applications
+  * that fill this list know where they are.  This is a bit ugly, but
+  * alternative solutions are even uglier -- the number of pvalues returned
+  * varies strongly per test from e.g. 1 for a single sample of monobit
+  * to ntuple_max for bitdist tests.  For 100 samples, we therefore might
+  * have (2^8 = 256)x100 ks_pvalues.  We dimension ks_pvalues according to
+  * the input value of psamples as 256 x psamples.  This needs to be
+  * increased if a test that generates more than 256 pvalues per test call
+  * is added.
+  *
   * Less important control variables:
   *
   *      iterations is the number of times the core loop is run (inserted 
@@ -134,12 +149,30 @@
   *========================================================================
   */
  unsigned int psamples,tsamples,size,bits;
+ /* dimensioned in startup */
+#define KS_SAMPLES_PER_TEST_MAX 256
+ double *ks_pvalue;
+ unsigned int kspi;
  unsigned int quiet,verbose;
  unsigned int testnum,randnum,iterations,reseed_flag;
  struct timeval tv_start,tv_stop;
  int dummy,idiot;
  char filename[128];
  FILE *fp;
+
+ /*
+  * We need to set up a test specific control struct.  For example,
+  * rgb_bitdist_test() can be run for all ntuples <= 8 until failure,
+  * or it can be run for specific ntuples.  In order to be able to
+  * use samples() to repeatedly run the tests, the tests cannot have
+  * arguments (well, they can, but it is a PITA).  Hence the following
+  * struct.  Note the very simple paradigm for adding control variables
+  * as control.testname_variablename.
+  */
+ typedef struct {
+   int rgb_bitdist_ntuple;   /* Negative means all tests */
+ } Control;
+ Control cntrl;
 
  /*
   * rng global vectors and variables for setup and tests.
@@ -154,7 +187,7 @@
  unsigned int rmax_mask;        /* Mask for valid section of uint */
  double *rand_uniform;          /* vector of "random" uniform deviates */
  int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
- double q_ks(double x);
+
 
  /*
   * Looks like we'll need certain structs in order to be able to really

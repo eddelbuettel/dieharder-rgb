@@ -35,13 +35,13 @@ int main(int argc, char *argv[])
   * Startup: Allocate memory, initialize all derivative variables from
   * command line values.  
   */
- rand_rate_startup();
+ startup();
 
  /*
   * Work: Do all the work.  In a complicated cpu_rate, project_work would
   * itself be a shell for a lot of other modular routines.
   */
- rand_rate_work();
+ work();
 
  /* 
   * Quit:  Done. Clean up (if necessary) and exit.

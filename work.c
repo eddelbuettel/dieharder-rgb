@@ -16,7 +16,7 @@
 
 #include "rand_rate.h"
 
-void rand_rate_work()
+void work()
 {
 
  if(testnum<0){

@@ -76,42 +76,83 @@ double rgb_bitdist()
    printf("#==================================================================\n");
  }
 
- pvalue = (double *)malloc(256*psamples*sizeof(double));
-
  /*
-  * All 5-bit combinations.
+  * 0 and 1 (only check 1)
   */
- ntuple = 5;
- ntuple_max = 32;
- if(verbose == D_RGB_BITDIST || verbose == D_ALL){
-   printf("# sample     pvalue\n");
- }
- pcnt = 0;
- for(n=0;n<ntuple_max;n++){
-   for(p=0;p<psamples;p++){
-     pvalue[pcnt] = rgb_bitdist_test(ntuple,n);
-     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
-       printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
-     }
-     pcnt++;
-   }
- }
- if(verbose == D_RGB_BITDIST || verbose == D_ALL){
-   printf(" Evaluating Kuiper Kolmogorov-Smirnov test for pvalues.\n");
- }
-
- /*
-  * pvalue now holds a vector of p-values from test testfunc().
-  * We perform a KS test, or (with an appropriate case switch
-  * or other control mechanism) perform other tests as well.
-  */
- pks = kstest_kuiper(pvalue,pcnt);
- printf("Testing distribution of %d bit ntuples\n",ntuple);
- printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
+ cntrl.rgb_bitdist_ntuple = 1;
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)rgb_bitdist_test);
+ printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
  if(pks < 0.0001){
    printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
-   exit(0);
+   return(pks);
  }
+
+ /*
+  * 00 01 10 11 (only check 01 = 1)
+  */
+ cntrl.rgb_bitdist_ntuple = 2;
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)rgb_bitdist_test);
+ printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   return(pks);
+ }
+
+ /*
+  * Triplets, only testing 001 = 1
+  */
+ cntrl.rgb_bitdist_ntuple = 3;
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)rgb_bitdist_test);
+ printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   return(pks);
+ }
+
+ /*
+  * 4-tuples, only testing 0001 = 1
+  */
+ cntrl.rgb_bitdist_ntuple = 4;
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)rgb_bitdist_test);
+ printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   return(pks);
+ }
+
+ /*
+  * 5-tuples, only testing 00001 = 1
+  */
+ cntrl.rgb_bitdist_ntuple = 5;
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)rgb_bitdist_test);
+ printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   return(pks);
+ }
+
+ /*
+  * 6-tuples, only testing 000001 = 1
+  */
+ cntrl.rgb_bitdist_ntuple = 6;
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)rgb_bitdist_test);
+ printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   return(pks);
+ }
+
+ return(pks);
+
+
+
+ pvalue = (double *)malloc(256*psamples*sizeof(double));
 
  /*
   * 0 and 1
@@ -124,7 +165,7 @@ double rgb_bitdist()
  pcnt = 0;
  for(n=0;n<ntuple_max;n++){
    for(p=0;p<psamples;p++){
-     pvalue[pcnt] = rgb_bitdist_test(ntuple,n);
+     /* pvalue[pcnt] = rgb_bitdist_test(ntuple,n); */
      if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
      }
@@ -145,7 +186,7 @@ double rgb_bitdist()
  printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
  if(pks < 0.0001){
    printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
-   exit(0);
+   return(0);
  }
 
  /*
@@ -159,7 +200,7 @@ double rgb_bitdist()
  pcnt = 0;
  for(n=0;n<ntuple_max;n++){
    for(p=0;p<psamples;p++){
-     pvalue[pcnt] = rgb_bitdist_test(ntuple,n);
+     /* pvalue[pcnt] = rgb_bitdist_test(ntuple,n); */
      if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
      }
@@ -180,7 +221,7 @@ double rgb_bitdist()
  printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
  if(pks < 0.0001){
    printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
-   exit(0);
+   return(0);
  }
 
  /*
@@ -194,7 +235,7 @@ double rgb_bitdist()
  pcnt = 0;
  for(n=0;n<ntuple_max;n++){
    for(p=0;p<psamples;p++){
-     pvalue[pcnt] = rgb_bitdist_test(ntuple,n);
+     /* pvalue[pcnt] = rgb_bitdist_test(ntuple,n); */
      if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
      }
@@ -215,7 +256,7 @@ double rgb_bitdist()
  printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
  if(pks < 0.0001){
    printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
-   exit(0);
+   return(0);
  }
 
  /*
@@ -229,7 +270,7 @@ double rgb_bitdist()
  pcnt = 0;
  for(n=0;n<ntuple_max;n++){
    for(p=0;p<psamples;p++){
-     pvalue[pcnt] = rgb_bitdist_test(ntuple,n);
+     /* pvalue[pcnt] = rgb_bitdist_test(ntuple,n); */
      if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
      }
@@ -250,9 +291,44 @@ double rgb_bitdist()
  printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
  if(pks < 0.0001){
    printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
-   exit(0);
+   return(0);
  }
 
+
+ /*
+  * All 5-bit combinations.
+  */
+ ntuple = 5;
+ ntuple_max = 32;
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# sample     pvalue\n");
+ }
+ pcnt = 0;
+ for(n=0;n<ntuple_max;n++){
+   for(p=0;p<psamples;p++){
+     /* pvalue[pcnt] = rgb_bitdist_test(ntuple,n); */
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
+     }
+     pcnt++;
+   }
+ }
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf(" Evaluating Kuiper Kolmogorov-Smirnov test for pvalues.\n");
+ }
+
+ /*
+  * pvalue now holds a vector of p-values from test testfunc().
+  * We perform a KS test, or (with an appropriate case switch
+  * or other control mechanism) perform other tests as well.
+  */
+ pks = kstest_kuiper(pvalue,pcnt);
+ printf("Testing distribution of %d bit ntuples\n",ntuple);
+ printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
+ if(pks < 0.0001){
+   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   return(0);
+ }
 
  /*
   * All 6-bit combinations.
@@ -265,7 +341,7 @@ double rgb_bitdist()
  pcnt = 0;
  for(n=0;n<ntuple_max;n++){
    for(p=0;p<psamples;p++){
-     pvalue[pcnt] = rgb_bitdist_test(ntuple,n);
+     /* pvalue[pcnt] = rgb_bitdist_test(ntuple,n); */
      if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
      }
@@ -286,7 +362,7 @@ double rgb_bitdist()
  printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
  if(pks < 0.0001){
    printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
-   exit(0);
+   return(0);
  }
 
  /*
@@ -300,7 +376,7 @@ double rgb_bitdist()
  pcnt = 0;
  for(n=0;n<ntuple_max;n++){
    for(p=0;p<psamples;p++){
-     pvalue[pcnt] = rgb_bitdist_test(ntuple,n);
+     /* pvalue[pcnt] = rgb_bitdist_test(ntuple,n); */
      if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
      }
@@ -321,7 +397,7 @@ double rgb_bitdist()
  printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
  if(pks < 0.0001){
    printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
-   exit(0);
+   return(0);
  }
 
 
@@ -336,7 +412,7 @@ double rgb_bitdist()
  pcnt = 0;
  for(n=0;n<ntuple_max;n++){
    for(p=0;p<psamples;p++){
-     pvalue[pcnt] = rgb_bitdist_test(ntuple,n);
+     /* pvalue[pcnt] = rgb_bitdist_test(ntuple,n); */
      if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("ntuple value = %u     %u        %6.4f\n",n,pcnt,pvalue[pcnt]);
      }
@@ -357,21 +433,24 @@ double rgb_bitdist()
  printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,pcnt);
  if(pks < 0.0001){
    printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
-   exit(0);
+   return(0);
  }
 
 }
 
-double rgb_bitdist_test(int ntuple,int np)
+void rgb_bitdist_test()
 {
 
- unsigned int b,t,i,j,k,l,m,n;   /* loop indices */
+ unsigned int b,t,i,j,k,l,m,n,ntuple,np;   /* loop indices */
  unsigned int bsamples,boffset;  /* The number of ntuples we pull from bitstring */
  unsigned int value;         /* value of ntuple (as an integer) */
  unsigned int *count,ctotal; /* count of any ntuple per bitstring */
  unsigned int ntuple_max;    /* largest ntuple value */
  double pvalue,ntuple_prob,pbin;  /* probabilities */
  Btest *btest;               /* A vector of binomial test bins */
+
+ ntuple = cntrl.rgb_bitdist_ntuple;
+ np = 1;
 
  /*
   * Let's see what gsl_ran_binomial_pdf(k,p,n) (for k hits in n trials)
@@ -573,14 +652,14 @@ double rgb_bitdist_test(int ntuple,int np)
  for(n=0;n<ntuple_max;n++){
    Btest_eval(&btest[n]);
    if(n == np){
-     pvalue = btest[n].pvalue;
+     ks_pvalue[kspi] = btest[n].pvalue;
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("# rgb_bitdist(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
+     }
+     kspi++;
    }
    Btest_destroy(&btest[n]);
  }
- if(verbose == D_RGB_BITDIST || verbose == D_ALL){
-   printf("# rgb_bitdist(): Returning pvalue[%u] = %10.5f\n",np,pvalue);
- }
- return(pvalue);
 
  free(btest);
  free(count);

@@ -40,22 +40,20 @@
 
 #include "rand_rate.h"
 
-double sample(double *testfunc())
+double sample(void *testfunc())
 {
 
- int n;
- double *pvalue,pks;
-
- pvalue = (double *)malloc(psamples*sizeof(double));
+ int p;
+ double pks;
 
  if(verbose == D_SAMPLE || verbose == D_ALL){
-   printf("# sample     pvalue\n");
+   printf("# samples():    sample\n");
  }
- for(n=0;n<psamples;n++){
-   pvalue[n] = *(*testfunc)();
+ for(p=0;p<psamples;p++){
    if(verbose == D_SAMPLE || verbose == D_ALL){
-     printf("  %u        %6.4f\n",n,pvalue[n]);
+     printf("# sample():  %6u\n",p);
    }
+   (*testfunc)();
  }
 
  /*
@@ -63,9 +61,9 @@ double sample(double *testfunc())
   * We perform a KS test, or (with an appropriate case switch
   * or other control mechanism) perform other tests as well.
   */
- pks = kstest_kuiper(pvalue,psamples);
+ pks = kstest_kuiper(ks_pvalue,kspi);
  if(verbose == D_SAMPLE || verbose == D_ALL){
-   printf("# p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalue.\n",pks,psamples);
+   printf("# sample(): p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalue.\n",pks,kspi);
  }
 
  return(pks);

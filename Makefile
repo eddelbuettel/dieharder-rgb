@@ -63,9 +63,9 @@ SOURCES = $(SOURCE)\
     confidence.c \
     chisq.c \
     kstest.c \
-    rand_rate_seed.c \
-    rand_rate_startup.c \
-    rand_rate_work.c \
+    random_seed.c \
+    startup.c \
+    work.c \
     bits.c \
     diehard_runs.c \
     diehard_birthdays.c \

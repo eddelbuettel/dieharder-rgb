@@ -41,13 +41,13 @@ double kstest(double *pvalue,int count)
   * and transform it into a p-value at the end.
   */
  dmax = 0.0;
- if(verbose){
+ if(verbose == D_KSTEST || verbose == D_ALL){
    printf("    p       y       d       dmax\n");
  }
  for(i=0;i<count;i++){
    y = (double) i/count;
    d = fabs(pvalue[i] - y);
-   if(verbose){
+   if(verbose == D_KSTEST || verbose == D_ALL){
      printf("%8.3f   %8.3f    %8.3f   %8.3f\n",pvalue[i],y,d,dmax);
    }
    if(d > dmax) dmax = d;
@@ -55,7 +55,7 @@ double kstest(double *pvalue,int count)
 
  csqrt = sqrt(count);
  x = (csqrt + 0.12 + 0.11/csqrt)*dmax;
- if(verbose){
+ if(verbose == D_KSTEST || verbose == D_ALL){
    printf("Kolmogorov-Smirnov D = %8.3f, evaluating q_ks(%6.2f)\n",dmax,x);
  }
  p = q_ks(x);
@@ -78,12 +78,12 @@ double q_ks(double x)
  for(i=1;i<100;i++){
    sign *= -1;
    qsum += (double)sign*exp(kappa*(double)i*(double)i);
-   if(verbose){
+   if(verbose == D_KSTEST || verbose == D_ALL){
      printf("Q_ks %d: %f\n",i,2.0*qsum);
    }
  }
 
- if(verbose){
+ if(verbose == D_KSTEST || verbose == D_ALL){
    printf("Q_ks returning %f\n",2.0*qsum);
  }
  return(2.0*qsum);
@@ -103,6 +103,12 @@ double kstest_kuiper(double *pvalue,int count)
  /*
   * We start by sorting the list of pvalues.
   */
+ if(verbose == D_KSTEST || verbose == D_ALL){
+   printf("# kstest_kuiper(): Computing Kuiper KS pvalue for:\n");
+   for(i=0;i<count;i++){
+     printf("# kstest_kuiper(): %3d    %10.5f\n",i,pvalue[i]);
+   }
+ }
  gsl_sort(pvalue,1,count);
 
  /*
@@ -112,7 +118,7 @@ double kstest_kuiper(double *pvalue,int count)
   * accumulation.  We save the maximum d across all cumulated samples
   * and transform it into a p-value at the end.
   */
- if(verbose){
+ if(verbose == D_KSTEST || verbose == D_ALL){
    printf("    obs       exp           v        vmin         vmax\n");
  }
  vmin = 0.0;
@@ -126,17 +132,24 @@ double kstest_kuiper(double *pvalue,int count)
    } else if(v < vmin) {
      vmin = v;
    }
-   if(verbose){
+   if(verbose == D_KSTEST || verbose == D_ALL){
      printf("%8.3f   %8.3f    %8.3f   %8.3f    %8.3f\n",pvalue[i],y,v,vmin,vmax);
    }
  }
  v = fabs(vmax) + fabs(vmin);
  csqrt = sqrt(count);
  x = (csqrt + 0.155 + 0.24/csqrt)*v;
- if(verbose){
+ if(verbose == D_KSTEST || verbose == D_ALL){
    printf("Kuiper's V = %8.3f, evaluating q_ks_kuiper(%6.2f)\n",v,x);
  }
  p = q_ks_kuiper(x);
+
+ if(p < 0.0001){
+   printf("# kstest_kuiper(): Test Fails!  Visually inspect p-values:\n");
+   for(i=0;i<count;i++){
+     printf("# kstest_kuiper(): %3d    %10.5f\n",i,pvalue[i]);
+   }
+ }
 
  return(p);
 
@@ -150,19 +163,19 @@ double q_ks_kuiper(double x)
 
  if(x<0.4){
    qsum = 1.0;
-   if(verbose){
+   if(verbose == D_KSTEST || verbose == D_ALL){
      printf("(cutoff): Q_ks %d: %f\n",i,qsum);
    }
  } else {
    for(i=1;i<100;i++){
      qsum += (4.0*i*i*x*x - 1.0)*exp(-2.0*i*i*x*x);
-     if(verbose){
+     if(verbose == D_KSTEST || verbose == D_ALL){
        printf("Q_ks %d: %f\n",i,2.0*qsum);
      }
    }
  }
 
- if(verbose){
+ if(verbose == D_KSTEST || verbose == D_ALL){
    printf("Q_ks returning %f\n",2.0*qsum);
  }
  return(2.0*qsum);
