@@ -52,7 +52,7 @@ void parsecl(int argc, char **argv)
        break;
      case 'v':
        verbose = strtol(optarg,(char **) NULL,10);
-       printf("Verbose is now %d\n",verbose);
+       /* printf("Verbose is now %d\n",verbose); */
        break;
      case 'x':
        xtest = strtod(optarg,(char **) NULL);
@@ -62,7 +62,7 @@ void parsecl(int argc, char **argv)
    }
  }
 
- if(testnum<0){
+ if(testnum<0 && verbose != HELPGEN){
    Usage();
    exit(0);
  }

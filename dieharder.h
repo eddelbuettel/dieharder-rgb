@@ -35,6 +35,14 @@
    N_DEBUG
  } Debug;
 
+ typedef enum {
+   QUIET,
+   LOUD,
+   HELPGEN,
+   TST_RNG,
+   N_VERBOSE,
+ } Verbose;
+
 
  /*
   *========================================================================
@@ -73,7 +81,7 @@
  int samples,iterations,stride,random_flag,cache_flag,size;
  int quiet,verbose;
  int floattest,doubletest,transtest;
- int testnum;
+ int testnum,hbtestnum;
  struct timeval tv_start,tv_stop;
 
  /*
@@ -81,13 +89,11 @@
   */
  double xtest;			/* input variable */
  int dummy,idiot;		/* To fool compiler into executing empty cases */
- int *index;		        /* re-indexing/shuffling vector */
- double *a,*b,*c,*d,*e;		/* To test double floats */
- double ad,bd,cd,dd,ed;		/* double variables */
- unsigned int *ai;		/* To do memtest on unsigned int vectors */
-
+ int *rand_int;		        /* vector of "random" ints */
+ const gsl_rng_type **types;
+ unsigned int random_max,seed;
  gsl_rng *random;  /* global gsl random number generator */
  int num_gsl_rngs;  /* number of GSL rng's found in current library */
  FILE *fp;         /* pointer to /dev/random, for that benchmark or rng seed */
-
-
+ char homebrews[10][64];  /* names of homebrew random number generators */
+ int num_homebrews;       /* and their number */

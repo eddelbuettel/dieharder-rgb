@@ -19,172 +19,91 @@
 void cpu_rate_startup()
 {
 
-
-  
-
  int i,imax,j,k;
- const gsl_rng_type **types;
- unsigned int random_max,seed;
 
  /*
-  * List the available, built in gsl generators
+  * What homebrew generators might we have today?
+  * Always /dev/random...
+  */
+ sprintf(homebrews[0],"/dev/random");
+ num_homebrews = 1;
+
+ /*
+  * Count and optionally list the available, built in gsl generators
   */
  types = gsl_rng_types_setup ();
- printf("Available built-in gsl-linked generators:\n");
+ if(verbose == HELPGEN){
+   printf("Listing available built-in gsl-linked generators:\n");
+   printf("Test Number      Name\n");
+   printf("================================\n");
+ }
  i = 0;
  while(types[i] != NULL){
-   printf("%d: %s\n", i, types[i]->name);
+   if(verbose == HELPGEN){
+     printf(" %d\t\t%s\n", i, types[i]->name);
+   }
    i++;
  }
- num_gsl_rngs = i+1;
- /*
-  * List any homemade or locally linked non-gsl generators.
-  * There will ALWAYS be /dev/random -- many of the rest that
-  * we might want to link are already wrapped in the gsl -- but we'll
-  * still need to add more, I'm sure.  Especially vector generators,
-  * since I'm betting one can double the speed of the fastest generator
-  * here by simply filling a vector all at once, and not calling the
-  * generator in a subroutine wrapper...
-  */
- printf("Available private generators:\n");
- printf("%d: /dev/random (always used to reseed selected generator)\n", i);
- i++;
-
- /*
-  * The following code is all likely to go away.  It just validates
-  * that gsl_rng's "work" and so forth.
-  */
- random = gsl_rng_alloc (types[12]);
- random_max = gsl_rng_max(random);
- seed = random_seed();
- gsl_rng_set(random,seed);
-
- if(verbose == 10){
-   printf("generator type: %s\n", gsl_rng_name(random));
-   printf("seed value: %u\n", seed);
-   printf("max value = %u\n", random_max);
-   printf("first value = %u\n", gsl_rng_get(random));
-   printf("second value = %u\n", gsl_rng_get(random));
-   printf("third value = %u\n", gsl_rng_get(random));
+ num_gsl_rngs = i;
+ if(verbose == HELPGEN){
+   printf("================================\n");
+   printf(" Listing additional (non-gsl-linked) tests with local sources:\n");
+   printf("Test Number      Name\n");
+   printf("================================\n");
+   for(i = 0;i<num_homebrews;i++){
+     printf(" %d\t\t%s\n", i+num_gsl_rngs, homebrews[i]);
+   }
  }
 
+ if(verbose == HELPGEN) exit(0);
 
  /*
-  * Do some initialization and setup here, according to the values
-  * of testnum (and the other parameters)
+  * This extracts the index of a homebrew test.  Eventually we'll
+  * need to put initialization calls for its wrapper here as well.
+  * In fact, we may want to just plain steal the entire wrapper
+  * structure from gsl, and add tests to "it" instead of write
+  * our own.  This would prevent us from having to mess with porting
+  * any we discover that are "good" to the gsl...
   */
- idiot = 1.0;	/* Give the idiot a value */
+ if(testnum>=num_gsl_rngs) {
+   hbtestnum = testnum - num_gsl_rngs;
+   printf(" testnum = %d, hbtestnum = %d\n",testnum,hbtestnum);
+ } else {
+   /*
+    * Initialize the selected gsl rng
+    */
+   random = gsl_rng_alloc (types[testnum]);
+   random_max = gsl_rng_max(random);
+   seed = random_seed();
+   gsl_rng_set(random,seed);
+ }
+
+ if(verbose == TST_RNG){
+   if(testnum >= num_gsl_rngs) {
+     printf("hbtestnum = %d\n",hbtestnum);
+     printf("generator type: %s\n", homebrews[hbtestnum]);
+   } else {
+     printf("generator type: %s\n", gsl_rng_name(random));
+     printf("seed value: %u\n", seed);
+     printf("max value = %u\n", random_max);
+     for(i = 0;i<15;i++) printf("%d:  %u\n", i, gsl_rng_get(random));
+   }
+   exit(0);
+ }
+
  /*
-  * This is a double indexing vector.  It will have either
-  * sequential entries or shuffled entries, and be used to
-  * permit direct comparison of random vs sequential memory
-  * speed tests.  We abstract the index resolution directly into
-  * the timing loop time, which is subtracted in any event.
+  * We now need to allocate space for at least one vector:  one
+  * for 32-bit integer deviates and/or a vector of 64-bit uniform
+  * deviates.  This will need to be done from information passed on
+  * the command line as to the size (number of ints, bits, doubles).
   *
-  * I think that we're going to include this in ALL the vector
-  * benchmarks, but subject to a shuffle flag, instead of using
-  * independent test numbers.
+  * We'll start by using "size" for this, and do just ints (into
+  * the vector rand_int[]).
   */
- index = (int *) malloc((size_t) (size*sizeof(int)));
- switch(testnum){
-   case 0:
-     dummy = idiot;	/* This is the "nearly empty loop" */
-     break;
-   case 1:	/* bogomflops */
-     /* Allocate the vector to be tested with */
-     d = (double *) malloc((size_t) (size*sizeof(double)));
-     /* xtest is set from the command line, default PI */
-     ad = xtest;
-     bd = 1.0 + xtest;
-     /* Initialize the vector */
-    for(i=0;i<size;i++){
-      d[i] = xtest;
-     }
-     break;
-   case 2:	/* copy (stream) */
-     /* Allocate the vectors to be tested with */
-     d = (double *) malloc((size_t) (size*sizeof(double)));
-     a = (double *) malloc((size_t) (size*sizeof(double)));
-     /* xtest is set from the command line, default PI */
-     /* Initialize the vector */
-    for(i=0;i<size;i++){
-      a[i] = xtest;
-     }
-     break;
-   case 3:	/* scale (stream) */
-     /* Allocate the vectors to be tested with */
-     d = (double *) malloc((size_t) (size*sizeof(double)));
-     /* Initialize the vector */
-    for(i=0;i<size;i++){
-      d[i] = 0.0;
-     }
-     break;
-   case 4:	/* add (stream) */
-     /* Allocate the vectors to be tested with */
-     d = (double *) malloc((size_t) (size*sizeof(double)));
-     a = (double *) malloc((size_t) (size*sizeof(double)));
-     b = (double *) malloc((size_t) (size*sizeof(double)));
-     /* xtest is set from the command line, default PI */
-     /* Initialize the vectors */
-    for(i=0;i<size;i++){
-      a[i] = xtest;
-      b[i] = xtest;
-     }
-     break;
-   case 5:	/* triad (stream) */
-     /* Allocate the vectors to be tested with */
-     d = (double *) malloc((size_t) (size*sizeof(double)));
-     a = (double *) malloc((size_t) (size*sizeof(double)));
-     b = (double *) malloc((size_t) (size*sizeof(double)));
-     /* xtest is set from the command line, default PI */
-     /* Initialize the vectors */
-    for(i=0;i<size;i++){
-      a[i] = xtest;
-      b[i] = 0.0;
-     }
-     break;
-   case 6:	/* bogomegatrids, no divide */
-     /* Allocate the vector to be tested with */
-     d = (double *) malloc((size_t) (size*sizeof(double)));
-     /* xtest is set from the command line, default PI */
-     ad = 1.0;
-     bd = xtest;
-     cd = xtest;
-     /* Initialize the vector */
-    for(i=0;i<size;i++){
-      d[i] = xtest;
-     }
-     break;
-   case 7:	/* memtest */
-     /* Allocate the vector to be tested with */
-     ai = (unsigned int *) malloc((size_t) (size*sizeof(unsigned int)));
-     /* Initialize the vector */
-     for(i=0;i<size;i++){
-      ai[i] = i;
-     }
-     break;
-   case 8:	/* memtest, random */
-     /* Allocate the vector to be tested with */
-     ai = (unsigned int *) malloc((size_t) (size*sizeof(unsigned int)));
-     /* Initialize the vector */
-     for(i=0;i<size;i++){
-       ai[i] = i;
-     }
-     if(verbose == 10){
-       printf("#==================================================================\n");
-       for(i=0;i<size;i++) printf("# Unshuffled: ai[%d] = %u\n",i,ai[i]);
-     }
-     gsl_ran_shuffle(random, ai, size, sizeof (unsigned int));
-     if(verbose == 10){
-       printf("#==================================================================\n");
-       for(i=0;i<size;i++) printf("# Shuffled: ai[%d] = %u\n",i,ai[i]);
-       printf("#==================================================================\n");
-     }
-     break;
-   case 9:	/* savage, requires no initialization */
-     break;
-   default:
-     break;
+ if(size < 1000) {
+   fprintf(stderr,"Warning:  size = %d too small, using size = 1000\n",size);
+   size = 1000;
  }
+ rand_int = (int *) malloc((size_t) (size*sizeof(unsigned int)));
 
 }
