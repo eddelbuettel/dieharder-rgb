@@ -42,8 +42,14 @@
    HELPGEN,
    TST_RNG,
    MEASURE,
-   N_VERBOSE,
+   N_VERBOSE
  } Verbose;
+
+ typedef enum {
+   BOGORATE,
+   STS_MONOBIT,
+   N_TEST
+ } Tests;
 
 
  /*

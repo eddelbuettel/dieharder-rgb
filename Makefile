@@ -33,7 +33,7 @@ DIR = $(PROGRAM)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=0
-VERSION_MINOR=1.1
+VERSION_MINOR=2.0
 RELEASE=1
 
 #========================================================================
@@ -50,6 +50,7 @@ SOURCES = $(SOURCE)\
     rand_rate_seed.c \
     rand_rate_startup.c \
     rand_rate_work.c \
+    sts_monobit.c \
     timing.c \
 
 # SOURCE2 = $(PROGRAM2:=.c)

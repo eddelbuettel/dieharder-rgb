@@ -8,7 +8,9 @@
 
 /*
  *========================================================================
- * OK, so not much work done here.  No matter.  One day there might be.
+ * This should be a nice, big case switch where we add EACH test
+ * we might want to do and either just configure and do it or
+ * prompt for input (if absolutely necessary) and then do it.
  *========================================================================
  */
 
@@ -17,6 +19,14 @@
 void rand_rate_work()
 {
 
-  measure_rate();
+ switch(testnum){
+   default:
+   case BOGORATE:
+     measure_rate();
+     break;
+   case STS_MONOBIT:
+     sts_monobit();
+     break;
+ }
 
 }
