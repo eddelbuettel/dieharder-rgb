@@ -51,6 +51,7 @@ SOURCES = $(SOURCE)\
     list_rngs.c \
     measure_rate.c \
     parsecl.c \
+    help.c \
     prob.c \
     timing.c \
     tensor.c \

@@ -13,36 +13,57 @@ void parsecl(int argc, char **argv)
  extern char *optarg;
  extern int optind, opterr, optopt;
 
- psamples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
- tsamples = 10000;		/* This SHOULD be a lot. */
- iterations = -1;	/* This should be just enough to do empty accurately */
- size = 1024;		/* Small enough to easily fit into any cache */
+ /*
+  * Within reason, the following user-controllable options are referenced
+  * by a flag with the same first letter.  In order:
+  */
+ all = NO;              /* Default is to NOT do all the tests */
  bits = 128;            /* Maximum size bitstring is default */
+ diehard = 0;           /* Diehard test number */
+ filename[0] = (char)0; /* No input file */
+ generator = 13;        /* Default is mt19937, as the "best" overall */
+ help_flag = NO;             /* No help requested */
+ iterations = -1;	/* For timing loop, set iterations to be timed */
+ list = NO;             /* List all generators */
+ ntuple = 0;            /* n-tuple size for n-tuple tests (0 means all) */
+ psamples = 100;        /* Number of test runs in final KS test */
+ quiet = 0;		/* Default is to be not be quiet -- full report. */
+ rgb = 0;               /* rgb test number */
+ sts = 0;               /* sts test number */
+ seed = 0;              /* user selected seed.  != 0 surpresses reseeding per sample.*/
+ tsamples = 10000;	/* Generally should be "a lot". */
+ user = 0;              /* user defined test number */
  verbose = 0;		/* Default is not to be verbose. */
- quiet = 0;		/* Default is ALSO not to be quiet (output control). */
- testnum = 0;		/* Default is to list rng's */
- randnum = 12;          /* Default is mt19937, as the "best" overall */
- reseed_flag = 0;       /* Don't reseed for every sample (default) */
+ x_user = 0.0;          /* x,y,z_user are for "arbitrary" input controls */
+ y_user = 0.0;          /* and can be used by any test without having to */
+ z_user = 0.0;          /* rewrite parsecl() or add global variables */
 
- while ((c = getopt(argc,argv,"b:f:hin:p:qr:s:t:v:")) != EOF){
+ while ((c = getopt(argc,argv,"ab:d:f:g:hilLn:p:qr:S:s:t:u:v:x:y:z:")) != EOF){
    switch (c){
-     case 'h':
-       Usage();
-       exit(0);
+     case 'a':
+       all = YES;
        break;
      case 'b':
        bits = strtol(optarg,(char **) NULL,10);
        break;
+     case 'd':
+       diehard = strtol(optarg,(char **) NULL,10);
+       break;
      case 'f':
        strncpy(filename,optarg,128);
-       fprintf(stderr,"Error: -f %s not yet supported!  Exiting...\n",filename);
-       exit(0);
+       fprintf(stderr,"Warning: -f %s not yet supported!\n",filename);
+       break;
+     case 'g':
+       generator = strtol(optarg,(char **) NULL,10);
+       break;
+     case 'h':
+       help_flag = YES;
        break;
      case 'i':
-       reseed_flag = 1;
+       iterations = strtol(optarg,(char **) NULL,10);
        break;
      case 'n':
-       size = strtol(optarg,(char **) NULL,10);
+       ntuple = strtol(optarg,(char **) NULL,10);
        break;
      case 'p':
        psamples = strtol(optarg,(char **) NULL,10);
@@ -51,17 +72,29 @@ void parsecl(int argc, char **argv)
        quiet = 1;
        break;
      case 'r':
-       randnum = strtol(optarg,(char **) NULL,10);
+       rgb = strtol(optarg,(char **) NULL,10);
        break;
      case 's':
-       tsamples = strtol(optarg,(char **) NULL,10);
+       sts = strtol(optarg,(char **) NULL,10);
        break;
      case 't':
-       testnum = strtol(optarg,(char **) NULL,10);
+       tsamples = strtol(optarg,(char **) NULL,10);
+       break;
+     case 'u':
+       user = strtol(optarg,(char **) NULL,10);
        break;
      case 'v':
        verbose = strtol(optarg,(char **) NULL,10);
-       /* printf("Verbose is now %d\n",verbose); */
+       printf("# Verbose is now %d\n",verbose);
+       break;
+     case 'x':
+       x_user = strtod(optarg,(char **) NULL);
+       break;
+     case 'y':
+       y_user = strtod(optarg,(char **) NULL);
+       break;
+     case 'z':
+       z_user = strtod(optarg,(char **) NULL);
        break;
      case '?':
        errflg++;
@@ -77,63 +110,21 @@ void parsecl(int argc, char **argv)
   * If there are no more arguments, we are done.
   */
  if(argc-optind == 0){
+   /*
+    * If help was requested, call the help routine.  This routine does
+    * different things depending on the other flags and variables, so
+    * we defer calling it until they are all set.  help() will exit.
+    */
+   if(help_flag) help();
    return;
  }
 
  /*
   * Anything else left is an erroneous call and should cause the Usage
-  * message to be printed.  memtest -h or --help will therefore "work".
+  * message to be printed.
   */
 
  Usage();
 
 }
 
-void Usage()
-{
-
- fprintf(stdout, "\n");
- fprintf(stdout, "Usage:\n");
- fprintf(stdout, "  dieharder [-t testnumber] [-r rngnumber] [-f filename ]\n");
- fprintf(stdout, "           [-b number of bits] [-n length] [-s samples] [-i]\n");
- fprintf(stdout, "           [-q] [-h] [-v level]\n");
- fprintf(stdout, "\n");
- fprintf(stdout, "  -t testnumber selects the test to be performed.  Available tests:\n");
- fprintf(stdout, "     %d (default) list available rngs.\n",LIST_RNGS);
- fprintf(stdout, "     %d write list of random integers and uniform deviates to stdout with\n",LIST_RAND);
- fprintf(stdout, "       selected rng.\n");
- fprintf(stdout, "     %d time selected generator, determining its bogomegarate.\n",BOGORATE);
- fprintf(stdout, "     %d Diehard runs (tests ascending/descending runs).\n",DIEHARD_RUNS);
- fprintf(stdout, "     %d Diehard birthday (tests repeated birthday intervals).\n",DIEHARD_BDAY);
- fprintf(stdout, "     %d Diehard 2d sphere (tests minimum distance between points in 2D).\n",DIEHARD_2DSPHERE);
- fprintf(stdout, "     %d Diehard 3d sphere (tests minimum distance between points in 3D).\n",DIEHARD_3DSPHERE);
- fprintf(stdout, "     %d RGB bitmask (tests for frozen/unchanging bits).\n",RGB_PERSIST);
- fprintf(stdout, "     %d RGB bitdist (tests frequency of all n-bit patterns:\n",RGB_BITDIST);
- fprintf(stdout, "       note that this is an extremely powerful master test and can \n");
- fprintf(stdout, "       replace a whole raft of weaker tests in STS and Diehard).\n");
- fprintf(stdout, "     %d STS monobit (tests number of 1s only).\n",STS_MONOBIT);
- fprintf(stdout, "     %d STS runs (de facto tests frequency of 2-bit patterns)\n",STS_RUNS);
- fprintf(stdout, "\n");
- fprintf(stdout, "  -r rngnumber selects the rng to be tested (list them with -t 0).\n");
- fprintf(stdout, "  -f filename will EVENTUALLY permit random strings to be tested to be\n");
- fprintf(stdout, "     read in from a file, but this is not yet implemented!\n");
- fprintf(stdout, "  -b controls the number of bits used in bit string tests\n");
- fprintf(stdout, "  -n controls the length of the test vector (int or double) for vector\n");
- fprintf(stdout, "     tests\n");
- fprintf(stdout, "  -s controls the number of samples (default 100)\n");
- fprintf(stdout, "  -i turns on a new seed for each sample -- better indicates the\n");
- fprintf(stdout, "     probability of a \"bad seed\" existing for an otherwise good\n");
- fprintf(stdout, "     generator.\n");
- fprintf(stdout, "  -v controls verbosity of output for debugging or amusement purposes.\n");
- fprintf(stdout, "  -q selects \"quiet\" operation: results only are printed on a single line\n");
- fprintf(stdout, "     (where applicable).\n");
- fprintf(stdout, "  -h prints usage statement (this message) and exits.\n");
- fprintf(stdout, "\n");
- fprintf(stdout, "  NOTE WELL:  The \"bogomegarates\" returned by this tool are BOGUS\n");
- fprintf(stdout, "  and may not be even approximately correct in your context.  Also, the\n");
- fprintf(stdout, "  quality assessment(s) for the rngs may, in fact, be completely incorrect\n");
- fprintf(stdout, "  or misleading.  Use them at your Own Risk!  Be Warned!\n");
- fprintf(stdout,"\n");
- exit(0);
-
-}

@@ -34,22 +34,17 @@ double diehard_3dsphere()
  double pks;
  
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#              Diehard \"3d Sphere\" test (modified).\n");
-   printf("# Generate 4000 points in a 1000^3 integer cube.  Determine the\n");
-   printf("# the shortest nearest neighbor distance R.  This should generate\n");
-   printf("# p = 1.0 - exp(-R^3/30).  Repeat for lots of samples, apply a\n");
-   printf("# KS test to see if p is uniform.\n");
-   printf("#==================================================================\n");
+   help_diehard_3dsphere();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
    printf("# Number of points tested = %u\n",POINTS);
  }
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_3dsphere_test);
- printf("p = %8.6f for diehard_3dsphere test from Kuiper Kolmogorov-Smirnov test\n",pks);
+ printf("# p = %8.6f for diehard_2dsphere test from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for diehard_3dsphere.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.01%% for diehard_3dsphere.\n",gsl_rng_name(rng));
  }
 
  return(pks);
@@ -117,3 +112,15 @@ void diehard_3dsphere_test()
 
 }
 
+void help_diehard_3dsphere()
+{
+
+ printf("#==================================================================\n");
+ printf("#              Diehard \"3d Sphere\" test (modified).\n");
+ printf("# Generate 4000 points in a 1000^3 integer cube.  Determine the\n");
+ printf("# the shortest nearest neighbor distance R.  This should generate\n");
+ printf("# p = 1.0 - exp(-R^3/30).  Repeat for lots of samples, apply a\n");
+ printf("# KS test to see if p is uniform.\n");
+ printf("#==================================================================\n");
+
+}

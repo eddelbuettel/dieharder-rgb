@@ -25,21 +25,9 @@ double sts_runs()
  double pks;
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                    sts_runs Test Description\n");
-   printf("# Counts the total number of 0 runs + total number of 1 runs across\n");
-   printf("# a sample of bits.  Note that a 0 run must begin with 10 and end\n");
-   printf("# with 01.  Note that a 1 run must begin with 01 and end with a 10.\n");
-   printf("# This test, run on a bitstring with cyclic boundary conditions, is\n");
-   printf("# absolutely equivalent to just counting the 01 + 10 bit pairs.\n");
-   printf("# It is therefore totally redundant with but not as good as the\n");
-   printf("# rgb_bitdist() test for 2-tuples, which looks beyond the means to the\n");
-   printf("# moments, testing an entire histogram  of 00, 01, 10, and 11 counts\n");
-   printf("# to see if it is binomially distributed with p = 0.25.\n");
-   printf("#\n");
+   help_sts_runs();
    printf("# random number generator: %s\n",gsl_rng_name(rng));
    printf("# p-samples = %u   number of sampled ints/test = %u\n",psamples,tsamples);
-   printf("#==================================================================\n");
  }
 
  /*
@@ -50,9 +38,10 @@ double sts_runs()
   */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)sts_runs_test);
- printf("p = %6.3f for sts_runs test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,kspi);
+ printf("# p = %6.3f for sts_runs test from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for sts_runs.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.01%% for sts_runs.\n",gsl_rng_name(rng));
  }
  return(pks);
 
@@ -144,3 +133,20 @@ void sts_runs_test()
  
 }
 
+void help_sts_runs()
+{
+
+ printf("#==================================================================\n");
+ printf("#                    sts_runs Test Description\n");
+ printf("# Counts the total number of 0 runs + total number of 1 runs across\n");
+ printf("# a sample of bits.  Note that a 0 run must begin with 10 and end\n");
+ printf("# with 01.  Note that a 1 run must begin with 01 and end with a 10.\n");
+ printf("# This test, run on a bitstring with cyclic boundary conditions, is\n");
+ printf("# absolutely equivalent to just counting the 01 + 10 bit pairs.\n");
+ printf("# It is therefore totally redundant with but not as good as the\n");
+ printf("# rgb_bitdist() test for 2-tuples, which looks beyond the means to the\n");
+ printf("# moments, testing an entire histogram  of 00, 01, 10, and 11 counts\n");
+ printf("# to see if it is binomially distributed with p = 0.25.\n");
+ printf("#==================================================================\n");
+
+}

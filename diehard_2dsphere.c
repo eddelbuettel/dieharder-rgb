@@ -34,22 +34,17 @@ double diehard_2dsphere()
  double pks;
  
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#         Diehard \"Minimum Distance\" test (modified).\n");
-   printf("# Generate 8000 points in a 10000^2 square.  Determine the\n");
-   printf("# the shortest nearest neighbor distance R.  This should generate\n");
-   printf("# p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a\n");
-   printf("# KS test to see if p is uniform.\n");
-   printf("#==================================================================\n");
+   help_diehard_2dsphere();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
    printf("# Number of points tested = %u\n",POINTS);
  }
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_2dsphere_test);
- printf("p = %8.6f for diehard_2dsphere test from Kuiper Kolmogorov-Smirnov test\n",pks);
+ printf("# p = %8.6f for diehard_2dsphere test from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for diehard_2dsphere.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.01%% for diehard_2dsphere.\n",gsl_rng_name(rng));
  }
 
  return(pks);
@@ -109,3 +104,15 @@ void diehard_2dsphere_test()
 
 }
 
+void help_diehard_2dsphere()
+{
+
+ printf("#==================================================================\n");
+ printf("#         Diehard \"Minimum Distance\" test (modified).\n");
+ printf("# Generate 8000 points in a 10000^2 square.  Determine the\n");
+ printf("# the shortest nearest neighbor distance R.  This should generate\n");
+ printf("# p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a\n");
+ printf("# KS test to see if p is uniform.\n");
+ printf("#==================================================================\n");
+
+}

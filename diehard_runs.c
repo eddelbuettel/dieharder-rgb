@@ -105,7 +105,7 @@ double diehard_runs()
   * If this is part of a sweep of tests, reset tsamples and
   * resize rand_int.
   */
- if(testnum < 0){
+ if(all == YES){
    tempsamples = tsamples;
    tsamples = 100000 ;  /* Minimal value for this test */
  }
@@ -113,31 +113,23 @@ double diehard_runs()
  rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                Diehard \"runs\" test (modified).\n");
-   printf("# This tests the distribution of increasing and decreasing runs\n");
-   printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
-   printf("# or greater and -n 100000 or greater, it will compute a vector\n");
-   printf("# of p-values for up and down and verify that the proportion\n");
-   printf("# of these values less than 0.01 is consistent with a uniform\n");
-   printf("# distribution.\n");
-   printf("#==================================================================\n");
+   help_diehard_runs();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
    printf("# size of vector tested = %u (100000 or more suggested)\n",tsamples);
  }
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_runs_test);
- printf("p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov test\n",pks);
- printf("     on %u pvalues (up runs + down runs).\n",kspi);
+ printf("# p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues (up runs + down runs).\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.01%% for diehard_runs.\n",gsl_rng_name(rng));
  }
 
  /*
   * Put back tsamples
   */
- if(testnum < 0){
+ if(all == YES){
    tsamples = tempsamples;
  }
  free(rand_int);
@@ -201,7 +193,7 @@ void diehard_runs_test()
      ucount = 1;
    }
  }
- if(rand_int[size-1] > rand_int[0]){
+ if(rand_int[tsamples-1] > rand_int[0]){
    ucount++;
    if(ucount > RUN_MAX) ucount = RUN_MAX;
    downruns[dcount-1]++;
@@ -240,5 +232,17 @@ void diehard_runs_test()
 
 }
 
+void help_diehard_runs()
+{
 
+ printf("#==================================================================\n");
+ printf("#                Diehard \"runs\" test (modified).\n");
+ printf("# This tests the distribution of increasing and decreasing runs\n");
+ printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
+ printf("# or greater and -n 100000 or greater, it will compute a vector\n");
+ printf("# of p-values for up and down and verify that the proportion\n");
+ printf("# of these values less than 0.01 is consistent with a uniform\n");
+ printf("# distribution.\n");
+ printf("#==================================================================\n");
 
+}

@@ -25,16 +25,9 @@ double sts_monobit()
  double pks;
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                 sts_monobit Test Description\n");
-   printf("# Very simple.  Counts the 1 bits in a long string of random uints.\n");
-   printf("# Compares to expected number, generates a p-value directly from\n");
-   printf("# erfc().  Very effective at revealing overtly weak generators;\n");
-   printf("# Not so good at determining where stronger ones eventually fail.\n");
-   printf("#\n");
+   help_sts_monobit();
    printf("# random number generator: %s\n",gsl_rng_name(rng));
    printf("# p-samples = %u   number of sampled ints/test = %u\n",psamples,tsamples);
-   printf("#==================================================================\n");
  }
 
  /*
@@ -45,9 +38,10 @@ double sts_monobit()
   */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)sts_monobit_test);
- printf("p = %6.3f for sts_monobit test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ printf("# p = %6.3f for sts_monobit test from Kuiper Kolmogorov-Smirnov.\n",pks);
+ printf("#     test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for sts_monobit.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.01%% for sts_monobit.\n",gsl_rng_name(rng));
  }
  return(pks);
 
@@ -91,7 +85,7 @@ void sts_monobit_test()
   * that if -b bits is specified, size will be "more than enough".
   */
  if(verbose == D_RGB_BITDIST || verbose == D_ALL){
-   printf("# rgb_bitdist(): Generating %u bits in rand_int[]\n",size*sizeof(uint)*8);
+   printf("# rgb_bitdist(): Generating %u bits in bitstring",tsamples*sizeof(uint)*8);
  }
  mtest.x = 0;
  for(i=0;i<tsamples;i++) {
@@ -123,3 +117,15 @@ void sts_monobit_test()
  
 }
 
+void help_sts_monobit()
+{
+
+ printf("#==================================================================\n");
+ printf("#                 sts_monobit Test Description\n");
+ printf("# Very simple.  Counts the 1 bits in a long string of random uints.\n");
+ printf("# Compares to expected number, generates a p-value directly from\n");
+ printf("# erfc().  Very effective at revealing overtly weak generators;\n");
+ printf("# Not so good at determining where stronger ones eventually fail.\n");
+ printf("#==================================================================\n");
+
+}

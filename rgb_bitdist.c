@@ -56,120 +56,44 @@
 double rgb_bitdist()
 {
 
- int ntuple,ntuple_max,n,p,pcnt;
+ int ntuple_max,n,p,pcnt;
  double *pvalue,pks;
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                 rgb_bitdist Test Description\n");
-   printf("# Accumulates the frequencies of all n-tuples of bits in a list\n");
-   printf("# of random integers and compares the distribution thus generated\n");
-   printf("# with the theoretical (binomial) histogram, forming chisq and the\n");
-   printf("# associated p-value.  In this test n-tuples are selected without\n");
-   printf("# WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples\n");
-   printf("# are independent.  Every other sample is offset modulus of the\n");
-   printf("# sample index and ntuple_max.\n");
-   printf("#\n");
+   help_rgb_bitdist();
    printf("# random number generator: %s\n",gsl_rng_name(rng));
    printf("# p-samples = %u   bitstring samples = %u  bits sampled = %u\n",
      psamples,tsamples,bits);
-   printf("#==================================================================\n");
  }
 
  /*
   * 0 and 1 (only check 1)
   */
- cntrl.rgb_bitdist_ntuple = 1;
- kspi = 0;  /* Always zero first */
- pks = sample((void *)rgb_bitdist_test);
- printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),cntrl.rgb_bitdist_ntuple);
-   return(pks);
- }
-
- /*
-  * 00 01 10 11 (only check 01 = 1)
-  */
- cntrl.rgb_bitdist_ntuple = 2;
- kspi = 0;  /* Always zero first */
- pks = sample((void *)rgb_bitdist_test);
- printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),cntrl.rgb_bitdist_ntuple);
-   return(pks);
- }
-
- /*
-  * Triplets, only testing 001 = 1
-  */
- cntrl.rgb_bitdist_ntuple = 3;
- kspi = 0;  /* Always zero first */
- pks = sample((void *)rgb_bitdist_test);
- printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),cntrl.rgb_bitdist_ntuple);
-   return(pks);
- }
-
- /*
-  * 4-tuples, only testing 0001 = 1
-  */
- cntrl.rgb_bitdist_ntuple = 4;
- kspi = 0;  /* Always zero first */
- pks = sample((void *)rgb_bitdist_test);
- printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),cntrl.rgb_bitdist_ntuple);
-   return(pks);
- }
-
- /*
-  * 5-tuples, only testing 00001 = 1
-  */
- cntrl.rgb_bitdist_ntuple = 5;
- kspi = 0;  /* Always zero first */
- pks = sample((void *)rgb_bitdist_test);
- printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),cntrl.rgb_bitdist_ntuple);
-   return(pks);
- }
-
- /*
-  * 6-tuples, only testing 000001 = 1
-  */
- cntrl.rgb_bitdist_ntuple = 6;
- kspi = 0;  /* Always zero first */
- pks = sample((void *)rgb_bitdist_test);
- printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),cntrl.rgb_bitdist_ntuple);
-   return(pks);
- }
-
- /*
-  * 7-tuples, only testing 0000001 = 1
-  */
- cntrl.rgb_bitdist_ntuple = 7;
- kspi = 0;  /* Always zero first */
- pks = sample((void *)rgb_bitdist_test);
- printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),cntrl.rgb_bitdist_ntuple);
-   return(pks);
- }
-
- /*
-  * 8-tuples, only testing 00000001 = 1
-  */
- cntrl.rgb_bitdist_ntuple = 8;
- kspi = 0;  /* Always zero first */
- pks = sample((void *)rgb_bitdist_test);
- printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),cntrl.rgb_bitdist_ntuple);
-   return(pks);
+ printf("ntuple = %u\n",ntuple);
+ if(ntuple == 0 || all == YES){
+   for(n=1;n<=8;n++){
+     ntuple = n;
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("# rgb_bitdist(): Testing ntuple = %u\n",ntuple);
+     }
+     kspi = 0;  /* Always zero first */
+     pks = sample((void *)rgb_bitdist_test);
+     printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov\n",pks,ntuple);
+     printf("#     test on %u pvalues.\n",kspi);
+     if(pks < 0.0001){
+       printf("# Generator %s FAILS at 0.01%% for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),ntuple);
+       return(pks);
+     }
+   }
+ } else {
+   kspi = 0;  /* Always zero first */
+   pks = sample((void *)rgb_bitdist_test);
+   printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov\n",pks,ntuple);
+   printf("#     test on %u pvalues.\n",kspi);
+   if(pks < 0.0001){
+     printf("# Generator %s FAILS at 0.01%% for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),ntuple);
+     return(pks);
+   }
  }
 
  return(pks);
@@ -179,15 +103,15 @@ double rgb_bitdist()
 void rgb_bitdist_test()
 {
 
- unsigned int b,t,i,j,k,l,m,n,ntuple,np;   /* loop indices */
+ unsigned int b,t,i,j,k,l,m,n,np;   /* loop indices */
  unsigned int bsamples,boffset;  /* The number of ntuples we pull from bitstring */
  unsigned int value;         /* value of ntuple (as an integer) */
  unsigned int *count,ctotal; /* count of any ntuple per bitstring */
  unsigned int ntuple_max;    /* largest ntuple value */
+ int size;
  double pvalue,ntuple_prob,pbin;  /* probabilities */
  Btest *btest;               /* A vector of binomial test bins */
 
- ntuple = cntrl.rgb_bitdist_ntuple;
  np = 1;
 
  /*
@@ -224,7 +148,7 @@ void rgb_bitdist_test()
   */
  size += 1;
  if(verbose == D_RGB_BITDIST || verbose == D_ALL){
-   printf("# rgb_bitdist(): size = %u\n",size);
+   printf("# rgb_bitdist(): bits = %u size = %u ntuple = %u\n",bits,size,ntuple);
  }
 
  /*
@@ -404,3 +328,18 @@ void rgb_bitdist_test()
 
 }
 
+void help_rgb_bitdist()
+{
+
+ printf("#==================================================================\n");
+ printf("#                 rgb_bitdist Test Description\n");
+ printf("# Accumulates the frequencies of all n-tuples of bits in a list\n");
+ printf("# of random integers and compares the distribution thus generated\n");
+ printf("# with the theoretical (binomial) histogram, forming chisq and the\n");
+ printf("# associated p-value.  In this test n-tuples are selected without\n");
+ printf("# WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples\n");
+ printf("# are independent.  Every other sample is offset modulus of the\n");
+ printf("# sample index and ntuple_max.\n");
+ printf("#==================================================================\n");
+
+}

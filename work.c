@@ -19,7 +19,7 @@
 void work()
 {
 
- if(testnum<0){
+ if(all == YES){
    diehard_runs();
    diehard_birthdays();
    diehard_2dsphere();
@@ -31,16 +31,8 @@ void work()
    exit(0);
  }
 
- switch(testnum){
+ switch(diehard){
    default:
-   case LIST_RNGS:
-     list_rngs();
-     break;
-   case LIST_RAND:
-     list_rand();
-     break;
-   case BOGORATE:
-     measure_rate();
      break;
    case DIEHARD_RUNS:
      diehard_runs();
@@ -54,11 +46,21 @@ void work()
    case DIEHARD_3DSPHERE:
      diehard_3dsphere();
      break;
+ }
+
+ switch(rgb){
+   default:
+     break;
    case RGB_PERSIST:
      rgb_persist();
      break;
    case RGB_BITDIST:
      rgb_bitdist();
+     break;
+ }
+
+ switch(sts){
+   default:
      break;
    case STS_MONOBIT:
      sts_monobit();

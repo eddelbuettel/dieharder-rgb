@@ -62,27 +62,51 @@ double diehard_birthdays()
   */
 
  /*
-  * From Marsaglia, nms should just be "512", but we'll do it this way in
-  * case we want to vary it.  One day it would be useful to scale this
-  * whole computation <bam!> up a notch (sorry, Emmeril:-).  Similarly,
-  * nbits should be "24", but we can really make it anything we want
-  * that's less than rmax_bits;
+  * From Marsaglia, nms should just be "512", but this CAN be varied and
+  * all his formulae still work.  Similarly, nbits should be "24", but we
+  * can really make it anything we want that's less than or equal to
+  * rmax_bits;
   */
- nms = 512;
- nbits = 24;
- 
- free(rand_int);
- rand_int = (unsigned int *)malloc(nms*sizeof(unsigned int));
- intervals = (unsigned int *)malloc(nms*sizeof(unsigned int));
-
+ if(x_user != 0.0) {
+   nms = (int)x_user;
+ } else {
+   nms = 512;  /* default value */
+ }
+ if(y_user != 0.0) {
+   nbits = (int)y_user;
+ } else {
+   nbits = 24;
+ }
  if(nbits>rmax_bits) nbits = rmax_bits;
 
  /*
   * This is the one thing that matters.  We're going to make the
   * exact poisson distribution we expect below, and lambda has to
-  * be right.  lambda = nms^3/4n where n = 2^nbits, for the record.
+  * be right.  lambda = nms^3/4n where n = 2^nbits, which is:
+  *   lambda = (2^9)^3/(2^2 * 2^24) = 2^27/2^26 = 2.0
+  * for Marsaglia's defaults.  Small changes in nms make big changes
+  * in lambda, but we can easily pick e.g. nbits = 30, nms = 2048
+  *   lambda =  (2^11)^3/2^32 = 2.0
+  * and get the same test, but with a lot more samples and perhaps a
+  * slightly smoother result.
   */
  lambda = (double)nms*nms*nms/pow(2.0,(double)nbits+2.0);
+
+
+ /*
+  * If this test is run by itself, we can ignore tsamples.  If it is
+  * part of a "standard run", we have to use specific values.  Either
+  * way, we have to adjust the sizes of e.g. the list of integers to
+  * be generated and sampled, and (re)allocate memory accordingly.
+  * Then at the bottom, we have to put it all back.
+  */
+ if(all == YES){
+   tempsamples = tsamples;
+   tsamples = 100;  /* Standard value */
+ }
+ free(rand_int);
+ rand_int = (unsigned int *)malloc(nms*sizeof(unsigned int));
+ intervals = (unsigned int *)malloc(nms*sizeof(unsigned int));
 
  /*
   * This should be more than twice as many slots as we really
@@ -95,50 +119,33 @@ double diehard_birthdays()
  while(tsamples*gsl_ran_poisson_pdf(kmax,lambda)>5) kmax++;
  kmax++;   /* and one to grow on...*/
 
- if(testnum < 0){
-   tempsamples = tsamples;
-   tsamples = 100;  /* Standard value */
- }
-
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                Diehard \"Birthdays\" test (modified).\n");
-   printf("# Each test determines the number of matching intervals\n");
-   printf("# from 512 \"birthdays\" drawn on a 24-bit \"year\".  This\n");
-   printf("# is repeated and cumulated in a histogram %u times.\n",tsamples);
-   printf("# Cumulated samples are then converted to chisq and p-values\n");
-   printf("# based on the poisson distribution expectation values.\n");
-   printf("#\n");
-   printf("# The samples in this test are completely independent with no\n");
-   printf("# cyclic/bitwise overlap -- it is therefore stronger than the\n");
-   printf("# original (I think).   At any rate, it brings otherwise strong\n");
-   printf("# generators to their metaphorical knees at -s 200\n");
-   printf("#==================================================================\n");
+   help_diehard_birthdays();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# %u samples drawn of %u-length random integer from inside cyclic\n",tsamples,rmax_bits);
-   printf("# window on %u bits.  lambda = %f, kmax = %u\n",rmax_bits,lambda,kmax);
+   printf("# %u samples drawn from %u-bit integers masked out of a\n",nms,nbits);
+   printf("# %u bit random integer.  lambda = %f, kmax = %u, tsamples = %u\n",rmax_bits,lambda,kmax,tsamples);
  }
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_birthdays_test);
- printf("p = %8.6f for diehard_birthdays test from Kuiper Kolmogorov-Smirnov test\n",pks);
- printf("     on %u pvalues.\n",kspi);
+ printf("# p = %8.6f for diehard_birthdays test from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for diehard_birthdays.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.1%% level for diehard_birthdays.\n",gsl_rng_name(rng));
  }
 
  /*
   * Put rand_int back, as others might need it.  Free intervals.
   */
  free(rand_int);
- rand_int = (unsigned int *)malloc(size*sizeof(unsigned int));
  free(intervals);
 
  /*
   * Put back tsamples
   */
- if(testnum < 0){
+ if(all == YES){
    tsamples = tempsamples;
+   rand_int = (unsigned int *)malloc(tsamples*sizeof(unsigned int));
  }
 
  return(pks);
@@ -292,3 +299,26 @@ void diehard_birthdays_test()
 
 }
 
+void help_diehard_birthdays()
+{
+
+ if(!quiet){
+   printf("#==================================================================\n");
+   printf("#                Diehard \"Birthdays\" test (modified).\n");
+   printf("# Each test determines the number of matching intervals\n");
+   printf("# from 512 \"birthdays\" drawn on a 24-bit \"year\".  This\n");
+   printf("# is repeated and cumulated in a histogram %u times.\n",tsamples);
+   printf("# Cumulated samples are then converted to chisq and p-values\n");
+   printf("# based on the poisson distribution expectation values.\n");
+   printf("#\n");
+   printf("# The samples in this test are completely independent with no\n");
+   printf("# cyclic/bitwise overlap -- it is therefore stronger than the\n");
+   printf("# original (I think).   At any rate, it brings otherwise strong\n");
+   printf("# generators to their metaphorical knees at -t 200.\n");
+   printf("#\n");
+   printf("# It is recommended that you run this at or near the original\n");
+   printf("# 100 test samples per p-value with -t 100.\n");
+   printf("#==================================================================\n");
+ }
+
+}

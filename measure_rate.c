@@ -119,7 +119,7 @@ void measure_rate()
    start_timing();
    for(j=1;j<=full_iter;j++){
      dummy = idiot;	/* pass it on to dummy to force the case */
-     for(i=0;i<size;i++){
+     for(i=0;i<tsamples;i++){
        rand_int[i] = gsl_rng_get(rng);
      }
    }
@@ -151,7 +151,7 @@ void measure_rate()
    start_timing();
    for(j=1;j<=full_iter;j++){
      dummy = idiot;	/* pass it on to dummy to force the case */
-     for(i=0;i<size;i++){
+     for(i=0;i<tsamples;i++){
        rand_int[i] = gsl_rng_get(rng);
      }
    }
@@ -171,7 +171,7 @@ void measure_rate()
    sigma_time_full = 1.0e+300;
  }
  if(!quiet){
-   printf("# Timing test %d\n",testnum);
+   /* printf("# Timing test %d\n",testnum); */
    printf("# Samples = %d  Loop iterations per sample = %d\n",msamples,full_iter);
    printf("# Time(sec): %12.8e +/- %12.8e\n",avg_time_full,sigma_time_full);
    printf("#========================================================================\n");
@@ -183,15 +183,15 @@ void measure_rate()
   * the average rate in mega-whatevers.
   *========================================================================
   */
-  vector_length = size*sizeof(unsigned int);
-  nanotime_norm = 1.0*size;
+  vector_length = tsamples*sizeof(unsigned int);
+  nanotime_norm = 1.0*tsamples;
   avg_nanotime = (avg_time_full - avg_time_empty)*1.e+9/nanotime_norm;
   avg_megarate = 1.0e3/avg_nanotime;
   avg_kilorate = 1.0e6/avg_nanotime;
   /* This is a comment */
   if(!quiet){
     printf("# Benchmark of the gsl_rnd_int() for the %s generator:\n",gsl_rng_name(rng));
-    printf("#    and vector size = %d (%d bytes)\n",size,vector_length);
+    printf("#    and vector size = %d (%d bytes)\n",tsamples,vector_length);
     printf("# Average Time: %6.2f nanoseconds\n",avg_nanotime);
     if(avg_megarate<1.0){
       printf("# BogokiloRate: %6.2f %s kilorands per second\n",avg_kilorate,gsl_rng_name(rng));
@@ -200,9 +200,9 @@ void measure_rate()
     }
   } else {
     if(avg_megarate<1.0){
-      printf("%12d (bytes)    %6.2f (%s bogokflops)\n",size*sizeof(unsigned int),avg_kilorate,gsl_rng_name(rng));
+      printf("%12d (bytes)    %6.2f (%s bogokflops)\n",tsamples*sizeof(unsigned int),avg_kilorate,gsl_rng_name(rng));
     } else {
-      printf("%12d (bytes)    %6.2f (%s bogomflops)\n",size*sizeof(unsigned int),avg_megarate,gsl_rng_name(rng));
+      printf("%12d (bytes)    %6.2f (%s bogomflops)\n",tsamples*sizeof(unsigned int),avg_megarate,gsl_rng_name(rng));
     }
   }
 }
