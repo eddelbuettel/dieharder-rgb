@@ -235,14 +235,15 @@ void diehard_runs_test()
 void help_diehard_runs()
 {
 
- printf("#==================================================================\n");
- printf("#                Diehard \"runs\" test (modified).\n");
- printf("# This tests the distribution of increasing and decreasing runs\n");
- printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
- printf("# or greater and -n 100000 or greater, it will compute a vector\n");
- printf("# of p-values for up and down and verify that the proportion\n");
- printf("# of these values less than 0.01 is consistent with a uniform\n");
- printf("# distribution.\n");
- printf("#==================================================================\n");
+ printf("\n\
+#==================================================================\n\
+#                Diehard \"runs\" test (modified).\n\
+# This tests the distribution of increasing and decreasing runs\n\
+# of integers.  If called with reasonable parameters e.g. -s 100\n\
+# or greater and -n 100000 or greater, it will compute a vector\n\
+# of p-values for up and down and verify that the proportion\n\
+# of these values less than 0.01 is consistent with a uniform\n\
+# distribution.\n\
+#==================================================================\n");
 
 }

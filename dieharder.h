@@ -65,8 +65,7 @@
  
  /* Diehard Tests (by number) */
  typedef enum {
-   DIEHARD_NONE,    /* Controls verbosity */
-   DIEHARD_ALL,     /* Controls verbosity */
+   DIEHARD_NONE,
    DIEHARD_RUNS,
    DIEHARD_BDAY,
    DIEHARD_2DSPHERE,
@@ -76,16 +75,14 @@
 
  /* RGB Tests (by number) */
  typedef enum {
-   RGB_NONE,    /* Controls verbosity */
-   RGB_ALL,     /* Controls verbosity */
+   RGB_NONE,
    RGB_PERSIST,
    RGB_BITDIST,
    N_RGB_TESTS
  } Rgb_Tests;
 
  typedef enum {
-   STS_NONE,    /* Controls verbosity */
-   STS_ALL,     /* Controls verbosity */
+   STS_NONE,
    STS_MONOBIT,
    STS_RUNS,
    N_STS_TESTS
@@ -96,8 +93,7 @@
   * in the subroutine prototypes below.
   */
  typedef enum {
-   USER_NONE,    /* Controls verbosity */
-   USER_ALL,     /* Controls verbosity */
+   USER_NONE,
    USER_DUMMY,
    N_USER_TESTS
  } User_Tests;

@@ -36,15 +36,19 @@ void work()
      break;
    case DIEHARD_RUNS:
      diehard_runs();
+     exit(0);
      break;
    case DIEHARD_BDAY:
      diehard_birthdays();
+     exit(0);
      break;
    case DIEHARD_2DSPHERE:
      diehard_2dsphere();
+     exit(0);
      break;
    case DIEHARD_3DSPHERE:
      diehard_3dsphere();
+     exit(0);
      break;
  }
 
@@ -53,9 +57,11 @@ void work()
      break;
    case RGB_PERSIST:
      rgb_persist();
+     exit(0);
      break;
    case RGB_BITDIST:
      rgb_bitdist();
+     exit(0);
      break;
  }
 
@@ -64,10 +70,14 @@ void work()
      break;
    case STS_MONOBIT:
      sts_monobit();
+     exit(0);
      break;
    case STS_RUNS:
      sts_runs();
+     exit(0);
      break;
  }
+
+ list_rngs();
 
 }

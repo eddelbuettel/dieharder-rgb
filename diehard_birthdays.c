@@ -303,22 +303,33 @@ void help_diehard_birthdays()
 {
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                Diehard \"Birthdays\" test (modified).\n");
-   printf("# Each test determines the number of matching intervals\n");
-   printf("# from 512 \"birthdays\" drawn on a 24-bit \"year\".  This\n");
-   printf("# is repeated and cumulated in a histogram %u times.\n",tsamples);
-   printf("# Cumulated samples are then converted to chisq and p-values\n");
-   printf("# based on the poisson distribution expectation values.\n");
-   printf("#\n");
-   printf("# The samples in this test are completely independent with no\n");
-   printf("# cyclic/bitwise overlap -- it is therefore stronger than the\n");
-   printf("# original (I think).   At any rate, it brings otherwise strong\n");
-   printf("# generators to their metaphorical knees at -t 200.\n");
-   printf("#\n");
-   printf("# It is recommended that you run this at or near the original\n");
-   printf("# 100 test samples per p-value with -t 100.\n");
-   printf("#==================================================================\n");
+   printf("\n\
+#==================================================================\n\
+#                Diehard \"Birthdays\" test (modified).\n\
+# Each test determines the number of matching intervals from 512\n\
+# \"birthdays\" (by default) drawn on a 24-bit \"year\" (by\n\
+# default).  This is repeated 100 times (by default) and the\n\
+# results cumulated in a histogram.  Repeated intervals should be\n\
+# distributed in a Poisson distribution if the underlying generator\n\
+# is random enough, and a a chisq and p-value for the test are\n\
+# evaluated relative to this null hypothesis.\n\
+#\n\
+# In the original diehard test, 9 different \"windows\" 24 bits\n\
+# wide were sampled in this way for a single data set, and\n\
+# the 9 p-values thus obtained subjected to a Kolmogorov-Smirnov (KS)\n\
+# test.  However, values drawn from these windows only differ by a\n\
+# single bit.  The samples in this version of the test are\n\
+# completely independent but are still selected from a (random)\n\
+# offset within each integer tested, with a periodic boundary\n\
+# condition.  Many more p-values are accumulated in this way before\n\
+# performing the final KS test. It is therefore stronger than the\n\
+# original test (I think).   At any rate, it brings otherwise strong\n\
+# generators to their metaphorical knees at -t 200.\n\
+#\n\
+# It is recommended that you run this at or near the original\n\
+# 100 test samples per p-value with -t 100.\n\
+#==================================================================\n",
+  tsamples);
  }
 
 }

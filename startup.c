@@ -22,6 +22,42 @@ void startup()
  int i,imax,j,k;
 
  /*
+  * The very first thing we do is see if any simple help options
+  * were requested, as we exit immediately if they were and can
+  * save all sorts of work.
+  */
+ if(list == YES) {
+
+printf("\n\
+                     DieHarder Test Suite\n\
+========================================================================\n\
+The following tests are available and will be run when diehard -a is\n\
+invoked.  Special options or suggested parameters are indicated if\n\
+they are needed to get a satisfactory result (such as completion in a\n\
+reasonable amount of time).\n\
+\n\
+            Diehard Tests\n\
+   -d 1 Diehard Runs test\n\
+   -d 2 Diehard Birthdays test (-t 100, or less than 200) \n\
+   -d 3 Diehard Minimum Distance (2D Spheres) test\n\
+   -d 4 Diehard 3D Spheres (minimum distance) test\n\
+\n\
+             RGB Tests\n\
+   -r 1 Bit Persist test\n\
+   -r 2 Bit Ntuple Distribution test suite (-n ntuple for 1-8)\n\
+\n\
+      Statistical Test Suite (STS)\n\
+   -s 1 STS Monobit test\n\
+   -s 2 STS Runs test\n\
+\n\
+            User Tests\n\
+No user-developed test are installed at this time.\n\
+\n");
+
+   exit(0);
+ }
+
+ /*
   * Count and optionally list the available, built in gsl generators
   */
  types = gsl_rng_types_setup ();
@@ -52,12 +88,22 @@ void startup()
   * Initialize the selected gsl rng.  random_seed() seeds from
   * /dev/random.  Note that any locally defined rng's were "added"
   * to the gsl set above and can now be called with the gsl
-  * wrapper!
+  * wrapper!  So we either initialize the selected generator or list
+  * the generators and exit.  We had to wait until now for the latter
+  * or we'd miss our own additions!
   */
- rng = gsl_rng_alloc (types[generator]);
- random_max = gsl_rng_max(rng);
- seed = random_seed();
- gsl_rng_set(rng,seed);
+ if(generator >= 0){
+   rng = gsl_rng_alloc (types[generator]);
+   random_max = gsl_rng_max(rng);
+   seed = random_seed();
+   gsl_rng_set(rng,seed);
+ } else {
+   list_rngs();
+   exit(0);
+ }
+
+
+ 
 
  /*
   * Simultaneously count the number of significant bits in the rng
