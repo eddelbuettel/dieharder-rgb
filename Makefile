@@ -33,7 +33,7 @@ DIR = $(PROGRAM)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=0
-VERSION_MINOR=2.0
+VERSION_MINOR=3.0
 RELEASE=1
 
 #========================================================================

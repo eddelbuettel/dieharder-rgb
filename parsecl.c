@@ -98,6 +98,8 @@ Usage:
      1 write list of random integers and uniform deviates to stdout with
        selected rng.
      2 time selected generator, determining its bogomegarate.
+     3 STS monobit test (number of 1's in bitstring rel to expected val).
+     4 RGB binomial test (number of 1's in bitstrings rel to binomial dist).
 
   -r rngnumber selects the rng to be tested (list them with -t 0).
 
