@@ -50,183 +50,167 @@
 
 #include "rand_rate.h"
 
+
+/*
+ * The following are the definitions and parameters for runs, based on
+ * Journal of Applied Statistics v30, Algorithm AS 157, 1981:
+ *    The Runs-Up and Runs-Down Tests, by R. G. T. Grafton.
+ * (and before that Knuth's The Art of Programming v. 2).
+ */
+
+#define RUN_MAX 6
+/*
+ * a_ij
+ */
+static double a[6][6] = {
+ { 4529.4,   9044.9,  13568.0,   18091.0,   22615.0,   27892.0},
+ { 9044.9,  18097.0,  27139.0,   36187.0,   45234.0,   55789.0},
+ {13568.0,  27139.0,  40721.0,   54281.0,   67852.0,   83685.0},
+ {18091.0,  36187.0,  54281.0,   72414.0,   90470.0,  111580.0},
+ {22615.0,  45234.0,  67852.0,   90470.0,  113262.0,  139476.0},
+ {27892.0,  55789.0,  83685.0,  111580.0,  139476.0,  172860.0}
+};
+/*
+ * b_i
+ */
+static double b[6];
 int diehard_runs()
 {
 
- int i,j,k;
- unsigned int ucount,dcount;
- double ptmp;
- Ntest utest,dtest;
+ int i,j,k,ns;
+ unsigned int ucount,dcount,increased;
+ int upruns[RUN_MAX],downruns[RUN_MAX];
+ int ufail,dfail;
+ double uv,dv,uv_pvalue,dv_pvalue,uv_pvalue_min,dv_pvalue_min;
+ double *up,*down;
 
- if(verbose){
-   printf("Creating utest\n");
- }
- Ntest_create(&utest,RUN_MAX,"diehard_runs(up)",gsl_rng_name(rng));
- if(verbose){
-   printf("Initializing utest\n");
- }
- for(k=0;k<RUN_MAX;k++){
-   /*
-    * Here is what I don't know -- what the expected probability
-    * and sigma is for each possible run length from a sample.
-    * Let's assume something like 1/2^i.  The rest we'll leave
-    * for the moment.
-    */
-   ptmp = pow(0.5,k+1);
-   utest.y[k] = samples*ptmp;
-   utest.sigma[k] = sqrt(utest.y[k]*(1.0 - ptmp));
- }
+ /* Initialize b explicitly */
+ b[0] = 1.0/6.0;
+ b[1] = 5.0/24.0;
+ b[2] = 11.0/120.0;
+ b[3] = 19.0/720.0;
+ b[4] = 29.0/5040.0;
+ b[5] = 1.0/840.0;
 
- if(verbose){
-   printf("Creating dtest\n");
- }
- Ntest_create(&dtest,RUN_MAX,"diehard_runs(down)",gsl_rng_name(rng));
- for(k=0;k<RUN_MAX;k++){
-   ptmp = pow(0.5,k+1);
-   dtest.y[k] = samples*ptmp;
-   dtest.sigma[k] = sqrt(dtest.y[k]*(1.0 - ptmp));
- }
+ up = (double *)malloc(samples*sizeof(double));
+ down = (double *)malloc(samples*sizeof(double));
 
+ uv_pvalue_min = 1.0;
+ dv_pvalue_min = 1.0;
+ ufail = 0;
+ dfail = 0;
 
  /*
   * Fill vector of "random" integers with selected generator.
   * Observe that this test does NOT not convert to floats but
   * counts up down and down up on an integer compare.
   */
- for(i=0;i<samples;i++){
-   ucount = dcount = 0;
+ if(!quiet){
+   printf("#==================================================================\n");
+   printf("#  up runs p-value      down runs p-value\n");
+ }
+ for(ns=0;ns<samples;ns++){
+
+   /* Fill vector of rands all at once */
    for(j=0;j<size;j++) {
      rand_int[j] = gsl_rng_get(rng);
+   }
+
+   /* Clear up and down run bins */
+   for(k=0;k<RUN_MAX;k++){
+     upruns[k] = 0;
+     downruns[k] = 0;
+   }
+
+   /*
+    * Now count up and down runs and increment the bins.  Note
+    * that each successive up counts as a run of one down, and
+    * each successive down counts as a run of one up.
+    */
+   ucount = dcount = 1;
+   if(verbose){
+     printf("j    rand    ucount  dcount\n");
+   }
+   for(j=1;j<size;j++) {
      if(verbose){
-       printf("%d:  %u\n",j,rand_int[j]);
+       printf("%d:  %10u   %u    %u\n",j,rand_int[j],ucount,dcount);
      }
-     if(j>0){
-       /*
-        * Check to see if this int is larger, if so increment ucount.  We'll
-        * handle boundary cases (equal integers) as larger.  We then must check
-        * to see if the PREVIOUS pair was running down (in which case dcount
-	* will not be zero).  If so, we increment dtest->x[dcount] and clear
-	* dcount.
-        */
-       if(rand_int[j] >= rand_int[j-1]){
-         ucount++;
-         if(verbose){
-           printf("->ucount = %u\n",ucount);
-	 }
-	 if(dcount){
-	   if(dcount > RUN_MAX) {
-	     fprintf(stderr,"diehard_run run-time error, down run larger than %d\n",RUN_MAX);
-	     fprintf(stderr,"Increase RUN_MAX and recompile, or use smaller sample size.\n");
-	     exit(0);
-	   }
-	   dtest.x[dcount-1]++;
-           if(verbose){
-             printf("->old dcount = %u binned\n",dcount);
-           }
-	   dcount = 0;
-	 }
-       } else {
-         dcount++;
-         if(verbose){
-           printf("->dcount = %u\n",dcount);
-	 }
-	 if(ucount){
-	   if(ucount >= RUN_MAX) {
-	     fprintf(stderr,"diehard_run run-time error, up run larger than %d\n",RUN_MAX);
-	     fprintf(stderr,"Increase RUN_MAX and recompile, or use smaller sample size.\n");
-	     exit(0);
-	   }
-	   utest.x[ucount-1]++;
-           if(verbose){
-             printf("->old ucount = %u binned\n",ucount);
-           }
-	   ucount = 0;
-	 }
-       }
+     /*
+      * Did we increase?
+      */
+     if(rand_int[j] > rand_int[j-1]){
+       ucount++;
+       if(ucount > RUN_MAX) ucount = RUN_MAX;
+       downruns[dcount-1]++;
+       dcount = 1;
+     } else {
+       dcount++;
+       if(dcount > RUN_MAX) dcount = RUN_MAX;
+       upruns[ucount-1]++;
+       ucount = 1;
      }
    }
-   /*
-    * Manage end case separately (periodic/cyclic wraparound) so
-    * we check exactly size cases per sample.
-    */
-   if(rand_int[size] >= rand_int[0]){
+   if(rand_int[size-1] > rand_int[0]){
      ucount++;
-     if(verbose){
-       printf("->ucount = %u\n",ucount);
-     }
-     if(dcount){
-       if(dcount > RUN_MAX) {
-         fprintf(stderr,"diehard_run run-time error, down run larger than %d\n",RUN_MAX);
-         fprintf(stderr,"Increase RUN_MAX and recompile, or use smaller sample size.\n");
-         exit(0);
-       }
-       dtest.x[dcount-1]++;
-       if(verbose){
-         printf("->old dcount = %u binned\n",dcount);
-       }
-       dcount = 0;
-     }
-     utest.x[ucount-1]++;
-     if(verbose){
-       printf("->final ucount = %u binned\n",ucount);
-     }
-     ucount = 0;
+     if(ucount > RUN_MAX) ucount = RUN_MAX;
+     downruns[dcount-1]++;
+     dcount = 1;
    } else {
      dcount++;
-     if(verbose){
-       printf("->dcount = %u\n",dcount);
-     }
-     if(ucount){
-       if(ucount >= RUN_MAX) {
-         fprintf(stderr,"diehard_run run-time error, up run larger than %d\n",RUN_MAX);
-         fprintf(stderr,"Increase RUN_MAX and recompile, or use smaller sample size.\n");
-          exit(0);
-       }
-       utest.x[ucount-1]++;
-       if(verbose){
-         printf("->old ucount = %u binned\n",ucount);
-       }
-       ucount = 0;
-     }
-     dtest.x[dcount-1]++;
-     if(verbose){
-       printf("->final dcount = %u binned\n",dcount);
-     }
-     dcount = 0;
+     if(dcount > RUN_MAX) dcount = RUN_MAX;
+     upruns[ucount-1]++;
+     ucount = 1;
    }
    /*
     * This ends a single sample.
+    * Compute the test statistic for up and down runs.
     */
- }
-
- /*
-  * Compute the test statistics up an down.
-  */
-
- b[0] = 0.16666666666666666;
- b[1] = 0.20833333333333334;
- b[2] = 0.09166666666666666;
- b[3] = 0.026388888888888889;
- b[4] = 0.0057539682539682543;
- b[5] = 0.0011904761904761906;
- up = 0.0;
- down = 0.0;
- for(i=0;i<RUN_MAX;i++) {
-   for(j=0;j<RUN_MAX;j++) {
-     up   += (utest.x[i] - rn*b[i])*(utest.x[j] - rn*b[j])*a[i][j];
-     down += (dtest.x[i] - rn*b[i])*(dtest.x[j] - rn*b[j])*a[i][j];
+   uv=0.0;
+   dv=0.0;
+   if(verbose){
+     printf(" i      upruns    downruns\n");
    }
+   for(i=0;i<RUN_MAX;i++) {
+     if(verbose){
+       printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
+     }
+     for(j=0;j<RUN_MAX;j++) {
+       uv += ((double)upruns[i]   - size*b[i])*(upruns[j]   - size*b[j])*a[i][j];
+       dv += ((double)downruns[i] - size*b[i])*(downruns[j] - size*b[j])*a[i][j];
+     }
+   }
+   uv /= (double)size;
+   dv /= (double)size;
+   if(verbose){
+     printf("uv = %f   dv = %f\n",uv,dv);
+   }
+   uv_pvalue = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
+   if(uv_pvalue < uv_pvalue_min) uv_pvalue_min = uv_pvalue;
+   if(uv_pvalue < 1.0/samples) ufail++;
+   dv_pvalue = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
+   if(dv_pvalue < dv_pvalue_min) dv_pvalue_min = dv_pvalue;
+   if(dv_pvalue < 1.0/samples) dfail++;
+
+   if(!quiet){
+     printf("#    %10.8f                 %10.8f\n",uv_pvalue,dv_pvalue);
+   }
+/*
+ * This distributes uv and dv in the interval 0-1, presumably
+ * uniformly, for a KS test.  Once I write one.
+   up[ns] = 1.0 -  exp(-0.5*uv)*(1.0 + 0.5*uv  + 0.125*uv*uv);
+   down[ns] = 1.0 -  exp(-0.5*dv)*(1.0 + 0.5*dv  + 0.125*dv*dv);
+   printf("%d  up = %f   down = %f\n",ns,up[ns],down[ns]);
+ */
+
  }
- up /= rn;
- down /= rn;
 
 
- 
- /*
-  * This ends all sampling.  Now we have to analyze the result.
-  */
- Ntest_eval(&utest);
- Ntest_eval(&dtest);
-   
+ if(!quiet){
+   printf("#==================================================================\n");
+   printf("# Minimum p-values (reference = 1/%u = %f)\n",samples,(double)1.0/samples);
+   printf("# (number of p's less than reference) ufail = %d   dfail = %d\n",ufail,dfail);
+   printf("#  up min p-value      down min p-value\n");
+   printf("#    %10.8f                 %10.8f\n",uv_pvalue_min,dv_pvalue_min);
+ }
 }
 

@@ -30,13 +30,6 @@
 #define NO	0
 #define PI 3.141592653589793238462643
 
-/*
- * This should be WAY more than enough for vectors less than
- * 10^7 or 10^8 in size...
- */
-#define RUN_MAX	20
-
-
  typedef enum {
    D_QUIET,
    D_ALL,
