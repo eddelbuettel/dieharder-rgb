@@ -134,7 +134,7 @@ void sts_runs_test()
  c11 /= (double) tsamples*rmax_bits;
  /* printf(" p = %f c00 = %f c01 = %f c10 = %f c11 = %f\n",pones,c00,c01,c10,c11); */
  mtest.y = 2.0*bits*pones*(1.0-pones);
- mtest.sigma = 2.0*sqrt(2.0*bits)*pones*(1.0-pones);
+ mtest.sigma = 2.0*sqrt(bits)*pones*(1.0-pones);
  Xtest_eval(&mtest);
  ks_pvalue[kspi] = mtest.pvalue;
  if(verbose == D_STS_MONOBIT || verbose == D_ALL){
