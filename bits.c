@@ -105,10 +105,15 @@ int get_bit(unsigned int n)
   * index tells us which vector element contains the bit being sought:
   */
  index = (int) (n/rmax_bits);
+ /*
+  * This is broken, I think.
  if(index >= size){
    fprintf(stderr,"Error: bit offset %d exceeds length %d of bitstring in rand[]\n",n,size*sizeof(unsigned int));
    exit(0);
  }
+ */
+
+ 
  /*
   * Then we have to compute the offset of the bit desired, starting from
   * the first significant/valid bit in the unsigned int.

@@ -105,7 +105,7 @@ void Btest_eval(Btest *btest)
    printf("Evaluating chisq and pvalue for %d points\n",btest->npts);
  }
 
- btest->chisq = 0.0;
+ chisq = 0.0;
  x_tot = 0.0;
  y_tot = 0.0;
  ndof = 0;

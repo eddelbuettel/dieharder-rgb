@@ -1,4 +1,4 @@
-<H2>rand_rate Version 0.4.31</H2>
+<H2>rand_rate Version 0.4.4</H2>
 
 <p>Click <a href="./rand_rate">here</a> to see a list of all rand_rate
 files on this repository.</p>
@@ -77,11 +77,8 @@ efficiently rejects e.g. randu (GSL 40).</p>
  <p>This is a nice test that is similar (possibly identical, I haven't
 decided) to some sts tests that look at bit distributions.  If you look
 at random e.g. 128 bit words, you expect to see a binomial distribution
-of the total 1 bit count per word centered on 64.  You can therefore
-easily compute a Pearson's chisq and p-value.  I'm not TOTALLY happy
-with the latter computation but it does seem to work.  As I really clean
-up the Pearson's chisq code and add a KS test, this test will become a
-lot more reliable.</p>
+of the total 1 bit count per word centered on 64.  This test is now
+fixed and appears to work quite well.</p>
 
 <li> rgb: Pairwise bit binomial distribution test.
 
