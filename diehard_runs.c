@@ -226,12 +226,12 @@ void diehard_runs_test()
      printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
    }
    for(j=0;j<RUN_MAX;j++) {
-     uv += ((double)upruns[i]   - size*b[i])*(upruns[j]   - size*b[j])*a[i][j];
-     dv += ((double)downruns[i] - size*b[i])*(downruns[j] - size*b[j])*a[i][j];
+     uv += ((double)upruns[i]   - tsamples*b[i])*(upruns[j]   - tsamples*b[j])*a[i][j];
+     dv += ((double)downruns[i] - tsamples*b[i])*(downruns[j] - tsamples*b[j])*a[i][j];
    }
  }
- uv /= (double)size;
- dv /= (double)size;
+ uv /= (double)tsamples;
+ dv /= (double)tsamples;
  if(verbose){
    printf("uv = %f   dv = %f\n",uv,dv);
  }
