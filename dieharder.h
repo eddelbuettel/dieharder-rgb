@@ -16,6 +16,7 @@
 #include <limits.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_sf.h>
+#include <gsl/gsl_sort.h>
 
 /*
  *========================================================================
