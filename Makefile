@@ -33,7 +33,7 @@ DIR = $(PROGRAM)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=0
-VERSION_MINOR=4.3
+VERSION_MINOR=4.4
 RELEASE=1
 
 #========================================================================
@@ -67,6 +67,7 @@ SOURCES = $(SOURCE)\
     rand_rate_utils.c \
     diehard_runs.c \
     diehard_birthdays.c \
+    diehard_2dsphere.c \
     diehard_3dsphere.c \
     rgb_binomial.c \
     rgb_bitdist.c \
