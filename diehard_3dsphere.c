@@ -102,10 +102,18 @@ int diehard_3dsphere()
 
  pks = kstest(pvalue,samples);
  printf("p = %6.3f from Komogorov-Smirnov test on %d samples.\n",pks,samples);
- if(pks>0.1){
-   printf("Generator appears to be good\n");
+ if(pks>0.01){
+   printf("Generator appears to be ok.\n");
  } else {
-   printf("Generator appears to be bad\n");
+   printf("Generator fails at 1%% confidence level.\n");
+ }
+ 
+ pks = kstest_kuiper(pvalue,samples);
+ printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d samples.\n",pks,samples);
+ if(pks>0.01){
+   printf("Generator appears to be ok.\n");
+ } else {
+   printf("Generator fails at 1%% confidence level.\n");
  }
  
 

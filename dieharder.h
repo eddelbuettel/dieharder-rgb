@@ -82,7 +82,9 @@
  int sts_runs();
  void dumpbits(unsigned int *data, unsigned int nbits);
  double kstest(double *pvalue,int count);
+ double kstest_kuiper(double *pvalue,int count);
  double q_ks(double x);
+ double q_ks_kuiper(double x);
 
  /*
   *========================================================================

@@ -258,11 +258,19 @@ int diehard_birthdays()
  }
 
  pks = kstest(pvalue,rmax_bits);
- printf("p = %6.3f from Komogorov-Smirnov test on %d bits.\n",pks,rmax_bits);
- if(pks>0.1){
-   printf("Generator appears to be good\n");
+ printf("p = %6.3f from standard Komogorov-Smirnov test on %d bits.\n",pks,rmax_bits);
+ if(pks>0.01){
+   printf("Generator appears to be ok.\n");
  } else {
-   printf("Generator appears to be bad\n");
+   printf("Generator fails at 1%% confidence level.\n");
+ }
+
+ pks = kstest_kuiper(pvalue,rmax_bits);
+ printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d bits.\n",pks,rmax_bits);
+ if(pks>0.01){
+   printf("Generator appears to be ok.\n");
+ } else {
+   printf("Generator fails at 1%% confidence level.\n");
  }
  
 }
