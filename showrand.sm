@@ -36,3 +36,15 @@ show_urand 2
 	get_hist urnd S F 0 $rmax $binsize
 	histogram S F
 	# shade histogram $shadelvl S F
+show_binomial 2
+	data $1
+	define rmax $2
+	define numbins $rmax
+	define binsize 1
+	read {count 1}
+	# set Score = Score*100
+	# Note -1 pushes null samples off of graph.
+	stats count mean sigma kurtosis
+	get_hist count S F 0 $rmax $binsize
+	histogram S F
+	# shade histogram $shadelvl S F

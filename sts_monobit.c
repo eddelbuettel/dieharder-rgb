@@ -42,8 +42,8 @@ void sts_monobit()
   */
  for(i=0;i<samples;i++){
    if((i%25) == 0){
-     printf("ones\t\tzeros\t\ttotal bits\t\tPercentage of ones\n");
-     printf("------------------------------------------------------------------\n");
+     printf("# ones\t\tzeros\t\ttotal bits\t\tPercentage of ones\n");
+     printf("#------------------------------------------------------------------\n");
    }
    /*
     * Fill vector of "random" integers with selected generator.
@@ -62,8 +62,8 @@ void sts_monobit()
      mask = 1;
      for(k=0;k<32;k++){
        num_bits++;
-       num_ones += mask&rand_int[j];
-       mask<<1;
+       if((mask & rand_int[j]) != 0) num_ones++;
+       mask = mask<<1;
      }
    }
    num_zeros = num_bits - num_ones;

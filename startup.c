@@ -90,9 +90,9 @@ void rand_rate_startup()
   * We'll start by using "size" for this, and do just ints (into
   * the vector rand_int[]).
   */
- if(size < 1000) {
-   fprintf(stderr,"Warning:  size = %d too small, using size = 1000\n",size);
-   size = 1000;
+ if(size < 1) {
+   fprintf(stderr,"Warning:  size = %d too small, using size = 1\n",size);
+   size = 1;
  }
  rand_int = (int *) malloc((size_t) (size*sizeof(unsigned int)));
 
