@@ -53,6 +53,7 @@ void rgb_bitdist()
 {
 
  int i,j,k,nbits,npairs;
+ int first_bit,current_bit,pairmask = 3,current_pair;
  Ntest btest;   /* For bitlevel binomial test results */
  Ntest *ctest;   /* For bitpair binomial test results */
 
@@ -116,9 +117,45 @@ void rgb_bitdist()
        dumpbits(&rand_int[j],32);
      }
    }
+   current_pair = 0;
    for(j=0;j<nbits;j++){
-     btest.x[j] += get_bit(j);
+     current_bit = get_bit(j);
+     /* Do the single bit histogram */
+     btest.x[j] += current_bit;
+     /*
+      * Save the first bit for periodic wraparound at the end.  Also
+      * initialize current pair with the first bit.
+      */
+     if(j==0) {
+       first_bit = current_bit;
+       current_pair = current_bit;
+     } else {
+     /*
+      * For all bits AFTER the first bit, we left-shift current_pair,
+      * add the current bit, & with pairmask (discarding bits that
+      * have shifted out of the first two slots).  Note that this
+      * general methodology can be used for ANY number of bits, provided
+      * that we dynamically generate the mask.  Our eventual design
+      * goal here is to put all of this in a single loop over the
+      * size of the bit subsequence being studied, although we'll have to
+      * work a bit to manage the periodic wraparound at the end for
+      * the general case.
+      *
+      * current pair ends up being the INDEX of the ctest to be incremented.
+      */
+       current_pair <<= 1;
+       current_pair += current_bit;
+       current_pair = current_pair & pairmask;
+       ctest[current_pair].x[j-1]++;
+     }
    }
+   /*
+    * Finally, we have to deal with the last/first bit.
+    */
+   current_pair <<= 1;
+   current_pair += first_bit;
+   current_pair = current_pair & pairmask;
+   ctest[current_pair].x[j-1]++;
  }
  /*
   * RESULTS:  We output chisq, the number of points compared, and a p-value
@@ -142,6 +179,14 @@ void rgb_bitdist()
    samples,nbits,btest.pvalue);
 
  Ntest_destroy(&btest);
+
+ for(i=0;i<=3;i++){
+   Ntest_eval(&ctest[i]);
+   Ntest_conclusion(&ctest[i]);
+   Ntest_destroy(&ctest[i]);
+ }
+
+ free(ctest);
 
 }
 
