@@ -92,46 +92,46 @@ void parsecl(int argc, char **argv)
 void Usage()
 {
 
- fprintf(stdout, "
-Usage:
-  rand_rate [-t testnumber] [-r rngnumber] [-f filename ]
-           [-b number of bits] [-n length] [-s samples] [-i]
-           [-q] [-h] [-v level]
-
-  -t testnumber selects the test to be performed.  Available tests:
-     0 (default) list available rngs.
-     1 write list of random integers and uniform deviates to stdout with
-       selected rng.
-     2 time selected generator, determining its bogomegarate.
-     3 STS monobit test (number of 1's in bitstring rel to expected val).
-     4 RGB binomial test (number of 1's in bitstrings rel to binomial dist).
-
-  -r rngnumber selects the rng to be tested (list them with -t 0).
-
-  -f filename will EVENTUALLY permit random strings to be tested to be
-     read in from a file, but this is not yet implemented!
-
-  -b controls the number of bits used in bit string tests
-  -n controls the length of the test vector (int or double) for vector
-     tests
-  -s controls the number of samples (default 100)
-
-  -i turns on a new seed for each sample -- better indicates the
-     probability of a \"bad seed\" existing for an otherwise good
-     generator.
-
-  -v controls verbosity of output for debugging or amusement purposes.
-  -q selects \"quiet\" operation: results only are printed on a single line
-     (where applicable).
-  -h prints usage statement (this message) and exits.
-
-  NOTE WELL:  The \"bogomegarates\" returned by this tool are BOGUS
-  and may not be even approximately correct in your context.  Be Warned!
-  ALSO NOTE:  The quality assessment(s) for the rngs may, in fact, be
-  completely incorrect or misleading.  Use them at your Own Risk!
-
-  NOTE FINALLY: If you use this tool, you owe me a beverage! (see GPL v2.0b)
-");
+ fprintf(stdout, "\n");
+ fprintf(stdout, "Usage:\n");
+ fprintf(stdout, "  rand_rate [-t testnumber] [-r rngnumber] [-f filename ]\n");
+ fprintf(stdout, "           [-b number of bits] [-n length] [-s samples] [-i]\n");
+ fprintf(stdout, "           [-q] [-h] [-v level]\n");
+ fprintf(stdout, "\n");
+ fprintf(stdout, "  -t testnumber selects the test to be performed.  Available tests:\n");
+ fprintf(stdout, "     0 (default) list available rngs.\n");
+ fprintf(stdout, "     1 write list of random integers and uniform deviates to stdout with\n");
+ fprintf(stdout, "       selected rng.\n");
+ fprintf(stdout, "     2 time selected generator, determining its bogomegarate.\n");
+ fprintf(stdout, "     3 STS monobit test (number of 1's in bitstring rel to expected val).\n");
+ fprintf(stdout, "     4 RGB binomial test (number of 1's in bitstrings rel to binomial dist).\n");
+ fprintf(stdout, "\n");
+ fprintf(stdout, "  -r rngnumber selects the rng to be tested (list them with -t 0).\n");
+ fprintf(stdout, "\n");
+ fprintf(stdout, "  -f filename will EVENTUALLY permit random strings to be tested to be\n");
+ fprintf(stdout, "     read in from a file, but this is not yet implemented!\n");
+ fprintf(stdout, "\n");
+ fprintf(stdout, "  -b controls the number of bits used in bit string tests\n");
+ fprintf(stdout, "  -n controls the length of the test vector (int or double) for vector\n");
+ fprintf(stdout, "     tests\n");
+ fprintf(stdout, "  -s controls the number of samples (default 100)\n");
+ fprintf(stdout, "\n");
+ fprintf(stdout, "  -i turns on a new seed for each sample -- better indicates the\n");
+ fprintf(stdout, "     probability of a \"bad seed\" existing for an otherwise good\n");
+ fprintf(stdout, "     generator.\n");
+ fprintf(stdout, "\n");
+ fprintf(stdout, "  -v controls verbosity of output for debugging or amusement purposes.\n");
+ fprintf(stdout, "  -q selects \"quiet\" operation: results only are printed on a single line\n");
+ fprintf(stdout, "     (where applicable).\n");
+ fprintf(stdout, "  -h prints usage statement (this message) and exits.\n");
+ fprintf(stdout, "\n");
+ fprintf(stdout, "  NOTE WELL:  The \"bogomegarates\" returned by this tool are BOGUS\n");
+ fprintf(stdout, "  and may not be even approximately correct in your context.  Be Warned!\n");
+ fprintf(stdout, "  ALSO NOTE:  The quality assessment(s) for the rngs may, in fact, be\n");
+ fprintf(stdout, "  completely incorrect or misleading.  Use them at your Own Risk!\n");
+ fprintf(stdout, "\n");
+ fprintf(stdout, "  NOTE FINALLY: If you use this tool, you owe me a beverage! (see GPL v2.0b)\n");
+ fprintf(stdout,"\n");
  exit(0);
 
 }

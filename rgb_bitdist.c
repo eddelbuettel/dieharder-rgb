@@ -25,8 +25,8 @@
 
 #include "rand_rate.h"
 
-
-static char bitdist_description[]="
+static char bitdist_description[]="";
+/*
 #==================================================================
 #                        rgb_bitdist
 # Here we create a vector of length bits, and increment each bit
@@ -47,7 +47,7 @@ static char bitdist_description[]="
 #
 #==================================================================
 ";
-										    
+*/										    
 
 void rgb_bitdist()
 {
