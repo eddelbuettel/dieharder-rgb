@@ -345,3 +345,33 @@ wondering if THIS occurrence of p = 0.02 from a single mean value is
 reasonable or not, compute the p of an entire distribution of mean
 values compared to the appropriate normal or binomial distribution, and
 get a p-value one can really trust!
+
+=======================
+
+OK, so I'm stupid and I'm wrong.  sts_monobit is, in fact, more
+sensitive than rgb_binomial although rgb_binomial might yet pick up a
+generator that passes sts_monobit and fail it -- one that preserves the
+symmetry of its 0/1 distribution about the midpoint (so the mean number
+of 0's and 1's is correct) but has the >>wrong<< distribution, e.g. is
+not binomial.
+
+As it turns out, most distributions that fail rgb_binomial do not have
+symmetry about their midpoint and consequently fail sts_monobit "before"
+failing rgb_binomial.  If you like, rgb_binomial only becomes reliable
+when there is enough data to fill the primary non-zero bins near the
+middle, which takes a goodly chunk of data.  sts_monobit, in the
+meantime, just adds up the number of 0's and 1's while steadily chopping
+down sigma -- by the time one has sampled a few thousand bits a lot of
+rng's are already 0/1 asymmetric enough to fail monobit, but the bin
+sigma's are still large enough to forgive a lot of slop in any given
+bin.
+
+Interestingly, binomial can be applied to very small bitstrings -- in
+fact, to bitstrings of length 1 (I think).  At that point it should
+become equivalent to monobit, but in a somewhat different way,
+especially since rgb_binomial now evaluates monobit directly on the
+accumulated bit values.
+
+Looks like I >>do<< have some work to do to fully understand everything,
+I do I do...;-)
+

@@ -55,6 +55,7 @@ SOURCES = $(SOURCE)\
     rand_rate_work.c \
     rand_rate_utils.c \
     rgb_binomial.c \
+    rgb_persist.c \
     sts_monobit.c \
     sts_runs.c \
     timing.c \

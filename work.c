@@ -33,6 +33,9 @@ void rand_rate_work()
    case RGB_BINOMIAL:
      rgb_binomial();
      break;
+   case RGB_PERSIST:
+     rgb_persist();
+     break;
    case STS_MONOBIT:
      sts_monobit();
      break;

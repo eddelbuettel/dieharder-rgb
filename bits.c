@@ -59,6 +59,7 @@ void Ntest_eval(Ntest *ntest)
 
  int i;
  double chi;
+ double x_tot,y_tot;
 
  /*
   * This routine evaluates chi-squared, where:
@@ -80,16 +81,24 @@ void Ntest_eval(Ntest *ntest)
  if(!quiet){
    printf("# Ntest_eval summary\n");
    printf("# %3s %10s %10s %10s %10s %12s\n","bit","    X","    Y"," sigma","del-chisq"," chisq");
-   printf("#------------------------------------------------------------------\n");
+   printf("#==================================================================\n");
  }
  ntest->chisq = 0.0;
+ x_tot = 0.0;
+ y_tot = 0.0;
  for (i=0;i<ntest->npts;i++) {
    chi = (ntest->y[i]-ntest->x[i])/ntest->sigma[i];
    ntest->chisq += chi*chi;
+   x_tot += ntest->x[i];
+   y_tot += ntest->y[i];
    if(!quiet){
      printf("# %3d %10.1f %10.1f %10.3f %10.3f %12.8f\n",i,ntest->x[i],
            ntest->y[i],ntest->sigma[i],chi*chi,ntest->chisq);
    }
+ }
+ if(!quiet){
+   printf("#==================================================================\n");
+   printf("# Tot %10.1f %10.1f\n",x_tot,y_tot);
  }
 
  ntest->pvalue = gsl_sf_gamma_inc_Q((double)ntest->npts/2.0,ntest->chisq/2.0);
@@ -186,7 +195,9 @@ void Xtest_conclusion(Xtest *xtest)
 int get_bit(unsigned int n)
 {
 
+ int i;
  unsigned int index,offset,mask;
+ static unsigned last_rand;
 
 /*
  * This routine is designed to get the nth bit of the global unsigned int
@@ -198,10 +209,28 @@ int get_bit(unsigned int n)
    fprintf(stderr,"Error: bit offset %d exceeds length %d of bitstring in rand[]\n",n,size*sizeof(unsigned int));
    exit(0);
  }
+ if(verbose) {
+    printf("\nDumping rand_int[%d] = %u = ",index,rand_int[index]);
+ }
+ mask = 1;
+ for(i = 0;i<32;i++){
+   if(mask & rand_int[index]){
+     printf("1");
+   } else {
+     printf("0");
+   }
+   mask = mask << 1;
+ }
+
+ printf("\n & Rand: %u\n",last_rand & rand_int[index]);
+ last_rand = rand_int[index];
+ 
+   
+ 
+ 
  offset = n%(8*sizeof(unsigned int));
  mask = 1;
  mask = mask<<offset;
-
  if(mask & rand_int[index]){
    return(1);
  } else {
