@@ -35,15 +35,89 @@ suite in general.
 <p>The following are the tests so far implemented and (possibly)
 functional:</p>
 
-<h2>List of Tests</h2>
+<h2>List of Tests/Comments</h2>
 
 <ul>
 <li> Diehard: Knuth "runs" test.
+  <p>Works OK. Pretty much the way it is described in the original
+documentation, but very definitely new/clean original C code.</p>
+<li> Diehard: Poissonian "Birthdays" test.
+  <p>Works OK, not KS test yet, need to choose -s 500.  Also fancied it
+up a bit -- use GSL's rmax_bits correctly, use a cyclic permutation
+under a 24 bit mask to do all 32 cyclic permutations of bit position,
+not just 9 a la Marsaglia, use Pearson's chisq directly computed from
+gsl_ran_poisson_pdf() and the observations per cycle.  Good at solidly
+rejecting bad generators (try -r 40, randu, as the universal "bad
+generator":-).</p>
 <li> rgb: bitmask test.
+  <p>This is one of my own clever ideas.  Some rng's, for some seeds,
+have bits that don't change. Obviously that makes the rng's bad, but bad
+in a somewhat different way than "just" non-randomness of some more
+occult order.  This is a very fast test that can iterate samples over
+seeds and extract a collective mask of all the bits that didn't change
+for an entire sequence of rands for at least one seed in the test.  Very
+efficiently rejects e.g. randu (GSL 40).</p>
 <li> rgb: single bit binomial distribution test.
+ <p>This is a nice test that is similar (possibly identical, I haven't
+decided) to some sts tests that look at bit distributions.  If you look
+at random e.g. 128 bit words, you expect to see a binomial distribution
+of the total 1 bit count per word centered on 64.  You can therefore
+easily compute a Pearson's chisq and p-value.  I'm not TOTALLY happy
+with the latter computation but it does seem to work.  As I really clean
+up the Pearson's chisq code and add a KS test, this test will become a
+lot more reliable.</p>
 <li> rgb: pairwise bit binomial distribution test.
+ <p>This one is exactly the same, only it looks at all 2-bit tuples with
+a cyclic permutation of the starting bit across the words.  There are
+four possible values per tuple, and they too should be binomially
+distributed (each).  Once again one can easily make chisq and pvalues,
+once again I've got to really carefully ensure that my computations of
+chisq are correct for this context.</p>
 <li> STS: monobit test.
+ <p>This is a weak (but still powerful) version of the counting of 1's
+in a word of N bits that examines the number of 1's in a very long list
+of bits and compares it to the direct binomial expectation.  Here one
+can be very sure chisq and p are correctly computed, but it still needs
+to collect a vector of p's and apply a KS test rather than force one to
+run it lots of times and visually assess the p distribution as
+"uniform".  Still, it is pretty good at finding weak rng's.  Not so good
+at finding rng's that are less obviously weak (but still very nonrandom)
+as it is quite possible for an rng to yield the right fraction of 1's
+and 0's but still be very nonrandom.</p>
 <li> STS: runs test (counts runs of 0's and 1's).
+ <p>This is distinct from Diehard's runs.  In fact, this test is TRYING
+to compute what I compute far more directly in the pairwise bit
+distribution, since runs of 0's or 1's always end on a 01 or 10 pair,
+right?  1/4 of all pairs should be 01, 1/4 should be 10, 1/4 should be
+11, 1/4 should be 00.  Why bother calling it "runs"?  Just count the
+damn pairs!</p>
 </ul>
 
-<p>I hope that you find rand_rate useful.</p>
+<p>Notes on current activity:  I'm working on adding a KS test on a
+vector of p-values to ensure that they are uniform on 0,1 over many
+independent sampling runs PER test, so that a test can yield a single
+statistic that is absolutely consistent across all tests.  I also plan
+to add a variant of this based on binned p-values as described in the
+STS documentation, for comparison as much as anything.</p>
+
+<p>As I finish improved Pearson chisq estimators and the KStest, I
+expect to fly through some of the still-missing Diehard tests and dig
+into the sts tests.  I also think that it would be "interesting" to
+apply this exact framework to the GSL distribution generators as a test
+of random numbers TOTALLY within the GSL -- if one simply (e.g.) samples
+a poissonian using randu as your rng and compare the result to the
+poissonian probability density function to compute Pearson's chisq and a
+p-value (vector) and eventually a KS p-value, does that prove to be as
+sensitive a test as the various (far more complex) STS and Diehard
+tests.  For example, the birthday test seems like a difficult way to
+generate a Poissonian compared to just "doing it" from an rng.  Is there
+any evidence that it has greater sensitivity to various failures of the rng
+than a test that didn't have to achieve an asymtotic limit (large bit
+windows, many birthdays, many samples) in order to become Poissonian in
+the first place?</p>
+
+<p>Anyway, I hope that you find rand_rate useful.  If you have any
+interest in participating in its development, be sure to let me know,
+especially if you have decent coding skills and a basic knowledge of
+statistics.  I have documents to help with the latter, if you have the
+programming skills and want to LEARN statistics.</p>
