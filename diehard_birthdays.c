@@ -214,6 +214,7 @@ int diehard_birthdays()
    printf("#==================================================================\n");
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
    printf("# %u samples drawn of %u cyclic permutations.\n",samples,rmax_bits);
+   printf("# lambda = %f\n",lambda);
  }
 
 }
