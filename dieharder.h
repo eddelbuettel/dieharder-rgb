@@ -41,6 +41,7 @@
    D_SAMPLE,
    D_BITS,
    D_RGB_BITDIST,
+   D_STS_MONOBIT,
    D_BTEST,
    D_KSTEST,
    N_DEBUG
@@ -83,7 +84,6 @@
  double chisq_eval(double *x,double *y,double *sigma, unsigned int n);
  double chisq_poisson(uint *observed,double lambda,int kmax);
  double chisq_binomial(double *observed,double prob,uint kmax,uint nsamp);
- int sts_monobit();
  int sts_runs();
  void dumpbits(unsigned int *data, unsigned int nbits);
  double sample(void *testfunc());
@@ -96,6 +96,8 @@
   */
  double rgb_bitdist();
  void rgb_bitdist_test();
+ double sts_monobit();
+ void sts_monobit_test();
 
 
  /*

@@ -18,11 +18,47 @@
 
 #include "rand_rate.h"
 
-int sts_monobit()
+double sts_monobit()
 {
 
  int i,j,k;
- unsigned int nbits;
+ double pks;
+ Xtest mtest;
+
+ if(!quiet){
+   printf("#==================================================================\n");
+   printf("#                 sts_monobit Test Description\n");
+   printf("# Very simple.  Counts the 1 bits in a long string of random uints.\n");
+   printf("# Compares to expected number, generates a p-value directly from\n");
+   printf("# erfc().\n");
+   printf("#\n");
+   printf("# random number generator: %s\n",gsl_rng_name(rng));
+   printf("# p-samples = %u   number of sampled ints = %u  bits sampled = %u\n",
+     psamples,tsamples,bits);
+   printf("#==================================================================\n");
+ }
+
+ /*
+  * This part should ALMOST be standardized enough to make a
+  * single unified call.  For the moment we'll do one per test, as each
+  * test has a few quirks that would otherwise have to go in e.g. work(),
+  * making it complicated.
+  */
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)sts_monobit_test);
+ printf("p = %6.3f for sts_monobit test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails for sts_monobit.\n",gsl_rng_name(rng));
+ }
+ return(pks);
+
+}
+
+void sts_monobit_test()
+{
+
+ int i,j,k;
+ uint bitstring,blens;
  Xtest mtest;
 
  /*
@@ -39,63 +75,51 @@ int sts_monobit()
   * do "samples" here.  Or rather, we could -- for enough bits, the
   * distribution of means should be normal -- but we don't.
   *
-  * Number of total bits (from EITHER -b bits OR -s size, -b overrides -s)
   */
- if(bits){
-   nbits = bits;
- } else {
-   nbits = 8*sizeof(unsigned int)*size;
- }
+ /*
+  * The number of bits per random integer tested.
+  */
+ blens = rmax_bits;
  mtest.y = 0.0;
  mtest.sigma = sqrt((double)nbits);
  mtest.npts = nbits;
  strncpy(mtest.testname,"sts_monobit",128);
  strncpy(mtest.rngname,gsl_rng_name(rng),128);
+ offset = 0;
+ 
 
  /*
   * Fill vector of "random" integers with selected generator.
   * NOTE WELL:  This can also be done by reading in a file!  Note
   * that if -b bits is specified, size will be "more than enough".
   */
- for(j=0;j<size;j++) rand_int[j] = gsl_rng_get(rng);
- /*
-  * Count the 1 bits and the 0 bits
-  * We do this by masking out each bit slot, anding the mask with
-  * the rand_int and accumulating the ones.  I think.
-  */
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# rgb_bitdist(): Generating %u bits in rand_int[]\n",size*sizeof(uint)*8);
+ }
  mtest.x = 0;
- if(verbose) printf("# Testing bitstring: ");
- for(j=0;j<nbits;j++){
-   if(get_bit(j) != 0) {
-     mtest.x++;
+ for(i=0;i<size;i++) {
+   rand_int[i] = gsl_rng_get(rng);
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+     printf("# rgb_bitdist(): rand_int[%d] = %u = ",i,rand_int[i]);
+     dumpbits(&rand_int[i],8*sizeof(uint));
+   }
+   for(b=0;b<bsamples;b++){
+     /*
+      * This gets the integer value of the ntuple at index position
+      * n in the current bitstring, from a window with cyclic wraparound.
+      */
+     mtest.x += get_bit_ntuple(&rand_int[i],1,1,b);
      if(verbose) printf("1");
-   } else {
-     if(verbose) printf("0");
    }
  }
- if(verbose) printf("\n");
+
  mtest.x = 2*mtest.x - nbits;
  Xtest_eval(&mtest);
- Xtest_conclusion(&mtest);
-
- /*
-  * Finally, we do a full summary of the test results.  The DETAIL
-  * printed above -- this just indicates the p-value, basically
-  * for each test pattern.
-  */
- printf("# Full sts_monobit test summary:\n");
- printf("#==================================================================\n");
- printf("# %11s  %12s  %12s  %12s  %8s\n","Test Name","Generator",
-   "# samples","# of bits","p-value");
- printf("  %11s  %12s  %12d  %11d  %8.4f\n",mtest.testname,mtest.rngname,
-   psamples,nbits,mtest.pvalue);
-
- if(mtest.pvalue<0.01){
-   return(0);
- } else {
-   return(1);
+ ks_pvalue[kspi] = mtest.pvalue;
+ if(verbose == D_STS_MONOBIT || verbose == D_ALL){
+   printf("# sts_monobit(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
-
-
+ kspi++;
+ 
 }
 
