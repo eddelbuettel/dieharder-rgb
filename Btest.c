@@ -110,8 +110,8 @@ void Btest_eval(Btest *btest)
  y_tot = 0.0;
  ndof = 0;
  if(verbose == D_BTEST || verbose == D_ALL){
-   printf("# %7s   %3s      %3s %10s      %10s %9s\n",
-           "bit/bin","DoF","X","Y","del-chisq","chisq");
+   printf("# %7s   %3s      %3s %10s      %10s %10s %9s\n",
+           "bit/bin","DoF","X","Y","sigma","del-chisq","chisq");
    printf("#==================================================================\n");
  }
  for (i=0;i<btest->bins;i++) {
@@ -119,10 +119,14 @@ void Btest_eval(Btest *btest)
      x_tot += btest->x[i];
      y_tot += btest->y[i];
      delchisq = (btest->x[i] - btest->y[i])*(btest->x[i] - btest->y[i])/btest->y[i];
+     /*  Alternative way of evaluating chisq for binomial only.
+     delchisq = (btest->x[i] - btest->y[i])/btest->sigma[i];
+     delchisq *= delchisq;
+     */
      chisq += delchisq;
      if(verbose == D_BTEST || verbose == D_ALL){
-       printf("# %5u     %3u   %10.4f %10.4f %10.4f %10.4f\n",
-                  i,ndof,btest->x[i],btest->y[i],delchisq,chisq);
+       printf("# %5u     %3u   %10.4f %10.4f %10.4f %10.4f %10.4f\n",
+                  i,ndof,btest->x[i],btest->y[i],btest->sigma[i],delchisq,chisq);
      }
      ndof++;
    }

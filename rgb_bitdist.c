@@ -84,7 +84,7 @@ double rgb_bitdist()
  pks = sample((void *)rgb_bitdist_test);
  printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",cntrl.rgb_bitdist_ntuple,gsl_rng_name(rng));
    return(pks);
  }
 
@@ -96,7 +96,7 @@ double rgb_bitdist()
  pks = sample((void *)rgb_bitdist_test);
  printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",cntrl.rgb_bitdist_ntuple,gsl_rng_name(rng));
    return(pks);
  }
 
@@ -108,7 +108,7 @@ double rgb_bitdist()
  pks = sample((void *)rgb_bitdist_test);
  printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",cntrl.rgb_bitdist_ntuple,gsl_rng_name(rng));
    return(pks);
  }
 
@@ -120,7 +120,7 @@ double rgb_bitdist()
  pks = sample((void *)rgb_bitdist_test);
  printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",cntrl.rgb_bitdist_ntuple,gsl_rng_name(rng));
    return(pks);
  }
 
@@ -132,7 +132,7 @@ double rgb_bitdist()
  pks = sample((void *)rgb_bitdist_test);
  printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",cntrl.rgb_bitdist_ntuple,gsl_rng_name(rng));
    return(pks);
  }
 
@@ -144,7 +144,31 @@ double rgb_bitdist()
  pks = sample((void *)rgb_bitdist_test);
  printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails.  Test terminating.\n",gsl_rng_name(rng));
+   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",cntrl.rgb_bitdist_ntuple,gsl_rng_name(rng));
+   return(pks);
+ }
+
+ /*
+  * 7-tuples, only testing 0000001 = 1
+  */
+ cntrl.rgb_bitdist_ntuple = 7;
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)rgb_bitdist_test);
+ printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",cntrl.rgb_bitdist_ntuple,gsl_rng_name(rng));
+   return(pks);
+ }
+
+ /*
+  * 8-tuples, only testing 00000001 = 1
+  */
+ cntrl.rgb_bitdist_ntuple = 8;
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)rgb_bitdist_test);
+ printf("p = %6.3f for %1d-tuplet test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails for %1d-tuplets.  rgb_bitdist terminating.\n",cntrl.rgb_bitdist_ntuple,gsl_rng_name(rng));
    return(pks);
  }
 

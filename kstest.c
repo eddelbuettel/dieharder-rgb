@@ -144,10 +144,12 @@ double kstest_kuiper(double *pvalue,int count)
  }
  p = q_ks_kuiper(x);
 
- if(p < 0.0001){
-   printf("# kstest_kuiper(): Test Fails!  Visually inspect p-values:\n");
-   for(i=0;i<count;i++){
-     printf("# kstest_kuiper(): %3d    %10.5f\n",i,pvalue[i]);
+ if(verbose == D_KSTEST || verbose == D_ALL){
+   if(p < 0.0001){
+     printf("# kstest_kuiper(): Test Fails!  Visually inspect p-values:\n");
+     for(i=0;i<count;i++){
+       printf("# kstest_kuiper(): %3d    %10.5f\n",i,pvalue[i]);
+     }
    }
  }
 
