@@ -78,6 +78,18 @@ int sts_monobit()
  Xtest_eval(&mtest);
  Xtest_conclusion(&mtest);
 
+ /*
+  * Finally, we do a full summary of the test results.  The DETAIL
+  * printed above -- this just indicates the p-value, basically
+  * for each test pattern.
+  */
+ printf("# Full sts_monobit test summary:\n");
+ printf("#==================================================================\n");
+ printf("# %11s  %12s  %12s  %12s  %8s\n","Test Name","Generator",
+   "# samples","# of bits","p-value");
+ printf("  %11s  %12s  %12d  %11d  %8.4f\n",mtest.testname,mtest.rngname,
+   samples,nbits,mtest.pvalue);
+
  if(mtest.pvalue<0.01){
    return(0);
  } else {

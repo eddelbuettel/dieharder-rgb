@@ -71,7 +71,7 @@ void rgb_bitdist()
  bxtest.npts = nbits*samples;  /* Total number of bits tested */
  bxtest.p = 0.5;  /* still p = 0.5 for a 1 */
  bxtest.x = 0.0;
- bxtest.y = (double) btest.npts*btest.p;
+ bxtest.y = (double) bxtest.npts*bxtest.p;
  bxtest.sigma = sqrt(bxtest.y*(1.0 - bxtest.p));
  strncpy(bxtest.testname,"rgb_bit_total",128);
  strncpy(bxtest.rngname,gsl_rng_name(random),128);
@@ -226,7 +226,7 @@ void rgb_bitdist()
    Ntest_eval(&ctest[i]);
  }
  for(i=0;i<=3;i++){
-   Ntest_eval(&cxtest[i]);
+   Xtest_eval(&cxtest[i]);
  }
 
  if(!quiet){

@@ -46,7 +46,11 @@ void rgb_binomial()
   * on 0.0.
   *
   */
- nbits = bits;
+ if(bits > 128){
+   nbits = bits = 128;
+ } else {
+   nbits = bits;
+ }
  mtest.y = 0.0;
  /* The total number of bits checked should be nbits*samples */
  mtest.npts = 0;

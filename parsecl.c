@@ -16,7 +16,7 @@ void parsecl(int argc, char **argv)
  samples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
  iterations = -1;	/* This should be just enough to do empty accurately */
  size = 1024;		/* Small enough to easily fit into any cache */
- bits = 128;            /* Default size for bitlevel tests*/
+ bits = 0;              /* Start at zero */
  verbose = 0;		/* Default is not to be verbose. */
  quiet = 0;		/* Default is ALSO not to be quiet (output control). */
  testnum = 0;		/* Default is to list rng's */
@@ -64,10 +64,6 @@ void parsecl(int argc, char **argv)
    }
  }
 
- if(bits){
-   size = bits/(8*sizeof(unsigned int)) + 1;  /* more than enough */
- }
-
  if(errflg){
    Usage();
    exit(0);
@@ -104,7 +100,7 @@ void Usage()
  fprintf(stdout, "       selected rng.\n");
  fprintf(stdout, "     %d time selected generator, determining its bogomegarate.\n",BOGORATE);
  fprintf(stdout, "     %d RGB bitmask (tests for frozen/unchanging bits).\n",RGB_PERSIST);
- fprintf(stdout, "     %d RGB binomial (number of 1's in bitstrings rel to binomial dist).\n",RGB_PERSIST);
+ fprintf(stdout, "     %d RGB binomial (number of 1's in bitstrings rel to binomial dist).\n",RGB_BINOMIAL);
  fprintf(stdout, "       and STS monobit (number of 1's in bitstring rel to expected val).\n");
  fprintf(stdout, "     %d RGB bitdist (tests frequency of 2-bit patterns:\n",RGB_BIT2);
  fprintf(stdout, "     %d RGB bitdist (tests frequency of all n-bit patterns:\n",RGB_BITDIST);

@@ -12,8 +12,6 @@
  * binomially distributed.  It checks the actual distribution of bits for
  * relatively small strings (small enough that n! doesn't overflow and
  * 2^-n doesn't underflow, so we can evaluate meaningful probabilities).
- * It >>also<< does the sts_monobit test on the aggregate string across
- * all smaller samples.
  *
  * This (and all further rgb_ tests) are "my own" in that I'm BOTH
  * making them up AND writing them as I go.  If they turn out to be
@@ -30,51 +28,10 @@ void rgb_bit2()
 
  int i,j,k,nbits,npairs,npts;
  int first_bit,current_bit,pairmask = 3,current_pair;
- Ntest btest;   /* For bit (binomial) distribution test results */
- Xtest bxtest;  /* For cumulative bit distribution test results */
  Ntest *ctest;   /* For bitpair (binomial) distribution  test results */
- Xtest *cxtest;  /* For cumulative bitpair distribution test results */
-
- /*
-  * btest.x[k] is an accumulator to be used to count the frequency with
-  *   which we get k 1's in num_bits, over the m runs.
-  * btest.y[k] contains the expected binomial result, samples*p_1
-  * btest.sigma[k] contains the standard binomial error of btest.y[k],
-  *   sqrt(samples)*p_1*(1-p_1) (in both cases with p_0 = p_1 = 0.5).
-  *
-  * We start by creating all three and filling y[k] and sigma[k]
-  * to support the formation of chisq as we run.
-  *
-  * We use rand_int as usual, and the standard code for extracting the
-  * output from particular bits in series.
-  */
+ /* Xtest *cxtest;  /* For cumulative bitpair distribution test results */
 
  nbits = bits;
-
- /*
-  * create and initialize btest to test for binomial bit distribution
-  * in each bit position.
-  */
- Ntest_create(&btest,nbits,"rgb_bitdist",gsl_rng_name(random));
- btest.npts = samples;
- btest.p = 0.5;   /* presumed binomial probability of getting a 1 */
- for(k=0;k<nbits;k++){
-   btest.x[k] = 0.0;
-   btest.y[k] = (double) btest.npts*btest.p;
-   btest.sigma[k] = sqrt(btest.y[k]*(1.0 - btest.p));
- }
-
- /*
-  * initialize bxtest to test for binomial distribution of TOTAL
-  * number of bits tested (sts_monobit).
-  */
- bxtest.npts = nbits*samples;  /* Total number of bits tested */
- bxtest.p = 0.5;  /* still p = 0.5 for a 1 */
- bxtest.x = 0.0;
- bxtest.y = (double) btest.npts*btest.p;
- bxtest.sigma = sqrt(bxtest.y*(1.0 - bxtest.p));
- strncpy(bxtest.testname,"rgb_bit_total",128);
- strncpy(bxtest.rngname,gsl_rng_name(random),128);
 
  /*
   * ctest will test every successive bitpair AND wrap the final bit
@@ -92,7 +49,7 @@ void rgb_bit2()
   */
  npairs = 4;
  ctest = (Ntest *) malloc(npairs*sizeof(Ntest));
- cxtest = (Xtest *) malloc(npairs*sizeof(Xtest));
+ /* cxtest = (Xtest *) malloc(npairs*sizeof(Xtest)); */
  for(i = 0;i < npairs;i++){
    Ntest_create(&ctest[i],nbits,"rgb_bitpair",gsl_rng_name(random));
    /*
@@ -109,7 +66,6 @@ void rgb_bit2()
    /*
     * This is pretty standard at this point.  In fact, we could
     * probably do this with a constructor...
-    */
    cxtest[i].npts = nbits*samples;
    cxtest[i].p = 0.25;
    cxtest[i].x = 0.0;
@@ -117,6 +73,7 @@ void rgb_bit2()
    cxtest[i].sigma = sqrt(cxtest[i].y*(1.0 - cxtest[i].p));
    strncpy(cxtest[i].testname,"rgb_bitpair_total",128);
    strncpy(cxtest[i].rngname,gsl_rng_name(random),128);
+    */
  }
 
  for(i=0;i<samples;i++){
@@ -160,13 +117,6 @@ void rgb_bit2()
      current_bit = get_bit(j);
 
      /*
-      * Add its value to the single bit histogram at this position,
-      * and also to the cumulative count of 1 bits.
-      */
-     btest.x[j] += current_bit;
-     bxtest.x += current_bit;
-
-     /*
       * Now we do bitpairs.
       */
      if(j==0) {
@@ -201,7 +151,6 @@ void rgb_bit2()
 	* or cxtest to be incremented (since it exists!).
         */
        ctest[current_pair].x[j-1]++;
-       cxtest[current_pair].x++;
      }
    }
    /*
@@ -211,7 +160,6 @@ void rgb_bit2()
    current_pair += first_bit;
    current_pair = current_pair & pairmask;
    ctest[current_pair].x[j-1]++;
-   cxtest[current_pair].x++;
  }
 
  /*
@@ -219,14 +167,8 @@ void rgb_bit2()
   * above (btest, bxtest for bits, ctest and cxtest for bitpairs).
   * Again, looks like we could probably loop this.
   */
- Ntest_eval(&btest);
- Xtest_eval(&bxtest);
-
  for(i=0;i<=3;i++){
    Ntest_eval(&ctest[i]);
- }
- for(i=0;i<=3;i++){
-   Ntest_eval(&cxtest[i]);
  }
 
  if(!quiet){
@@ -255,13 +197,8 @@ void rgb_bit2()
   * This prints out "conclusions" (e.g. pass test, fail test, maybe
   * pass, maybe fail, etc. for each test.
   */
- Ntest_conclusion(&btest);
- Xtest_conclusion(&bxtest);
  for(i=0;i<=3;i++){
    Ntest_conclusion(&ctest[i]);
- }
- for(i=0;i<=3;i++){
-   Xtest_conclusion(&cxtest[i]);
  }
 
  /*
@@ -272,35 +209,16 @@ void rgb_bit2()
  printf("# Full rgb_bitdist test summary:\n");
 
  printf("#==================================================================\n");
- printf("# %11s  %12s  %12s  %12s  %8s\n","Test Name","Generator",
-   "# samples","# of bits","p-value");
- printf("  %11s  %12s  %12d  %11d  %8.4f\n",btest.testname,btest.rngname,
-   samples,nbits,btest.pvalue);
-
- printf("#==================================================================\n");
- printf("# %11s  %12s  %12s  %12s  %8s\n","Test Name","Generator",
-   "# samples","# of bits","p-value");
- printf("  %11s  %12s  %12d  %11d  %8.4f\n",bxtest.testname,bxtest.rngname,
-   samples,nbits,bxtest.pvalue);
-
- printf("#==================================================================\n");
  printf("# %s test of %s summary:\n",ctest[0].testname,ctest[0].rngname);
  printf("# %8s  %8s  %8s  %8s  %8s  %8s\n","samples","bits",
     "p(00)","p(01)","p(10)","p(11)");
  printf(" %10d  %8d  %8.4f  %8.4f  %8.4f  %8.4f\n",samples,nbits,
     ctest[0].pvalue,ctest[1].pvalue,ctest[2].pvalue,ctest[3].pvalue);
 
- printf("#==================================================================\n");
- printf("# %s of %s summary:\n",cxtest[0].testname,cxtest[0].rngname);
- printf("# %8s  %8s  %8s  %8s  %8s  %8s\n","samples","bits",
-    "p(00)","p(01)","p(10)","p(11)");
- printf(" %10d  %8d  %8.4f  %8.4f  %8.4f  %8.4f\n",samples,nbits,
-    cxtest[0].pvalue,cxtest[1].pvalue,cxtest[2].pvalue,cxtest[3].pvalue);
 
  /*
   * Free everything...
   */
- Ntest_destroy(&btest);
  for(i=0;i<=3;i++){
    Ntest_destroy(&ctest[i]);
  }
