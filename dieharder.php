@@ -8,6 +8,6 @@
 
 include("common.php");
 
-display_doc("rand_rate" , "rand_rate");
+display_doc("dieharder" , "dieharder");
 
 ?>
