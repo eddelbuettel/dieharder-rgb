@@ -1,4 +1,4 @@
-<H3>rand_rate Version 0.4.0</H3>
+<H2>rand_rate Version 0.4.1</H2>
 
 <p>Click <a href="./rand_rate">here</a> to see a list of all rand_rate
 files on this repository.</p>
@@ -31,5 +31,19 @@ It is my hope that by providing this tool in autodocumenting source, it
 makes it easy to add new tests, critique older tests, and improve the
 suite in general.
 </p>
+
+<p>The following are the tests so far implemented and (possibly)
+functional:</p>
+
+<h2>List of Tests</h2>
+
+<ul>
+<li> Diehard: Knuth "runs" test.
+<li> rgb: bitmask test.
+<li> rgb: single bit binomial distribution test.
+<li> rgb: pairwise bit binomial distribution test.
+<li> STS: monobit test.
+<li> STS: runs test (counts runs of 0's and 1's).
+</ul>
 
 <p>I hope that you find rand_rate useful.</p>

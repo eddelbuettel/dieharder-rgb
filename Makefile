@@ -190,7 +190,7 @@ tgz:	$(SOURCES) $(SCSOURCES)
 	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' >> $(SPEC).$$
 	mv $(SPEC).$$ $(SPEC)
 	cat $(ABS) | \
-	sed -e 's/^<H3>\(.*\)<\/H3>/<H3>rand_rate Version $(VERSION_MAJOR).$(VERSION_MINOR)<\/H3>/' >> $(ABS).$$
+	sed -e 's/^<H2>\(.*\)<\/H2>/<H2>rand_rate Version $(VERSION_MAJOR).$(VERSION_MINOR)<\/H2>/' >> $(ABS).$$
 	mv $(ABS).$$ $(ABS)
 	mkdir -p .$(DIR)
 	cp -a * .$(DIR)
