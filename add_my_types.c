@@ -22,7 +22,7 @@
  * fill N myself personally...
  */
 #define N 100
-#define GSL_VAR
+/* #define GSL_VAR */
 /* List new rng types to be added. */
 GSL_VAR const gsl_rng_type *gsl_rng_dev_random;
 GSL_VAR const gsl_rng_type *gsl_rng_dev_urandom;

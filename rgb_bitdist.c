@@ -25,30 +25,6 @@
 
 #include "rand_rate.h"
 
-static char bitdist_description[]="";
-/*
-#==================================================================
-#                        rgb_bitdist
-# Here we create a vector of length bits, and increment each bit
-# slot by the contents of the bit (0 or 1).  The statistic
-# in the end is an extension of rgb_persist, but sensitive to cases
-# where a bit changes but is biased towards either 0 or 1.  We basically
-# compute the expected number of bits per slot (samples/2) and the
-# sigma of same (sqrt(samples)/2) and form a chisq of the measured 
-# deviations in in the vector and turn it into a p-value.
-#
-# However, this p-value is NOT the primary result of interest from
-# this test -- far more interesting should be the actual output
-# frequency histogram, which should be flat within sqrt(samples) noise.
-# Whereever it is NOT flat it provides us with evidence of non-randomness,
-# quite possibly in ways that on average satisfy the expectations for
-# the total number of bits (one can systematically have balanced
-# surfeits and deficits of ones in certain bitslots).
-#
-#==================================================================
-";
-*/										    
-
 void rgb_bitdist()
 {
 
@@ -139,7 +115,7 @@ void rgb_bitdist()
    cxtest[i].x = 0.0;
    cxtest[i].y = cxtest[i].npts*cxtest[i].p;
    cxtest[i].sigma = sqrt(cxtest[i].y*(1.0 - cxtest[i].p));
-   strncpy(cxtest[i].testname,"rgb_bipair_total",128);
+   strncpy(cxtest[i].testname,"rgb_bitpair_total",128);
    strncpy(cxtest[i].rngname,gsl_rng_name(random),128);
  }
 
@@ -239,12 +215,6 @@ void rgb_bitdist()
  }
 
  /*
-  * Now we output the results of each of these in turn.  First we spit
-  * out the test description given above, if we're not running quiet.
-  */
- if(!quiet) printf("%s",bitdist_description);
-
- /*
   * Next we evaluate the pvalue for each test statistic accumulated
   * above (btest, bxtest for bits, ctest and cxtest for bitpairs).
   * Again, looks like we could probably loop this.
@@ -257,6 +227,28 @@ void rgb_bitdist()
  }
  for(i=0;i<=3;i++){
    Ntest_eval(&cxtest[i]);
+ }
+
+ if(!quiet){
+   printf("#==================================================================\n");
+   printf("#                        rgb_bitdist\n");
+   printf("# Here we create a vector of length bits, and increment each bit\n");
+   printf("# slot by the contents of the bit (0 or 1).  The statistic\n");
+   printf("# in the end is an extension of rgb_persist, but sensitive to cases\n");
+   printf("# where a bit changes but is biased towards either 0 or 1.  We basically\n");
+   printf("# compute the expected number of bits per slot (samples/2) and the\n");
+   printf("# sigma of same (sqrt(samples)/2) and form a chisq of the measured \n");
+   printf("# deviations in in the vector and turn it into a p-value.\n");
+   printf("#\n");
+   printf("# However, this p-value is NOT the primary result of interest from\n");
+   printf("# this test -- far more interesting should be the actual output\n");
+   printf("# frequency histogram, which should be flat within sqrt(samples) noise.\n");
+   printf("# Whereever it is NOT flat it provides us with evidence of non-randomness,\n");
+   printf("# quite possibly in ways that on average satisfy the expectations for\n");
+   printf("# the total number of bits (one can systematically have balanced\n");
+   printf("# surfeits and deficits of ones in certain bitslots).\n");
+   printf("#\n");
+   printf("#==================================================================\n");
  }
 
  /*
