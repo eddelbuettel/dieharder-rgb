@@ -8,7 +8,7 @@ many years after it was introduced, are computers getting to be fast
 enough that extensions to diehard are required to push the existing
 pseudorandom number generators to failure.</p>
 
-<H2>rand_rate Version 0.5.2</H2>
+<H2>rand_rate Version 0.5.3</H2>
 
 <p>Click <a href="./rand_rate">here</a> to see a list of all rand_rate
 files on this repository.</p>
