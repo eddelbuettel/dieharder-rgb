@@ -47,9 +47,11 @@ SOURCES = $(SOURCE)\
     dev_random.c \
     measure_rate.c \
     parsecl.c \
+    prob.c \
     rand_rate_seed.c \
     rand_rate_startup.c \
     rand_rate_work.c \
+    rgb_binomial.c \
     sts_monobit.c \
     timing.c \
 
