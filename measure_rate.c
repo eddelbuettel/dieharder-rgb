@@ -200,9 +200,9 @@ void measure_rate()
     }
   } else {
     if(avg_megarate<1.0){
-      printf("%12d (bytes)    %6.2f (bogokflops)\n",size*sizeof(unsigned int),avg_kilorate);
+      printf("%12d (bytes)    %6.2f (%s bogokflops)\n",size*sizeof(unsigned int),avg_kilorate,gsl_rng_name(random));
     } else {
-      printf("%12d (bytes)    %6.2f (bogomflops)\n",size*sizeof(unsigned int),avg_megarate);
+      printf("%12d (bytes)    %6.2f (%s bogomflops)\n",size*sizeof(unsigned int),avg_megarate,gsl_rng_name(random));
     }
   }
 }

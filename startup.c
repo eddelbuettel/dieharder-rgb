@@ -65,23 +65,23 @@ void cpu_rate_startup()
   * our own.  This would prevent us from having to mess with porting
   * any we discover that are "good" to the gsl...
   */
- if(testnum>=num_gsl_rngs) {
-   hbtestnum = testnum - num_gsl_rngs;
-   printf(" testnum = %d, hbtestnum = %d\n",testnum,hbtestnum);
+ if(randnum>=num_gsl_rngs) {
+   hbrandnum = randnum - num_gsl_rngs;
+   printf(" randnum = %d, hbrandnum = %d\n",randnum,hbrandnum);
  } else {
    /*
     * Initialize the selected gsl rng
     */
-   random = gsl_rng_alloc (types[testnum]);
+   random = gsl_rng_alloc (types[randnum]);
    random_max = gsl_rng_max(random);
    seed = random_seed();
    gsl_rng_set(random,seed);
  }
 
  if(verbose == TST_RNG){
-   if(testnum >= num_gsl_rngs) {
-     printf("hbtestnum = %d\n",hbtestnum);
-     printf("generator type: %s\n", homebrews[hbtestnum]);
+   if(randnum >= num_gsl_rngs) {
+     printf("hbrandnum = %d\n",hbrandnum);
+     printf("generator type: %s\n", homebrews[hbrandnum]);
    } else {
      printf("generator type: %s\n", gsl_rng_name(random));
      printf("seed value: %u\n", seed);

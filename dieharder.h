@@ -82,13 +82,12 @@
  int samples,iterations,stride,random_flag,cache_flag,size;
  int quiet,verbose;
  int floattest,doubletest,transtest;
- int testnum,hbtestnum;
+ int testnum,randnum,hbrandnum;
  struct timeval tv_start,tv_stop;
 
  /*
   * Global vectors and constants for tests.
   */
- double xtest;			/* input variable */
  int dummy,idiot;		/* To fool compiler into executing empty cases */
  int *rand_int;		        /* vector of "random" ints */
  const gsl_rng_type **types;
