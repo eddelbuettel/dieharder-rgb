@@ -65,9 +65,10 @@ void Ntest_destroy(Ntest *ntest)
 void Ntest_eval(Ntest *ntest)
 {
 
- int i;
+ uint i,nvalid;
  double chi,chisq;
  double x_tot,y_tot;
+ double *pvalue,pks;
 
  /*
   * This routine evaluates chi-squared, where:
@@ -87,40 +88,43 @@ void Ntest_eval(Ntest *ntest)
    printf("Evaluating chisq and pvalue for %d points\n",ntest->npts);
  }
 
+ pvalue = (double *)malloc(ntest->npts*sizeof(double));
+
  if(!quiet){
    printf("# Ntest_eval summary\n");
-   printf("# %8s %3s %10s %10s %10s  %7s    %7s\n",
-           "bit/bin","X","Y","sigma","del-chisq","chisq-1","chisq-2");
+   printf("# %7s %3s       %3s   %10s   %10s\n",
+           "bit/bin","X","Y","sigma","p-value");
    printf("#==================================================================\n");
  }
  ntest->chisq = 0.0;
  x_tot = 0.0;
  y_tot = 0.0;
+ /*
+  * We've been doing this all wrong.  Each value in ntest->x[i] should
+  * be distributed normally.  Each value therefore should generate a p-value.
+  * This VECTOR of pvalues should satisfy a kolmogorov-smirnov test, EXCEPT
+  * that we should only include points where the expected result is
+  * (say) >=5, if not higher.
+  */
+ nvalid = 0;
  for (i=0;i<ntest->npts;i++) {
-   /* Try these two forms.  The first uses known sigma[i]: */
-   chi = (ntest->y[i]-ntest->x[i])/ntest->sigma[i];
-   ntest->chisq += chi*chi;
-   /*
-    * Here is an alternate (Pearson chisq) form that presumes only
-    * known/expected y[i].  This is the one we should use, really, if
-    * we know the actual probability distribution and hence y[i].
-    */
-   chisq += (ntest->y[i]-ntest->x[i])*(ntest->y[i]-ntest->x[i])/ntest->y[i];
-   x_tot += ntest->x[i];
-   y_tot += ntest->y[i];
-   if(!quiet){
-     printf("# %3d %10.1f %10.1f %8.3f %8.3f %10.4f %10.4f\n",i,ntest->x[i],
-           ntest->y[i],ntest->sigma[i],chi*chi,ntest->chisq,chisq);
+   if(ntest->x[i] > 30.0){
+     pvalue[nvalid] = 0.5*
+       gsl_sf_erfc((ntest->y[i] - ntest->x[i])/(sqrt(2.0)*ntest->sigma[i]));
+     if(!quiet){
+       printf("# %3d %10.4f %10.4f %10.4f %10.4f\n",i,ntest->x[i],
+             ntest->y[i],ntest->sigma[i],pvalue[nvalid]);
+     }
+     nvalid++;
    }
  }
 
- ntest->pvalue = gsl_sf_gamma_inc_Q((double)ntest->npts/2.0,ntest->chisq/2.0);
+ ntest->pvalue = kstest_kuiper(pvalue,nvalid);
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#    x-total    y-total      chisq   # of bits/bins    p-value\n");
-   printf("# %10.1f %10.1f %10.1f %10d        %10.8f\n",
-      x_tot,y_tot,ntest->chisq,ntest->npts,ntest->pvalue);
+   printf("Kuiper KS p value for series = %f\n",ntest->pvalue);
  }
+
+ free(pvalue);
 
 }
 

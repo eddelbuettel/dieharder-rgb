@@ -105,7 +105,7 @@ void rand_rate_startup()
   * occur when one tries to specify bits on a test where one should
   * specify size.  I need to work this out much better.
   */
- if(bits && testnum != RGB_BIT2 && testnum != RGB_BITDIST){
+ if(bits && testnum != RGB_BIT2 && testnum != RGB_BITDIST && testnum != RGB_BINOMIAL){
    size = bits/rmax_bits + 1;
  } else {
    bits = size*rmax_bits;

@@ -167,7 +167,7 @@ int get_bit_left(unsigned int n)
   */
  index = (int) (n/rmax_bits);
  if(index >= size){
-   fprintf(stderr,"Error: bit offset %d exceeds length %d of bitstring in rand[]\n",n,size*sizeof(unsigned int));
+   fprintf(stderr,"Error: bit offset %d exceeds length %d of bitstring in rand[]\n",n,8*size*sizeof(unsigned int));
    exit(0);
  }
  /*

@@ -52,20 +52,28 @@
 void rgb_binomial()
 {
 
- unsigned int i,j,k,nbits,npts,nsize;
+ unsigned int i,j,k,n,nbits,npts,nsize;
  unsigned int num_ones,num_zeros,num_bits;
  unsigned int thisbit,tot_1,tot_bits;
  double tot_onefrac,tot_oneexp,tot_onefrac_sigma,tot_onefrac_delta;
  double *pvalue,pks,ptmp;
  Ntest btest;   /* For binomial test results */
 
- pvalue = (double *)malloc(samples*sizeof(double));
-
  if(bits > 128){
    nbits = bits = 128;
  } else {
    nbits = bits;
  }
+ /*
+  * Because each rng is only rmax_bits long (which can be less than
+  * 32) we may need to generate more than bits/32 ints per tested
+  * string.  We check to make sure that nsize big enough, as if
+  * rmax_bits < 32 the int division will truncate instead of round up.
+  */
+ nsize = 0;
+ while(nsize*rmax_bits < nbits) nsize++;
+
+ pvalue = (double *)malloc(samples*sizeof(double));
 
  /*
   * Each run checks size bitstrings and generates a binomial pvalue
@@ -89,19 +97,6 @@ void rgb_binomial()
    btest.y[k] = size*ptmp;
    btest.sigma[k] = sqrt(btest.y[k]*(1.0 - ptmp));
  }
-
- /*
-  * We want to check size bitstrings of length bits.  Each random
-  * int produces rmax_int bits.  We therefore need bits/rmax_int
-  * ints from the rng to generate size samples, and we need to round
-  * UP to make sure that we'll always have ENOUGH in the integer vector,
-  * as nothing is non-random like overrunning the test into the data
-  * or code segments.  The following makes nsize minimally size, maximally
-  * 6*size (when e.g. bits = 128 and rmax_int = 24).  It isn't too wasteful,
-  * and I don't care if it is -- memory is cheap on the scale we can afford
-  * to run the test on anyway in terms of CPU speeds.
-  */
- nsize = size*(bits/rmax_bits + 1);
 
  /*
   * Next we run the sampling loop to accumulate num_bit results
@@ -133,31 +128,35 @@ void rgb_binomial()
    }
 
    /*
-    * Fill vector of "random" integers with selected generator.
-    * NOTE WELL:  This can also be done by reading in a file!
-    */
-   for(j=0;j<nsize;j++) {
-     rand_int[j] = gsl_rng_get(rng);
-     if(verbose){
-       printf("rand_int[%d] = %u\n",j,rand_int[j]);
-       dumpbits(&rand_int[j],32);
-     }
-   }
-
-   /*
     * Now we check size (NOT nsize) bitstrings of bits in length,
     * counting the 1's.  At the end we increment the result histogram
     * with the bitcount as an index as a trial that generated that
     * bitcount.
     */
-   if(j=0;j<size;j++){
+   for(j=0;j<size;j++){
+
+     /*
+      * Fill vector of "random" integers with selected generator.
+      * NOTE WELL:  This can also be done by reading in a file!
+      */
+     if(verbose){
+       printf("Generating %u bits in rand_int[]\n",nsize*sizeof(uint)*8);
+     }
+     for(k=0;k<nsize;k++) {
+       rand_int[k] = gsl_rng_get(rng);
+       if(verbose){
+         printf("rand_int[%d] = %u\n",k,rand_int[k]);
+         dumpbits(&rand_int[k],8*sizeof(uint));
+       }
+     }
 
      if(verbose){
-       printf("# bitstring: ");
+       printf("# Counting bitstring: ");
      }
      num_ones = 0;
-     for(k=0;k<bits;k++){
-       if(thisbit = get_bit(k)) {
+     n = 0;
+     for(k=0;k<nbits;k++){
+       if(thisbit = get_bit(n++)) {
          num_ones++;
        }
        if(verbose){
@@ -169,23 +168,15 @@ void rgb_binomial()
       */
      btest.x[num_ones]++;
      if(verbose){
-       printf("\n# Sample %u: 1's = %d, btest[%u] = %u\n",j,num_ones,num_ones,btest[num_ones]);
+       printf("\n# Sample %u: btest[%u] = %u\n",j,num_ones,(uint)btest.x[num_ones]);
      }
    }
-
-   /*
-    * At this point we have a pretty little histogram in btest.x with size
-    * runs in it.  We generate its chisq relative to the expected
-    * binomial distribution.  Really, we should probably use the two
-    * distribution ks test to do this, but lets give this a try as the
-    * two approaches should yield similar if not identical results.
-    */
-   Ntest_eval(&btest);
 
    /*
     * Finally, we save THIS sample's pvalue in the pvalue vector, and
     * move on.
     */
+   Ntest_eval(&btest);
    pvalue[i] = btest.pvalue;
    if(!quiet){
      printf("  %u        %6.2f\n",i,pvalue[i]);

@@ -64,7 +64,7 @@ SOURCES = $(SOURCE)\
     rand_rate_seed.c \
     rand_rate_startup.c \
     rand_rate_work.c \
-    rand_rate_utils.c \
+    bits.c \
     diehard_runs.c \
     diehard_birthdays.c \
     diehard_2dsphere.c \

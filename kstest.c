@@ -47,7 +47,7 @@ double kstest(double *pvalue,int count)
  for(i=0;i<count;i++){
    y = (double) i/count;
    d = fabs(pvalue[i] - y);
-   if(!quiet){
+   if(verbose){
      printf("%8.3f   %8.3f    %8.3f   %8.3f\n",pvalue[i],y,d,dmax);
    }
    if(d > dmax) dmax = d;
@@ -55,7 +55,7 @@ double kstest(double *pvalue,int count)
 
  csqrt = sqrt(count);
  x = (csqrt + 0.12 + 0.11/csqrt)*dmax;
- if(!quiet){
+ if(verbose){
    printf("Kolmogorov-Smirnov D = %8.3f, evaluating q_ks(%6.2f)\n",dmax,x);
  }
  p = q_ks(x);
@@ -112,7 +112,7 @@ double kstest_kuiper(double *pvalue,int count)
   * accumulation.  We save the maximum d across all cumulated samples
   * and transform it into a p-value at the end.
   */
- if(!quiet){
+ if(verbose){
    printf("    obs       exp           v        vmin         vmax\n");
  }
  vmin = 0.0;
@@ -126,14 +126,14 @@ double kstest_kuiper(double *pvalue,int count)
    } else if(v < vmin) {
      vmin = v;
    }
-   if(!quiet){
+   if(verbose){
      printf("%8.3f   %8.3f    %8.3f   %8.3f    %8.3f\n",pvalue[i],y,v,vmin,vmax);
    }
  }
  v = fabs(vmax) + fabs(vmin);
  csqrt = sqrt(count);
  x = (csqrt + 0.155 + 0.24/csqrt)*v;
- if(!quiet){
+ if(verbose){
    printf("Kuiper's V = %8.3f, evaluating q_ks_kuiper(%6.2f)\n",v,x);
  }
  p = q_ks_kuiper(x);
