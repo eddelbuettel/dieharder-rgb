@@ -19,6 +19,15 @@
 void rand_rate_work()
 {
 
+ if(testnum<0){
+   measure_rate();
+   rgb_persist();
+   rgb_binomial();
+   sts_monobit();
+   sts_runs();
+   exit(0);
+ }
+
  switch(testnum){
    default:
    case LIST_RNGS:

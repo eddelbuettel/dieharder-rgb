@@ -11,6 +11,7 @@ void measure_rate()
 {
 
  unsigned int i,j,k,aindex,aitmp;	/* Loop variables */
+ int msamples = 200;  /* seems to be plenty */
  int empty_iter,full_iter,vector_length;
 
  /* Sundry variables for doing statistics */
@@ -74,7 +75,7 @@ void measure_rate()
   
  total_time = 0.0;
  total_time2 = 0.0;
- for(k=1;k<=samples;k++){
+ for(k=1;k<=msamples;k++){
    usleep(1);
    start_timing();
    for(j=1;j<=empty_iter;j++){
@@ -88,17 +89,17 @@ void measure_rate()
    total_time += delta;
    total_time2 += delta*delta;
  }
- avg_time_empty = total_time/samples;
- avg_time2_empty = total_time2/samples;
- if(samples>1){
-   sigma_time_empty = sqrt(( avg_time2_empty - avg_time_empty*avg_time_empty )/(samples-1.0));
+ avg_time_empty = total_time/msamples;
+ avg_time2_empty = total_time2/msamples;
+ if(msamples>1){
+   sigma_time_empty = sqrt(( avg_time2_empty - avg_time_empty*avg_time_empty )/(msamples-1.0));
  } else {
    sigma_time_empty = 1.0e300;
  }
  if(!quiet){
    printf("# ========================================================================\n");
    printf("# Timing \"Empty\" Loop\n");
-   printf("# Samples = %d  Loop iterations per sample = %d\n",samples,empty_iter);
+   printf("# Samples = %d  Loop iterations per sample = %d\n",msamples,empty_iter);
    printf("# Time(sec): %12.8e +/- %12.8e\n",avg_time_empty,sigma_time_empty);
    printf("# ========================================================================\n");
  }
@@ -146,7 +147,7 @@ void measure_rate()
   */
  total_time = 0.0;
  total_time2 = 0.0;
- for(k=1;k<=samples;k++){
+ for(k=1;k<=msamples;k++){
    usleep(1);
    start_timing();
    for(j=1;j<=full_iter;j++){
@@ -163,16 +164,16 @@ void measure_rate()
    total_time += delta;
    total_time2 += delta*delta;
  }
- avg_time_full = total_time/samples;
- avg_time2_full = total_time2/samples;
- if(samples>1){
-   sigma_time_full = sqrt(( avg_time2_full - avg_time_full*avg_time_full )/(samples-1.0));
+ avg_time_full = total_time/msamples;
+ avg_time2_full = total_time2/msamples;
+ if(msamples>1){
+   sigma_time_full = sqrt(( avg_time2_full - avg_time_full*avg_time_full )/(msamples-1.0));
  } else {
    sigma_time_full = 1.0e+300;
  }
  if(!quiet){
    printf("# Timing test %d\n",testnum);
-   printf("# Samples = %d  Loop iterations per sample = %d\n",samples,full_iter);
+   printf("# Samples = %d  Loop iterations per sample = %d\n",msamples,full_iter);
    printf("# Time(sec): %12.8e +/- %12.8e\n",avg_time_full,sigma_time_full);
    printf("#========================================================================\n");
  }
