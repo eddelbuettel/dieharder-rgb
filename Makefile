@@ -56,6 +56,7 @@ SOURCES = $(SOURCE)\
     rand_rate_utils.c \
     rgb_binomial.c \
     sts_monobit.c \
+    sts_runs.c \
     timing.c \
 
 # SOURCE2 = $(PROGRAM2:=.c)

@@ -1,14 +1,13 @@
-These are some simple design notes to guide further work.
+These are some simple design notes to document this program and to guide
+further work.
 
 This program is designed to do the following:
 
-  a) Encapsulate every RNG known to humans for testing.  Since GSL
-already does the encapsulation pretty well, we're going to start with
-all the existing GSL routines.  However, we'll add /dev/random (used for
-seeding, until something better shows up) as well as anything else we
-encounter that isn't already there.  [We will use the GSL encapsulation
-for any new RNG's we add -- /dev/random is already encapsulated and can
-serve as a template for future work, 1/16/03, rgb]
+  a) Encapsulate every RNG known to humans for testing.  We will use the
+GSL both for its rich supply of ready-to-test RNG's and for its
+relatively simple and consistent encapsulation of any new RNG's we add
+-- /dev/random is already encapsulated and can serve as a template for
+future work. [1/16/03 rgb]
 
   b) test speed of the available RNG's.  Both:
      i) In "native/standard" subroutine calls (with the subroutine call
@@ -18,15 +17,96 @@ serve as a template for future work, 1/16/03, rgb]
         subsequently accessed via a macro that only calls for a refill
         when the vector is exhausted.
 
-  c) test quality of the available RNG's.  This means at LEAST:
-     i) DIEHARD, but modified so that we get cold/reproducible
-        statistics and an unambiguous "good/no good" conclusion,
-        per test;
-    ii) NIST STS/FIPS.  Ditto;
-   iii) Plus, of course, anything and everything I can think of.
+  c) test quality of the available RNG's.  There are at least three
+primary sources of tests that will be used in this tool.  
 
-  d) test quality of any input set of "random" data according to c).
-This will let us test arbitrary RNG's via their data, including and
+     i) RGB tests.  These are the tests I myself have implemented.  To
+        the best of my knowledge these are new, although of course
+        my knowledge is far from complete.
+
+    ii) DIEHARD, by Dr. George Marsaglia of FSU.  This is a well-known
+        and venerable "battery of tests" of RNG's.
+
+   iii) NIST STS/FIPS (NIST special publication 800-22, revised
+        5/15/2001).  This is also a suite of RNG tests, with some
+        overlap with DIEHARD.  I will probably implement only selected
+        tests from this suite at least at first, as some of them
+        appear to be relatively weak compared to e.g. rgb_binomial
+        and to test basically the same thing.
+
+    iv) Additional tests that are to be found on the web and in the
+        literature, where they appear to test things not
+        well-represented in tests already implemented in one suite
+        or another.
+
+  d) test quality of any input set of "random" data according to i-iv in
+c).  This will let us test arbitrary RNG's via their data, including and
 especially hardware generators.  Note that hardware generators available
-as "devices" will be interfaced via a).
+as "devices" will be interfaced via a).  This step will only be
+implemented when enough tests to make it worthwhile are already
+implemented.
 
+
+         Addendum and explanation of copyright issues.
+
+The STS was written by a variety of authors:
+
+  Andrew Rukhin, Juan Soto, James Nechvatal, Miles Smid, Elaine Barker,
+  Stefan Leigh, Mark Levenson, Mark Vangel, David Banks, Alan Heckert,
+  James Dray, San Vo.
+
+None of the actual code in the STS suite has been used in this tool --
+all testing routines have been written using only the STS published
+document as an excellent reference.  GSL routines have been used
+throughout, where possible, for computing things such as erfc or Q.
+Since I am not using their code, I am omitting their copyright notice,
+but wish to acknowledge their documentation of the selected tests
+anyway.  All the code in rand_rate is GPL open source in any event, but
+academic credit matters.
+
+Similarly, DIEHARD is the work of George Marsaglia.  Dr. Marsaglia
+doen't have any written copyright that I could find on the website where
+he openly distributes source for his own suite, but in keeping with a
+minor design goal of completely original GPL code, all the DIEHARD
+algorithms have also been completely rewritten without reference to the
+actual diehard code.  Fortunately, Dr. Marsaglia also provides clear
+documentation for his test suite, making it a fairly simple matter to
+implement the tests.
+
+The relatively few tests I have added are motivated by a desire to get a
+less ambiguous answer than many of these tests provide.  In many cases
+it is not (or should not) be correct to say that one "accepts" a
+generator as being a good one just because a test run of the generator
+has a p-value significantly greater than 0.  A few moment's
+experimentation, especially with relatively small data sets, should
+convince one that even "bad" RNG's can sometimes, or even frequently,
+return an "acceptable" p-value.  Only when the size of the test is
+increased, or the test is repeatedly run with different seeds, does it
+become apparent that although it sometimes performs acceptably (the
+result of a run isn't inconsistent with the generator producing "real"
+random numbers) it sometimes performs so poorly that the result can
+>>never<< be explained or believed for a true random number generator.
+
+That is, while a really poor p-value allows us to reject the hypothesis
+that the tested generator is random, acceptable p-values, even a fair
+number of them in repeated tests, do not usually support accepting the
+hypothesis -- at best they don't support rejection.
+
+Running a test repeatedly to generate a full distribution of results and
+then directly comparing the entire distribution with theory appears to
+provide greater sensitivity and accuracy in the rejection process than
+"simple" tests that generate only a single quantity.  This motivated the
+rgb_binomial test, which has proven very good at rejecting "bad" rng's.
+
+Similarily, it may prove useful to directly generate an empirical
+distribution of p-values themselves (repeating a test many times with
+different seeds and binning the p-values) and compare it to the expected
+distribution (which might work for erfc-based p-values, although not so
+well for Q-based p-values).  This can replace running a test many times
+looking for an anomalous number of "poor" p-values mixed in with ones
+that are not so poor as to lead to immediate rejection.
+
+Contributions of rng's (consistently GSL-wrapped as e.g. dev_random.c
+demonstrates) and/or additional tests would be most welcome.
+
+     rgb

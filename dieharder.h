@@ -47,8 +47,9 @@
    LIST_RNGS,
    LIST_RAND,
    BOGORATE,
-   STS_MONOBIT,
    RGB_BINOMIAL,
+   STS_MONOBIT,
+   STS_RUNS,
    N_TEST
  } Tests;
 

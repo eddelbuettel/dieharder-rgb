@@ -30,11 +30,14 @@ void rand_rate_work()
    case BOGORATE:
      measure_rate();
      break;
+   case RGB_BINOMIAL:
+     rgb_binomial();
+     break;
    case STS_MONOBIT:
      sts_monobit();
      break;
-   case RGB_BINOMIAL:
-     rgb_binomial();
+   case STS_RUNS:
+     sts_runs();
      break;
  }
 
