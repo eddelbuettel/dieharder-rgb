@@ -45,6 +45,7 @@ SOURCE = $(PROGRAM:=.c)
 SOURCES = $(SOURCE)\
     add_my_types.c \
     dev_random.c \
+    list_rngs.c \
     measure_rate.c \
     parsecl.c \
     prob.c \

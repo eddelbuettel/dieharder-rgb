@@ -18,7 +18,7 @@ void parsecl(int argc, char **argv)
  size = 1000;		/* Small enough to easily fit into any cache */
  verbose = 0;		/* Default is not to be verbose. */
  quiet = 0;		/* Default is ALSO not to be quiet (output control). */
- testnum = 0;		/* Default is benchmark */
+ testnum = 0;		/* Default is to list rng's */
  randnum = 12;          /* Default is mt19937, as the "best" overall */
 
  while ((c = getopt(argc,argv,"hi:n:qr:s:t:v:")) != EOF){
@@ -86,7 +86,7 @@ void Usage()
  fprintf(stdout, "\n");
  fprintf(stdout, "  -r rngnumber selects the rng to be tested.\n");
  fprintf(stdout, "  -t testnumber selects the test to be performed.\n");
- fprintf(stdout, "     The default test is 0, the bogomegarate timing.\n");
+ fprintf(stdout, "     The default is 0, which lists the rng's available only.\n");
  fprintf(stdout, "\n");
  fprintf(stdout, "  -s controls the length of the test vector (int or double).\n");
  fprintf(stdout, "  -n controls the number of samples (default 100)\n");

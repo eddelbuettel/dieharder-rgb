@@ -25,16 +25,8 @@ void rand_rate_startup()
   * Count and optionally list the available, built in gsl generators
   */
  types = gsl_rng_types_setup ();
- if(verbose == HELPGEN){
-   printf("Listing available built-in gsl-linked generators:\n");
-   printf("Test Number      Name\n");
-   printf("================================\n");
- }
  i = 0;
  while(types[i] != NULL){
-   if(verbose == HELPGEN){
-     printf(" %d\t\t%s\n", i, types[i]->name);
-   }
    i++;
  }
  num_gsl_rngs = i;
@@ -43,22 +35,12 @@ void rand_rate_startup()
   * Now add my own types and count THEM.
   */
  add_my_types();
- if(verbose == HELPGEN){
-   printf("Listing available non-gsl generators:\n");
-   printf("Test Number      Name\n");
-   printf("================================\n");
- }
  while(types[i] != NULL){
-   if(verbose == HELPGEN){
-     printf(" %d\t\t%s\n", i, types[i]->name);
-   }
    i++;
  }
 
  num_rngs = i;
  num_my_rngs = num_rngs - num_gsl_rngs;
-
- if(verbose == HELPGEN) exit(0);
 
  /*
   * Initialize the selected gsl rng.  random_seed() seeds from

@@ -13,7 +13,7 @@
 
 #include "rand_rate.h"
 
-void binomial(unsigned int n, unsigned int k, double p)
+double binomial(unsigned int n, unsigned int k, double p)
 {
 
  double pnk = gsl_sf_fact(n)*pow(p,(double)k)*pow((1.0-p),(double)(n-k))/

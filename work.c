@@ -21,6 +21,9 @@ void rand_rate_work()
 
  switch(testnum){
    default:
+   case LIST_RNGS:
+     list_rngs();
+     break;
    case BOGORATE:
      measure_rate();
      break;
