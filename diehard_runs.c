@@ -80,9 +80,8 @@ int diehard_runs()
  int i,j,k,ns;
  unsigned int ucount,dcount,increased;
  int upruns[RUN_MAX],downruns[RUN_MAX];
- int ufail,dfail;
- double uv,dv,uv_pvalue,dv_pvalue,uv_pvalue_min,dv_pvalue_min;
- double *up,*down;
+ double uv,dv;
+ double *uv_pvalue,*dv_pvalue;
 
  /* Initialize b explicitly */
  b[0] = 1.0/6.0;
@@ -92,23 +91,14 @@ int diehard_runs()
  b[4] = 29.0/5040.0;
  b[5] = 1.0/840.0;
 
- up = (double *)malloc(samples*sizeof(double));
- down = (double *)malloc(samples*sizeof(double));
-
- uv_pvalue_min = 1.0;
- dv_pvalue_min = 1.0;
- ufail = 0;
- dfail = 0;
+ uv_pvalue = (double *)malloc(samples*sizeof(double));
+ dv_pvalue = (double *)malloc(samples*sizeof(double));
 
  /*
   * Fill vector of "random" integers with selected generator.
   * Observe that this test does NOT not convert to floats but
   * counts up down and down up on an integer compare.
   */
- if(!quiet){
-   printf("#==================================================================\n");
-   printf("#  up runs p-value      down runs p-value\n");
- }
  for(ns=0;ns<samples;ns++){
 
    /* Fill vector of rands all at once */
@@ -184,33 +174,65 @@ int diehard_runs()
    if(verbose){
      printf("uv = %f   dv = %f\n",uv,dv);
    }
-   uv_pvalue = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
-   if(uv_pvalue < uv_pvalue_min) uv_pvalue_min = uv_pvalue;
-   if(uv_pvalue < 1.0/samples) ufail++;
-   dv_pvalue = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
-   if(dv_pvalue < dv_pvalue_min) dv_pvalue_min = dv_pvalue;
-   if(dv_pvalue < 1.0/samples) dfail++;
-
-   if(!quiet){
-     printf("#    %10.8f                 %10.8f\n",uv_pvalue,dv_pvalue);
-   }
-/*
- * This distributes uv and dv in the interval 0-1, presumably
- * uniformly, for a KS test.  Once I write one.
-   up[ns] = 1.0 -  exp(-0.5*uv)*(1.0 + 0.5*uv  + 0.125*uv*uv);
-   down[ns] = 1.0 -  exp(-0.5*dv)*(1.0 + 0.5*dv  + 0.125*dv*dv);
-   printf("%d  up = %f   down = %f\n",ns,up[ns],down[ns]);
- */
-
+   uv_pvalue[ns] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
+   dv_pvalue[ns] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
  }
 
-
+ if(size < 100000){
+   printf("Warning!  size = %d too small!  Use -n 100000 or greater\n",size);
+ }
  if(!quiet){
    printf("#==================================================================\n");
-   printf("# Minimum p-values (reference = 1/%u = %f)\n",samples,(double)1.0/samples);
-   printf("# (number of p's less than reference) ufail = %d   dfail = %d\n",ufail,dfail);
-   printf("#  up min p-value      down min p-value\n");
-   printf("#    %10.8f                 %10.8f\n",uv_pvalue_min,dv_pvalue_min);
+   printf("#                Diehard \"runs\" test (modified).\n");
+   printf("# This tests the distribution of increasing and decreasing runs\n");
+   printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
+   printf("# or greater and -n 100000 or greater, it will compute a vector\n");
+   printf("# of p-values for up and down and verify that the proportion\n");
+   printf("# of these values less than 0.01 is consistent with a uniform\n");
+   printf("# distribution.\n");
+   printf("#==================================================================\n");
+   printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+   printf("# size of vector tested = %u\n",size);
  }
+ printf("# Testing runs up:\n");
+ test_proportion(uv_pvalue,samples,0.01);
+ if(!quiet){
+   printf("#==================================================================\n");
+ }
+ printf("# Testing runs down:\n");
+ test_proportion(dv_pvalue,samples,0.01);
+ if(!quiet){
+   printf("#==================================================================\n");
+ }
+
+}
+
+int test_proportion(double *pvec,int m,double alpha)
+{
+
+ int i,j,k;
+ double phat,pcount,proportion,interval,confplus,confminus;
+
+ pcount = 0.0;
+ for(i=0;i<m;i++){
+   /* printf("pvalue = %f\n",pvec[i]); */
+   if(pvec[i]>alpha) pcount++;
+ }
+ proportion = pcount/(double) m;
+ /* printf("pcount = %f, proportion = %f\n",pcount,proportion); */
+ phat = 1.0 - alpha;
+ interval = 3.0*sqrt(phat*(1.0-phat)/(double)m);
+ confplus  = phat+interval;
+ confminus = phat-interval;
+ printf("# %4.2f%% confidence interval for %d samples = (%f,%f)\n",
+   phat*100.0,m,confminus,confplus);
+ if(proportion > confplus){
+   printf("Failure:  proportion = %f\n",proportion);
+ } else if(proportion < confminus){
+   printf("Failure:  proportion = %f\n",proportion);
+ } else {
+   printf("Success:  proportion = %f\n",proportion);
+ }
+ 
 }
 
