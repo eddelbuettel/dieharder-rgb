@@ -15,8 +15,14 @@
  */
 
 #include "rand_rate.h"
+/*
+ * From gsl types.c -- apparently a hard-coded value
+ */
+#define N 100
+/* GSL_VAR const gsl_rng_type *gsl_rng_dev_random; */
+const gsl_rng_type *gsl_rng_dev_random;
 
-void cpu_rate_startup()
+void rand_rate_startup()
 {
 
  int i,imax,j,k;
@@ -47,13 +53,16 @@ void cpu_rate_startup()
  num_gsl_rngs = i;
  if(verbose == HELPGEN){
    printf("================================\n");
-   printf(" Listing additional (non-gsl-linked) tests with local sources:\n");
+   printf(" Listing/adding additional (non-gsl-linked) tests with local sources:\n");
    printf("Test Number      Name\n");
    printf("================================\n");
-   for(i = 0;i<num_homebrews;i++){
-     printf(" %d\t\t%s\n", i+num_gsl_rngs, homebrews[i]);
-   }
  }
+   types[i] = (gsl_rng_dev_random);
+ if(verbose == HELPGEN){
+   printf(" %d\t\t%s\n", i, types[i]->name);
+ }
+ i++;
+ num_rngs = i;
 
  if(verbose == HELPGEN) exit(0);
 
@@ -64,30 +73,35 @@ void cpu_rate_startup()
   * structure from gsl, and add tests to "it" instead of write
   * our own.  This would prevent us from having to mess with porting
   * any we discover that are "good" to the gsl...
-  */
- if(randnum>=num_gsl_rngs) {
+*/
+
+ /* if(randnum>=num_gsl_rngs) {
    hbrandnum = randnum - num_gsl_rngs;
    printf(" randnum = %d, hbrandnum = %d\n",randnum,hbrandnum);
- } else {
+ } else   { */
    /*
     * Initialize the selected gsl rng
     */
+   if(verbose) {
+     printf("Boo! randnum = %d\n",randnum);
+     printf("Initializing random number generator %s\n",types[randnum]->name);
+   }
    random = gsl_rng_alloc (types[randnum]);
    random_max = gsl_rng_max(random);
    seed = random_seed();
    gsl_rng_set(random,seed);
- }
+/* } */
 
  if(verbose == TST_RNG){
-   if(randnum >= num_gsl_rngs) {
+/*   if(randnum >= num_gsl_rngs) {
      printf("hbrandnum = %d\n",hbrandnum);
      printf("generator type: %s\n", homebrews[hbrandnum]);
-   } else {
+   } else { */
      printf("generator type: %s\n", gsl_rng_name(random));
      printf("seed value: %u\n", seed);
      printf("max value = %u\n", random_max);
      for(i = 0;i<15;i++) printf("%d:  %u\n", i, gsl_rng_get(random));
-   }
+/*   } */
    exit(0);
  }
 

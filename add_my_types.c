@@ -17,9 +17,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <config.h>
 #include <stdlib.h>
 #include <gsl/gsl_rng.h>
+/*
+ * Add my local additions?  Here and below...
+ */
+GSL_VAR const gsl_rng_type *gsl_rng_dev_random;
 
 #define N 100
 
@@ -93,6 +96,7 @@ gsl_rng_types_setup (void)
   ADD(gsl_rng_vax);
   ADD(gsl_rng_waterman14);
   ADD(gsl_rng_zuf);
+  ADD(gsl_rng_dev_random);
   ADD(0);
 
   return gsl_rng_generator_types;

@@ -13,6 +13,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <math.h>
+#include <limits.h>
 #include <gsl/gsl_rng.h>
 
 /*
@@ -93,7 +94,7 @@
  const gsl_rng_type **types;
  unsigned int random_max,seed;
  gsl_rng *random;  /* global gsl random number generator */
- int num_gsl_rngs;  /* number of GSL rng's found in current library */
+ int num_gsl_rngs,num_rngs;  /* number of GSL rng's found in current library */
  FILE *fp;         /* pointer to /dev/random, for that benchmark or rng seed */
  char homebrews[10][64];  /* names of homebrew random number generators */
  int num_homebrews;       /* and their number */

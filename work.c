@@ -14,7 +14,7 @@
 
 #include "rand_rate.h"
 
-void cpu_rate_work()
+void rand_rate_work()
 {
 
   measure_rate();

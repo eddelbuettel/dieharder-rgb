@@ -43,12 +43,13 @@ RELEASE=1
 #========================================================================
 SOURCE = $(PROGRAM:=.c)
 SOURCES = $(SOURCE)\
+    dev_random.c \
+    measure_rate.c \
     parsecl.c \
     rand_rate_seed.c \
     rand_rate_startup.c \
     rand_rate_work.c \
-    measure_rate.c \
-    timing.c
+    timing.c \
 
 # SOURCE2 = $(PROGRAM2:=.c)
 # SOURCES2 = $(SOURCE2) project2_work.c
