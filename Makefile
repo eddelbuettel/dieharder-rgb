@@ -61,6 +61,7 @@ SOURCES = $(SOURCE)\
     rand_rate_work.c \
     rand_rate_utils.c \
     diehard_runs.c \
+    diehard_birthdays.c \
     rgb_binomial.c \
     rgb_bitdist.c \
     rgb_bit2.c \
