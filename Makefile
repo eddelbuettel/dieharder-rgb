@@ -64,6 +64,7 @@ SOURCES = $(SOURCE)\
     rand_rate_utils.c \
     diehard_runs.c \
     diehard_birthdays.c \
+    diehard_3dsphere.c \
     rgb_binomial.c \
     rgb_bitdist.c \
     rgb_bit2.c \

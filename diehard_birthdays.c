@@ -66,7 +66,10 @@ int diehard_birthdays()
   * This should be more than twice as many slots as we really
   * need for the Poissonian tail.
   */
- kmax = 10;
+ kmax = 1;
+ while(samples*gsl_ran_poisson_pdf(kmax,lambda)>5) kmax++;
+ kmax++;   /* and one to grow on...*/
+ printf("# Setting number of bins kmax = %u.\n",kmax);
  
  /*
   * Forget size for this one; reallocate to nms in length.
@@ -193,18 +196,13 @@ int diehard_birthdays()
      /*
       * k now is the total number of intervals that occur more than
       * once in this sample and permutation.  So we increment the
-      * sample counter for this permutation in this slot.
+      * sample counter for this permutation in this slot.  If k is
+      * bigger than kmax, we simply ignore it -- it is a BAD IDEA
+      * to bundle all the points from the tail into the last bin,
+      * as a Poisson distribution can have a lot of points out in that
+      * tail!
       */
-     if(k>=kmax){
-       if(verbose){
-         printf("Warning.  Interval count %u exceeds kmax = %u.\n",k,kmax);
-       }
-       k = kmax-1;
-       if(verbose){
-         printf("Incrementing count %u instead.\n",k);
-       }
-     }
-     js[nc][k]++;
+     if(k<kmax) js[nc][k]++;
      if(verbose){
        printf("incremented js[%u][%u] = %u\n",nc,k,js[nc][k]);
      }

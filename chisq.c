@@ -73,9 +73,10 @@ double chisq_poisson(uint *observed,double lambda,int kmax)
 
  /*
   * Now evaluate the corresponding pvalue.  The only real question
-  * is what is the correct number of degrees of freedom.
+  * is what is the correct number of degrees of freedom.  We have
+  * kmax bins, so it should be kmax-1.
   */
- pvalue = gsl_sf_gamma_inc_Q((double)kmax/2.0,chisq/2.0);
+ pvalue = gsl_sf_gamma_inc_Q((double)(kmax-1)/2.0,chisq/2.0);
  if(verbose){
    printf("pvalue = %f in chisq_poisson.\n",pvalue);
  }

@@ -46,6 +46,9 @@ void rand_rate_work()
    case DIEHARD_BDAY:
      diehard_birthdays();
      break;
+   case DIEHARD_3DSPHERE:
+     diehard_3dsphere();
+     break;
    case RGB_PERSIST:
      rgb_persist();
      break;
