@@ -22,7 +22,8 @@ void parsecl(int argc, char **argv)
  diehard = 0;           /* Diehard test number */
  filename[0] = (char)0; /* No input file */
  generator = 13;        /* Default is mt19937, as the "best" overall */
- help_flag = NO;             /* No help requested */
+ help_flag = NO;        /* No help requested */
+ hist_flag = YES;       /* For the moment, histograms on */
  iterations = -1;	/* For timing loop, set iterations to be timed */
  list = NO;             /* List all generators */
  ntuple = 0;            /* n-tuple size for n-tuple tests (0 means all) */
@@ -38,7 +39,7 @@ void parsecl(int argc, char **argv)
  y_user = 0.0;          /* and can be used by any test without having to */
  z_user = 0.0;          /* rewrite parsecl() or add global variables */
 
- while ((c = getopt(argc,argv,"ab:d:f:g:hi:ln:p:qr:S:s:t:u:v:x:y:z:")) != EOF){
+ while ((c = getopt(argc,argv,"ab:d:f:g:H:hi:ln:p:qr:S:s:t:u:v:x:y:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
@@ -55,6 +56,9 @@ void parsecl(int argc, char **argv)
        break;
      case 'g':
        generator = strtol(optarg,(char **) NULL,10);
+       break;
+     case 'H':
+       hist_flag = strtol(optarg,(char **) NULL,10);
        break;
      case 'h':
        help_flag = YES;

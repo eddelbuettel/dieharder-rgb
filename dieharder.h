@@ -194,7 +194,8 @@
  int diehard;           /* Diehard test number */
  char filename[K];      /* Input file name */
  int generator;         /* GSL generator id number to be tested */
- int help_flag;              /* Help flag */
+ int help_flag;         /* Help flag */
+ int hist_flag;         /* Histogram display flag */
  int iterations;	/* For timing loop, set iterations to be timed */
  int list;              /* List all tests flag */
  int List;              /* List all generators flag */

@@ -33,8 +33,15 @@ double diehard_rank_32x32()
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_rank_32x32_test);
- printf("# p = %8.6f for diehard 32x32 binary rank test from Kuiper Kolmogorov-Smirnov\n",pks);
- printf("#     test on %u pvalues.\n",kspi);
+
+ /*
+  * Display histogram of ks p-values (optional)
+  */
+ if(hist_flag){
+   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
+ }
+ printf("# p = %8.6f for diehard 32x32 binary rank test from \n",pks);
+ printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
    printf("# Generator %s FAILS at 0.01%% for diehard_rank_32x32.\n",gsl_rng_name(rng));
  }
@@ -70,7 +77,6 @@ void diehard_rank_32x32_test()
  btest.y[32] = tsamples*0.2887880952e+00;
  btest.sigma[32] = 0.0;
  
-
  for(t=0;t<tsamples;t++){
 
    /*
@@ -119,9 +125,6 @@ void diehard_rank_32x32_test()
  kspi++;
 
  Btest_destroy(&btest);
-
-
- 
 
 }
 

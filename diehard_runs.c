@@ -120,6 +120,13 @@ double diehard_runs()
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_runs_test);
+
+ /*
+  * Display histogram of ks p-values (optional)
+  */
+ if(hist_flag){
+   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
+ }
  printf("# p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov\n",pks);
  printf("#     test on %u pvalues (up runs + down runs).\n",kspi);
  if(pks < 0.0001){

@@ -85,7 +85,7 @@ int binary_rank(uint **mtx,int mrows,int ncols)
    /*
     * This handles the transition to the next
     * uint when the bit index j passes the uint
-    * boundary.  mask picks out the correc bit
+    * boundary.  mask picks out the correct bit
     * column from right to left (why not from
     * left to right?).
     */
@@ -167,8 +167,12 @@ int binary_rank(uint **mtx,int mrows,int ncols)
            printf("eliminating row %2d, before = ",k);
            dumpbits(&mtx[k][col_ind],32);
          }
-         while (n-- > 0){
+         while (n >= 0){
+           if(verbose == D_BRANK || verbose == D_ALL){
+             printf("xoring column = %2d\n",n);
+	   }
            mtx[k][n] ^= mtx[i][n];
+	   n--;
          }
          if(verbose == D_BRANK || verbose == D_ALL){
            printf("eliminating row %2d, after  = ",k);

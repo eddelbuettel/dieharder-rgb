@@ -62,6 +62,7 @@ SOURCES = $(SOURCE)\
     Xtest.c \
     sample.c \
     rank.c \
+    histogram.c \
     confidence.c \
     chisq.c \
     kstest.c \
