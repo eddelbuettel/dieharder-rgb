@@ -256,8 +256,7 @@ sync:
 	echo "New Checkin `date`" >> $(CVS)	# Will force a commit and increment revision
 	cvs commit .		# Do the commit
 	synccvs $(DIR) ganesh.phy.duke.edu
-	synccvs $(DIR) rgb.adsl.duke.edu
-
+	synccvs $(DIR) 209.42.212.5
 
 #========================================================================
 # printout makes an enscript -2r printout of SOURCES and
