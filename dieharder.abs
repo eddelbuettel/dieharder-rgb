@@ -1,4 +1,14 @@
-<H2>rand_rate Version 0.5.1</H2>
+<H1>DieHarder: A Random Number Test Suite</H1>
+
+<p>One suggestion I got on the GSL list was to call this suite "dieharder"
+as it includes and extends George Marsaglia's "Diehard" suite of tests
+of random number generators.  This actually sounds pretty good as a
+tribute to Diehard's enduring usefulness as a test suite.  Only now,
+many years after it was introduced, are computers getting to be fast
+enough that extensions to diehard are required to push the existing
+pseudorandom number generators to failure.</p>
+
+<H2>rand_rate Version 0.5.2</H2>
 
 <p>Click <a href="./rand_rate">here</a> to see a list of all rand_rate
 files on this repository.</p>
@@ -32,6 +42,16 @@ makes it easy to add new tests, critique older tests, and improve the
 suite in general.
 </p>
 
+<h2>NOTE WELL</h2>
+
+<p>If you compile the test and run it as</p>
+
+<tt>  rand_rate -t -1 </tt>
+
+<p>it should run the entire suite on the default generator.  Choose
+alternative tests with -r number where rand_rate -t 0 will list all
+possible numbers known to the current test (mostly from the GSL).</p>
+
 <p>The following are the tests so far implemented and (possibly)
 functional:</p>
 
@@ -39,12 +59,13 @@ functional:</p>
 
 <ul>
 
-<li> Diehard: Knuth "runs" test.
+<li> <b>-t 3</b> Diehard: Knuth "runs" test.
 
 <p>Works OK. Pretty much the way it is described in the original
-documentation, but very definitely new/clean original C code.</p>
+documentation, but very definitely new/clean original C code.  Use a
+large number of samples (e.g. -s 1000000) for the best results.</p>
 
-<li> Diehard: Poissonian "Birthdays" test.
+<li> <b>-t 4</b> Diehard: Poissonian "Birthdays" test.
 
 <p>Works well with KS test, need to choose -s 500.  I fancied it up a bit
 -- use GSL's rmax_bits correctly, use a cyclic permutation under a 24
@@ -54,7 +75,7 @@ gsl_ran_poisson_pdf() and the observations per cycle.  Good at solidly
 rejecting bad generators (try -r 40, randu, as the universal "bad
 generator":-).</p>
 
-<li> Diehard: (2d) Minimum Distance test.
+<li> <b>-t 5</b> Diehard: (2d) Minimum Distance test (2dspheres).
 
 <p>This works well, uses KS test on lots of samples.  It's relatively
 slow as it has to test a lot of pairs of points to float out the minimum
@@ -62,54 +83,53 @@ distance, and I haven't written this optimally (yet) out of sheer
 laziness.  It requires e.g. an index sort and while doing primary
 development a prefer brute force.</p>
 
-<li> Diehard: (3d) Minimum Distance test. 
+<li> <b>-t 6</b> Diehard: (3d) Minimum Distance test (3dspheres). 
 
 <p>This works well also and is in fact the same test as the 2d test
 above but yields a different target distribution.  Again, I'm not
 sorting to find the minimum (yet) and checking all the pairs of points
 is relatively slow, if sure.</p>
 
-<li> rgb: Bitmask test.
+<li> <b>-t 7</b> rgb: Bitmask test.
 
   <p>This is one of my own clever ideas.  Some rng's, for some seeds,
 have bits that don't change. Obviously that makes the rng's bad, but bad
 in a somewhat different way than "just" non-randomness of some more
-occult order.  This is a very fast test that can iterate samples over
-seeds and extract a collective mask of all the bits that didn't change
-for an entire sequence of rands for at least one seed in the test.  Very
-efficiently rejects e.g. randu (GSL 40).</p>
+occult order.  This is a <i>very fast</i> test that can iterate samples
+over seeds and extract a collective mask of all the bits that didn't
+change for an entire sequence of rands for at least one seed in the
+test.  Very efficiently rejects e.g. randu (GSL 40).</p>
 
-<li> rgb: Single bit binomial distribution test.
+<li> <b>-t 8</b> rgb: Bitwise n-tuple distribution test.
 
- <p>This is a nice test that is similar (possibly identical, I haven't
-decided) to some sts tests that look at bit distributions.  If you look
-at random e.g. 128 bit words, you expect to see a binomial distribution
-of the total 1 bit count per word centered on 64.  This test is now
-fixed and appears to work quite well.</p>
+ <p>This is an awesome test.  No rng I've tested gets out alive.
+Basically, this test runs through a random bitstring somewhere between
+32 and 128 bits wide.  The test slides a window n \in (1-8) bits wide
+across the bitstring and counts the number of occurrences of the
+integer(s) it finds there, per bitstring, and bins the results in a
+<i>histogram</i>, per test of tsamples.  It then uses the binomial
+probability to compute the theoretical occupations of the histogram
+bins and converts the results for a single integer into a pvalue per
+test.  It saves these pvalues in a result pvalue vector and subjects
+them all to a kstest at the end, providing a single p-value for the
+test.</p>
 
-<li> rgb: Pairwise bit binomial distribution test.
+<p>As implemented, it does each n-tuple (window width) at a time from 1
+to 8.  1 is a more powerful version of e.g. sts_monobit, that not only
+determines if 0's and 1's are balanced but if their binomial histogram
+is correct when sampling relatively small bitstrings.  2 is a more
+powerful version of the sts "runs" test, since it can easily be shown
+that counting "runs" is equivalent to counting 2x(# of 01 bitstrings).
+5 appears to be redundant with several diehard tests, although that
+remains to be proven.  All the generators I've tested in the GSL fail
+at 6-tuples or 7-tuples -- none make it to 8-tuples (bytes).</p>
 
- <p>Broken, but now that I have the single bit test running well I
-can rewrite this one as it is identical except that it checks
-bit pairs instead of single bits.  To write it efficiently (and in fact
-to generalize the binomial cod above) I need to combine cycle with
-get_bit to create a cyclic "window" retrieval function that returns the
-integer value of an index-specified bit window on the integer, with
-periodic wraparound.</p>
+<p>This has profound implications for simulations and samplings of
+bytes.  Existing rng's appear to have a bitwise bias that is clearly
+apparent long before getting to bitstrings as long as a single byte of
+data.</p>
 
-<p>Then it should be easy to completely automate this so that one can
-test arbitrary n-tuples of bits for the right frequency distribution,
-across all cyclic permutations of the source words.  I think that this
-would eat/replace several of the Diehard tests and a few of the STS
-tests which all seem to do this same thing, but not as plainly and maybe
-not as well.  Note that doing a series of these tests is like testing
-moments -- if single bits are correctly distributed (50/50 binomial) and
-bitpairs are correctly distributed (25/75 binomial for all pairs) and
-bit triplets are correctly distributed and bit octets are correctly
-distributed (etc) it is hard to see how the rands themselves won't be
-correctly (randomly) distributed.</p>
-
-<li> STS: monobit test.
+<li> <b>-t 9</b> STS: monobit test.
 
  <p>This is a weak (but still useful) version of the counting of 1's in
 a word of N bits that examines the number of 1's in a very long list of
@@ -122,7 +142,7 @@ documentation).  Weak or not, monobit can definitely find truly weak
 rng's.  Not so good in general, as it is quite possible for an rng to
 yield the right fraction of 1's and 0's but still be very nonrandom.</p>
 
-<li> STS: runs test (counts runs of 0's and 1's).
+<li> <b>-t 10</b> STS: runs test (counts runs of 0's and 1's).
 
  <p>This is distinct from Diehard's runs.  In fact, this test is TRYING
 to compute what I will eventually compute far more directly in the
@@ -133,31 +153,45 @@ counting the intervening bits)?  Just count the damn pairs!</p>
 
 </ul>
 
-<p>Notes on current activity:  I added a KS test to analyze a vector of
-p-values to ensure that they are uniform on 0,1 over many independent
-sampling runs PER test, so that a test can yield a single statistic that
-is absolutely consistent across all tests.  Printing the KS data out as
-it is computed from a sorted list of p-values is also very useful in
-trying to determine whether or not it appears uniform to the eye.</p>
+<h2Notes on current activity</h2>
 
-<p>As I finish improved Pearson chisq estimators and the KStest, I
-expect to fly through some of the still-missing Diehard tests and dig
-into the sts tests.  I also think that it would be "interesting" to
-apply this exact framework to the GSL distribution generators as a test
-of random numbers TOTALLY within the GSL -- if one simply (e.g.) samples
-a poissonian using randu as your rng and compare the result to the
-poissonian probability density function to compute Pearson's chisq and a
-p-value (vector) and eventually a KS p-value, does that prove to be as
-sensitive a test as the various (far more complex) STS and Diehard
-tests.  For example, the birthday test seems like a difficult way to
-generate a Poissonian compared to just "doing it" from an rng.  Is there
-any evidence that it has greater sensitivity to various failures of the rng
+<p> I'm mostly through a rewrite of the code that is putting it all in
+a common format where a shell calls and samples the actual test, after
+setting any test-specific parameters and spitting out a more or less
+standard form description of the test (which can be surpressed by the
+-q flag).  A few diehard tests remain to be converted, and rgb_persist
+cannot be converted as it doesn't produce a p-value, it just fails or
+doesn't fail.  Once I finish converting the existing tests it is back
+to adding more diehard tests, as my current goal is to get all of
+diehard implemented this year (and more selected tests out of sts).</p>
+
+<h2>Thoughts for the Future</h2>
+
+<p>I think that it would be "interesting" to apply this exact framework
+to the GSL distribution generators as a test of random numbers TOTALLY
+within the GSL -- if one simply (e.g.) samples a poissonian using randu
+as your rng and compare the result to the poissonian probability density
+function and use it to compute Pearson's chisq and a p-value (vector)
+and eventually a KS p-value, does that prove to be as sensitive a test
+as the various (far more complex) STS and Diehard tests?  An interesting
+question, if nothing else.</p>
+
+<p>For example, the birthday test seems like a difficult way to generate
+a Poissonian compared to just "doing it" from an rng.  Is there any
+evidence that it has greater sensitivity to various failures of the rng
 than a test that didn't have to achieve an asymtotic limit (large bit
 windows, many birthdays, many samples) in order to become Poissonian in
-the first place?</p>
+the first place?  Similarly, does the sts runs test have anything to
+recommend it relative to just counting windowed integer values returned
+by the rng (integer values extracted from the actual bits viewed
+through a "port" if fixed width with cyclic/periodic wraparound of the
+source integer/bitstring)?  I doubt it, but sensitivity tests require a
+lot of time and energy to conduct.  When the tool is finished, I'll
+conduct them.</p>
 
-<p>Anyway, I hope that you find rand_rate useful.  If you have any
-interest in participating in its development, be sure to let me know,
-especially if you have decent coding skills and a basic knowledge of
-statistics.  I have documents to help with the latter, if you have the
-programming skills and want to LEARN statistics.</p>
+<p>Anyway, I hope that even during development, you find rand_rate
+useful.  If you have any interest in participating in its development,
+be sure to let me know, especially if you have decent coding skills and
+a basic knowledge of statistics.  I have documents to help with the
+latter, if you have the programming skills and want to LEARN
+statistics.</p>

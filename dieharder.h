@@ -38,7 +38,6 @@
    D_QUIET,
    D_ALL,
    D_SEED,
-   D_BITS,
    D_DIEHARD_RUNS,
    D_DIEHARD_BDAY,
    D_DIEHARD_2DSPHERE,
@@ -47,7 +46,9 @@
    D_RGB_BITDIST,
    D_STS_MONOBIT,
    D_STS_RUNS,
+   D_BITS,
    D_SAMPLE,
+   D_CHISQ,
    D_KSTEST,
    D_BTEST,
    D_XTEST,
@@ -89,7 +90,7 @@
  void Usage();
  double binomial(unsigned int n, unsigned int k, double p);
  double chisq_eval(double *x,double *y,double *sigma, unsigned int n);
- double chisq_poisson(uint *observed,double lambda,int kmax);
+ double chisq_poisson(uint *observed,double lambda,int kmax,uint nsamp);
  double chisq_binomial(double *observed,double prob,uint kmax,uint nsamp);
  void dumpbits(unsigned int *data, unsigned int nbits);
  double sample(void *testfunc());
@@ -102,6 +103,10 @@
   */
  double diehard_runs();
  void diehard_runs_test();
+ double diehard_birthdays();
+ void diehard_birthdays_test();
+ double diehard_2dsphere();
+ void diehard_2dsphere_test();
  double rgb_bitdist();
  void rgb_bitdist_test();
  double sts_monobit();

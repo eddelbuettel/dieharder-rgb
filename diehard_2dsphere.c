@@ -28,7 +28,35 @@ typedef struct {
   double x[DIM];
 } C3;
  
-int diehard_2dsphere()
+double diehard_2dsphere()
+{
+
+ double pks;
+ 
+ if(!quiet){
+   printf("#==================================================================\n");
+   printf("#         Diehard \"Minimum Distance\" test (modified).\n");
+   printf("# Generate 8000 points in a 10000^2 square.  Determine the\n");
+   printf("# the shortest nearest neighbor distance R.  This should generate\n");
+   printf("# p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a\n");
+   printf("# KS test to see if p is uniform.\n");
+   printf("#==================================================================\n");
+   printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+   printf("# Number of points tested = %u\n",POINTS);
+ }
+
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)diehard_2dsphere_test);
+ printf("p = %8.6f for diehard_2dsphere test from Kuiper Komogorov-Smirnov test\n",pks);
+ if(pks < 0.0001){
+   printf("Generator %s fails for diehard_2dsphere.\n",gsl_rng_name(rng));
+ }
+
+ return(pks);
+
+}
+
+void diehard_2dsphere_test()
 {
 
  int i,j,k,l,m;
@@ -42,72 +70,43 @@ int diehard_2dsphere()
   * a simple double loop through to float the smallest separation out.
   * Generate p, save in a sample vector.  Apply KS test.
   */
- pvalue = (double *)malloc(psamples*sizeof(double));
  c3 = (C3 *)malloc(POINTS*sizeof(C3));
 
- for(i=0;i<psamples;i++){
-   rmin = 2000.0;
-   for(j=0;j<POINTS;j++){
-     /*
-      * Generate a new point in the 10000x10000 square.
-      */
-     for(k=0;k<DIM;k++) c3[j].x[k] = 10000.0*gsl_rng_uniform_pos(rng);
-     if(verbose){
-       printf("%d: (%8.2f,%8.2f)\n",j,c3[j].x[0],c3[j].x[1]);
-     }
-
-     /*
-      * Now compute the distance between the new point and all previously
-      * picked points.
-      */
-     for(k=j-1;k>=0;k--){
-       r2 = 0.0;
-       for(l=0;l<DIM;l++){
-         r2 += (c3[j].x[l]-c3[k].x[l])*(c3[j].x[l]-c3[k].x[l]);
-       }
-       r1 = sqrt(r2);
-       if(r1<rmin) {
-         rmin = r1;
-	 r2min = r2;
-       }
-     }
+ rmin = 2000.0;
+ for(j=0;j<POINTS;j++){
+   /*
+    * Generate a new point in the 10000x10000 square.
+    */
+   for(k=0;k<DIM;k++) c3[j].x[k] = 10000.0*gsl_rng_uniform_pos(rng);
+   if(verbose == D_DIEHARD_2DSPHERE || verbose == D_ALL){
+     printf("%d: (%8.2f,%8.2f)\n",j,c3[j].x[0],c3[j].x[1]);
    }
 
-   if(verbose){
-     printf("Found rmin = %f  (r^2 = %f)\n",rmin,r2min);
+   /*
+    * Now compute the distance between the new point and all previously
+    * picked points.
+    */
+   for(k=j-1;k>=0;k--){
+     r2 = 0.0;
+     for(l=0;l<DIM;l++){
+       r2 += (c3[j].x[l]-c3[k].x[l])*(c3[j].x[l]-c3[k].x[l]);
+     }
+     r1 = sqrt(r2);
+     if(r1<rmin) {
+       rmin = r1;
+       r2min = r2;
+     }
    }
-   pvalue[i] = 1.0 - exp(-r2min/0.995);
-   printf("p-value[%d] = %f\n",i,pvalue[i]);
  }
 
- if(!quiet){
-   printf("#==================================================================\n");
-   printf("#         Diehard \"Minimum Distance\" test (modified).\n");
-   printf("# Generate 8000 points in a 10000^2 square.  Determine the\n");
-   printf("# the shortest nearest neighbor distance R.  This should generate\n");
-   printf("# p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a\n");
-   printf("# KS test to see if p is uniform.\n");
-   printf("#==================================================================\n");
-   printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# Number of points tested = %u\n",POINTS);
+ if(verbose == D_DIEHARD_2DSPHERE || verbose == D_ALL){
+   printf("Found rmin = %f  (r^2 = %f)\n",rmin,r2min);
  }
-
- pks = kstest(pvalue,psamples);
- printf("p = %6.3f from Komogorov-Smirnov test on %d samples.\n",pks,psamples);
- if(pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
+ ks_pvalue[kspi] = 1.0 - exp(-r2min/0.995);
+ if(verbose == D_DIEHARD_2DSPHERE || verbose == D_ALL){
+   printf("p-value[%d] = %f\n",kspi,ks_pvalue[kspi]);
  }
- 
- pks = kstest_kuiper(pvalue,psamples);
- printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d samples.\n",pks,psamples);
- if(pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
- }
- 
+ kspi++;
 
 }
 

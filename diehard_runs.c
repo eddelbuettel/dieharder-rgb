@@ -2,7 +2,6 @@
 * $Id$
 *
 * See copyright in copyright.h and the accompanying file COPYING
-* See also accompanying file STS.COPYING
 *
 */
 
@@ -78,8 +77,8 @@ static double b[6];
 double diehard_runs()
 {
 
- int ntuple,ntuple_max,n,p,pcnt;
  double *pvalue,pks;
+ uint tempsamples;
 
  /*
   * This is the merest shell to set any test-specific variables, call
@@ -101,6 +100,18 @@ double diehard_runs()
  b[4] = 29.0/5040.0;
  b[5] = 1.0/840.0;
 
+
+ /*
+  * If this is part of a sweep of tests, reset tsamples and
+  * resize rand_int.
+  */
+ if(testnum < 0){
+   tempsamples = tsamples;
+   tsamples = 100000 ;  /* Minimal value for this test */
+ }
+ free(rand_int);
+ rand_int = (uint *)malloc(tsamples*sizeof(uint));
+
  if(!quiet){
    printf("#==================================================================\n");
    printf("#                Diehard \"runs\" test (modified).\n");
@@ -112,16 +123,25 @@ double diehard_runs()
    printf("# distribution.\n");
    printf("#==================================================================\n");
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# size of vector tested = %u (100000 or more suggested)\n",size);
+   printf("# size of vector tested = %u (100000 or more suggested)\n",tsamples);
  }
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_runs_test);
- printf("p = %6.3f for diehard_runs test from Kuiper Komogorov-Smirnov test\n",pks);
+ printf("p = %8.6f for diehard_runs test from Kuiper Komogorov-Smirnov test\n",pks);
  printf("     on %u pvalues (up runs + down runs).\n",kspi);
  if(pks < 0.0001){
    printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));
  }
+
+ /*
+  * Put back tsamples
+  */
+ if(testnum < 0){
+   tsamples = tempsamples;
+ }
+ free(rand_int);
+ rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
  return(pks);
 
@@ -130,7 +150,7 @@ double diehard_runs()
 void diehard_runs_test()
 {
 
- int i,j,k,ns;
+ int i,j,k,t,ns;
  unsigned int ucount,dcount,increased;
  int upruns[RUN_MAX],downruns[RUN_MAX];
  double uv,dv,up_pks,down_pks;
@@ -141,14 +161,6 @@ void diehard_runs_test()
   * Observe that this test does NOT not convert to floats but
   * counts up down and down up on an integer compare.
   */
-
- /*
-  * Fill vector of rands all at once.  This should be tsamples
-  * in size, because size = tsamples unless overridden.
-  */
- for(j=0;j<size;j++) {
-   rand_int[j] = gsl_rng_get(rng);
- }
 
  /*
   * Clear up and down run bins
@@ -167,15 +179,17 @@ void diehard_runs_test()
  if(verbose){
    printf("j    rand    ucount  dcount\n");
  }
- for(j=1;j<size;j++) {
+ rand_int[0] = gsl_rng_get(rng);
+ for(t=1;t<tsamples;t++) {
+   rand_int[t] = gsl_rng_get(rng);
    if(verbose){
-     printf("%d:  %10u   %u    %u\n",j,rand_int[j],ucount,dcount);
+     printf("%d:  %10u   %u    %u\n",t,rand_int[t],ucount,dcount);
    }
 
    /*
     * Did we increase?
     */
-   if(rand_int[j] > rand_int[j-1]){
+   if(rand_int[t] > rand_int[t-1]){
      ucount++;
      if(ucount > RUN_MAX) ucount = RUN_MAX;
      downruns[dcount-1]++;

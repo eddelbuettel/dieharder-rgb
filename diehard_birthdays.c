@@ -41,237 +41,254 @@
 
 #include "rand_rate.h"
 
-#define BLEN  32
-#define BBITS 24
-/* #define BMPOW 9 */
-#define BMPOW 9
+static double lambda;
+static unsigned int *intervals;
+static unsigned int nms,nbits,kmax;
 
-int diehard_birthdays()
+double diehard_birthdays()
 {
 
- unsigned int i,j,k,kmax,m,mnext,ns,nc;
- unsigned int nms;
- unsigned int rmask;
- unsigned int *rand_list,*intervals;
- unsigned int **js;
- double lambda,*pvalue,pks;
+ double pks;
+ uint tempsamples;
 
  /*
-  * Should be 512, but we'll do it this way in case we want to vary it.
+  * This is the merest shell to set any test-specific variables, call
+  * the main test routine (which fills one or more slots in ks_pvalue[]
+  * and increments kspi accordingly), and run a Kuiper Kolmogorov-Smirnov
+  * test on the vector of pvalues produced and turn it into a single,
+  * cumulative p-value (pks) for the entire test.  If the test parameters
+  * are set properly, this will USUALLY yield an unambiguous signal of
+  * failure.
   */
- nms = pow(2,BMPOW);
 
- lambda = (double)nms*nms*nms/pow(2.0,26.0);
+ /*
+  * From Marsaglia, nms should just be "512", but we'll do it this way in
+  * case we want to vary it.  One day it would be useful to scale this
+  * whole computation <bam!> up a notch (sorry, Emmeril:-).  Similarly,
+  * nbits should be "24", but we can really make it anything we want
+  * that's less than rmax_bits;
+  */
+ nms = 512;
+ nbits = 24;
+ 
+ free(rand_int);
+ rand_int = (unsigned int *)malloc(nms*sizeof(unsigned int));
+ intervals = (unsigned int *)malloc(nms*sizeof(unsigned int));
+
+ if(nbits>rmax_bits) nbits = rmax_bits;
+
+ /*
+  * This is the one thing that matters.  We're going to make the
+  * exact poisson distribution we expect below, and lambda has to
+  * be right.  lambda = nms^3/4n where n = 2^nbits, for the record.
+  */
+ lambda = (double)nms*nms*nms/pow(2.0,(double)nbits+2.0);
+
  /*
   * This should be more than twice as many slots as we really
-  * need for the Poissonian tail.
+  * need for the Poissonian tail.  We're going to sample tsamples
+  * times, and we only want to keep the histogram out to where
+  * it has a reasonable number of hits/degrees of freedom, just
+  * like we do with all the chisq's built on histograms.
   */
  kmax = 1;
- while(psamples*gsl_ran_poisson_pdf(kmax,lambda)>5) kmax++;
+ while(tsamples*gsl_ran_poisson_pdf(kmax,lambda)>5) kmax++;
  kmax++;   /* and one to grow on...*/
- printf("# Setting number of bins kmax = %u.\n",kmax);
- 
- /*
-  * Forget size for this one; reallocate to nms in length.
-  * Also get the rand_list, where we'll put the 24 bit masked result.
-  */
- free(rand_int);
- rand_int  = (unsigned int *)malloc(nms*sizeof(unsigned int));
- rand_list = (unsigned int *)malloc(nms*sizeof(unsigned int));
- intervals = (unsigned int *)malloc(nms*sizeof(unsigned int));
- rmask = 1;
- for(i=0;i<BBITS-1;i++) {
-  rmask = rmask << 1;
-  rmask++;
- }
 
- /*
-  * js[rmax_bits][kmax] is the histogram we increment using the
-  * count of repeated intervals as an index, for each cyclic
-  * permutation of bits.
-  */
- js = (unsigned int **)malloc(rmax_bits*sizeof(unsigned int *));
- for(i=0;i<rmax_bits;i++){
-   js[i] = (unsigned int *)malloc(kmax*sizeof(unsigned int));
-   for(j=0;j<kmax;j++) js[i][j] = 0;
- }
- pvalue = (double *)malloc(rmax_bits*sizeof(double));
-
- /*
-  * Each sample uses a unique set of rand_int[]'s, but evaluates
-  * the Poissonian statistic for each cyclic rotation of the bits
-  * across the 24 bit mask.
-  */
- for(ns=0;ns<psamples;ns++){
-
-   /*
-    * Fill vector of rands to begin.
-    */
-   for(m=0;m<nms;m++) {
-     rand_int[m] = gsl_rng_get(rng);
-   }
-
-   /*
-    * Cycle over all rmax_bits cyclic bit permutations (which we'll take
-    * 24 bits at a time).  We really need to test to make sure
-    * that rmax_bits >= 24...
-   for(nc=0;nc<1;nc++){
-   */
-   for(nc=0;nc<rmax_bits;nc++){
-
-     /*
-      * k is the interval count for THIS pass through THIS list (what
-      * Marsaglia calls j).
-      */
-     k = 0;
-     for(m = 0;m<nms;m++){
-       /*
-        * Create a list of 24-bit masked rands
-        */
-       rand_list[m] = rand_int[m]&rmask;
-       if(verbose){
-         printf("Original int = ");
-         dumpbits(&rand_int[m],32);
-         printf("  Masked int = ");
-         dumpbits(&rand_list[m],32);
-       }
-     }
-
-     /*
-      * The actual test logic goes right here.  We have nms random ints
-      * with 24 bits each.  We sort them.
-      */
-     if(verbose){
-       for(m=0;m<nms;m++){
-         printf("Before %u:  %u\n",m,rand_list[m]);
-       }
-     }
-     gsl_sort_uint(rand_list,1,nms);
-     if(verbose){
-       for(m=0;m<nms;m++){
-         printf("After %u:  %u\n",m,rand_list[m]);
-       }
-     }
-
-     /*
-      * We create the intervals between entries in the sorted
-      * list and sort THEM.
-      */
-     intervals[0] = rand_list[0];
-     for(m=1;m<nms;m++){
-       intervals[m] = rand_list[m] - rand_list[m-1];
-     }
-     gsl_sort_uint(intervals,1,nms);
-     if(verbose){
-       for(m=0;m<nms;m++){
-         printf("Intervals %u:  %u\n",m,intervals[m]);
-       }
-     }
-
-     /*
-      * We count the number of interval values that occur more than
-      * once in the list.  Presumably that means that even if an interval
-      * occurs 3 or 4 times, it counts only once!
-      */
-     
-     for(m=0;m<nms-1;m++){
-       mnext = m+1;
-       while(intervals[m] == intervals[mnext]){
-          /* There is at least one repeat of this interval */
-	  if(mnext == m+1){
-	    /* increment the count of repeated intervals */
-	    k++;
-	  }
-          if(verbose){
-            printf("intervals[%u] = %u == intervals[%u] = %u\n",
-               m,intervals[m],mnext,intervals[mnext]);
-	  }
-	  mnext++;
-       }
-       /*
-        * Skip all the rest that were identical.
-	*/
-       if(mnext != m+1) m = mnext;
-     }
-     /*
-      * k now is the total number of intervals that occur more than
-      * once in this sample and permutation.  So we increment the
-      * sample counter for this permutation in this slot.  If k is
-      * bigger than kmax, we simply ignore it -- it is a BAD IDEA
-      * to bundle all the points from the tail into the last bin,
-      * as a Poisson distribution can have a lot of points out in that
-      * tail!
-      */
-     if(k<kmax) js[nc][k]++;
-     if(verbose){
-       printf("incremented js[%u][%u] = %u\n",nc,k,js[nc][k]);
-     }
-       
-
-     /*
-      * Done with a test on rand_list[].  Now we cycle each int in our
-      * original list one bit to the right (with wraparound).
-      */
-     for(m = 0;m<nms;m++){
-       cycle(&rand_int[m],rmax_bits);
-     }
-   }
- }
-
- /*
-  * Let's sort the result (for fun) and print it out for each bit
-  * position.
-  */
- if(verbose){
-   for(nc=0;nc<rmax_bits;nc++){
-     printf("#==================================================================\n");
-     for(k=0;k<kmax;k++){
-       printf("js[%u][%u] = %u\n",nc,k,js[nc][k]);
-     }
-   }
- }
-
-
- /*
-  * Fine fine fine.  We FINALLY have a distribution per cyclic permutation of
-  * the binned repeat interval counts of many samples of 512 numbers drawn
-  * from 2^24 (24 bit integer masks).  We should now be able to pass
-  * EACH vector of results off to a Pearson chisq computation for the
-  * expected Poissonian distribution and generate a p-value for each
-  * cyclic permutation of the bits through the 24 bit mask.
-  */
- for(nc=0;nc<rmax_bits;nc++){
-    pvalue[nc] = chisq_poisson(js[nc],lambda,kmax);
-    printf("p-value[%u] = %f\n",nc,pvalue[nc]);    
+ if(testnum < 0){
+   tempsamples = tsamples;
+   tsamples = 100;  /* Standard value */
  }
 
  if(!quiet){
    printf("#==================================================================\n");
    printf("#                Diehard \"Birthdays\" test (modified).\n");
-   printf("# Each sample determines the number of matching intervals\n");
-   printf("# from 512 \"birthdays\" drawn on a 24-bit \"year\".\n");
-   printf("# Cumulated samples are then converted to chisq and p-values.\n");
+   printf("# Each test determines the number of matching intervals\n");
+   printf("# from 512 \"birthdays\" drawn on a 24-bit \"year\".  This\n");
+   printf("# is repeated and cumulated in a histogram %u times.\n",tsamples);
+   printf("# Cumulated samples are then converted to chisq and p-values\n");
+   printf("# based on the poisson distribution expectation values.\n");
+   printf("#\n");
+   printf("# The samples in this test are completely independent with no\n");
+   printf("# cyclic/bitwise overlap -- it is therefore stronger than the\n");
+   printf("# original (I think).   At any rate, it brings otherwise strong\n");
+   printf("# generators to their metaphorical knees at -s 200\n");
    printf("#==================================================================\n");
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# %u samples drawn of %u cyclic permutations.\n",psamples,rmax_bits);
-   printf("# lambda = %f\n",lambda);
+   printf("# %u samples drawn of %u-length random integer from inside cyclic\n",tsamples,rmax_bits);
+   printf("# window on %u bits.  lambda = %f, kmax = %u\n",rmax_bits,lambda,kmax);
  }
 
- pks = kstest(pvalue,rmax_bits);
- printf("p = %6.3f from standard Komogorov-Smirnov test on %d bits.\n",pks,rmax_bits);
- if(pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)diehard_birthdays_test);
+ printf("p = %8.6f for diehard_birthdays test from Kuiper Komogorov-Smirnov test\n",pks);
+ printf("     on %u pvalues.\n",kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails for diehard_birthdays.\n",gsl_rng_name(rng));
  }
 
- pks = kstest_kuiper(pvalue,rmax_bits);
- printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d bits.\n",pks,rmax_bits);
- if(pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
+ /*
+  * Put rand_int back, as others might need it.  Free intervals.
+  */
+ free(rand_int);
+ rand_int = (unsigned int *)malloc(size*sizeof(unsigned int));
+ free(intervals);
+
+ /*
+  * Put back tsamples
+  */
+ if(testnum < 0){
+   tsamples = tempsamples;
  }
- 
+
+ return(pks);
+
+}
+
+void diehard_birthdays_test()
+{
+
+ unsigned int i,j,k,t,m,mnext,ns;
+ unsigned int bitstring,offset;
+ unsigned int *js;
+ double *pvalue,pks;
+
+ /*
+  * js[kmax] is the histogram we increment using the
+  * count of repeated intervals as an index.  Clear it.
+  */
+ js = (unsigned int *)malloc(kmax*sizeof(unsigned int));
+ for(i=0;i<kmax;i++) js[i] = 0;
+
+ /*
+  * Each sample uses a unique set of tsample rand_int[]'s, but evaluates
+  * the Poissonian statistic for each cyclic rotation of the bits across
+  * the 24 bit mask.
+  */
+
+ /*
+  * Accumulate tsamples of this test into our histogram.
+  */
+ for(t=0;t<tsamples;t++) {
+
+   /*
+    * Create a list of 24-bit masked rands.  This is easy now that
+    * we have get_bit_ntuple().  We use a more or less random offset
+    * of the bitstring, and use one and only one random number
+    * per bitstring, so that our samples are >>independent<<, and average
+    * over any particular bit position used as a starting point with
+    * cyclic/periodic bit wrap.
+    */
+   for(m = 0;m<nms;m++){
+     bitstring = gsl_rng_get(rng);
+     /* more or less random offset in the range of the bitstring */
+     offset = bitstring%rmax_bits;
+     rand_int[m] = get_bit_ntuple(&bitstring,1,nbits,offset);
+     if(verbose == D_DIEHARD_BDAY || verbose == D_ALL){
+       printf("  24-bit int = ");
+       /* Should count dump from the right, sorry */
+       dumpbits(&rand_int[m],32);
+     }
+   }
+
+   /*
+    * The actual test logic goes right here.  We have nms random ints
+    * with 24 bits each.  We sort them.
+    */
+   if(verbose == D_DIEHARD_BDAY || verbose == D_ALL){
+     for(m=0;m<nms;m++){
+       printf("Before sort %u:  %u\n",m,rand_int[m]);
+     }
+   }
+   gsl_sort_uint(rand_int,1,nms);
+   if(verbose == D_DIEHARD_BDAY || verbose == D_ALL){
+     for(m=0;m<nms;m++){
+       printf("After sort %u:  %u\n",m,rand_int[m]);
+     }
+   }
+
+   /*
+    * We create the intervals between entries in the sorted
+    * list and sort THEM.
+    */
+   intervals[0] = rand_int[0];
+   for(m=1;m<nms;m++){
+     intervals[m] = rand_int[m] - rand_int[m-1];
+   }
+   gsl_sort_uint(intervals,1,nms);
+   if(verbose == D_DIEHARD_BDAY || verbose == D_ALL){
+     for(m=0;m<nms;m++){
+       printf("Sorted Intervals %u:  %u\n",m,intervals[m]);
+     }
+   }
+
+   /*
+    * We count the number of interval values that occur more than
+    * once in the list.  Presumably that means that even if an interval
+    * occurs 3 or 4 times, it counts only once!
+    *
+    * k is the interval count (Marsaglia calls it j).
+    */
+   k = 0;
+   for(m=0;m<nms-1;m++){
+     mnext = m+1;
+     while(intervals[m] == intervals[mnext]){
+       /* There is at least one repeat of this interval */
+       if(mnext == m+1){
+         /* increment the count of repeated intervals */
+        k++;
+       }
+       if(verbose == D_DIEHARD_BDAY || verbose == D_ALL){
+         printf("repeated intervals[%u] = %u == intervals[%u] = %u\n",
+            m,intervals[m],mnext,intervals[mnext]);
+       }
+       mnext++;
+     }
+     /*
+      * Skip all the rest that were identical.
+      */
+     if(mnext != m+1) m = mnext;
+   }
+
+   /*
+    * k now is the total number of intervals that occur more than once in
+    * this sample of nms=512 numbers.  We increment the sample counter in
+    * this slot.  If k is bigger than kmax, we simply ignore it -- it is a
+    * BAD IDEA to bundle all the points from the tail into the last bin,
+    * as a Poisson distribution can have a lot of points out in that tail!
+    */
+   if(k<kmax) js[k]++;
+   if(verbose == D_DIEHARD_BDAY || verbose == D_ALL){
+     printf("incremented js[%u] = %u\n",k,js[k]);
+   }
+       
+ }
+
+
+ /*
+  * Let's sort the result (for fun) and print it out for each bit
+  * position.
+  */
+ if(verbose == D_DIEHARD_BDAY || verbose == D_ALL){
+   printf("#==================================================================\n");
+   printf("# This is the repeated interval histogram:\n");
+   for(k=0;k<kmax;k++){
+     printf("js[%u] = %u\n",k,js[k]);
+   }
+ }
+
+
+ /*
+  * Fine fine fine.  We FINALLY have a distribution of the binned repeat
+  * interval counts of many samples of 512 numbers drawn from 2^24.  We
+  * should now be able to pass this vector of results off to a Pearson
+  * chisq computation for the expected Poissonian distribution and
+  * generate a p-value for each cyclic permutation of the bits through the
+  * 24 bit mask.
+  */
+ ks_pvalue[kspi++] = chisq_poisson(js,lambda,kmax,tsamples);
+
+ free(js);
+
 }
 

@@ -41,7 +41,7 @@
  * the number of degrees of freedom of the fit.
  */
 
-double chisq_poisson(uint *observed,double lambda,int kmax)
+double chisq_poisson(uint *observed,double lambda,int kmax,uint nsamp)
 {
 
  uint i,j,k;
@@ -50,24 +50,25 @@ double chisq_poisson(uint *observed,double lambda,int kmax)
 
  expected = (double *)malloc(kmax*sizeof(double));
  for(k = 0;k<kmax;k++){
-   expected[k] = psamples*gsl_ran_poisson_pdf(k,lambda);
+   expected[k] = nsamp*gsl_ran_poisson_pdf(k,lambda);
  }
 
  /*
-  * Compute Pearson's chisq for this vector of the data.
+  * Compute Pearson's chisq for this vector of the data with poisson
+  * expected values.
   */
  chisq = 0.0;
  for(k = 0;k < kmax;k++){
    delchisq = ((double) observed[k] - expected[k])*
       ((double) observed[k] - expected[k])/expected[k];
    chisq += delchisq;
-   if(verbose){
+   if(verbose == D_CHISQ || verbose == D_ALL){
      printf("%u:  observed = %f,  expected = %f, delchisq = %f, chisq = %f\n",
         k,(double)observed[k],expected[k],delchisq,chisq);
    }
  }
 
- if(verbose){
+ if(verbose == D_CHISQ || verbose == D_ALL){
    printf("Evaluated chisq = %f for %u k values\n",chisq,kmax);
  }
 
@@ -77,7 +78,7 @@ double chisq_poisson(uint *observed,double lambda,int kmax)
   * kmax bins, so it should be kmax-1.
   */
  pvalue = gsl_sf_gamma_inc_Q((double)(kmax-1)/2.0,chisq/2.0);
- if(verbose){
+ if(verbose == D_CHISQ || verbose == D_ALL){
    printf("pvalue = %f in chisq_poisson.\n",pvalue);
  }
 
