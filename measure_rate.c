@@ -23,7 +23,6 @@ void measure_rate()
  double avg_nanotime,nanotime_norm;
  double avg_megarate,avg_kilorate;
 
-
  /*
   *========================================================================
   * This routine is basically a timing shell.

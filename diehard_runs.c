@@ -74,16 +74,26 @@ static double a[6][6] = {
  * b_i
  */
 static double b[6];
-int diehard_runs()
+
+double diehard_runs()
 {
 
- int i,j,k,ns;
- unsigned int ucount,dcount,increased;
- int upruns[RUN_MAX],downruns[RUN_MAX];
- double uv,dv,up_pks,down_pks;
- double *uv_pvalue,*dv_pvalue;
+ int ntuple,ntuple_max,n,p,pcnt;
+ double *pvalue,pks;
 
- /* Initialize b explicitly */
+ /*
+  * This is the merest shell to set any test-specific variables, call
+  * the main test routine (which fills one or more slots in ks_pvalue[]
+  * and increments kspi accordingly), and run a Kuiper Kolmogorov-Smirnov
+  * test on the vector of pvalues produced and turn it into a single,
+  * cumulative p-value (pks) for the entire test.  If the test parameters
+  * are set properly, this will USUALLY yield an unambiguous signal of
+  * failure.
+  */
+
+ /*
+  * Initialize b explicitly.  Might as well do it here.
+  */
  b[0] = 1.0/6.0;
  b[1] = 5.0/24.0;
  b[2] = 11.0/120.0;
@@ -91,96 +101,6 @@ int diehard_runs()
  b[4] = 29.0/5040.0;
  b[5] = 1.0/840.0;
 
- uv_pvalue = (double *)malloc(psamples*sizeof(double));
- dv_pvalue = (double *)malloc(psamples*sizeof(double));
-
- /*
-  * Fill vector of "random" integers with selected generator.
-  * Observe that this test does NOT not convert to floats but
-  * counts up down and down up on an integer compare.
-  */
- for(ns=0;ns<psamples;ns++){
-
-   /* Fill vector of rands all at once */
-   for(j=0;j<size;j++) {
-     rand_int[j] = gsl_rng_get(rng);
-   }
-
-   /* Clear up and down run bins */
-   for(k=0;k<RUN_MAX;k++){
-     upruns[k] = 0;
-     downruns[k] = 0;
-   }
-
-   /*
-    * Now count up and down runs and increment the bins.  Note
-    * that each successive up counts as a run of one down, and
-    * each successive down counts as a run of one up.
-    */
-   ucount = dcount = 1;
-   if(verbose){
-     printf("j    rand    ucount  dcount\n");
-   }
-   for(j=1;j<size;j++) {
-     if(verbose){
-       printf("%d:  %10u   %u    %u\n",j,rand_int[j],ucount,dcount);
-     }
-     /*
-      * Did we increase?
-      */
-     if(rand_int[j] > rand_int[j-1]){
-       ucount++;
-       if(ucount > RUN_MAX) ucount = RUN_MAX;
-       downruns[dcount-1]++;
-       dcount = 1;
-     } else {
-       dcount++;
-       if(dcount > RUN_MAX) dcount = RUN_MAX;
-       upruns[ucount-1]++;
-       ucount = 1;
-     }
-   }
-   if(rand_int[size-1] > rand_int[0]){
-     ucount++;
-     if(ucount > RUN_MAX) ucount = RUN_MAX;
-     downruns[dcount-1]++;
-     dcount = 1;
-   } else {
-     dcount++;
-     if(dcount > RUN_MAX) dcount = RUN_MAX;
-     upruns[ucount-1]++;
-     ucount = 1;
-   }
-   /*
-    * This ends a single sample.
-    * Compute the test statistic for up and down runs.
-    */
-   uv=0.0;
-   dv=0.0;
-   if(verbose){
-     printf(" i      upruns    downruns\n");
-   }
-   for(i=0;i<RUN_MAX;i++) {
-     if(verbose){
-       printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
-     }
-     for(j=0;j<RUN_MAX;j++) {
-       uv += ((double)upruns[i]   - size*b[i])*(upruns[j]   - size*b[j])*a[i][j];
-       dv += ((double)downruns[i] - size*b[i])*(downruns[j] - size*b[j])*a[i][j];
-     }
-   }
-   uv /= (double)size;
-   dv /= (double)size;
-   if(verbose){
-     printf("uv = %f   dv = %f\n",uv,dv);
-   }
-   uv_pvalue[ns] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
-   dv_pvalue[ns] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
- }
-
- if(size < 100000){
-   printf("Warning!  size = %d too small!  Use -n 100000 or greater\n",size);
- }
  if(!quiet){
    printf("#==================================================================\n");
    printf("#                Diehard \"runs\" test (modified).\n");
@@ -192,54 +112,119 @@ int diehard_runs()
    printf("# distribution.\n");
    printf("#==================================================================\n");
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# size of vector tested = %u\n",size);
- }
- printf("# Testing runs up:\n");
- confidence(uv_pvalue,psamples,0.01);
- if(!quiet){
-   printf("#==================================================================\n");
- }
- printf("# Testing runs down:\n");
- confidence(dv_pvalue,psamples,0.01);
- if(!quiet){
-   printf("#==================================================================\n");
+   printf("# size of vector tested = %u (100000 or more suggested)\n",size);
  }
 
- up_pks = kstest(uv_pvalue,psamples);
- printf("p = %6.3f from Komogorov-Smirnov test on %d up samples.\n",up_pks,psamples);
- if(up_pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
- }
- 
- up_pks = kstest_kuiper(uv_pvalue,psamples);
- printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d up samples.\n",up_pks,psamples);
- if(up_pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
- }
- 
- if(!quiet){
-   printf("#==================================================================\n");
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)diehard_runs_test);
+ printf("p = %6.3f for diehard_runs test from Kuiper Komogorov-Smirnov test\n",pks);
+ printf("     on %u pvalues (up runs + down runs).\n",kspi);
+ if(pks < 0.0001){
+   printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));
  }
 
- down_pks = kstest(dv_pvalue,psamples);
- printf("p = %6.3f from Komogorov-Smirnov test on %d down samples.\n",down_pks,psamples);
- if(down_pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
- }
-
- down_pks = kstest_kuiper(dv_pvalue,psamples);
- printf("p = %6.3f from Kuiper Komogorov-Smirnov test on %d down samples.\n",down_pks,psamples);
- if(down_pks>0.01){
-   printf("Generator appears to be ok.\n");
- } else {
-   printf("Generator fails at 1%% confidence level.\n");
- }
+ return(pks);
 
 }
+
+void diehard_runs_test()
+{
+
+ int i,j,k,ns;
+ unsigned int ucount,dcount,increased;
+ int upruns[RUN_MAX],downruns[RUN_MAX];
+ double uv,dv,up_pks,down_pks;
+ double *uv_pvalue,*dv_pvalue;
+
+ /*
+  * Fill vector of "random" integers with selected generator.
+  * Observe that this test does NOT not convert to floats but
+  * counts up down and down up on an integer compare.
+  */
+
+ /*
+  * Fill vector of rands all at once.  This should be tsamples
+  * in size, because size = tsamples unless overridden.
+  */
+ for(j=0;j<size;j++) {
+   rand_int[j] = gsl_rng_get(rng);
+ }
+
+ /*
+  * Clear up and down run bins
+  */
+ for(k=0;k<RUN_MAX;k++){
+   upruns[k] = 0;
+   downruns[k] = 0;
+ }
+
+ /*
+  * Now count up and down runs and increment the bins.  Note
+  * that each successive up counts as a run of one down, and
+  * each successive down counts as a run of one up.
+  */
+ ucount = dcount = 1;
+ if(verbose){
+   printf("j    rand    ucount  dcount\n");
+ }
+ for(j=1;j<size;j++) {
+   if(verbose){
+     printf("%d:  %10u   %u    %u\n",j,rand_int[j],ucount,dcount);
+   }
+
+   /*
+    * Did we increase?
+    */
+   if(rand_int[j] > rand_int[j-1]){
+     ucount++;
+     if(ucount > RUN_MAX) ucount = RUN_MAX;
+     downruns[dcount-1]++;
+     dcount = 1;
+   } else {
+     dcount++;
+     if(dcount > RUN_MAX) dcount = RUN_MAX;
+     upruns[ucount-1]++;
+     ucount = 1;
+   }
+ }
+ if(rand_int[size-1] > rand_int[0]){
+   ucount++;
+   if(ucount > RUN_MAX) ucount = RUN_MAX;
+   downruns[dcount-1]++;
+   dcount = 1;
+ } else {
+   dcount++;
+   if(dcount > RUN_MAX) dcount = RUN_MAX;
+   upruns[ucount-1]++;
+   ucount = 1;
+ }
+ /*
+  * This ends a single sample.
+  * Compute the test statistic for up and down runs.
+  */
+ uv=0.0;
+ dv=0.0;
+ if(verbose){
+   printf(" i      upruns    downruns\n");
+ }
+ for(i=0;i<RUN_MAX;i++) {
+   if(verbose){
+     printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
+   }
+   for(j=0;j<RUN_MAX;j++) {
+     uv += ((double)upruns[i]   - size*b[i])*(upruns[j]   - size*b[j])*a[i][j];
+     dv += ((double)downruns[i] - size*b[i])*(downruns[j] - size*b[j])*a[i][j];
+   }
+ }
+ uv /= (double)size;
+ dv /= (double)size;
+ if(verbose){
+   printf("uv = %f   dv = %f\n",uv,dv);
+ }
+ ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
+ ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
+
+}
+
+
 

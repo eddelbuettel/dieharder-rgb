@@ -100,6 +100,8 @@
  /*
   * Tests.
   */
+ double diehard_runs();
+ void diehard_runs_test();
  double rgb_bitdist();
  void rgb_bitdist_test();
  double sts_monobit();
@@ -162,9 +164,10 @@
  /* dimensioned in startup */
 #define KS_SAMPLES_PER_TEST_MAX 256
  double *ks_pvalue;
+ int testnum; /* has to be able to be negative! */
  unsigned int kspi;
  unsigned int quiet,verbose;
- unsigned int testnum,randnum,iterations,reseed_flag;
+ unsigned int randnum,iterations,reseed_flag;
  struct timeval tv_start,tv_stop;
  int dummy,idiot;
  char filename[128];

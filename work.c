@@ -20,11 +20,13 @@ void work()
 {
 
  if(testnum<0){
-   measure_rate();
    diehard_runs();
+   diehard_birthdays();
+   diehard_2dsphere();
+   diehard_3dsphere();
    rgb_persist();
-   rgb_binomial();
    rgb_bitdist();
+   sts_monobit();
    sts_runs();
    exit(0);
  }
