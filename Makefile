@@ -59,6 +59,7 @@ SOURCES = $(SOURCE)\
     Btest.c \
     Ntest.c \
     Xtest.c \
+    sample.c \
     confidence.c \
     chisq.c \
     kstest.c \

@@ -13,7 +13,8 @@ void parsecl(int argc, char **argv)
  extern char *optarg;
  extern int optind, opterr, optopt;
 
- samples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
+ psamples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
+ tsamples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
  iterations = -1;	/* This should be just enough to do empty accurately */
  size = 1024;		/* Small enough to easily fit into any cache */
  bits = 0;              /* Start at zero */
@@ -23,7 +24,7 @@ void parsecl(int argc, char **argv)
  randnum = 12;          /* Default is mt19937, as the "best" overall */
  reseed_flag = 0;       /* Don't reseed for every sample (default) */
 
- while ((c = getopt(argc,argv,"b:f:hin:qr:s:t:v:")) != EOF){
+ while ((c = getopt(argc,argv,"b:f:hin:p:qr:s:t:v:")) != EOF){
    switch (c){
      case 'h':
        Usage();
@@ -43,6 +44,9 @@ void parsecl(int argc, char **argv)
      case 'n':
        size = strtol(optarg,(char **) NULL,10);
        break;
+     case 'p':
+       psamples = strtol(optarg,(char **) NULL,10);
+       break;
      case 'q':
        quiet = 1;
        break;
@@ -50,7 +54,7 @@ void parsecl(int argc, char **argv)
        randnum = strtol(optarg,(char **) NULL,10);
        break;
      case 's':
-       samples = strtol(optarg,(char **) NULL,10);
+       tsamples = strtol(optarg,(char **) NULL,10);
        break;
      case 't':
        testnum = strtol(optarg,(char **) NULL,10);
