@@ -1,0 +1,380 @@
+# logplot
+logplot
+	logspeed_box 1 72000000 0 450 double
+	# logplotspeed qcd4.gcc.mdops.data 6 0
+	# loglinespeed qcd4.gcc.mdops.data 0
+	# logplotspeed qcd4.ccc.mdops.data 6 3
+	# loglinespeed qcd4.ccc.mdops.data 0
+	# logplotspeed grads15.mdops.data 4 0
+	# loglinespeed grads15.mdops.data 0
+	# logplotspeed eve.mdops.data 4 3
+	# loglinespeed eve.mdops.data 0
+	# logplotspeed ganesh.mdops.data 3 0
+	# loglinespeed ganesh.mdops.data 0
+	# logplotspeed b14_1.mdops.data 5 0
+	# loglinespeed b14_1.mdops.data 0
+	# logplotspeed b14_2.mdops.data 5 1
+	# loglinespeed b14_2.mdops.data 0
+	logplotspeed lucifer.mflops 12 0
+	loglinespeed lucifer.mflops 0
+# logsigma
+logsigma
+	logsigma_box 10000 33000000 0 50 double
+	logplotsigma ganesh2.mdops.data 3 0
+	loglinesigma ganesh2.mdops.data 0
+	logplotsigma grads14.mdops.data 4 0
+	loglinesigma grads14.mdops.data 0
+	logplotsigma qcd2.mdops.data 6 0
+	loglinesigma qcd2.mdops.data 0
+	logplotsigma lucifer.mdops.data 12 0
+	loglinesigma lucifer.mdops.data 0
+	logplotsigma thunderbird.mdops.data 4 3
+	loglinesigma thunderbird.mdops.data 0
+# speed_box memmin memmax speedmin speedmax host
+speed_box  5
+	define memmin $1
+	define memmax $2
+	define speedmin $3
+	define speedmax $4
+	define precision $5
+	erase
+	location 6000 30000 6000 28000
+	define TeX_strings 1
+	expand 1.5
+	limits $memmin $memmax $speedmin $speedmax
+	ticksize 0 0 0 0
+	box
+	angle 0
+	ylabel Speed(Bogomflops)
+	xlabel Size(Bytes)
+	define hostxloc ($memmin + 0.05*($memmax - $memmin))
+	define hostyloc ($speedmin + 1.05*($speedmax - $speedmin))
+	relocate $hostxloc $hostyloc
+	label $precision precision floating point speed
+	expand 1.0
+        # draw cache boundaries in
+	# L1 is 16 KB
+        relocate 16000 $speedmin
+        ltype 2
+        draw 16000 $speedmax
+	# L1 is 16 KB
+        relocate 128000 $speedmin
+        ltype 2
+        draw 128000 $speedmax
+        ltype 0
+# logspeed_box memmin memmax speedmin speedmax bogoops
+logspeed_box  5
+	define memmin $1
+	define memmax $2
+	define speedmin $3
+	define speedmax $4
+	define bogoops $5
+	define logmemmin (lg($memmin))
+	define logmemmax (lg($memmax))
+	erase
+	location 6000 30000 6000 28000
+	define TeX_strings 1
+	expand 1.5
+	limits 0 $logmemmax $speedmin $speedmax
+	ticksize -10 0 0 0
+	box
+	angle 0
+	ylabel Speed($bogoops)
+	xlabel Size(Bytes)
+	define yloc ($speedmin + 1.10*($speedmax - $speedmin))
+	relocate $logmemmin $yloc
+	label $bogoops benchmark
+	expand 1.0
+        # draw cache boundaries in
+	# P6 family L1 is 16 KB
+	define logl1 (lg(16000))
+	define xloc (0.95*$logl1)
+	define yloc ($speedmin + 1.02*($speedmax - $speedmin))
+	relocate $xloc $yloc
+	expand 1.5
+	label 16K
+	expand 1.0
+        relocate $logl1 $speedmin
+        ltype 2
+        draw $logl1 $speedmax
+	# 32000
+	define logline (lg(32000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# 64000
+	define logline (lg(64000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# 128000
+	define logline (lg(128000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# 256000
+	define logline (lg(256000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# 512000
+	define logline (lg(512000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# Always put line back when done.
+	ltype 0
+# logsigma_box memmin memmax speedmin speedmax host
+logsigma_box  5
+	define memmin $1
+	define memmax $2
+	define speedmin $3
+	define speedmax $4
+	define precision $5
+	define logmemmin (lg($memmin))
+	define logmemmax (lg($memmax))
+	erase
+	location 6000 30000 6000 28000
+	define TeX_strings 1
+	expand 1.5
+	limits $logmemmin $logmemmax $speedmin $speedmax
+	ticksize -10 0 0 0
+	box
+	angle 0
+	ylabel \sigma_{speed}
+	xlabel Size(Bytes)
+	define yloc ($speedmin + 1.10*($speedmax - $speedmin))
+	relocate $logmemmin $yloc
+	label $precision precision \sigma (standard deviation)
+	expand 1.0
+        # draw cache boundaries in
+	# P6 family L1 is 16 KB
+	define logl1 (lg(16000))
+	define xloc (0.95*$logl1)
+	define yloc ($speedmin + 1.02*($speedmax - $speedmin))
+	relocate $xloc $yloc
+	expand 1.5
+	label 16K
+	expand 1.0
+        relocate $logl1 $speedmin
+        ltype 2
+        draw $logl1 $speedmax
+	# 32000
+	define logline (lg(32000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# 64000
+	define logline (lg(64000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# 128000
+	define logline (lg(128000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# 256000
+	define logline (lg(256000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# 512000
+	define logline (lg(512000))
+        relocate $logline $speedmin
+        ltype 2
+        draw $logline $speedmax
+	# Always put line back when done.
+	ltype 0
+# var_box memmin memmax speedmin speedmax host
+sigma_box  5
+	define memmin $1
+	define memmax $2
+	define speedmin $3
+	define speedmax $4
+	define precision $5
+	erase
+	location 6000 30000 6000 28000
+	define TeX_strings 1
+	expand 1.5
+	limits $memmin $memmax $speedmin $speedmax
+	ticksize 0 0 0 0
+	box
+	angle 0
+	ylabel \sigma_{speed}
+	xlabel Size(Bytes)
+	define hostxloc ($memmin - 0.05*($memmax - $memmin))
+	define hostyloc ($speedmin + 1.05*($speedmax - $speedmin))
+	relocate $hostxloc $hostyloc
+	label $precision precision speed \sigma (standard deviation)
+	expand 1.0
+        # draw cache boundaries in
+	# L1 is 16 KB
+        relocate 16000 $speedmin
+        ltype 2
+        draw 16000 $speedmax
+	# L1 is 16 KB
+        relocate 128000 $speedmin
+        ltype 2
+        draw 128000 $speedmax
+        ltype 0
+# linespeed datafile ltype
+linespeed 2
+	define datafile $1
+	define ltype $2
+	data $datafile
+	read {size 1 mflops 2 sigma 3}
+	expand 1.0
+	ltype $ltype
+	connect size mflops
+	ltype 0
+# loglinespeed datafile ltype
+loglinespeed 2
+	define datafile $1
+	define ltype $2
+	data $datafile
+	read {size 1 mflops 2 sigma 3}
+	set logsize=lg(size)
+	expand 1.0
+	ltype $ltype
+	connect logsize mflops
+	ltype 0
+# linesigma datafile ltype
+linesigma 2
+	define datafile $1
+	define ltype $2
+	data $datafile
+	read {size 1 mflops 2 sigma 3}
+	expand 1.0
+	ltype $ltype
+	connect size sigma
+	ltype 0
+# loglinesigma datafile ltype
+loglinesigma 2
+	define datafile $1
+	define ltype $2
+	data $datafile
+	read {size 1 mflops 2 sigma 3}
+	set logsize=lg(size)
+	ltype $ltype
+	connect logsize sigma
+	ltype 0
+# plotspeed datafile ptype pfill
+plotspeed 3
+	define datafile $1
+	define ptype $2
+	define pfill $3
+	data $datafile
+	read {size 1 mflops 2 sigma 3}
+	ptype $ptype $pfill
+	expand 1.5
+	points size mflops
+        error_y size mflops sigma
+	expand 1.0
+# logplotspeed datafile ptype pfill
+logplotspeed 3
+	define datafile $1
+	define ptype $2
+	define pfill $3
+	data $datafile
+	read {size 1 mflops 2 sigma 3}
+	set logsize=lg(size)
+	ptype $ptype $pfill
+	expand 1.5
+	points logsize mflops
+        error_y logsize mflops sigma
+	expand 1.0
+# plotsigma datafile ptype pfill
+plotsigma 3
+	define datafile $1
+	define ptype $2
+	define pfill $3
+	data $datafile
+	read {size 1 mflops 2 sigma 3}
+	ptype $ptype $pfill
+	expand 1.5
+	points size sigma
+	expand 1.0
+# logplotsigma datafile ptype pfill
+logplotsigma 3
+	define datafile $1
+	define ptype $2
+	define pfill $3
+	data $datafile
+	read {size 1 mflops 2 sigma 3}
+	set logsize=lg(size)
+	ptype $ptype $pfill
+	expand 1.5
+	points logsize sigma
+	expand 1.0
+# lucifer datafile precision
+lucifer_speed 2
+	define datafile $1
+	define precision $2
+        speed_box 0 400000 0 400 $precision
+	plotspeed $datafile 3 0
+	linespeed $datafile 0
+# lucifer datafile precision
+lucifer_sigma 2
+	define datafile $1
+	define precision $2
+        sigma_box 0 400000 0 7 $precision
+	plotsigma $datafile 10 3
+	linesigma $datafile 0
+     
+# dell_speed datafile precision
+dell_speed 2
+	define datafile $1
+	define precision $2
+        speed_box 0 800000 0 800 $precision
+	plotspeed $datafile 3 0
+	linespeed $datafile 0
+# dell_sigma datafile precision
+dell_sigma 2
+	define datafile $1
+	define precision $2
+        sigma_box 0 800000 0 80 $precision
+	plotsigma $datafile 10 3
+	linesigma $datafile 0
+     
+# grads_speed datafile precision
+grads_speed 2
+	define datafile $1
+	define precision $2
+        speed_box 0 4100000 0 800 $precision
+	plotspeed $datafile 3 0
+	linespeed $datafile 0
+# dell_sigma datafile precision
+grads_sigma 2
+	define datafile $1
+	define precision $2
+        sigma_box 0 4100000 0 80 $precision
+	plotsigma $datafile 10 3
+	linesigma $datafile 0
+     
+gettod_hist 1
+        FNbox 0 2 0 100 "frequency" "gettod time"
+        data $1
+        read {gettod 1}
+        set gettod = gettod*1.e6
+        # Note -1 pushes null samples off of graph.
+        stats gettod mean sigma kurtosis
+        get_hist gettod S F -1 2 0.01
+        # set S=S+1
+        histogram S F
+        # shade histogram 150 S F
+        relocate 10 6.5
+        label gettod distribution
+        relocate 10 6
+        label Mean = $mean, \sigma = $sigma
+
+FNbox   6
+        erase
+        location 5000 30000 6000 28000
+        define TeX_strings 1
+        limits $1 $2 $3 $4
+        expand 1.1
+        ltype 0
+        box
+        xlabel $6
+        ylabel $5
