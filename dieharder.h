@@ -71,35 +71,31 @@
   *      samples is the number of samples to be taken
   *      iterations is the number of times the core loop is run (inserted 
   *        so one can minimize errors due to the gettimeofday call itself).
-  *      random_flag controls the insertion of usleep(1), probably cruft
-  *        as it makes little visible difference EXCEPT in the empty
-  *        timing loop (where it is essential and not controlled by
-  *        random_flag!).
-  *      cache_flag is an experimental control.
-  *      xtest is an input variable used to pass the d[i] (and hence
-  *        division) variable from the command line.
   *      size is the length of the vector being evaluated.
+  *      bits is the size of the bitstring being tested (where relevant)
   *      verbose controls the output -- "normal" is verbose=1.
   *      tv_start and tv_stop are used to record timings.
-  *
-  *      floattest selects a straight bogomflops run
-  *      doubletest selects a double precision bogomflops run (bogomdops?)
+  *      dummy and idiot are there to fool the compiler into not optimizing
+  *        empty loops out of existence so we can time one accurately.
+  *      filename holds the name(s) of I/O file(s).
+  *      fp is a file pointer for input or output purposes.
   *========================================================================
   */
- int samples,iterations,stride,random_flag,cache_flag,size;
+ int samples,iterations,size,bits;
  int quiet,verbose;
- int floattest,doubletest,transtest;
- int testnum,randnum,hbrandnum;
+ int testnum,randnum;
  struct timeval tv_start,tv_stop;
+ int dummy,idiot;
+ char filename[128];
+ FILE *fp;
 
  /*
-  * Global vectors and constants for tests.
+  * rng global vectors and variables for setup and tests.
   */
- int dummy,idiot;		/* To fool compiler into executing empty cases */
- int *rand_int;		        /* vector of "random" ints */
- const gsl_rng_type **types;
- unsigned int random_max,seed;
- gsl_rng *random;  /* global gsl random number generator */
+ const gsl_rng_type **types;    /* where all the rng types go */
+ gsl_rng *random;               /* global gsl random number generator */
+ unsigned int *rand_int;        /* vector of "random" ints */
+ unsigned int random_max,seed;  /* parameter and seed of run */
+ double *rand_uniform;          /* vector of "random" uniform deviates */
  int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
- FILE *fp;         /* pointer to /dev/random, for that benchmark or rng seed */
 

@@ -15,23 +15,32 @@ void parsecl(int argc, char **argv)
 
  samples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
  iterations = -1;	/* This should be just enough to do empty accurately */
- size = 1000;		/* Small enough to easily fit into any cache */
+ size = 1024;		/* Small enough to easily fit into any cache */
+ bits = 32;             /* Unsigned long in, probably */
  verbose = 0;		/* Default is not to be verbose. */
  quiet = 0;		/* Default is ALSO not to be quiet (output control). */
  testnum = 0;		/* Default is to list rng's */
  randnum = 12;          /* Default is mt19937, as the "best" overall */
 
- while ((c = getopt(argc,argv,"hi:n:qr:s:t:v:")) != EOF){
+ while ((c = getopt(argc,argv,"b:f:hi:n:qr:s:t:v:")) != EOF){
    switch (c){
      case 'h':
        Usage();
+       exit(0);
+       break;
+     case 'b':
+       bits = strtol(optarg,(char **) NULL,10);
+       break;
+     case 'f':
+       strncpy(filename,optarg,128);
+       fprintf(stderr,"Error: -f %s not yet supported!  Exiting...\n",filename);
        exit(0);
        break;
      case 'i':
        iterations = strtol(optarg,(char **) NULL,10);
        break;
      case 'n':
-       samples = strtol(optarg,(char **) NULL,10);
+       size = strtol(optarg,(char **) NULL,10);
        break;
      case 'q':
        quiet = 1;
@@ -40,7 +49,7 @@ void parsecl(int argc, char **argv)
        randnum = strtol(optarg,(char **) NULL,10);
        break;
      case 's':
-       size = strtol(optarg,(char **) NULL,10);
+       samples = strtol(optarg,(char **) NULL,10);
        break;
      case 't':
        testnum = strtol(optarg,(char **) NULL,10);
@@ -78,32 +87,42 @@ void parsecl(int argc, char **argv)
 void Usage()
 {
 
- fprintf(stdout, "\n");
- fprintf(stdout, "Usage: \n");
- fprintf(stdout, "  rand_rate -r rngnumber [-t testnumber] \n");
- fprintf(stdout, "           [-s size] [-n num_samples] [-i iterations]\n");
- fprintf(stdout, "           [-q] [-h] [-v level]\n");
- fprintf(stdout, "\n");
- fprintf(stdout, "  -r rngnumber selects the rng to be tested.\n");
- fprintf(stdout, "  -t testnumber selects the test to be performed.\n");
- fprintf(stdout, "     The default is 0, which lists the rng's available only.\n");
- fprintf(stdout, "\n");
- fprintf(stdout, "  -s controls the length of the test vector (int or double).\n");
- fprintf(stdout, "  -n controls the number of samples (default 100)\n");
- fprintf(stdout, "  -i controls the number of iterations inside the sampling loop.\n");
- fprintf(stdout, "     If omitted, iterations are automatically scaled (best).\n");
- fprintf(stdout, "\n");
- fprintf(stdout, "  -v 1 causes available rng's to be listed.\n");
- fprintf(stdout, "     2 causes available tests to be listed.\n");
- fprintf(stdout, "     3 causes specific rng to be briefly demo'd.\n");
- fprintf(stdout, "  -q selects \"quiet\" operation: results only are printed on a single line\n");
- fprintf(stdout, "  -h prints usage statement (this message) and exits.\n");
- fprintf(stdout, "\n");
- fprintf(stdout, "  NOTE WELL:  The \"Mega-rates\" returned by this tool are BOGUS\n");
- fprintf(stdout, "  and may not be even approximately correct.  Be Warned!\n");
- fprintf(stdout, "  ALSO NOTE:  The quality assessment(s) for the rngs may, in fact, be\n");
- fprintf(stdout, "  incorrect or misleading.  Use them at your Own Risk!\n");
- fprintf(stdout, "\n");
+ fprintf(stdout, "
+Usage:
+  rand_rate [-t testnumber] [-r rngnumber] [-f filename ]
+           [-b number of bits] [-n length] [-s samples] [-i iterations]
+           [-q] [-h] [-v level]
+
+  -t testnumber selects the test to be performed.  Available tests:
+     0 (default) list available rngs.
+     1 write list of random integers and uniform deviates to stdout with
+       selected rng.
+     2 time selected generator, determining its bogomegarate.
+
+  -r rngnumber selects the rng to be tested (list them with -t 0).
+
+  -f filename will EVENTUALLY permit random strings to be tested to be
+     read in from a file, but this is not yet implemented!
+
+  -b controls the number of bits used in bit string tests
+  -n controls the length of the test vector (int or double) for vector
+     tests
+  -s controls the number of samples (default 100)
+  -i controls the number of TIMING iterations
+     If omitted, iterations are automatically scaled in timing runs (best).
+
+  -v controls verbosity of output for debugging or amusement purposes.
+  -q selects \"quiet\" operation: results only are printed on a single line
+     (where applicable).
+  -h prints usage statement (this message) and exits.
+
+  NOTE WELL:  The \"bogomegarates\" returned by this tool are BOGUS
+  and may not be even approximately correct in your context.  Be Warned!
+  ALSO NOTE:  The quality assessment(s) for the rngs may, in fact, be
+  completely incorrect or misleading.  Use them at your Own Risk!
+
+  NOTE FINALLY: If you use this tool, you owe me a beverage! (see GPL v2.0b)
+");
  exit(0);
 
 }
