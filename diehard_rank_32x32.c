@@ -107,15 +107,15 @@ void diehard_rank_32x32_test()
    } else {
      btest.x[rank]++;
    }
-
  }
+
+ /* for(i=0;i<33;i++) printf("btest.x[%d] =  %f\n",i,btest.x[i]); */
 
  Btest_eval(&btest);
  ks_pvalue[kspi] = btest.pvalue;
  if(verbose == D_DIEHARD_RANK_32x32 || verbose == D_ALL){
    printf("# diehard_rank_32x32(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
- printf("# diehard_rank_32x32(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  kspi++;
 
  Btest_destroy(&btest);
