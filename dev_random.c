@@ -17,7 +17,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 /*
  * This is a wrapping of the /dev/random hardware rng

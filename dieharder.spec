@@ -2,9 +2,9 @@
 # Makefile accompanying this program (and the .tgz defined in Source
 # below.
 
-Summary: rand_rate is a random number generator tester and timer
+Summary: dieharder is a random number generator tester and timer
 
-Name: rand_rate
+Name: dieharder
 Version: 0.5.3
 Release: 1
 Group: Development/Tools
@@ -14,7 +14,7 @@ Buildroot: /var/tmp/%{name}-%{version}-%{release}-root
 
 %description 
 
-rand_rate is a fairly involved random number/uniform deviate generator
+dieharder is a fairly involved random number/uniform deviate generator
 tester.  It can either test any of its many prebuilt and linked
 generators (basically all of those in the Gnu Scientific Library plus
 any others I've been able to find) or a potentially random dataset in a
@@ -54,10 +54,10 @@ rm -rf %{builddir}
 
 %files 
 %defattr(-,root,root)
-# The rand_rate binary
-%attr(755,root,root) /usr/bin/rand_rate
-# The rand_rate man page
-%attr(644,root,root) /usr/share/man/man1/rand_rate.1.gz
+# The dieharder binary
+%attr(755,root,root) /usr/bin/dieharder
+# The dieharder man page
+%attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
 # The xmlsysd docs
 %doc README COPYING NOTES

@@ -23,7 +23,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 void rgb_persist()
 {

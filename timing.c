@@ -11,7 +11,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 void start_timing()
 {

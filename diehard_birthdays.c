@@ -39,7 +39,7 @@
  */
 
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 static double lambda;
 static unsigned int *intervals;

@@ -39,7 +39,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 void Btest_create(Btest *btest, unsigned int bins,
                     char *testname, char *rngname)

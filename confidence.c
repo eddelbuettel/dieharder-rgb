@@ -15,7 +15,7 @@
  */
 
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 int confidence(double *pvec,int m,double alpha)
 {

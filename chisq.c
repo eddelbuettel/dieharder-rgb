@@ -15,7 +15,7 @@
  */
 
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 
 /*

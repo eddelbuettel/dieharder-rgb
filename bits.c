@@ -14,7 +14,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 /*
  * This should be the only tool we use to access bit substrings
@@ -25,7 +25,7 @@
  *
  * bstring is a pointer to the uint string to be parsed.  It is a uint
  * pointer to make it easy to pass arbitrary strings which will generally
- * be e.g. unsigned ints in rand_rate but might be other data types
+ * be e.g. unsigned ints in dieharder but might be other data types
  * in other applications (might as well make this semi-portable while I'm
  * writing it at all).  bslen is the length of bitstring in uints.  blen is
  * the length of the bitstring to be returned (as an unsigned int) and has

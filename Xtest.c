@@ -14,7 +14,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 void Xtest_eval(Xtest *xtest)
 {

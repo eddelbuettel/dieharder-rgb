@@ -5,7 +5,7 @@
 *
 */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 void parsecl(int argc, char **argv)
 {
@@ -94,7 +94,7 @@ void Usage()
 
  fprintf(stdout, "\n");
  fprintf(stdout, "Usage:\n");
- fprintf(stdout, "  rand_rate [-t testnumber] [-r rngnumber] [-f filename ]\n");
+ fprintf(stdout, "  dieharder [-t testnumber] [-r rngnumber] [-f filename ]\n");
  fprintf(stdout, "           [-b number of bits] [-n length] [-s samples] [-i]\n");
  fprintf(stdout, "           [-q] [-h] [-v level]\n");
  fprintf(stdout, "\n");

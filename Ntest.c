@@ -22,7 +22,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 void Ntest_create(Ntest *ntest, unsigned int npts,
                     char *testname, char *rngname)

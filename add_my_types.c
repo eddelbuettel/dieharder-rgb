@@ -6,7 +6,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 /*
  * This routine just adds new RNG's onto the GSL types list.

@@ -12,7 +12,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 
 /*
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
  /* 
   * Quit:  Done. Clean up (if necessary) and exit.
- rand_rate_quit();
+ dieharder_quit();
   */
 
 }

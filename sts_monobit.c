@@ -16,7 +16,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 double sts_monobit()
 {

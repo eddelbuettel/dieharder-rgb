@@ -38,7 +38,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 double sample(void *testfunc())
 {

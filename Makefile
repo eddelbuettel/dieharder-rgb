@@ -19,7 +19,7 @@
 #========================================================================
 # 
 # This should be the name of the binary produced by this package.
-PROGRAM = rand_rate
+PROGRAM = dieharder
 # This is the name of the toplevel directory, the CVS repository
 # and goes into e.g. the tarball names.  It will often (but not always)
 # be the name of the main binary.
@@ -33,7 +33,7 @@ DIR = $(PROGRAM)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=0
-VERSION_MINOR=5.3
+VERSION_MINOR=5.8
 RELEASE=1
 
 #========================================================================
@@ -199,7 +199,7 @@ tgz:	$(SOURCES) $(SCSOURCES)
 	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' >> $(SPEC).$$
 	mv $(SPEC).$$ $(SPEC)
 	cat $(ABS) | \
-	sed -e 's/^<H2>\(.*\)<\/H2>/<H2>rand_rate Version $(VERSION_MAJOR).$(VERSION_MINOR)<\/H2>/' >> $(ABS).$$
+	sed -e 's/^<H2>\(.*\)<\/H2>/<H2>dieharder Version $(VERSION_MAJOR).$(VERSION_MINOR)<\/H2>/' >> $(ABS).$$
 	mv $(ABS).$$ $(ABS)
 	mkdir -p .$(DIR)
 	cp -a * .$(DIR)

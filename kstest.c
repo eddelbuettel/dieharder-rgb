@@ -18,7 +18,7 @@
  */
 
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 
 double kstest(double *pvalue,int count)

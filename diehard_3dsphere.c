@@ -20,7 +20,7 @@
  */
 
 
-#include "rand_rate.h"
+#include "dieharder.h"
 #define POINTS 4000
 #define DIM 3
 

@@ -9,11 +9,11 @@
 /*
  *========================================================================
  * This just lists the available rng's.  This is the default action of
- * rand_rate when no test is specified.
+ * dieharder when no test is specified.
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 void list_rngs()
 {

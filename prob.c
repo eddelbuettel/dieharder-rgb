@@ -11,7 +11,7 @@
  *========================================================================
  */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 double binomial(unsigned int n, unsigned int k, double p)
 {

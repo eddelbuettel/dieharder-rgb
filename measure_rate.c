@@ -5,7 +5,7 @@
 *
 */
 
-#include "rand_rate.h"
+#include "dieharder.h"
 
 void measure_rate()
 {

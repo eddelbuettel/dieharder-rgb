@@ -61,7 +61,7 @@ document as an excellent reference.  GSL routines have been used
 throughout, where possible, for computing things such as erfc or Q.
 Since I am not using their code, I am omitting their copyright notice,
 but wish to acknowledge their documentation of the selected tests
-anyway.  All the code in rand_rate is GPL open source in any event, but
+anyway.  All the code in dieharder is GPL open source in any event, but
 academic credit matters.
 
 Similarly, DIEHARD is the work of George Marsaglia.  Dr. Marsaglia

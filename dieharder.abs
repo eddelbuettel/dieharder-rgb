@@ -1,197 +1,250 @@
-<H1>DieHarder: A Random Number Test Suite</H1>
+<center><H1>DieHarder: A Random Number Test Suite</H1></center>
 
-<p>One suggestion I got on the GSL list was to call this suite "dieharder"
-as it includes and extends George Marsaglia's "Diehard" suite of tests
-of random number generators.  This actually sounds pretty good as a
-tribute to Diehard's enduring usefulness as a test suite.  Only now,
-many years after it was introduced, are computers getting to be fast
-enough that extensions to diehard are required to push the existing
-pseudorandom number generators to failure.</p>
+<center><H3>by Robert G. Brown (rgb)</H3></center>
 
-<H2>rand_rate Version 0.5.3</H2>
+<center><H2>Current: dieharder Version 0.5.3</H2></center>
 
-<p>Click <a href="./rand_rate">here</a> to see a list of all rand_rate
-files on this repository.</p>
+<p>At the suggestion of Linas Vepstas on the Gnu Scientific Library
+(GSL) list this GPL'd suite of random number tests will be named
+"DieHarder".  Using a movie sequel pun for the name is a double tribute
+to George Marsaglia, whose <a
+href="http://stat.fsu.edu/~geo/diehard.html">"Diehard battery of
+tests"</a> of random number generators has enjoyed years of enduring
+usefulness as a test suite.</p>
 
-<p> This is the current snapshot of the <b>rand_rate</b> random number
-tester.  It encapsulates all of the Gnu Scientific Library random number
-generators as well as /dev/random and /dev/urandom in a single harness
-that can time them and subject them to various tests for randomness.
-These tests are variously drawn from Marsaglia's "Diehard" battery of
-random number tests, the NIST STS tests, useful e.g. binning or spectral
-tests that I've found doing research into random number tests or tests
-that I myself have made up or that are improvements on tests from other
-sources.</p>
+<p>The DieHarder suite is more than just the diehard tests cleaned up
+and given a pretty GPL source face in native C.  Tests from the <a
+href="http://csrc.nist.gov/rng/">Statistical Test Suite (STS)</a>
+developed by the National Institute for Standards and Technology (NIST)
+are being incorporated, as are new tests developed by rgb.  Where
+possible or appropriate, <i>all</i> tests that can be parameterized
+("cranked up") to where failure, at least, is unambiguous are so
+parameterized and controllable from the command line.</p>
 
-<p> The primary point of this tester is to make it easy to time and test
-(pseudo)random number generators OR hardware or other generators.  Three
-examples are provided of wrapping a random number generator and
-inserting it so that it is can be called via the GSL interface.  An
-interface is planned that would allow random numbers to be read in from
-a file, allowing the tool to be used with any generator (wrappable or
-not) that can generate a table of random numbers.</p>
+<p>Note well that extensible DieHarder is intended to be the "Swiss Army
+Knife of random number test suites", or if you prefer, "the last suite
+you'll ever wear".  If that <i>last</i> pun isn't enough motivation for
+any serious researcher that consumes lots of random numbers to give it a
+try, then nothing is...</p>
 
-<p>Another important motivation for writing rand_rate is to have the
-entire test code and documentation be fully Gnu Public Licensed and
-hence openly available for adaptation, testing, modification, including
-the addition of new tests.  The primary objections I have towards
-diehard and sts are not that they are or are not adequate and complete;
-it is that the code is obscure and not explicitly published for reuse.
-It is my hope that by providing this tool in autodocumenting source, it
-makes it easy to add new tests, critique older tests, and improve the
-suite in general.
-</p>
+<hr>
 
-<h2>NOTE WELL</h2>
+<center><h2><a href="./dieharder">DieHarder Download
+Area</a></h2></center>
 
-<p>If you compile the test and run it as</p>
+<p> All dieharder source (.tgz and .src.rpm) files can be downloaded
+from this directory.  In addition, i386 binary rpm's built on top of
+Fedora Core 2 are present (that require that the GSL rpm's be
+installed) as well.</p>
 
-<tt>  rand_rate -t -1 </tt>
+<p> This project is under very active development.  Some effort will be
+expended from here on so that the suite will "run out of the box".  A
+brief synopsis of command options to get you started as presented
+below.</p>
 
-<p>it should run the entire suite on the default generator.  Choose
-alternative tests with -r number where rand_rate -t 0 will list all
-possible numbers known to the current test (mostly from the GSL).</p>
+<p> Note well that this project is under active development.
+Documentation (including this page and built in documentation) may lag
+the bleeding edge snapshot by a few days or more.</p>
 
-<p>The following are the tests so far implemented and (possibly)
-functional:</p>
+<hr>
 
-<h2>List of Tests/Comments</h2>
+<h2>About DieHarder</h2>
+
+<p>The primary point of DieHarder (like Diehard before it) is to make it
+easy to time and test (pseudo)random number generators, both software
+and hardware for a variety of purposes in research and cryptography.
+The tool is built entirely on top of the GSL's random number generator
+interface and uses a variety of other GSL tools (e.g.  sort, erfc,
+incomplete gamma, distribution generators) in its operation.  Three
+examples are provided of wrapping a random number generator (including
+the entropy-based /dev/random and /dev/urandom available on many linux
+systems) and inserting it so that it is can be called via the GSL
+interface, and it is strongly suggested that any random number generator
+to be tested by provided with such an interface.</p>
+
+<p>An file interface (still consistent with the GSL to the extent
+possible) is planned that would allow random numbers to be read in from
+a file, allowing the tool to be used with any generator (directly
+wrappable or not) that can generate a table of random numbers, but this
+will place severe limits on some of the tests, which can require very
+large numbers of random numbers.  In this respect, DieHarder differs
+significantly from Diehard, which used file based sources of random
+numbers exclusively.</p>
+
+<p>The development of DieHarder was motivated by the following, in
+rough order of importance:<p>
 
 <ul>
 
-<li> <b>-t 3</b> Diehard: Knuth "runs" test.
+<li> To provide a <b>readily available, rpm-installable toolset</b> so
+that "consumers" of random numbers (who typically use large numbers of
+random numbers in e.g. simulation or other research) can test the
+generator(s) they are using to verify their quality.
 
-<p>Works OK. Pretty much the way it is described in the original
-documentation, but very definitely new/clean original C code.  Use a
-large number of samples (e.g. -s 1000000) for the best results.</p>
+<li> To provide a very <b>simple user interface</b> for that toolset for
+random number consumers.
 
-<li> <b>-t 4</b> Diehard: Poissonian "Birthdays" test.
+<li> To provide lots of <b>lots of knobs and dials</b> and low level
+control for statistical researchers that want to study particular
+generators with particular tests in more detail.
 
-<p>Works well with KS test, need to choose -s 500.  I fancied it up a bit
--- use GSL's rmax_bits correctly, use a cyclic permutation under a 24
-bit mask to do all 32 cyclic permutations of bit position, not just 9 a
-la Marsaglia, use Pearson's chisq directly computed from
-gsl_ran_poisson_pdf() and the observations per cycle.  Good at solidly
-rejecting bad generators (try -r 40, randu, as the universal "bad
-generator":-).</p>
+<li> To have the entire test code and documentation be fully <b>Gnu
+Public Licensed</b> and hence openly available for adaptation, testing,
+comment, and modification so that the testing suite itself becomes
+reliable.
 
-<li> <b>-t 5</b> Diehard: (2d) Minimum Distance test (2dspheres).
+<li> To provide a fairly <b>simple API</b> for adding new tests with a
+common set of low-level testing tools and a <b>common test structure</b>
+that leads (one hopes) to an <i>unambiguous</i> decision to accept or
+reject any given random number generator on the basis of any given test
+for a suitable choice of controllable test parameters.
 
-<p>This works well, uses KS test on lots of samples.  It's relatively
-slow as it has to test a lot of pairs of points to float out the minimum
-distance, and I haven't written this optimally (yet) out of sheer
-laziness.  It requires e.g. an index sort and while doing primary
-development a prefer brute force.</p>
+<li> To allow all researchers to be able to directly test, in
+particular, the <b>random number generators interfaced with the GSL</b>.
+This is a deliberate design decision justified by the extremely large
+and growing number of random number generators prebuilt into the GSL and
+the ease of adding new ones (either contributing them to the project or
+for the sole purpose of local testing).
 
-<li> <b>-t 6</b> Diehard: (3d) Minimum Distance test (3dspheres). 
-
-<p>This works well also and is in fact the same test as the 2d test
-above but yields a different target distribution.  Again, I'm not
-sorting to find the minimum (yet) and checking all the pairs of points
-is relatively slow, if sure.</p>
-
-<li> <b>-t 7</b> rgb: Bitmask test.
-
-  <p>This is one of my own clever ideas.  Some rng's, for some seeds,
-have bits that don't change. Obviously that makes the rng's bad, but bad
-in a somewhat different way than "just" non-randomness of some more
-occult order.  This is a <i>very fast</i> test that can iterate samples
-over seeds and extract a collective mask of all the bits that didn't
-change for an entire sequence of rands for at least one seed in the
-test.  Very efficiently rejects e.g. randu (GSL 40).</p>
-
-<li> <b>-t 8</b> rgb: Bitwise n-tuple distribution test.
-
- <p>This is an awesome test.  No rng I've tested gets out alive.
-Basically, this test runs through a random bitstring somewhere between
-32 and 128 bits wide.  The test slides a window n \in (1-8) bits wide
-across the bitstring and counts the number of occurrences of the
-integer(s) it finds there, per bitstring, and bins the results in a
-<i>histogram</i>, per test of tsamples.  It then uses the binomial
-probability to compute the theoretical occupations of the histogram
-bins and converts the results for a single integer into a pvalue per
-test.  It saves these pvalues in a result pvalue vector and subjects
-them all to a kstest at the end, providing a single p-value for the
-test.</p>
-
-<p>As implemented, it does each n-tuple (window width) at a time from 1
-to 8.  1 is a more powerful version of e.g. sts_monobit, that not only
-determines if 0's and 1's are balanced but if their binomial histogram
-is correct when sampling relatively small bitstrings.  2 is a more
-powerful version of the sts "runs" test, since it can easily be shown
-that counting "runs" is equivalent to counting 2x(# of 01 bitstrings).
-5 appears to be redundant with several diehard tests, although that
-remains to be proven.  All the generators I've tested in the GSL fail
-at 6-tuples or 7-tuples -- none make it to 8-tuples (bytes).</p>
-
-<p>This has profound implications for simulations and samplings of
-bytes.  Existing rng's appear to have a bitwise bias that is clearly
-apparent long before getting to bitstrings as long as a single byte of
-data.</p>
-
-<li> <b>-t 9</b> STS: monobit test.
-
- <p>This is a weak (but still useful) version of the counting of 1's in
-a word of N bits that examines the number of 1's in a very long list of
-bits and compares it to N/2.  Here one can be very sure chisq and p are
-correctly computed per trial in the STS prescription, but the test now
-collects a vector of p's and applies a KS test rather than forcing you
-to run it lots of times by hand and visually assess the p distribution
-as "uniform" (or using the other methods described in the STS
-documentation).  Weak or not, monobit can definitely find truly weak
-rng's.  Not so good in general, as it is quite possible for an rng to
-yield the right fraction of 1's and 0's but still be very nonrandom.</p>
-
-<li> <b>-t 10</b> STS: runs test (counts runs of 0's and 1's).
-
- <p>This is distinct from Diehard's runs.  In fact, this test is TRYING
-to compute what I will eventually compute far more directly in the
-pairwise bit distribution, since runs of 0's or 1's always end on a 01
-or 10 pair, right?  1/4 of all pairs should be 01, 1/4 should be 10, 1/4
-should be 11, 1/4 should be 00.  Why bother calling it "runs" (or
-counting the intervening bits)?  Just count the damn pairs!</p>
+<li> To allow researchers that use e.g. <i>distributions</i> directly
+generated by GSL random distribution generation routines (which can in
+principle fail two ways, due to the failure of the underlying random
+number generator or due to a failure of the generating algorithm) to be
+able to directly validate their particular generator/distribution
+combination, where possible.
 
 </ul>
 
-<h2Notes on current activity</h2>
+<p>Note well that the primary objections I have towards diehard and sts
+are not that they are or are not adequate and complete; it is that the
+code itself is not properly packaged for reuse, testing, and extension.
+DieHarder will hopefully rectify this situation and make it extremely
+easy for anybody to test random numbers on any GSL-supported
+platform.</p>
 
-<p> I'm mostly through a rewrite of the code that is putting it all in
-a common format where a shell calls and samples the actual test, after
-setting any test-specific parameters and spitting out a more or less
-standard form description of the test (which can be surpressed by the
--q flag).  A few diehard tests remain to be converted, and rgb_persist
-cannot be converted as it doesn't produce a p-value, it just fails or
-doesn't fail.  Once I finish converting the existing tests it is back
-to adding more diehard tests, as my current goal is to get all of
-diehard implemented this year (and more selected tests out of sts).</p>
+<p>Although this tool is being developed on Linux/GCC-based platforms,
+it should port with no particular difficulty to other Unices, especially
+ones that support RPMs.  No particular effort is being expended at this
+time to make it run on Windows based compute platforms (due to a lack of
+availability of such platforms and compilers to rgb) but there is no
+reason to think that such a port would be terribly difficult.</p>
 
-<h2>Thoughts for the Future</h2>
+<h2>Essential Usage Synopsis</h2>
 
-<p>I think that it would be "interesting" to apply this exact framework
-to the GSL distribution generators as a test of random numbers TOTALLY
-within the GSL -- if one simply (e.g.) samples a poissonian using randu
-as your rng and compare the result to the poissonian probability density
-function and use it to compute Pearson's chisq and a p-value (vector)
-and eventually a KS p-value, does that prove to be as sensitive a test
-as the various (far more complex) STS and Diehard tests?  An interesting
-question, if nothing else.</p>
+<p>If you compile the test or install the provided binary rpm's and run
+it as:</p>
 
-<p>For example, the birthday test seems like a difficult way to generate
-a Poissonian compared to just "doing it" from an rng.  Is there any
-evidence that it has greater sensitivity to various failures of the rng
-than a test that didn't have to achieve an asymtotic limit (large bit
-windows, many birthdays, many samples) in order to become Poissonian in
-the first place?  Similarly, does the sts runs test have anything to
-recommend it relative to just counting windowed integer values returned
-by the rng (integer values extracted from the actual bits viewed
-through a "port" if fixed width with cyclic/periodic wraparound of the
-source integer/bitstring)?  I doubt it, but sensitivity tests require a
-lot of time and energy to conduct.  When the tool is finished, I'll
-conduct them.</p>
+<tt>dieharder -a</tt>
 
-<p>Anyway, I hope that even during development, you find rand_rate
-useful.  If you have any interest in participating in its development,
-be sure to let me know, especially if you have decent coding skills and
-a basic knowledge of statistics.  I have documents to help with the
-latter, if you have the programming skills and want to LEARN
-statistics.</p>
+<p>it should run -a(ll) tests on the default GSL generator.</p>
+
+<p>Choose alternative tests with -g number where</p>
+
+<tt>dieharder -g 0</tt>
+
+<p>will list all possible numbers known to the current snapshot of the
+DieHarder (mostly from the GSL).</p>
+
+<tt>dieharder -l</tt>
+
+<p>should list all the tests implemented in the current snapshop of
+DieHarder.  Finally, the venerable and time tested:</p>
+
+<tt>dieharder -h</tt>
+
+<p> provides a Usage synopsis (which can quite long) and</p>
+
+<tt>man dieharder</tt>
+
+<p>is the (installed) man page, which may or many not be completely up
+to date as the suite is under active development.  For developers,
+additional documentation is available in the toplevel directory or doc
+subdirectory of the source tree.  Eventually, a complete DieHard manual
+in printable PDF form will be available both on this website and in
+/usr/share/doc/dieharder-*/.</p>
+
+<h2>List of Tests/Comments</h2>
+
+<p> The following list of tests is probably not up to date.  It is
+included to give you some minimal idea of what the suite can already
+test.  The revision number X.Y.Z is connected to the supported test
+schema in the following way.  Major milestones in the test development
+will cause bumps in X.  Major structural rewrites (e.g.  altering the
+entire encapsulation scheme for tests or the fundamental KS test code
+used to validate all the tests) will bump Y.  Adding a new test will
+bump Z, and Z will be kept equal to the number of supported tests at all
+times (so bumping X or Y may have no effect on Z).  Bugfix releases will
+bump Z by .01, e.g. 0.5.8 might become 0.5.81.</p>
+
+<p>Full descriptions of the following tests are available from within
+the tool and source documentation.  All tests are completely and
+independently rewritten from their description alone, and may be
+functionally modified or extended relative to the original source code
+published in the originating suite.  The author (rgb) bears complete
+responsibility for these changes, subject to the standard GPL code
+disclaimer (in essence, yes it's my fault if they don't work but using
+the tool is at your own risk)</p>
+
+<ul>
+
+<li> <b>Diehard: Knuth "runs" test</b>
+
+<li> <b>Diehard: Poissonian "Birthdays" test</b>
+
+<li> <b>Diehard: (2d) Minimum Distance test (2dspheres)</b>
+
+<li> <b>Diehard: (3d) Minimum Distance test (3dspheres)</b>
+
+<li> <b>rgb: Bitmask test</b>
+
+<li> <b>rgb: Bitwise n-tuple distribution test</b>
+
+<li> <b>STS: Monobit test</b>
+
+<li> <b>STS: Runs test (counts runs of 0's and 1's)</b>
+
+</ul>
+
+<h2>Development Notes</h2>
+
+<p>All tests are currently using the x.5.x test encapsulation and
+underlying KS and chisq tests.  I'm in the process of completing the
+transition to the new DieHarder design and adding the rest of Diehard as
+fast as I can rewrite them in the standard test encapsulation.  Some of
+them will likely require extension of the underlying tools, e.g.
+covariance matrix to p-value, that I'm hoping is facilitated by the
+GSL.</p>
+
+<h2>Thoughts for the Future/Wish List/To Do</h2>
+
+<ul>
+
+<li> Tests of GSL distribution generators. 
+
+<li> Anderson-Darling KS test.
+
+<li> Covariance matrix to p-value (required by various Diehard tests).
+
+<li> STS binning of final p-value sampling to determine uniformity
+(alternative to KS test).
+
+<li> New tests, compressions of existing ones that are "different" but
+really the same.  Hyperplane tests.  Spectral tests.
+
+<li> Collaborators.  Co-developers welcome, as are contributions from
+users.
+
+</ul>
+
+<h2>Conclusions</h2>
+
+<p>I hope that even during development, you find dieharder useful.  If
+you have any interest in participating in its development, be sure to
+let me know, especially if you have decent coding skills and a basic
+knowledge of statistics.  I have documents to help with the latter, if
+you have the programming skills and want to LEARN statistics.</p>
+
+<p>Submit bug reports, etc. to</p>
+<address>
+  <a href="mailto:rgb@phy.duke.edu">rgb@phy.duke.edu</a> 
+</address>
