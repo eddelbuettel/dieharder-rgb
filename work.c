@@ -20,6 +20,7 @@ void work()
 {
 
  if(all == YES){
+   rgb_timing();
    diehard_runs();
    diehard_birthdays();
    diehard_2dsphere();
