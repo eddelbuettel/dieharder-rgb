@@ -110,3 +110,209 @@ Contributions of rng's (consistently GSL-wrapped as e.g. dev_random.c
 demonstrates) and/or additional tests would be most welcome.
 
      rgb
+
+
+                     STS Critique, By Statistic
+
+                       The Monobit Statistic
+
+The monobit statistic checks to make sure that the raw number of 1's and
+0's approximately balance in a given bitstring.  This is actually a
+decent thing to test, but there is a better way to test it.  Given a
+relatively short bitstring (e.g. n<=160 bits), the probability that it
+will have k bits according to the null hypothesis is p(n,k,1/2) (the
+binomial distribution of outcomes over n independent trials, each with
+p=1/2).  If one runs m runs of n independent trials each, and
+accumulates X[k] (the count histogram for each possible value of output
+k in [0,n]) then one has X[k], the expected value histogram Y(k) =
+m*p(n,k,1/2), and sigma(k) = sqrt(m)*p(n,k,1/2).  From this it is simple
+to compute a p-value from an incomplete gamma function for the
+>>details<< of the distribution of 1's.  One can even do it two ways --
+with an independent random number seed for each of the m samples, or
+by simply running the rng with its original seed long enough to produce
+m*n bits.
+
+This binomial test is stronger than the monobit test.  Any result
+histogram that passes it necessarily passes the monobit test for the
+aggregate distribution with m*n bits (as I hope is obvious -- passing it
+means that the distribution is binomial in detail, not just uniformly
+balanced.  However, it is simple enough to compute the monobit result
+more or less in passing in the binomial test by simply summing the count
+histogram at the end or aggregating a total 1-bit count as one goes.  In
+that case one can generate two p-values -- a p-value for the monobit
+test and one for the binomial -- in one pass for the same data.  I would
+predict that the binomial p-value is strictly less than the monobit
+p-value, and that there exist rng's that pass the monobit that
+explicitly fail the binomial, but we can determine that empirically.
+
+This chisq-based binomial test methodology can be used to improve nearly
+any single test statistic in sts.  Instead of looking at the expected
+value of the statistic itself, frame its generation as a Bernoulli trial
+with a known percentage, compute the expected binomial distribution and
+its error, generate the result histogram as the test statistic, and use
+chisq and the complementary incomplete gamma function Q(a,x) to generate
+a p-value over many smaller "independent" trials instead of one long
+one.
+
+This suggests ways of improving e.g. the runs and other tests as well,
+see below.
+
+                        The Runs Statistic
+
+For n bits, count the test statistic X as the number of (overlapping) 01
+and 10 pairs and add one.  Compute p_1 = (# ones)/n, p_0 = (1 - p_1)
+(and ensure that they are close enough to p_0 = p_1 = 0.5).  Compute the
+expected number of 01 and 10 pairs as Y = 2*n*p_1*p_0.  Compute the
+expected error in the number of 01 and 10 pairs as sigma =
+2*sqrt(2*n)*p_1*p_0.  Finally, compute the p-value as erfc(|X -
+Y|/sigma).
+
+This methodology seems questionable, at least to me.  
+
+First of all, it seems odd to use a p_0 and p_1 derived from the sample,
+given that the null hypothesis is p_0 = p_1 = 0.5 and independent.
+Ensuring that the sample passes monobit (in a slightly different
+formulation) to start means that one has conditionally >>accepted<< this
+null hypothesis for the rng before beginning the runs test, using
+different p's implies a different null hypothesis.
+
+In addition, given their prior assumption that p_1 = # ones/# bits,
+their computation of the probability of p_01 and p_10 (and hence Y) is
+erroneous.  The probability of 01 in a finite string of n bits, subject
+to constrained numbers of 0's and 1's needs to be computed WITHOUT
+replacement, just as one does with a deck of cards.  After shuffling a
+deck of cards known to contain four aces, the probability that the top
+two cards are aces is not (4/52)*(4/52), but rather (4/52)*(3/52) -- if
+the first card is an ace, it means there are fewer aces left in the deck
+for the second card.  To be consistent, they should compute the expected
+number of 01 strings in a 10-bit sequence containing 6 1's as
+(4/10)(6/9) and not (4/10)(6/10).  They need to choose between a null
+hypothesis of p_1 = p_0 = 0.5 (where they can presume successive bit
+probabilities to be independent) and a null hypothesis of p_1 = (#
+1's)/(# bits) and use "probability for a 1, given that the first draw is
+a 0".  This matters for short strings.
+
+Next, they don't wrap the n-value bitstring into a torus.  Consequently,
+there are only n-1 bitpairs examined, and thus the expected value should
+be Y = 2*(n-1)*p_1*p_0 and not 2*n*p_1*p_0.  For large n, of course, it
+won't matter (neither will the previous two problems, at least not
+much), but it is surprisingly sloppy mathematically.
+
+In addition there is no reason I can see to add a 1 to the test
+statistic of (# of 01 and 10 pairs in an overlapping scan of the
+string).  This is very difficult to understand, as it clearly breaks the
+symmetry of this test statistic with the complementary view where the
+test statistic X is (# of 00 or 11 pairs in an overlapping scan of the
+string) but Y and sigma are the same -- the sum of the Y's necessarily
+equals n (or n-1, if that is the number of examined pairs).  This leads
+to an obvious problem for short strings, e.g. n = 2, where the formula
+they give for the expected number of 01 or 10's measured is
+2*2*(1/2)*(1/2) = 1, but the statistic can only take on the values 1 or
+2, each with probability 1/2.  There is something odd here.
+
+Finally, it is more than a bit crazy to view this assessment as somehow
+a measure of excessive sequential correlation, as a measure of "runs".
+Let us reframe the test statistic (count of 01 and 10's) in terms of our
+null hypothesis.  Presuming random, equal probability 0's and 1's, we
+expect 25% each of 00 01 10 11.  Given an exemplary bit string of e.g.
+1001101011, it doesn't really matter if one examines disjoint bitpairs
+(10 01 10 10 11) (n/2 bitpairs for n even) or the overlapping bitpairs
+10 00 01 11 10 01 10 01 11 11 (wrapping the last pair around
+periodically to ensure symmetry and n pairs of bits, EACH pair is
+expected to occur with a frequency, in the limit of many bitpairs, of
+#bitpairs*(1/4).
+
+Furthermore, in an ensemble of measurements of bitpair frequencies, each
+distinct possibility is (for lots of identical bitsets) to be binomially
+distributed with respect to the rest (as in p_01 = 1/4, p_!01 = 3/4)
+regardless of whether or not sequential overlapping bitpairs are
+counted.  We can understand this by noting that our null hypothesis (a
+random generator producing pairs of bits) can be applied to any pair of
+bits in any string.
+
+Note also that in a given bitstring with periodic wraparound, the number
+of 01 (overlapping) pairs must equal the number of 10 pairs.  This can
+be proven with ease.  Every bit flipped can either change >>both<< the
+01 and 10 count by one (flipping a bit with two neighbors that are both
+0 or both 1) or it can leave them both the same (flipping a bit with a
+neighboring 0 AND a neighboring 1).  This wreaks a certain measure of
+havoc on the notion that each sequentially overlapping pair examined is
+an independent measurement -- measuring any pair of (01 or 10 count) and
+(00 or 11 count) suffices to determine the counts for all four possible
+bit pairs.
+
+The only question remaining is whether measuring the counts using
+overlapping bitpairs is more or less rigorous a test than measuring the
+counts using non-overlapping pairs.  That is, can a generator create a
+bitstring that is correctly pairwise distributed in both non-overlapping
+pair sequences but that is NOT correctly pairwise distributed in
+overlapping pair sequences or vice versa.  The answer is not terribly
+obvious, but if we make the very weak presumption that our test
+measurments do not depend, on average, on whether we begin them
+systematically at bit 0 or bit 1 (so that if we have a bad generator
+we'll eventually fail for either starting point with roughly equal
+frequency for different starting seeds and/or first-bit displacements),
+then measuring both possibilities for each string should (on average)
+produce results that are conservatively related to measuring one
+possibility on twice as many strings.  
+
+To put it another way, if a generator creates strings that >>fail<< the
+overlapping test, they would necessarily fail at least one of the two
+non-overlapping tests possible for the same bitstring, since the counts
+for the two non-overlapping tests add to produce the count for the
+non-overlapping test.  For this addition to push values out of
+acceptable ranges one would require two deviations from the expected
+value in the same direction.  If we only make the extremely weak
+assumption that failure of the non-overlapping tests is equally likely
+for both possible cyclic starting points, the 1/sqrt(2) scaling implicit
+in using both strings is thus conservative.
+
+The final problem with runs is that it is not easy to see how to extend
+it to a higher order.  For example, does 101 occur too often?  How about
+010?  Again, each bit pattern should occur at a rigorously predicted
+rate for p_0 = p_1 = 0.5 and independent bits, e.g. p_000 = p_001 =
+p_010 = ... = 1/8 for any distinct three-bit combination, p_0000... =
+1/16 for four-bit combinations, and so on.  EACH of these outcomes
+should occur with binomially distributed frequencies when measured as a
+bernoulli trial with p_xyz, (1 - p_xyz), making it easy to compute both
+Y and sigma.  This suggests that the correct generalization of monobit
+and runs (and probably more of the sts tests) is a test that (in one
+pass):
+
+   a) presumes a valid bitlevel rng so that p_0 = p_1 = 0.5 exactly, all
+bits independent (null hypothesis).
+
+   b) counts 1's (and infers 0's) for M sets of N bits, incrementing a
+histogram vector of the number of 1's observed accordingly.  This is
+rigorously compared for EACH possible value of the count to the expected
+binomial distribution of counts.
+
+   c) counts e.g. 00,01,10,11 overlapping pairs.  We showed above that
+the count of 01's exactly equals the count of 10's.  The count of 11
+pairs equals the total number of pairs less the count of 00's, 01's and
+10's (all known).  Even though these are not all independent, there is
+no harm and a small ease of coding advantage in binning all four counts
+in four result histograms, each to be compared to its binomial
+expectation.
+
+   d) counts e.g. 000, 001, 010... overlapping pairs.  Here we IGNORE
+possible count relationships for sure (as we won't stop with three
+bits:-).  Again, bin the outcome count frequencies and compare to their
+expected binomial distribution.
+
+This process can continue indefinitely, as long as we can accumulate
+enough counts in each pattern histogram to make aggregate statistics
+reliable.  For example, at 8 bits, one is basically ensuring that the
+distribution of ascii characters is BOTH overall uniform (has the
+correct mean number of letters) AND that the actual distribution of
+those letters in samples is correct from the point of view of Bernoulli
+trials.
+
+I think that this process is strengthened significantly by conducting it
+simultaneously for all the sequences.  The first measures "bit frequency
+and randomness".  The second measures "pairwise sequential
+correlations".  The third measure "three-bit sequential correlations"
+and so forth.  A sequence might pass the first and fail the second, pass
+the first two and fail the third, pass the first seven and fail the
+eighth, pass the first eight and fail the 32nd (so that floats formed
+from the inverse are not uniformly distributed).
