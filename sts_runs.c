@@ -50,7 +50,7 @@ double sts_runs()
   */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)sts_runs_test);
- printf("p = %6.3f for sts_runs test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,kspi);
+ printf("p = %6.3f for sts_runs test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,kspi);
  if(pks < 0.0001){
    printf("Generator %s fails for sts_runs.\n",gsl_rng_name(rng));
  }

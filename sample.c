@@ -71,7 +71,7 @@ double sample(void *testfunc())
   */
  pks = kstest_kuiper(ks_pvalue,kspi);
  if(verbose == D_SAMPLE || verbose == D_ALL){
-   printf("# sample(): p = %6.3f from Kuiper Komogorov-Smirnov test on %u pvalue.\n",pks,kspi);
+   printf("# sample(): p = %6.3f from Kuiper Kolmogorov-Smirnov test on %u pvalue.\n",pks,kspi);
  }
 
  return(pks);

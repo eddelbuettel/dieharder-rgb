@@ -47,7 +47,7 @@ double diehard_2dsphere()
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_2dsphere_test);
- printf("p = %8.6f for diehard_2dsphere test from Kuiper Komogorov-Smirnov test\n",pks);
+ printf("p = %8.6f for diehard_2dsphere test from Kuiper Kolmogorov-Smirnov test\n",pks);
  if(pks < 0.0001){
    printf("Generator %s fails for diehard_2dsphere.\n",gsl_rng_name(rng));
  }

@@ -121,7 +121,7 @@ double diehard_birthdays()
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_birthdays_test);
- printf("p = %8.6f for diehard_birthdays test from Kuiper Komogorov-Smirnov test\n",pks);
+ printf("p = %8.6f for diehard_birthdays test from Kuiper Kolmogorov-Smirnov test\n",pks);
  printf("     on %u pvalues.\n",kspi);
  if(pks < 0.0001){
    printf("Generator %s fails for diehard_birthdays.\n",gsl_rng_name(rng));

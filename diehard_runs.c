@@ -128,7 +128,7 @@ double diehard_runs()
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_runs_test);
- printf("p = %8.6f for diehard_runs test from Kuiper Komogorov-Smirnov test\n",pks);
+ printf("p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov test\n",pks);
  printf("     on %u pvalues (up runs + down runs).\n",kspi);
  if(pks < 0.0001){
    printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));

@@ -45,7 +45,7 @@ double sts_monobit()
   */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)sts_monobit_test);
- printf("p = %6.3f for sts_monobit test from Kuiper Komogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
+ printf("p = %6.3f for sts_monobit test from Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",pks,cntrl.rgb_bitdist_ntuple,kspi);
  if(pks < 0.0001){
    printf("Generator %s fails for sts_monobit.\n",gsl_rng_name(rng));
  }
