@@ -28,11 +28,11 @@
 void rgb_binomial()
 {
 
- int i,j,k,nbits;
+ int i,j,k,nbits,npts;
  unsigned int num_ones,num_zeros,num_bits;
  unsigned int mask;
- double onefrac,chisq,pvalue;
- double *x,*y,*sigma,ptmp;
+ double onefrac,ptmp;
+ Ntest btest;
 
  /*
   * x[k] is an accumulator to be used to count the frequency with
@@ -44,19 +44,17 @@ void rgb_binomial()
   * to support the formation of chisq as we run.
   */
  nbits = 8*sizeof(unsigned int)*size;
- x = (double *) malloc(sizeof(double)*(nbits+1));       /* sample results */
- y = (double *) malloc(sizeof(double)*(nbits+1));       /* expected sample results */
- sigma = (double *) malloc(sizeof(double)*(nbits+1));   /* known sample sigma */
- for(k=0;k<=nbits;k++){
+ npts = nbits+1;
+ Ntest_create(&btest,npts,"rgb_binomial",gsl_rng_name(random));
+ for(k=0;k<npts;k++){
    ptmp = binomial(nbits,k,0.5);
-   x[k] = 0.0;                          /* zero the accumulator/counter */
-   y[k] = samples*ptmp;
-   sigma[k] = sqrt(y[k]*(1.0 - ptmp));
+   btest.y[k] = samples*ptmp;
+   btest.sigma[k] = sqrt(btest.y[k]*(1.0 - ptmp));
  }
 
  /*
   * Next we run the sampling loop to accumulate num_bit results
-  * in x[k].  For the moment we print out each sample as well.
+  * in btest.x[k].  For the moment we print out each sample as well.
   */
  for(i=0;i<samples;i++){
    if((i%25) == 0 && verbose){
@@ -92,7 +90,7 @@ void rgb_binomial()
    /*
     * Increment the counter for the resulting number of ones.
     */
-   x[num_ones]++;
+   btest.x[num_ones]++;
  }
 
  /*
@@ -103,35 +101,26 @@ void rgb_binomial()
   * If I understand things correctly, p-value from chisq is
   *   p = incomplete_gamma(N/2,chisq/2) (gsl Q version, not P version).
   */
- chisq = chisq_eval(x,y,sigma,nbits);
- pvalue = gsl_sf_gamma_inc_Q((double)nbits/2.0,chisq/2.0);
+ Ntest_eval(&btest);
  if(!quiet){
    printf("#==================================================================\n");
-   printf("# rgb_binomial test of bit distribution using the %s generator\n",gsl_rng_name(random));
-   printf("# number of 1's in %d strings of %d bits each cumulated and compared\n",samples,nbits);
-   printf("# to binomial distribution predictions.\n");
-   printf("# Results:  chisq = %12.8f for %d points (bits)\n",chisq,nbits);
-   printf("#==================================================================\n");
- }
- printf("p-value = Q(%f,%f) = %10.6f\n",(double)nbits/2.0,chisq/2.0,pvalue);
- if(!quiet){
-   if((pvalue<=0.05) && (pvalue>0.01)){
-     printf("Conclusion: Generator may be weak. (5%% level)  Run again.\n");
-   } else if((pvalue<=0.01) && (pvalue > 0.0001)){
-     printf("Conclusion: Generator likely to be weak! (1%% level)  Run again.\n");
-   } else if(pvalue<=0.0001){
-     printf("Conclusion: Generator Fails Test! (0.01%% level or less)\n");
-   } else {
-     printf("Conclusion: No obvious reason to worry about generator.\n");
-   }
+   printf("#                 %s Test Description\n",btest.testname);
+   printf("# Evaluates the number of 1's in %d strings of %d bits and\n",samples,nbits);
+   printf("# compares the result histogram to the binomial distribution.\n");
+   printf("# From chisq and the incomplete gamma function the probability\n");
+   printf("# of this histogram if the rng tested is in fact \"random\" is\n");
+   printf("# obtained.  If this p-value is low the hypothesis that it is\n");
+   printf("# random safely can be rejected\n");
  }
 
- /*
-  * Debugging:  Given as 0.801252 in STS docs, just making sure that
-  * we're using the right gsl incomplete gamma routine.  We are.
- pvalue = gsl_sf_gamma_inc_Q(1.5,0.5);
- printf("rgb_binomial p-value = Q(%f,%f) = %10.6f\n",1.5,0.5,pvalue);
- */
+ Ntest_conclusion(&btest);
+
+ printf("# %10s   %12s    %12s  %12s  %10s\n","Test Name","Generator",
+   "# samples","# of bits","p-value");
+ printf(" %13s  %12s  %12d  %11d  %13.7f\n",btest.testname,btest.rngname,
+   samples,nbits,btest.pvalue);
+
+ Ntest_destroy(&btest);
 
 }
 

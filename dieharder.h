@@ -101,3 +101,28 @@
  double *rand_uniform;          /* vector of "random" uniform deviates */
  int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
 
+ /*
+  * Looks like we'll need certain structs in order to be able to really
+  * streamline and objectify the process of test->results->chisq->p-value
+  * (and possibly even -> p-p-value, since p-values themselves should have
+  * a distribution and we might do better running 30 samples of 1000 instead
+  * of one sample of 30,000).
+  */
+ typedef struct {
+   double *x;
+   double *y;
+   double *sigma;
+   unsigned int npts;
+   double chisq;
+   double pvalue;
+   char testname[128];
+   char rngname[128];
+ } Ntest;
+
+ typedef struct {
+   double x;
+   double y;
+   double sigma;
+   double pvalue;
+ } Xtest;
+ 
