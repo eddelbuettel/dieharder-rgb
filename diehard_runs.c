@@ -198,6 +198,30 @@ int diehard_runs()
     * This ends a single sample.
     */
  }
+
+ /*
+  * Compute the test statistics up an down.
+  */
+
+ b[0] = 0.16666666666666666;
+ b[1] = 0.20833333333333334;
+ b[2] = 0.09166666666666666;
+ b[3] = 0.026388888888888889;
+ b[4] = 0.0057539682539682543;
+ b[5] = 0.0011904761904761906;
+ up = 0.0;
+ down = 0.0;
+ for(i=0;i<RUN_MAX;i++) {
+   for(j=0;j<RUN_MAX;j++) {
+     up   += (utest.x[i] - rn*b[i])*(utest.x[j] - rn*b[j])*a[i][j];
+     down += (dtest.x[i] - rn*b[i])*(dtest.x[j] - rn*b[j])*a[i][j];
+   }
+ }
+ up /= rn;
+ down /= rn;
+
+
+ 
  /*
   * This ends all sampling.  Now we have to analyze the result.
   */
