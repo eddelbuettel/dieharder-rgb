@@ -57,17 +57,17 @@ void diehard_rank_32x32_test()
    btest.y[0] = 0.0;
    btest.sigma[0] = 0.0;
  }
- btest.x[29] = 0.0052854502e+00;
- btest.y[29] = 0.0;
+ btest.x[29] = 0.0;
+ btest.y[29] = tsamples*0.0052854502e+00;
  btest.sigma[29] = 0.0;
- btest.x[30] = 0.1283502644e+00;
- btest.y[30] = 0.0;
+ btest.x[30] = 0.0;
+ btest.y[30] = tsamples*0.1283502644e+00;
  btest.sigma[30] = 0.0;
- btest.x[31] = 0.5775761902e+00;
- btest.y[31] = 0.0;
+ btest.x[31] = 0.0;
+ btest.y[31] = tsamples*0.5775761902e+00;
  btest.sigma[31] = 0.0;
- btest.x[32] = 0.2887880952e+00;
- btest.y[32] = 0.0;
+ btest.x[32] = 0.0;
+ btest.y[32] = tsamples*0.2887880952e+00;
  btest.sigma[32] = 0.0;
  
 
