@@ -124,6 +124,7 @@
    double x;
    double y;
    double sigma;
+   unsigned int npts;
    double pvalue;
    char testname[128];
    char rngname[128];

@@ -146,10 +146,13 @@ void Xtest_eval(Xtest *xtest)
  }
 
  if(!quiet){
-   printf("# Xtest_eval summary\n");
-   printf("# %10s %10s %10s\n","    X","    Y"," sigma");
-   printf("#--------------------------------------\n");
-   printf("# %10.1f %10.1f %10.3f\n",xtest->x,xtest->y,xtest->sigma);
+   printf("#==================================================================\n");
+   printf("#                        Xtest_eval Summary\n");
+   printf("# Reference data is observed, expected, error, normalized delta,\n");
+   printf("# number of points. p-value is erfc(delta):\n");
+   printf("# %5s %10s     %10s %10s %10s\n","X","Y","sigma","delta","Npts");
+   printf("#==================================================================\n");
+   printf("# %10.1f %10.1f %10.3f %10.5f %10d\n",xtest->x,xtest->y,xtest->sigma,fabs(xtest->y - xtest->x)/(sqrt(2.0)*xtest->sigma),xtest->npts);
  }
 
  xtest->pvalue =

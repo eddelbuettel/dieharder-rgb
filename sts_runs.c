@@ -28,6 +28,7 @@ void sts_runs()
  nbits = 8*sizeof(unsigned int)*size;
  mtest.y = nbits/2.0;
  mtest.sigma = sqrt((double)nbits/2.0);
+ mtest.npts = nbits;
  strncpy(mtest.testname,"sts_runs",128);
  strncpy(mtest.rngname,gsl_rng_name(random),128);
 
