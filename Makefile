@@ -57,6 +57,7 @@ SOURCES = $(SOURCE)\
     Xtest.c \
     confidence.c \
     chisq.c \
+    kstest.c \
     rand_rate_seed.c \
     rand_rate_startup.c \
     rand_rate_work.c \
