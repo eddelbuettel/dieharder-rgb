@@ -35,6 +35,7 @@ int diehard_3dsphere()
  C3 *c3;
  double r1,r2,r3,rmin,r3min;
  double *pvalue;
+ double xdelta,ydelta,zdelta;
 
  /*
   * This one should be pretty straightforward.  Generate a vector
@@ -48,36 +49,43 @@ int diehard_3dsphere()
  c3 = (C3 *)malloc(POINTS*sizeof(C3));
 
  for(i=0;i<samples;i++){
-  rmin = 2000.0;
-  for(m=0;m<POINTS;m++){
-
-   /* Pick 1000 points in the cube */
+   rmin = 2000.0;
    for(j=0;j<POINTS;j++){
-     /* This is a portable way to generate a 3 vector */
+     /*
+      * Generate a new point in the cube.
+      */
      for(k=0;k<DIM;k++) c3[j].x[k] = 1000.0*gsl_rng_uniform_pos(rng);
-     if(j<0){
+     if(verbose){
        printf("%d: (%8.2f,%8.2f,%8.2f)\n",j,c3[j].x[0],c3[j].x[1],c3[j].x[2]);
      }
-   }
-   
-   for(j=0;j<POINTS-1;j++){
-     for(k=j+1;k<POINTS;k++){
-       r2 = 0.0;
-       for(l=0;l<DIM;l++) r2 += c3[j].x[l]*c3[k].x[l];
+
+     /*
+      * Now compute the distance between the new point and all previously
+      * picked points.
+      */
+     for(k=j-1;k>=0;k--){
+       xdelta = c3[j].x[0]-c3[k].x[0];
+       ydelta = c3[j].x[1]-c3[k].x[1];
+       zdelta = c3[j].x[2]-c3[k].x[2];
+       r2 = xdelta*xdelta + ydelta*ydelta + zdelta*zdelta;
        r1 = sqrt(r2);
        r3 = r2*r1;
-       /* printf("rmin = %f, r1 = %f\n",rmin,r1); */
+       if(verbose){
+         printf("%d-%d: |(%6.2f,%6.2f,%6.2f)| = r1 = %f rmin = %f, \n",
+            j,k,xdelta,ydelta,zdelta,r1,rmin);
+       }
        if(r1<rmin) {
          rmin = r1;
 	 r3min = r3;
        }
      }
    }
-  }
 
-  printf("Found rmin = %f  (r^3 = %f)\n",rmin,r3min);
-  pvalue[i] = 1.0 - exp(-r3min/30.0);
-  printf("p-value[%d] = %f\n",i,pvalue[i]);
+   if(verbose){
+     printf("Found rmin = %f  (r^3 = %f)\n",rmin,r3min);
+   }
+   pvalue[i] = 1.0 - exp(-r3min/30.0);
+   printf("p-value[%d] = %f\n",i,pvalue[i]);
 
  }
 
@@ -90,7 +98,7 @@ int diehard_3dsphere()
    printf("# KS test to see if p is uniform.\n");
    printf("#==================================================================\n");
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# size of vector tested = %u\n",size);
+   printf("# Number of points tested = %u\n",POINTS);
  }
 
 }
