@@ -33,7 +33,7 @@ DIR = $(PROGRAM)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=0
-VERSION_MINOR=1.0
+VERSION_MINOR=1.1
 RELEASE=1
 
 #========================================================================
@@ -43,6 +43,7 @@ RELEASE=1
 #========================================================================
 SOURCE = $(PROGRAM:=.c)
 SOURCES = $(SOURCE)\
+    add_my_types.c \
     dev_random.c \
     measure_rate.c \
     parsecl.c \

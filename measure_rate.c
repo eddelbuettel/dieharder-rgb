@@ -172,8 +172,8 @@ void measure_rate()
  }
  if(!quiet){
    printf("# Timing test %d\n",testnum);
-   printf("# Time(sec): %12.8e +/- %12.8e\n",avg_time_full,sigma_time_full);
    printf("# Samples = %d  Loop iterations per sample = %d\n",samples,full_iter);
+   printf("# Time(sec): %12.8e +/- %12.8e\n",avg_time_full,sigma_time_full);
    printf("#========================================================================\n");
  }
 

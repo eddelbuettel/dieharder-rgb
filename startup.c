@@ -15,24 +15,11 @@
  */
 
 #include "rand_rate.h"
-/*
- * From gsl types.c -- apparently a hard-coded value
- */
-#define N 100
-/* GSL_VAR const gsl_rng_type *gsl_rng_dev_random; */
-const gsl_rng_type *gsl_rng_dev_random;
 
 void rand_rate_startup()
 {
 
  int i,imax,j,k;
-
- /*
-  * What homebrew generators might we have today?
-  * Always /dev/random...
-  */
- sprintf(homebrews[0],"/dev/random");
- num_homebrews = 1;
 
  /*
   * Count and optionally list the available, built in gsl generators
@@ -51,18 +38,25 @@ void rand_rate_startup()
    i++;
  }
  num_gsl_rngs = i;
+
+ /*
+  * Now add my own types and count THEM.
+  */
+ add_my_types();
  if(verbose == HELPGEN){
-   printf("================================\n");
-   printf(" Listing/adding additional (non-gsl-linked) tests with local sources:\n");
+   printf("Listing available non-gsl generators:\n");
    printf("Test Number      Name\n");
    printf("================================\n");
  }
-   types[i] = (gsl_rng_dev_random);
- if(verbose == HELPGEN){
-   printf(" %d\t\t%s\n", i, types[i]->name);
+ while(types[i] != NULL){
+   if(verbose == HELPGEN){
+     printf(" %d\t\t%s\n", i, types[i]->name);
+   }
+   i++;
  }
- i++;
+
  num_rngs = i;
+ num_my_rngs = num_rngs - num_gsl_rngs;
 
  if(verbose == HELPGEN) exit(0);
 
