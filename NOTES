@@ -412,3 +412,54 @@ SO, I need to rewrite sts_monobit, sts_runs, and rgb_binomial (last
 first) so that they only check bits in the valid part of each returned
 word.  This will be modestly annoying, but is of course absolutely
 necessary for the results to mean a damn thing.
+
+====================
+
+Note the new test rgb_bitdist, which is the BEST generalization of
+sts_monobit and perhaps better than rgb_binomial as well.  We need to
+merge sts_monobit, rgb_persist, and rgb_bitdist into a single test
+that measures the total/average bit number, the per-bit-slot
+total/average number, and derives the cumulative bitmask of repeated
+bits.
+
+Two additional directions to take this:
+
+First:
+
+   generate a set of Ntest variables for e.g.
+     1 bit
+     2 bit
+     3 bit
+     4 bit
+     ...
+     N bit
+
+combinations (one each).  For number of bits and bitpattern, sweep the
+bitstring and accumulate the frequency histogram (for each possible
+bitpattern in each string location)
+
+  ntest[no_of_bits].x[bit_pattern_slot]
+
+with periodic wraparound on the bitstring and so forth -- this is, in
+fact, sts_runs but for arbitrary numbers of bits and accumulating BOTH
+the totals AND the actual distribution, and check the chisq on the
+distribution and the pvalue of the total expected.
+
+Second:
+
+Here we look for subtle sequential bitlevel correlations.  We do the
+same test as before, except that the frequency histogram is LATERAL --
+doing each bit position in a sequential fashion.  This test should see a
+clear failure for bits that don't change (strong sequential correlation,
+that) but should ALSO discover individual bits that do things like:
+01010101 or 0011110000111100 or any other "balanced" repetition.
+
+In fact, we may eventually do a fft on the forward sequential bit
+sequences to see if there are even very weak sequential bit-level
+correlations like 001010100001100010 (where every sequential triplet has
+two 0's and one 1), even if the triplets themselves are "random".  A
+good frequency test on all 3-way bit patterns should catch this, of
+course, and the lovely thing about binary is that I can always use a
+suitably masked integer conversion of the bit pattern itself as the
+histogram index!  So it needn't be TOO horrible to encode.
+
