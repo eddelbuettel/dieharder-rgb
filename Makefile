@@ -53,6 +53,9 @@ SOURCES = $(SOURCE)\
     parsecl.c \
     prob.c \
     timing.c \
+    tensor.c \
+    matrix.c \
+    block.c \
     Ntest.c \
     Xtest.c \
     confidence.c \

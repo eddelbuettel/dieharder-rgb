@@ -19,6 +19,7 @@
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_sf.h>
 #include <gsl/gsl_sort.h>
+#include "tensor.h"
 
 /*
  *========================================================================
