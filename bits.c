@@ -130,3 +130,57 @@ void Ntest_conclusion(Ntest *ntest)
  printf("rgb_binomial p-value = Q(%f,%f) = %10.6f\n",1.5,0.5,pvalue);
  */
 
+void Xtest_eval(Xtest *xtest)
+{
+
+ int i;
+ double chi;
+
+ /*
+  * This routine evaluates the p-value from the xtest data.
+  * x, y, sigma all must be filled in by the calling routine.
+  */
+
+ if(verbose){
+   printf("Evaluating pvalue\n");
+ }
+
+ if(!quiet){
+   printf("# Xtest_eval summary\n");
+   printf("# %10s %10s %10s\n","    X","    Y"," sigma");
+   printf("#--------------------------------------\n");
+   printf("# %10.1f %10.1f %10.3f\n",xtest->x,xtest->y,xtest->sigma);
+ }
+
+ xtest->pvalue =
+     gsl_sf_erfc(fabs(xtest->y - xtest->x)/(sqrt(2.0)*xtest->sigma));
+
+}
+
+void Xtest_conclusion(Xtest *xtest)
+{
+ /*
+  * The following decision tree states our conclusion(s).  Disagree
+  * with them all you like -- they are at best approximate.
+  */
+ if(!quiet){
+   printf("#==================================================================\n");
+   printf("# %s test using the %s generator \n",xtest->testname,xtest->rngname);
+   printf("# Results: %12s\n","p-value");
+   printf("#        %11.5f\n",xtest->pvalue);
+   if((xtest->pvalue<=0.05) && (xtest->pvalue>0.01)){
+     printf("# Conclusion: Generator %s may be weak. (5%% level)  Run again.\n",xtest->rngname);
+   } else if((xtest->pvalue<=0.01) && (xtest->pvalue > 0.0001)){
+     printf("# Conclusion: Generator %s likely to be weak! (1%% level)  Run again.\n",xtest->rngname);
+   } else if(xtest->pvalue<=0.0001){
+     printf("# Conclusion: %s Generator Fails Test! (0.01%% level or less)\n",xtest->rngname);
+   } else if(xtest->pvalue>0.9999){
+     printf("# Conclusion: %s Generator succeeded! (0.01%% level or more)\n",xtest->rngname);
+   } else {
+     printf("# Conclusion: No obvious reason to worry about generator %s.\n",xtest->rngname);
+   }
+   printf("#==================================================================\n");
+ }
+
+}
+

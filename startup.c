@@ -42,6 +42,12 @@ void rand_rate_startup()
  num_rngs = i;
  num_my_rngs = num_rngs - num_gsl_rngs;
 
+ if(randnum > num_rngs-1){
+   fprintf(stderr,"Error:  rng %d (> %d) does not exist!\n",randnum,num_rngs-1);
+   list_rngs();
+   exit(0);
+ }
+
  /*
   * Initialize the selected gsl rng.  random_seed() seeds from
   * /dev/random.  Note that any locally defined rng's were "added"

@@ -124,5 +124,7 @@
    double y;
    double sigma;
    double pvalue;
+   char testname[128];
+   char rngname[128];
  } Xtest;
  

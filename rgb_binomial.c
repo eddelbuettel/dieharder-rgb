@@ -35,10 +35,10 @@ void rgb_binomial()
  Ntest btest;
 
  /*
-  * x[k] is an accumulator to be used to count the frequency with
+  * btest.x[k] is an accumulator to be used to count the frequency with
   *   which we get k 1's in num_bits, over the m runs.
-  * y[k] contains the expected/exact result.
-  * sigma[k] contains the standard error in y[k].
+  * btest.y[k] contains the expected/exact result.
+  * btest.sigma[k] contains the standard error in btest.y[k].
   *
   * We start by creating all three and filling y[k] and sigma[k]
   * to support the formation of chisq as we run.
