@@ -62,7 +62,6 @@ void diehard_2dsphere_test()
  int i,j,k,l,m;
  C3 *c3;
  double r1,r2,r3,rmin,r2min;
- double *pvalue,pks;
 
  /*
   * This one should be pretty straightforward.  Generate a vector

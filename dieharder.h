@@ -107,6 +107,8 @@
  void diehard_birthdays_test();
  double diehard_2dsphere();
  void diehard_2dsphere_test();
+ double diehard_3dsphere();
+ void diehard_3dsphere_test();
  double rgb_bitdist();
  void rgb_bitdist_test();
  double sts_monobit();
