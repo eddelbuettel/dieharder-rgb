@@ -49,12 +49,12 @@
 int diehard_birthdays()
 {
 
- unsigned int i,j,k,m,mnext,ns,nc;
+ unsigned int i,j,k,kmax,m,mnext,ns,nc;
  unsigned int nms;
  unsigned int rmask;
  unsigned int *rand_list,*intervals;
- unsigned int *jsamp;
- double lambda;
+ unsigned int **js;
+ double lambda,*pvalue;
 
  /*
   * Should be 512, but we'll do it this way in case we want to vary it.
@@ -62,6 +62,11 @@ int diehard_birthdays()
  nms = pow(2,BMPOW);
 
  lambda = (double)nms*nms*nms/pow(2.0,26.0);
+ /*
+  * This should be more than twice as many slots as we really
+  * need for the Poissonian tail.
+  */
+ kmax = 10;
  
  /*
   * Forget size for this one; reallocate to nms in length.
@@ -71,27 +76,28 @@ int diehard_birthdays()
  rand_int  = (unsigned int *)malloc(nms*sizeof(unsigned int));
  rand_list = (unsigned int *)malloc(nms*sizeof(unsigned int));
  intervals = (unsigned int *)malloc(nms*sizeof(unsigned int));
- jsamp =     (unsigned int *)malloc(rmax_bits*sizeof(unsigned int));
  rmask = 1;
  for(i=0;i<BBITS-1;i++) {
   rmask = rmask << 1;
   rmask++;
  }
- /*
-  * Zero the counter. Note that we only count the cyclic
-  * permutations of the rmax_bits signficant bits from the
-  * rng, and that we WILL sample each permutation samples
-  * times below in each permutation slot.  The permutations
-  * are arguably not independent, but each permutations
-  * 500 samples are, so the p-values are all independently
-  * valid.
-  */
- for(nc=0;nc<rmax_bits;nc++){
-   jsamp[nc] = 0;
- }
 
  /*
-  * Create samples of the birthday problem.
+  * js[rmax_bits][kmax] is the histogram we increment using the
+  * count of repeated intervals as an index, for each cyclic
+  * permutation of bits.
+  */
+ js = (unsigned int **)malloc(rmax_bits*sizeof(unsigned int *));
+ for(i=0;i<rmax_bits;i++){
+   js[i] = (unsigned int *)malloc(kmax*sizeof(unsigned int));
+   for(j=0;j<kmax;j++) js[i][j] = 0;
+ }
+ pvalue = (double *)malloc(rmax_bits*sizeof(double));
+
+ /*
+  * Each sample uses a unique set of rand_int[]'s, but evaluates
+  * the Poissonian statistic for each cyclic rotation of the bits
+  * across the 24 bit mask.
   */
  for(ns=0;ns<samples;ns++){
 
@@ -106,8 +112,15 @@ int diehard_birthdays()
     * Cycle over all rmax_bits cyclic bit permutations (which we'll take
     * 24 bits at a time).  We really need to test to make sure
     * that rmax_bits >= 24...
-    */
+   for(nc=0;nc<1;nc++){
+   */
    for(nc=0;nc<rmax_bits;nc++){
+
+     /*
+      * k is the interval count for THIS pass through THIS list (what
+      * Marsaglia calls j).
+      */
+     k = 0;
      for(m = 0;m<nms;m++){
        /*
         * Create a list of 24-bit masked rands
@@ -153,31 +166,47 @@ int diehard_birthdays()
      }
 
      /*
-      * We count the number of times an interval is repeated.
-      * I presume that this includes those rare intervals that are
-      * tripled, although that is very much not clear.  I'll
-      * have to look for a reference to clarify this.
+      * We count the number of interval values that occur more than
+      * once in the list.  Presumably that means that even if an interval
+      * occurs 3 or 4 times, it counts only once!
       */
      
      for(m=0;m<nms-1;m++){
        mnext = m+1;
        while(intervals[m] == intervals[mnext]){
+          /* There is at least one repeat of this interval */
+	  if(mnext == m+1){
+	    /* increment the count of repeated intervals */
+	    k++;
+	  }
           if(verbose){
             printf("intervals[%u] = %u == intervals[%u] = %u\n",
                m,intervals[m],mnext,intervals[mnext]);
 	  }
-	  if(mnext == m+1){
-	    jsamp[nc] += 2;
-	  } else {
-            jsamp[nc]++;
-	  }
 	  mnext++;
        }
+       /*
+        * Skip all the rest that were identical.
+	*/
        if(mnext != m+1) m = mnext;
-       
      }
+     /*
+      * k now is the total number of intervals that occur more than
+      * once in this sample and permutation.  So we increment the
+      * sample counter for this permutation in this slot.
+      */
+     if(k>=kmax){
+       if(verbose){
+         printf("Warning.  Interval count %u exceeds kmax = %u.\n",k,kmax);
+       }
+       k = kmax-1;
+       if(verbose){
+         printf("Incrementing count %u instead.\n",k);
+       }
+     }
+     js[nc][k]++;
      if(verbose){
-       printf("jsamp[%u] = %u\n",ns,jsamp[ns]);
+       printf("incremented js[%u][%u] = %u\n",nc,k,js[nc][k]);
      }
        
 
@@ -192,16 +221,30 @@ int diehard_birthdays()
  }
 
  /*
-  * OK, it is very much time for bed, but the following is a sorted
-  * list of counts of birthday intervals that match, with correct
-  * handling of triples and higher (so three in a row counts as three,
-  * and two in a row counts as two).  So all we have to do is compute
-  * chisq for the jsamp vector, following Marsaglia, assuming a poisson
-  * distribution.  But TOMORROW, not now... I'm dyin'.
+  * Let's sort the result (for fun) and print it out for each bit
+  * position.
   */
- gsl_sort_uint(jsamp,1,rmax_bits);
+ if(verbose){
+   for(nc=0;nc<rmax_bits;nc++){
+     printf("#==================================================================\n");
+     for(k=0;k<kmax;k++){
+       printf("js[%u][%u] = %u\n",nc,k,js[nc][k]);
+     }
+   }
+ }
+
+
+ /*
+  * Fine fine fine.  We FINALLY have a distribution per cyclic permutation of
+  * the binned repeat interval counts of many samples of 512 numbers drawn
+  * from 2^24 (24 bit integer masks).  We should now be able to pass
+  * EACH vector of results off to a Pearson chisq computation for the
+  * expected Poissonian distribution and generate a p-value for each
+  * cyclic permutation of the bits through the 24 bit mask.
+  */
  for(nc=0;nc<rmax_bits;nc++){
-   printf("jsamp[%u] = %u\n",nc,jsamp[nc]);
+    pvalue[nc] = chisq_poisson(js[nc],lambda,kmax);
+    printf("p-value[%u] = %f\n",nc,pvalue[nc]);    
  }
  
 

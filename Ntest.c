@@ -100,7 +100,11 @@ void Ntest_eval(Ntest *ntest)
    /* Try these two forms.  The first uses known sigma[i]: */
    chi = (ntest->y[i]-ntest->x[i])/ntest->sigma[i];
    ntest->chisq += chi*chi;
-   /* Here is an alternate form that presumes only known/expected y[i]. */
+   /*
+    * Here is an alternate (Pearson chisq) form that presumes only
+    * known/expected y[i].  This is the one we should use, really, if
+    * we know the actual probability distribution and hence y[i].
+    */
    chisq += (ntest->y[i]-ntest->x[i])*(ntest->y[i]-ntest->x[i])/ntest->y[i];
    x_tot += ntest->x[i];
    y_tot += ntest->y[i];

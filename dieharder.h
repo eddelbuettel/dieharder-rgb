@@ -15,6 +15,8 @@
 #include <math.h>
 #include <limits.h>
 #include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
+#include <gsl/gsl_cdf.h>
 #include <gsl/gsl_sf.h>
 #include <gsl/gsl_sort.h>
 
@@ -73,6 +75,7 @@
  void Usage();
  double binomial(unsigned int n, unsigned int k, double p);
  double chisq_eval(double *x,double *y,double *sigma, unsigned int n);
+ double chisq_poisson(uint *observed,double lambda,int kmax);
  int sts_monobit();
  int sts_runs();
  void dumpbits(unsigned int *data, unsigned int nbits);

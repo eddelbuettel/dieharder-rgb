@@ -1,10 +1,9 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-* See also accompanying file STS.COPYING
-*
-*/
+ * $Id$
+ *
+ * See copyright in copyright.h and the accompanying file COPYING
+ *
+ */
 
 /*
  *========================================================================
@@ -42,8 +41,46 @@
  * the number of degrees of freedom of the fit.
  */
 
-int chisq_poisson(uint *svec,double *pvec,uint nvec,double lambda)
+double chisq_poisson(uint *observed,double lambda,int kmax)
 {
+
+ uint i,j,k;
+ double *expected;
+ double delchisq,chisq,pvalue;
+
+ expected = (double *)malloc(kmax*sizeof(double));
+ for(k = 0;k<kmax;k++){
+   expected[k] = samples*gsl_ran_poisson_pdf(k,lambda);
+ }
+
+ /*
+  * Compute Pearson's chisq for this vector of the data.
+  */
+ chisq = 0.0;
+ for(k = 0;k < kmax;k++){
+   delchisq = ((double) observed[k] - expected[k])*
+      ((double) observed[k] - expected[k])/expected[k];
+   chisq += delchisq;
+   if(verbose){
+     printf("%u:  observed = %f,  expected = %f, delchisq = %f, chisq = %f\n",
+        k,(double)observed[k],expected[k],delchisq,chisq);
+   }
+ }
+
+ if(verbose){
+   printf("Evaluated chisq = %f for %u k values\n",chisq,kmax);
+ }
+
+ /*
+  * Now evaluate the corresponding pvalue.  The only real question
+  * is what is the correct number of degrees of freedom.
+  */
+ pvalue = gsl_sf_gamma_inc_Q((double)kmax/2.0,chisq/2.0);
+ if(verbose){
+   printf("pvalue = %f in chisq_poisson.\n",pvalue);
+ }
+
+ return(pvalue);
 
 }
 
