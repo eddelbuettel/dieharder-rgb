@@ -22,9 +22,7 @@ void sts_monobit()
 {
 
  int i,j,k;
- unsigned int num_ones,num_zeros,nbits;
- unsigned int mask;
- double onefrac;
+ unsigned int nbits;
  Xtest mtest;
 
  /*
@@ -61,16 +59,12 @@ void sts_monobit()
   */
  mtest.x = 0;
  if(verbose) printf("# Tested bitstring:\n#");
- for(j=0;j<size;j++){
-   mask = 1;
-   for(k=0;k<32;k++){
-     if((mask & rand_int[j]) != 0) {
-       mtest.x++;
-       if(verbose) printf("1");
-     } else {
-       if(verbose) printf("0");
-     }
-     mask = mask<<1;
+ for(j=0;j<nbits;j++){
+   if(get_bit(j) != 0) {
+     mtest.x++;
+     if(verbose) printf("1");
+   } else {
+     if(verbose) printf("0");
    }
  }
  if(verbose) printf("\n");

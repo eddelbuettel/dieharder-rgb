@@ -184,3 +184,30 @@ void Xtest_conclusion(Xtest *xtest)
 
 }
 
+int get_bit(unsigned int n)
+{
+
+ unsigned int index,offset,mask;
+
+/*
+ * This routine is designed to get the nth bit of the global unsigned int
+ * vector rand_int[] (known to be of length size).
+ */
+
+ index = (int) (n/(8*sizeof(unsigned int)));
+ if(index >= size){
+   fprintf(stderr,"Error: bit offset %d exceeds length %d of bitstring in rand[]\n",n,size*sizeof(unsigned int));
+   exit(0);
+ }
+ offset = n%(8*sizeof(unsigned int));
+ mask = 1;
+ mask = mask<<offset;
+
+ if(mask & rand_int[index]){
+   return(1);
+ } else {
+   return(0);
+ }
+ 
+
+}
