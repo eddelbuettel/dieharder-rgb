@@ -16,7 +16,7 @@ void parsecl(int argc, char **argv)
  samples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
  iterations = -1;	/* This should be just enough to do empty accurately */
  size = 1024;		/* Small enough to easily fit into any cache */
- bits = 128;            /* Default size for bitlevel tests */
+ bits = 128;            /* Default size for bitlevel tests*/
  verbose = 0;		/* Default is not to be verbose. */
  quiet = 0;		/* Default is ALSO not to be quiet (output control). */
  testnum = 0;		/* Default is to list rng's */
@@ -64,11 +64,9 @@ void parsecl(int argc, char **argv)
    }
  }
 
-/*
  if(bits){
-   size = bits/(8*sizeof(unsigned int)) + 1;
+   size = bits/(8*sizeof(unsigned int)) + 1;  /* more than enough */
  }
- */
 
  if(errflg){
    Usage();
@@ -105,34 +103,34 @@ void Usage()
  fprintf(stdout, "     1 write list of random integers and uniform deviates to stdout with\n");
  fprintf(stdout, "       selected rng.\n");
  fprintf(stdout, "     2 time selected generator, determining its bogomegarate.\n");
- fprintf(stdout, "     3 STS monobit test (number of 1's in bitstring rel to expected val).\n");
- fprintf(stdout, "     4 RGB binomial test (number of 1's in bitstrings rel to binomial dist).\n");
+ fprintf(stdout, "     3 RGB binomial (number of 1's in bitstrings rel to binomial dist).\n");
+ fprintf(stdout, "       and STS monobit (number of 1's in bitstring rel to expected val).\n");
+ fprintf(stdout, "     4 RGB bitmask (tests for frozen/unchanging bits).\n");
+ fprintf(stdout, "     5 RGB bitdist (tests frequency of all n-bit patterns:\n");
+ fprintf(stdout, "       note that this is an extremely powerful master test and can \n");
+ fprintf(stdout, "       replace a whole raft of weaker tests in STS and Diehard).\n");
+ fprintf(stdout, "     6 STS monobit (like this one - number of 1's vs 0's).\n");
+ fprintf(stdout, "     7 STS runs (and this one - tests frequency of 2-bit patterns)\n");
  fprintf(stdout, "\n");
  fprintf(stdout, "  -r rngnumber selects the rng to be tested (list them with -t 0).\n");
- fprintf(stdout, "\n");
  fprintf(stdout, "  -f filename will EVENTUALLY permit random strings to be tested to be\n");
  fprintf(stdout, "     read in from a file, but this is not yet implemented!\n");
- fprintf(stdout, "\n");
  fprintf(stdout, "  -b controls the number of bits used in bit string tests\n");
  fprintf(stdout, "  -n controls the length of the test vector (int or double) for vector\n");
  fprintf(stdout, "     tests\n");
  fprintf(stdout, "  -s controls the number of samples (default 100)\n");
- fprintf(stdout, "\n");
  fprintf(stdout, "  -i turns on a new seed for each sample -- better indicates the\n");
  fprintf(stdout, "     probability of a \"bad seed\" existing for an otherwise good\n");
  fprintf(stdout, "     generator.\n");
- fprintf(stdout, "\n");
  fprintf(stdout, "  -v controls verbosity of output for debugging or amusement purposes.\n");
  fprintf(stdout, "  -q selects \"quiet\" operation: results only are printed on a single line\n");
  fprintf(stdout, "     (where applicable).\n");
  fprintf(stdout, "  -h prints usage statement (this message) and exits.\n");
  fprintf(stdout, "\n");
  fprintf(stdout, "  NOTE WELL:  The \"bogomegarates\" returned by this tool are BOGUS\n");
- fprintf(stdout, "  and may not be even approximately correct in your context.  Be Warned!\n");
- fprintf(stdout, "  ALSO NOTE:  The quality assessment(s) for the rngs may, in fact, be\n");
- fprintf(stdout, "  completely incorrect or misleading.  Use them at your Own Risk!\n");
- fprintf(stdout, "\n");
- fprintf(stdout, "  NOTE FINALLY: If you use this tool, you owe me a beverage! (see GPL v2.0b)\n");
+ fprintf(stdout, "  and may not be even approximately correct in your context.  Also, the\n");
+ fprintf(stdout, "  quality assessment(s) for the rngs may, in fact, be completely incorrect\n");
+ fprintf(stdout, "  or misleading.  Use them at your Own Risk!  Be Warned!\n");
  fprintf(stdout,"\n");
  exit(0);
 
