@@ -52,14 +52,16 @@ static char bitdist_description[]="
 void rgb_bitdist()
 {
 
- int i,j,k,nbits;
- Ntest btest;   /* For binomial test results */
+ int i,j,k,nbits,npairs;
+ Ntest btest;   /* For bitlevel binomial test results */
+ Ntest *ctest;   /* For bitpair binomial test results */
 
  /*
   * btest.x[k] is an accumulator to be used to count the frequency with
   *   which we get k 1's in num_bits, over the m runs.
-  * btest.y[k] contains the expected/exact result.
-  * btest.sigma[k] contains the standard error in btest.y[k].
+  * btest.y[k] contains the expected binomial result, samples*p_1
+  * btest.sigma[k] contains the standard binomial error of btest.y[k],
+  *   sqrt(samples)*p_1*(1-p_1) (in both cases with p_0 = p_1 = 0.5).
   *
   * We start by creating all three and filling y[k] and sigma[k]
   * to support the formation of chisq as we run.
@@ -72,8 +74,28 @@ void rgb_bitdist()
  Ntest_create(&btest,nbits,"rgb_bitdist",gsl_rng_name(random));
  for(k=0;k<nbits;k++){
    btest.x[k] = 0.0;
-   btest.y[k] = (double) samples/2.0;
-   btest.sigma[k] = sqrt(samples)/2.0;
+   btest.y[k] = (double) samples*0.5;
+   btest.sigma[k] = sqrt((double) samples)*0.25;
+ }
+
+ /*
+  * We're going to test every successive pair AND wrap the final bit
+  * back to the first bit for the final bitpair, so there are as many
+  * bitpairs as their are bits.  There are exactly four distinct binary
+  * bitpairs, 00, 01, 10, 11 (0-3).  We'll have to do the malloc here
+  * since Ntest_create wasn't designed to do a vector of Ntests...
+  *
+  * Note that each pair has p=0.25, and (1-p) = 0.75.
+  */
+ npairs = 4;
+ ctest = (Ntest *) malloc(npairs*sizeof(Ntest));
+ for(i = 0;i < npairs;i++){
+   Ntest_create(&ctest[i],nbits,"rgb_bitpairdist",gsl_rng_name(random));
+   for(k=0;k<nbits;k++){
+     ctest[i].x[k] = 0.0;
+     ctest[i].y[k] = (double) samples*0.25;
+     ctest[i].sigma[k] = sqrt((double) samples)*0.25*0.75;
+   }
  }
 
  for(i=0;i<samples;i++){
