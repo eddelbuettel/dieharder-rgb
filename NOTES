@@ -267,6 +267,12 @@ assumption that failure of the non-overlapping tests is equally likely
 for both possible cyclic starting points, the 1/sqrt(2) scaling implicit
 in using both strings is thus conservative.
 
+However, we can easily average over this as well by simply randomly
+starting each non-overlapping run on bit 0 or bit 1.  This might
+actually simplify the code and provides an ADDITIONAL measure of
+randomness as the two results should themselves be binomially
+distributed, independently.
+
 The final problem with runs is that it is not easy to see how to extend
 it to a higher order.  For example, does 101 occur too often?  How about
 010?  Again, each bit pattern should occur at a rigorously predicted

@@ -16,7 +16,7 @@ void parsecl(int argc, char **argv)
  samples = 100;		/* Should NOT be a "lot", 10-100 is plenty */
  iterations = -1;	/* This should be just enough to do empty accurately */
  size = 1024;		/* Small enough to easily fit into any cache */
- bits = 0;              /* EITHER size OR bits */
+ bits = 128;            /* Default size for bitlevel tests */
  verbose = 0;		/* Default is not to be verbose. */
  quiet = 0;		/* Default is ALSO not to be quiet (output control). */
  testnum = 0;		/* Default is to list rng's */
@@ -64,9 +64,11 @@ void parsecl(int argc, char **argv)
    }
  }
 
+/*
  if(bits){
-   size = bits/(8*sizeof(unsigned int)) + 1;  /* more than enough */
+   size = bits/(8*sizeof(unsigned int)) + 1;
  }
+ */
 
  if(errflg){
    Usage();

@@ -31,13 +31,14 @@ void list_rngs()
    printf("%3d %-20s|", i, types[i]->name);
    if(((i+1)%3) == 0 && i>0) printf("\n");
  }
+ if(i%3 != 0) printf("\n");
  printf("                   Listing available non-gsl generators:                  |\n");
  printf("%3s %-20s|%3s %-20s|%3s %-20s|\n"," Id","Test Name",
          " Id","Test Name"," Id","Test Name");
  printf("==========================================================================|\n");
  while(types[i] != NULL){
    printf("%3d %-20s|", i, types[i]->name);
-   if(((i+1)%3) == 0 && i>0) printf("\n");
+   if(((i)%3) == 0 && i>0) printf("\n");
    i++;
  }
  printf("\n");
