@@ -70,6 +70,7 @@ SOURCES = $(SOURCE)\
     bits.c \
     diehard_runs.c \
     diehard_birthdays.c \
+    diehard_binary_rank.c \
     diehard_2dsphere.c \
     diehard_3dsphere.c \
     rgb_bitdist.c \

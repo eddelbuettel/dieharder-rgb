@@ -43,6 +43,7 @@
    D_DIEHARD_BDAY,
    D_DIEHARD_2DSPHERE,
    D_DIEHARD_3DSPHERE,
+   D_DIEHARD_BINARY_RANK,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_STS_MONOBIT,
@@ -70,6 +71,7 @@
    DIEHARD_BDAY,
    DIEHARD_2DSPHERE,
    DIEHARD_3DSPHERE,
+   DIEHARD_BINARY_RANK,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -144,6 +146,10 @@
  double diehard_3dsphere();
  void diehard_3dsphere_test();
  void help_diehard_3dsphere();
+ /* diehard "binary rank" test */
+ double diehard_binary_rank();
+ void diehard_binary_rank_test();
+ void help_diehard_binary_rank();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();

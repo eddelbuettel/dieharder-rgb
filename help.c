@@ -22,6 +22,7 @@ void help()
    help_diehard_birthdays();
    help_diehard_2dsphere();
    help_diehard_3dsphere();
+   help_diehard_binary_rank();
    help_rgb_persist();
    help_rgb_bitdist();
    help_sts_monobit();
@@ -45,7 +46,10 @@ void help()
      help_diehard_2dsphere();
      break;
    case DIEHARD_3DSPHERE:
-     diehard_3dsphere();
+     help_diehard_3dsphere();
+     break;
+   case DIEHARD_BINARY_RANK:
+     help_diehard_binary_rank();
      break;
  }
  switch(rgb){
