@@ -1,13 +1,14 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-*
-*/
+ * $Id$
+ *
+ * See copyright in copyright.h and the accompanying file COPYING
+ *
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <string.h>
 #include <unistd.h>
 #include "block.h"
 
