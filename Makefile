@@ -9,9 +9,9 @@
 # make tar      makes $(TAR) from >>all<< the sources
 # make tgz      makes $(TGZ) from >>all<< the sources
 # make rpm      makes $(RPM). This is experimental!  See below.
-# make cvs      does a cvs commit and creates the timestamp $(CVS)
-# make sync     does a cvs commit and runs synccvs to list of
-#               CVSROOT hosts
+# make svn      does a svn commit and creates the timestamp $(SVN)
+# make sync     does a svn commit and runs syncsvn to list of
+#               SVNROOT hosts
 # make clean    deletes the application and all object files
 # make install  strips and installs application and a man page
 # make printout prints out all source and include files
@@ -20,10 +20,11 @@
 # 
 # This should be the name of the binary produced by this package.
 PROGRAM = dieharder
-# This is the name of the toplevel directory, the CVS repository
-# and goes into e.g. the tarball names.  It will often (but not always)
-# be the name of the main binary.
 DIR = $(PROGRAM)
+
+SVNTREE = $(HOME)/Src/svn-tree
+SVNPATH = $(SVNTREE)/$(DIR)
+SVNTIME = $(DIR:=.svn.time)
 
 # Secondary/test binary programs next
 # PROGRAM2 = project2
@@ -159,7 +160,7 @@ SRPM = $(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
 WRPM = $(DIR).i386.rpm
 WSRPM = $(DIR).src.rpm
 SPEC = $(DIR:=.spec)
-CVS = $(DIR:=.cvs.time)
+SVN = $(DIR:=.svn.time)
 
 #========================================================================
 # List of variants one can make.  all is the default.  We always
@@ -210,10 +211,10 @@ tgz:	$(SOURCES) $(SCSOURCES)
 	mkdir -p .$(DIR)
 	cp -a * .$(DIR)
 	mv .$(DIR) $(DIR)
-	# Exclude any cruft/development directories and CVS stuff.  Add
+	# Exclude any cruft/development directories and SVN stuff.  Add
 	# lines as needed.
 	tar -cvpf $(TAR) \
-            --exclude=CVS --exclude=CRUFT \
+            --exclude=SVN --exclude=CRUFT \
             --exclude=*.tar \
             --exclude=*.tgz \
             --exclude=*rpm \
@@ -241,45 +242,21 @@ rpm:	Makefile $(SPEC) $(SOURCES) $(SOURCES2) $(TGZ)
 	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) .
 	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) $(WSRPM)
 
-#========================================================================
-# It will help greatly if $(CVS) exists, contains and RCS label and
-# any comments, and is added to the CVS distribution, of course.
-# The timestamp of for your own benefit -- an instant way to check
-# which of several working directories is really currentest.
-#========================================================================
-cvs:
-	cat $(CVS) | \
-	sed -e '/^New Checkin/d' >> $(CVS).tmp
-	mv $(CVS).tmp $(CVS)
-	echo "New Checkin `date`" >> $(CVS)	# Will force a commit and increment revision
-	cvs commit .		# doesn't sync (yet).
+svn:
+	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
+	svn commit .
+	cat $(SVNTIME) | \
+	sed -e '/^New Checkin/d' >> $(SVNTIME).tmp
+	mv $(SVNTIME).tmp $(SVNTIME)
 
-#========================================================================
-# This is a poor man's solution to both backup and having several
-# development "homes" each with their own CVSROOT (as I do -- one at
-# literally my home, one at Duke, and one on my laptop that needs to
-# be sync'd up before and after trips.  Just add one line per host
-# to be kept identical.  Be warned that if a host on the list is down,
-# this will hang boring while waiting for a timeout.  It presumes that
-# you have rsync (and that you use ssh) and that you have installed
-# the "synccvs" script:
-#
-#!/bin/sh
-# CVS_PKG=$1;CVS_HOST=$2
-# rsync -avz --delete --rsh=/usr/bin/ssh $CVSROOT/$CVS_PKG $CVS_HOST:\$CVSROOT
-#
-# on your path.  There's probably some way to protect the latter CVSROOT
-# from early interpretation in a Makefile, but I cannot find it.
-#========================================================================
 sync:
-	cat $(CVS) | \
-	sed -e '/^New Checkin/d' >> $(CVS).tmp
-	mv $(CVS).tmp $(CVS)
-	echo "New Checkin `date`" >> $(CVS)	# Will force a commit and increment revision
-	cvs commit .		# Do the commit
-	synccvs $(DIR) ganesh.phy.duke.edu
-	synccvs $(DIR) 209.42.212.5
-
+	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
+	svn commit .		# Do the commit
+	rsync -avz --delete $(SVNPATH) login.phy.duke.edu:/home/einstein/prof/rgb/Src/svn-tree
+	rsync -avz --delete $(SVNPATH) 209.42.212.5:$(SVNTREE)
+	cat $(SVNTIME) | \
+	sed -e '/^New Checkin/d' >> $(SVNTIME).tmp
+	mv $(SVNTIME).tmp $(SVNTIME)
 
 #========================================================================
 # printout makes an enscript -2r printout of SOURCES and
