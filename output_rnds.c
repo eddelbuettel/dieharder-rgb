@@ -31,6 +31,9 @@ double output_rnds()
    exit(0);
  }
 
+ fprintf(fp,"#==================================================================\n");
+ fprintf(fp,"# generator %s  seed = %u\n",gsl_rng_name(rng),seed);
+ fprintf(fp,"#==================================================================\n");
  fprintf(fp,"type: d\ncount: %i\nnumbit: 32\n",tsamples);
  for(i=0;i<tsamples;i++){
    rand_uint = gsl_rng_get(rng);
@@ -41,29 +44,3 @@ double output_rnds()
 
 }
 
-output_cruft()
-{
-
- int num_randoms,i;
-
- if(!filename){
-   printf(stderr,"Error: set to output but no file specified for printing.\n");
-   fprintf(stderr,"Please use the -f <filename> option to create output file.\n");
-   exit(0);
- }
-
- /* now prints num_randoms ints from rng to filename */
- if((fp = fopen(filename,"w")) == NULL) {
-   fprintf(stderr,"Error: Cannot open %s, exiting.\n", filename);
-   exit(0);
- }
-
- fprintf(fp,"type: d\ncount: %i\nnumbit: 32\n",num_randoms);
- for(i = 0; i < num_randoms; i++){
-   fprintf(fp,"%lu\n",gsl_rng_get(rng));
- }
-
- fprintf(stdout,"File %s generated, contains %u rands.\n",filename,num_randoms);
- exit(0);
-
-}
