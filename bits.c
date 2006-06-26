@@ -315,3 +315,37 @@ void dumpbits_left(unsigned int *data, unsigned int nbits)
  printf("\n");
 }
 
+
+unsigned int bit2uint(char *abit,unsigned int blen)
+{
+
+ int i,bit;
+ unsigned int result;
+
+ /* Debugging
+ if(verbose == D_BITS || verbose == D_ALL){
+   printf("# bit2uint(): converting %s\n",abit);
+ }
+ */
+
+ result = 0;
+ for(i = 0; i < blen; i++){
+   result = result << 1;
+   bit = abit[i] - '0';
+   result += bit;
+   /* Debugging
+   if(verbose == D_BITS || verbose == D_ALL){
+     printf("# bit2uint(): bit[%d] = %d, result = %u\n",i,bit,result);
+   }
+   */
+ }
+
+ /* Debugging
+ if(verbose == D_BITS || verbose == D_ALL){
+   printf("# bit2uint(): returning %0X\n",result);
+ }
+ */
+ return(result);
+
+}
+

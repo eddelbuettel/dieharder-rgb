@@ -29,35 +29,88 @@ static unsigned long int
 file_input_get (void *vstate)
 {
   file_input_state_t *state = (file_input_state_t *) vstate;
-  unsigned long int j;
+  int i;
+  unsigned long int j,nmask = 0xFFFFFFFF;
+  double f;
+  char inbuf[K]; /* input buffer */
   if(state->fp != NULL) {
+    /*
+     * Read in the next random number from the file
+     */
+    if(fgets(inbuf,K,state->fp) == 0){
+      fprintf(stderr,"# file_input(): Error: EOF on %s\n",filename);
+      exit(0);
+    }
+    /*
+     * Increment the pointer/count of rands read so far.
+     */
+    state->rptr++;
+
+    /*
+     * Convert the STRING input above into a uint according to
+     * the "type" (basically matching scanf type).
+     */
     switch(state->filenumtype){
+      /*
+       * 32 bit unsigned int by assumption
+       */
       case 'd':
-        if(0 == fscanf(state->fp,"%lu",&j)){
-              fprintf(stderr,"Error: reading %s failed.  Exiting.\n", filename);
-              exit(0);
+      case 'i':
+      case 'u':
+        if(0 == sscanf(inbuf,"%lu",&j)){
+          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+          exit(0);
         }
-	state->rptr++;
         break;
+      /*
+       * double precision floats get converted to 32 bit uint
+       */
+      case 'e':
+      case 'E':
+      case 'f':
+      case 'F':
+      case 'g':
+        if(0 == sscanf(inbuf,"%g",&f)){
+          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+          exit(0);
+        }
+	j = (uint) f*UINT_MAX;
+        break;
+      /*
+       * OK, so octal is really pretty silly, but we got it.  Still uint.
+       */
       case 'o':
-        if(0 == fscanf(state->fp,"%lo",&j)){
-              fprintf(stderr,"Error: reading %s failed.  Exiting.\n", filename);
-              exit(0);
+        if(0 == sscanf(inbuf,"%lo",&j)){
+          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+          exit(0);
         }
-	state->rptr++;
         break;
+      /*
+       * hexadecimal is silly too, but we got it.  uint, of course.
+       */
       case 'x':
-        if(0 == fscanf(state->fp,"%lx",&j)){
-              fprintf(stderr,"Error: reading %s failed.  Exiting.\n", filename);
-              exit(0);
+        if(0 == sscanf(inbuf,"%lx",&j)){
+          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+          exit(0);
         }
-	state->rptr++;
         break;
+      case 'X':
+        if(0 == sscanf(inbuf,"%lX",&j)){
+          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+          exit(0);
+        }
+        break;
+      /*
+       * binary is NOT so silly.  Let's do it.  The hard way.  A typical
+       * entry should look like:
+       *    01110101001010100100111101101110
+       */
       case 'b':
-        /* This case is incomplete. */
-        fprintf(stderr,"Warning: binary integer file reading not implemented\n");
-        exit(0);
-	state->rptr++;
+        j = bit2uint(inbuf,filenumbits);
+	/* Debugging cruft
+	printf("j = %u: binary = ",j);
+	dumpbits((uint *)&j,32);
+	*/
         break;
     }
     if(verbose){
@@ -110,32 +163,30 @@ file_input_set (void *vstate, unsigned long int s)
      exit(0);
    }
    if(verbose){
-     fprintf(stdout,"Opened %s for the first time at %x\n", filename,state->fp);
+     fprintf(stdout,"# file_input(): Opened %s for the first time at %x\n", filename,state->fp);
+     fprintf(stdout,"# file_input(): state->fp is %08x\n",state->fp);
+     fprintf(stdout,"# file_input(): Parsing header:\n");
    }
    state->rptr = 0;  /* Point this at the first record */
  } else {
    /*
     * Rewinding is a problem.  Rather, it is easy, but it seriously
-    * reduces the size of the space being explored.  Basically, we
-    * absolutely need to compute how many rands we will need and
-    * bitch like hell the FIRST time we run out in a test.  For
-    * the moment we just do it, though -- complaining comes later.
+    * reduces the size of the space being explored.  We rewind every
+    * time our file pointer reaches the end of the file, otherwise
+    * we do not actually reopen the file (and of course seed is
+    * ignored).
     */
    if(state->rptr >= filecount){
      rewind(state->fp);
-     fprintf(stdout,"# file_input(): rptr = %lu\n",state->rptr);
+     fprintf(stderr,"# file_input(): Warning rptr = %lu equals filecount\n",state->rptr);
      state->rptr = 0;
-     fprintf(stdout,"# file_input() Warning: Rewound %s, set rptr = %lu\n", filename,state->rptr);
+     fprintf(stderr,"# file_input():   Rewinding %s, resetting rptr = %lu\n", filename,state->rptr);
+     fprintf(stderr,"# file_input(): Parsing header:\n");
    } else {
      return;
    }
  }
 
- if(verbose){
-    fprintf(stdout,"# file_input(): state->fp is %08x\n",state->fp);
-    fprintf(stdout,"# file_input(): Opened %s.\n", filename);
-    fprintf(stdout,"# file_input(): Parsing header:\n");
- }
  /*
   * We MUST have precisely three data lines at the beginning after
   * any comments.
@@ -143,7 +194,10 @@ file_input_set (void *vstate, unsigned long int s)
  cnt = 0;
  while(cnt < 3){
    if(state->fp != NULL) {
-     fgets(inbuf,K,state->fp);
+     if(fgets(inbuf,K,state->fp) == 0){
+       fprintf(stderr,"# file_input(): Error: EOF on %s\n",filename);
+       exit(0);
+     }
    }
    if(verbose){
      fprintf(stdout,"%d: %s",cnt,inbuf);

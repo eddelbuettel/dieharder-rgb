@@ -266,7 +266,7 @@
   */
 
  char filename[K];      /* Input file name */
- int filecount;		/* number of rands in file */
+ unsigned int filecount;	/* number of rands in file */
  int fromfile;		/* set true if file is used for rands */
  int filenumbits;		/* number of bits per integer */
 
