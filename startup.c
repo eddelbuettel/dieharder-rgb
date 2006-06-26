@@ -47,6 +47,7 @@ reasonable amount of time).\n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\
    -r 2 Bit Ntuple Distribution test suite (-n ntuple for 1-8)\n\
+   -r 3 Timing test (times rng)\n\
 \n\
       Statistical Test Suite (STS)\n\
    -s 1 STS Monobit test\n\
@@ -58,6 +59,11 @@ No user-developed test are installed at this time.\n\
 
    exit(0);
  }
+
+ /*
+  * Allocate fields early in case we need to parse()
+  */
+ fields = allocate_fields(MAXFIELDNUMBER,K);
 
  /*
   * Count and optionally list the available, built in gsl generators
@@ -72,13 +78,29 @@ No user-developed test are installed at this time.\n\
  /*
   * Now add my own types and count THEM.
   */
+
  add_my_types();
+ GSL_VAR const gsl_rng_type *gsl_rng_file_input;
  while(types[i] != NULL){
    i++;
+
+   /* check if input is coming from file, and if so sets 
+    * generator accordingly
+    */
+   if(fromfile == 1 && types[i] == gsl_rng_file_input && !output){
+     generator = i;
+   }
  }
 
  num_rngs = i;
  num_my_rngs = num_rngs - num_gsl_rngs;
+
+
+ if(types[generator] == gsl_rng_file_input && fromfile == 0){
+   fprintf(stderr,"Error: generator set to file_input but no file has been loaded");
+   list_rngs();
+   exit(0);
+ }
 
  if(generator > num_rngs-1){
    fprintf(stderr,"Error:  rng %d (> %d) does not exist!\n",generator,num_rngs-1);
@@ -97,13 +119,33 @@ No user-developed test are installed at this time.\n\
  if(generator >= 0){
    rng = gsl_rng_alloc (types[generator]);
    random_max = gsl_rng_max(rng);
-   seed = random_seed();
+   if(seed == 0){
+	seed = random_seed();
+   }
    gsl_rng_set(rng,seed);
  } else {
    list_rngs();
    exit(0);
  }
 
+ if(output){
+   if(!fromfile){
+	fprintf(stderr,"Error: set to output but no file specified for printing.\n");
+	fprintf(stderr,"Please set the -f <filename> option to create output file.\n");
+	exit(0);
+   }
+   /* now prints num_randoms ints from rng to filename */
+   if((fp = fopen(filename,"w")) == NULL) {
+	fprintf(stderr,"Error: Cannot open %s, exiting.\n", filename);
+   	exit(0);
+   }
+   fprintf(fp,"type: d\ncount: %i\nnumbit: 32\n",num_randoms);
+   for(i = 0; i < num_randoms; i++){
+	fprintf(fp,"%lu\n",gsl_rng_get(rng));
+   }
+   fprintf(stdout,"File %s generated, contains %u rands.\n",filename,num_randoms);
+   exit(0);
+  }
 
  
 
@@ -121,6 +163,45 @@ No user-developed test are installed at this time.\n\
    rmax_mask++;
    rmax_bits++;
  }
+
+ /*
+  * Allocate the global list of random numbers and store all the 
+  * necessary numbers from the selected rng.  Each test must check
+  * that it requires fewer than num_randoms rand int's, because that's all
+  * it gets.  num_randoms can be increased at will if the rng is creating
+  * rands as you go, but if you're getting rands from a file you have
+  * to make sure that the file has more numbers in it than num_randoms or else
+  * the program will quit.  If you decrease num_randoms to below the number of
+  * ints used by a program, it will run but some rands will be reused which 
+  * will artificially deflate the final p-values.
+  */
+
+
+ /*
+  * This section sets the global rng to num_source, so that numbers are 
+  * accessed faster and also so that non-32 bit rand int files can be used.
+  * gsl_rng_set requires the global rng to have a different generator in it
+  * than gsl_rng_num_source to provide num_randoms integers for it, so set
+  * must come first or else this thing will be buggy at best.
+  *
+  * num_randoms is the number of integers to read into
+  * memory in num_source - this number must be larger than
+  * the maximum number of integers used in any one test
+  * or else non-randomness will be introduced (numbers will
+  * be cyclically reused). In general, each test should
+  * check that the number of randoms it will use is less
+  * than the global num_randoms, and exit/print a warning
+  * if it isn't.
+
+ GSL_VAR const gsl_rng_type *gsl_rng_num_source;
+ gsl_rng * temp_rng = gsl_rng_alloc(gsl_rng_num_source);
+ if(verbose){
+    fprintf(stdout,"num_randoms is %d\n",num_randoms);
+ }
+ gsl_rng_set(temp_rng,(unsigned long int)num_randoms);
+ rng = temp_rng;
+ random_max = gsl_rng_max(rng);
+  */
 
 
  /*

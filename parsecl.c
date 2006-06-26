@@ -21,6 +21,7 @@ void parsecl(int argc, char **argv)
  bits = 128;            /* Maximum size bitstring is default */
  diehard = 0;           /* Diehard test number */
  filename[0] = (char)0; /* No input file */
+ output = 0;            /* No output file */
  generator = 13;        /* Default is mt19937, as the "best" overall */
  help_flag = NO;        /* No help requested */
  hist_flag = YES;       /* For the moment, histograms on */
@@ -39,7 +40,7 @@ void parsecl(int argc, char **argv)
  y_user = 0.0;          /* and can be used by any test without having to */
  z_user = 0.0;          /* rewrite parsecl() or add global variables */
 
- while ((c = getopt(argc,argv,"ab:d:f:g:H:hi:ln:p:qr:S:s:t:u:v:x:y:z:")) != EOF){
+ while ((c = getopt(argc,argv,"ab:d:f:g:H:hi:ln:o:p:qr:S:s:t:u:v:x:y:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
@@ -52,7 +53,6 @@ void parsecl(int argc, char **argv)
        break;
      case 'f':
        strncpy(filename,optarg,128);
-       fprintf(stderr,"Warning: -f %s not yet supported!\n",filename);
        break;
      case 'g':
        generator = strtol(optarg,(char **) NULL,10);
@@ -71,6 +71,10 @@ void parsecl(int argc, char **argv)
        break;
      case 'n':
        ntuple = strtol(optarg,(char **) NULL,10);
+       break;
+     case 'o':
+       strncpy(filename,optarg,128);
+       output = 1;
        break;
      case 'p':
        psamples = strtol(optarg,(char **) NULL,10);
