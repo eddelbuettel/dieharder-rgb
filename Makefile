@@ -52,6 +52,7 @@ SOURCES = $(SOURCE)\
     list_rand.c \
     list_rngs.c \
     measure_rate.c \
+    output_rnds.c \
     parse.c \
     parsecl.c \
     help.c \

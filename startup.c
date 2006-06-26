@@ -95,7 +95,6 @@ No user-developed test are installed at this time.\n\
  num_rngs = i;
  num_my_rngs = num_rngs - num_gsl_rngs;
 
-
  if(types[generator] == gsl_rng_file_input && fromfile == 0){
    fprintf(stderr,"Error: generator set to file_input but no file has been loaded");
    list_rngs();
@@ -129,25 +128,10 @@ No user-developed test are installed at this time.\n\
  }
 
  if(output){
-   if(!fromfile){
-	fprintf(stderr,"Error: set to output but no file specified for printing.\n");
-	fprintf(stderr,"Please set the -f <filename> option to create output file.\n");
-	exit(0);
-   }
-   /* now prints num_randoms ints from rng to filename */
-   if((fp = fopen(filename,"w")) == NULL) {
-	fprintf(stderr,"Error: Cannot open %s, exiting.\n", filename);
-   	exit(0);
-   }
-   fprintf(fp,"type: d\ncount: %i\nnumbit: 32\n",num_randoms);
-   for(i = 0; i < num_randoms; i++){
-	fprintf(fp,"%lu\n",gsl_rng_get(rng));
-   }
-   fprintf(stdout,"File %s generated, contains %u rands.\n",filename,num_randoms);
+   output_rnds();
+   /* We'll fix it so we don't have to exit here later */
    exit(0);
-  }
-
- 
+ }
 
  /*
   * Simultaneously count the number of significant bits in the rng

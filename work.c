@@ -19,9 +19,11 @@
 void work()
 {
 
+/*
  if(output == YES){
    output_rnds();
  }
+ */
 
  if(all == YES){
    rgb_timing();

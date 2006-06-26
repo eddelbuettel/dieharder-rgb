@@ -40,7 +40,7 @@ void parsecl(int argc, char **argv)
  y_user = 0.0;          /* and can be used by any test without having to */
  z_user = 0.0;          /* rewrite parsecl() or add global variables */
 
- while ((c = getopt(argc,argv,"ab:d:f:g:H:hi:ln:o:p:qr:S:s:t:u:v:x:y:z:")) != EOF){
+ while ((c = getopt(argc,argv,"ab:d:f:g:H:hi:ln:op:qr:S:s:t:u:v:x:y:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
@@ -73,7 +73,6 @@ void parsecl(int argc, char **argv)
        ntuple = strtol(optarg,(char **) NULL,10);
        break;
      case 'o':
-       strncpy(filename,optarg,128);
        output = 1;
        break;
      case 'p':
