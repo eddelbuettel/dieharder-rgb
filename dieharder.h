@@ -49,8 +49,10 @@
    D_DIEHARD_RANK_6x8,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
+   D_RGB_TIMING,
    D_STS_MONOBIT,
    D_STS_RUNS,
+   D_STS_BLOCK,
    D_BITS,
    D_SAMPLE,
    D_CHISQ,
@@ -82,9 +84,10 @@
 
  /* RGB Tests (by number) */
  typedef enum {
-   RGB_TIMING,
+   RGB_NONE,
    RGB_PERSIST,
    RGB_BITDIST,
+   RGB_TIMING,
    N_RGB_TESTS
  } Rgb_Tests;
 
@@ -92,6 +95,7 @@
    STS_NONE,
    STS_MONOBIT,
    STS_RUNS,
+   STS_BLOCK,
    N_STS_TESTS
  } Sts_Tests;
 
@@ -128,6 +132,10 @@
  double kstest_kuiper(double *pvalue,int count);
  double q_ks(double x);
  double q_ks_kuiper(double x);
+ char **allocate_fields(size_t maxfields,size_t maxfieldlength);
+ int parse(char *inbuffer,char **outfields,int maxfields,int maxfieldlength);
+ int split(char *inbuffer,char **outfields,char *delim,
+               int maxfields,int maxfieldlength);
  /*
   *========================================================================
   * Test Prototypes.  Follow exactly this prototype format to add new
@@ -163,14 +171,13 @@
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();
  void help_rgb_persist();
+ /* rgb "timing test"  is ALSO an exception! */
+ double rgb_timing();
+ void help_rgb_timing();
  /* rgb "bit distribution" master test */
  double rgb_bitdist();
  void rgb_bitdist_test();
  void help_rgb_bitdist();
- /* rgb "timing" test */
- double rgb_timing();
- void rgb_timing_test();
- void help_rgb_timing();
 
  /* STS "monobit" test */
  double sts_monobit();
@@ -180,6 +187,11 @@
  double sts_runs();
  void sts_runs_test();
  void help_sts_runs();
+ /* STS "block" test 
+ double sts_block();
+ void sts_block_test();
+ void help_sts_block(); */
+
 
  /* User "dummy" test.  Replace with your own test(s) */
  double user_dummy();
@@ -196,7 +208,6 @@
  int all;               /* Flag to do all tests on selected generator */
  int bits;              /* bitstring size (in bits) */
  int diehard;           /* Diehard test number */
- char filename[K];      /* Input file name */
  int generator;         /* GSL generator id number to be tested */
  int help_flag;         /* Help flag */
  int hist_flag;         /* Histogram display flag */
@@ -204,6 +215,8 @@
  int list;              /* List all tests flag */
  int List;              /* List all generators flag */
  int ntuple;            /* n-tuple size for n-tuple tests */
+ int num_randoms;		/* the number of randoms stored into memory and usable */
+ int output;		/* equals 1 if you output to file, otherwise 0. */
  int psamples;          /* Number of test runs in final KS test */
  int quiet;             /* quiet flag -- surpresses full output report */
  int rgb;               /* rgb test number */
@@ -239,6 +252,18 @@
  struct timeval tv_start,tv_stop;
  int dummy,idiot;
  FILE *fp;
+#define MAXFIELDNUMBER 8
+ char **fields;
+
+ /*
+  * Global variables that store information about the file, if rand ints
+  * are taken from a file rather than generated ad hoc.
+  */
+
+ char filename[K];      /* Input file name */
+ int filecount;		/* number of rands in file */
+ int fromfile;		/* set true if file is used for rands */
+ int filenumbits;		/* number of bits per integer */
 
 
  /*

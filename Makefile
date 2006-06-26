@@ -48,9 +48,11 @@ SOURCES = $(SOURCE)\
     dev_random.c \
     dev_urandom.c \
     empty_random.c \
+    file_input.c \
     list_rand.c \
     list_rngs.c \
     measure_rate.c \
+    parse.c \
     parsecl.c \
     help.c \
     prob.c \
