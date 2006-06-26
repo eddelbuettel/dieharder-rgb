@@ -22,6 +22,7 @@
 #include <gsl/gsl_sort.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
+#include "parse.h"
 #include "tensor.h"
 
 /*
@@ -133,10 +134,13 @@
  double kstest_kuiper(double *pvalue,int count);
  double q_ks(double x);
  double q_ks_kuiper(double x);
+ /*
+  Cruft
  char **allocate_fields(size_t maxfields,size_t maxfieldlength);
  int parse(char *inbuffer,char **outfields,int maxfields,int maxfieldlength);
  int split(char *inbuffer,char **outfields,char *delim,
                int maxfields,int maxfieldlength);
+ */
  /*
   *========================================================================
   * Test Prototypes.  Follow exactly this prototype format to add new

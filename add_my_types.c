@@ -27,6 +27,7 @@
 GSL_VAR const gsl_rng_type *gsl_rng_dev_random;
 GSL_VAR const gsl_rng_type *gsl_rng_dev_urandom;
 GSL_VAR const gsl_rng_type *gsl_rng_empty_random;
+GSL_VAR const gsl_rng_type *gsl_rng_file_input;
 
 void add_my_types()
 {
@@ -45,5 +46,6 @@ void add_my_types()
  types[i++] = (gsl_rng_dev_random);
  types[i++] = (gsl_rng_dev_urandom);
  types[i++] = (gsl_rng_empty_random);
+ types[i++] = (gsl_rng_file_input);
 
 }

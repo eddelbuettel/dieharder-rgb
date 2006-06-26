@@ -62,8 +62,8 @@ No user-developed test are installed at this time.\n\
 
  /*
   * Allocate fields early in case we need to parse()
-  */
  fields = allocate_fields(MAXFIELDNUMBER,K);
+  */
 
  /*
   * Count and optionally list the available, built in gsl generators

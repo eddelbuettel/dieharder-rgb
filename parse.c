@@ -1,44 +1,97 @@
 /*
  *========================================================================
- * $Id$
- *
  * See copyright in copyright.h and the accompanying file COPYING
+ *========================================================================
+ * Utility routines to support basic needs of the program like managing
+ * models, creating and deleting directories with contents.  Probable
+ * cruft or yet-unused routines belong at the bottom...
  *========================================================================
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <strings.h>
+#include "parse.h"
 
-#define BUFLEN 1024
+ int verbose;
 
-char **allocate_fields(size_t maxfields,size_t maxfieldlength)
-{
+/*
+ * split() is a reusable routine to break up a string into char[PBUF]
+ * fields.  Anything past PBUF characters is truncated.  The output
+ * is put into parsebuf[i] and the number of fields found is returned.
+ * It is somewhat like the perl split function except that I give it
+ * a 128K buffer of its very own to work with and you don't get to
+ * choose your delimiters.
+ */
+int split(char *inbuffer)
+{ 
 
- int i;
+ char delim[7],*nextval;
 
- char **outfields;
- 
- outfields = (char **) malloc((size_t) (maxfields*sizeof(char*)));
- for(i = 0;i < maxfields;i++) {
-   outfields[i] = (char *) malloc((size_t)(maxfieldlength*sizeof(char)));
+ if(verbose){
+   printf("split(%s)\n",inbuffer);
  }
 
- return(outfields);
- 
-}
+  
+ /* 
+  * Permit blank, tab, or comma separators anywhere we need to parse
+  * a line.
+  */
+ delim[0] = ' ';                /* blanks */
+ delim[1] = (char) 9;           /* tab */
+ delim[2] = ',';                /* comma */
+ delim[3] = (char) 10;		/* LF */
+ delim[4] = (char) 13;		/* CR */
+ delim[5] = ':';		/* : needed to parse /proc/net/dev or passwd */
+ delim[6] = (char) NULL;        /* terminator */
 
+ 
+ nextval = strtok(inbuffer,delim);
+ if(nextval == (char *)NULL) return 0;
+ int i = 0;
+ strncpy(splitbuf[i],nextval,PBUF);
+ if(verbose){
+   printf("split(): split field[%d] = %s.\n",i,splitbuf[i]);
+ }
+ i++;
+
+ while(i < PK-1){
+   nextval = strtok((char *) NULL, delim);
+   if(nextval == (char *)NULL) break;
+   strncpy(splitbuf[i], nextval,PBUF);
+   if(verbose){
+     printf("split(): split field[%d] = %s.\n",i,splitbuf[i]);
+   }
+   i++;
+ }
+
+ /* Null the last field */
+ bzero(splitbuf[i],PBUF);
+ if(verbose){
+   printf("split(): Terminated split field[%d] = %s.\n",i,splitbuf[i]);
+   printf("split(): Returning %d as the field count\n",i);
+ }
+
+ return i;
+
+}
 
 /*
  * parse() is a reusable routine to break up a string into char[32]
  * fields.  Anything past 32 characters is truncated.
  */
+
 int parse(char *inbuffer,char **outfields,int maxfields,int maxfieldlength)
 {
 
- char delim[8],*nextval;
+ char delim[7],*nextval;
  int i = 0;
+
+ if(verbose){
+   printf("parse():\n");
+ }
+
+
+
 /* 
  * Permit blank, tab, or comma separators anywhere we need to parse
  * a line.
@@ -49,53 +102,43 @@ int parse(char *inbuffer,char **outfields,int maxfields,int maxfieldlength)
  delim[3] = (char) 10;		/* LF */
  delim[4] = (char) 13;		/* CR */
  delim[5] = ':';		/* : needed to parse /proc/net/dev or passwd */
- delim[6] = '=';		/* : needed to parse field = value */
- delim[7] = (char) NULL;        /* terminator */
+ delim[6] = (char) NULL;        /* terminator */
 
- nextval = strtok(inbuffer,delim);
- /* fprintf(OUTFP,"nextval = %s\n",nextval); */
- if(nextval == (char *)NULL) return 0;
- strncpy(outfields[i++],nextval,maxfieldlength);
- /* fprintf(OUTFP,"outfields[%d] = %s\n",i-1,outfields[i-1]); */
-
- while(i < maxfields){
-   nextval = strtok((char *) NULL, delim);
-   /* fprintf(OUTFP,"nextval = %s\n",nextval); */
-   if(nextval == (char *)NULL) break;
-   strncpy(outfields[i++], nextval,maxfieldlength);
-   /* fprintf(OUTFP,"outfields[%d] = %s\n",i-1,outfields[i-1]); */
- }
-
- return i;
-
-}
-
-/*
- * split() is a reusable routine to break up a string into fields.
- * One has to pass it the string to be split, a vector of strings
- * to fill in, a null-terminated vector of split characters, the 
- * maximum number of fields one can produce, and the maximum length 
- * of the fields one can produce.  We can probably do better, but 
- * this will do for now.
- */
-int split(char *inbuffer,char **outfields,char *delim,
-               int maxfields,int maxfieldlength)
-{
-
- char *nextval;
- int i = 0;
  
  nextval = strtok(inbuffer,delim);
  if(nextval == (char *)NULL) return 0;
  strncpy(outfields[i++],nextval,maxfieldlength);
+ if(verbose){
+   printf("parse(): Parsed field[%d] = %s.\n",i-1,outfields[i-1]);
+ }
 
- while(i < maxfields){
+ while(i < maxfields-1){
    nextval = strtok((char *) NULL, delim);
    if(nextval == (char *)NULL) break;
    strncpy(outfields[i++], nextval,maxfieldlength);
+   if(verbose){
+     printf("parse(): Parsed field[%d] = %s.\n",i-1,outfields[i-1]);
+   }
+ }
+
+ /* Null the last field */
+ bzero(outfields[i],maxfieldlength);
+ if(verbose){
+   printf("parse(): Terminated field[%d] = %s.\n",i,outfields[i]);
  }
 
  return i;
 
 }
 
+void chop(char *buf)
+{
+
+ int i=-1;
+ /* Advance to end of string */
+ while(*buf != 0) buf++;
+ buf--;
+ /* Reterminate one character earlier */
+ *buf = 0;
+}
+ 

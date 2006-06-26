@@ -21,6 +21,7 @@ void parsecl(int argc, char **argv)
  bits = 128;            /* Maximum size bitstring is default */
  diehard = 0;           /* Diehard test number */
  filename[0] = (char)0; /* No input file */
+ fromfile = 0;          /* Not from an input file */
  output = 0;            /* No output file */
  generator = 13;        /* Default is mt19937, as the "best" overall */
  help_flag = NO;        /* No help requested */
@@ -53,6 +54,7 @@ void parsecl(int argc, char **argv)
        break;
      case 'f':
        strncpy(filename,optarg,128);
+       fromfile = 1;
        break;
      case 'g':
        generator = strtol(optarg,(char **) NULL,10);
