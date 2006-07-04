@@ -47,40 +47,28 @@ file_input_raw_get (void *vstate)
    if((state->rptr % K) == 0){
 
      /*
-      * Hmmm, we might as well just reset state->rptr to zero
-      * and start over.  As long as we aren't going to buffer all the
-      * rands at once we don't really care how many there are in
-      * the file, although sure, we may as well count them for grins.
-      * And output/debugging help too, of course.
+      * Que suck!  We have to FIRST try to read in a new block.
+      * This may work, or it may not.  If it doesn't work (returns
+      * zero) THEN we test for EOF, rewind, and have to call
+      * nread again.  We manage it with a while loop, which
+      * (alas) has a few ways to become infinite...
       */
-     state->rptr = 0;
-
-     /*
-      * If the LAST read left us at the EOF, we rewind the file and record
-      * cnt, in state->flen, which SHOULD be the total number of binary
-      * integers found therein.
-      */
-     if(feof(state->fp)){
-       file_input_raw_set(vstate, 0);
-       state->flen = cnt;
+     while( (nread = fread(inbuf,sizeof(uint),K,state->fp)) == 0){
+       if(feof(state->fp)){
+         /* printf("state->rptr = %u at EOF\n",state->rptr); */
+         file_input_raw_set(vstate, 0);
+         if(state->flen == 0){
+           state->flen = cnt;
+           if(verbose){
+             printf("# file_input_raw(): There are %u rands in file\n",state->flen);
+	   }
+	 }
+       } else {
+         fprintf(stderr,"# file_input_raw(): Error.  This cannot happen.\n");
+	 exit(0);
+       }
      }
 
-     /*
-      * We should be able to read in at least one object unless the file
-      * is empty!
-      */
-     if( (nread = fread(inbuf,sizeof(uint),K,state->fp)) == 0){
-       /*
-        * Oops, it IS empty!  And gee, we just (presumably) reopened
-	* it.  I think that the only safe thing to do here is
-	* exit on a condition unless/until we see if we get EOF
-	* after the last record is read even if we don't try to
-	* read the next (nonexistent) one.
-	*/
-       fprintf(stderr,"# file_input_raw() Error: file is empty.\n");
-       exit(0);
-     }
-     
      /*
       * We just read in 0 < n <= K records, so we increment cnt, but only
       * if state->flen still is zero (the first time we count).
@@ -96,9 +84,10 @@ file_input_raw_get (void *vstate)
     * state->rptr for the next call.
     */
    iret = inbuf[state->rptr];
-    if(verbose){
-       fprintf(stdout,"# file_input_raw(): %lu -> %lu\n",state->rptr,iret);
-    }
+   /* fprintf(stdout,"# file_input_raw(): %lu -> %lu\n",state->rptr,iret); */
+   if(verbose){
+     fprintf(stdout,"# file_input_raw(): %lu -> %lu\n",state->rptr,iret);
+   }
 
    /*
     * Increment state->rptr.  If the INCREMENTED one is K, no problem,
@@ -114,10 +103,13 @@ file_input_raw_get (void *vstate)
      * Note that nread = K is normal and this works in this case too.
      */
     if(state->rptr == nread) state->rptr = 0;
+    if(verbose){
+      printf("# file_input_raw(): %u\n",iret);
+    }
     return(iret);
 
  } else {
-   fprintf(stderr,"Error: %s not open.  Exiting.\n", filename);
+   fprintf(stderr,"# file_input_raw_get(): Error: %s not open, call file_input_raw_set() first.  Exiting.\n", filename);
    exit(0);
  }
 
@@ -166,7 +158,9 @@ file_input_raw_set (void *vstate, unsigned long int s)
    }
  } else {
    rewind(state->fp);
-   fprintf(stderr,"# file_input_raw():  Rewinding %s, resetting rptr = %lu\n", filename,state->rptr);
+   if(verbose){
+     fprintf(stdout,"# file_input_raw():  Rewinding %s, resetting rptr = %lu\n", filename,state->rptr);
+   }
  }
 
 }

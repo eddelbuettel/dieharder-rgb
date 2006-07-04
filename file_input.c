@@ -215,31 +215,31 @@ file_input_set (void *vstate, unsigned long int s)
      chop(inbuf);
      numfields = split(inbuf);
      if(numfields != 2){
-       fprintf(stderr,"Error: Wrong number of fields: format is 'fieldname: value'\n");
+       fprintf(stderr,"# file_input(): Error: Wrong number of fields: format is 'fieldname: value'\n");
        exit(0);
      }
      if(strncmp(splitbuf[0],"type",4) == 0){
        state->filenumtype = splitbuf[1][0];
        cnt++;
        if(verbose){
-         fprintf(stdout,"#file_input(): cnt = %d\n",cnt);
-         fprintf(stdout,"#file_input(): filenumtype set to %c\n",state->filenumtype);
+         fprintf(stdout,"# file_input(): cnt = %d\n",cnt);
+         fprintf(stdout,"# file_input(): filenumtype set to %c\n",state->filenumtype);
        }
      }
      if(strncmp(splitbuf[0],"count",5) == 0){
        filecount = atoi(splitbuf[1]);
        cnt++;
        if(verbose){ 
-         fprintf(stdout,"#file_input(): cnt = %d\n",cnt);
-         fprintf(stdout,"filecount set to %i\n",filecount);
+         fprintf(stdout,"# file_input(): cnt = %d\n",cnt);
+         fprintf(stdout,"# file_input(): filecount set to %i\n",filecount);
        }
      }
      if(strncmp(splitbuf[0],"numbit",6) == 0){
        filenumbits = atoi(splitbuf[1]);
        cnt++;
        if(verbose){ 
-         fprintf(stdout,"#file_input(): cnt = %d\n",cnt);
-         fprintf(stdout,"filenumbits set to %i\n",filenumbits);
+         fprintf(stdout,"# file_input(): cnt = %d\n",cnt);
+         fprintf(stdout,"# file_input(): filenumbits set to %i\n",filenumbits);
        }
      }
    }

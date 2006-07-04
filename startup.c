@@ -81,6 +81,7 @@ No user-developed test are installed at this time.\n\
 
  add_my_types();
  GSL_VAR const gsl_rng_type *gsl_rng_file_input;
+ GSL_VAR const gsl_rng_type *gsl_rng_file_input_raw;
  while(types[i] != NULL){
    i++;
 
@@ -88,6 +89,9 @@ No user-developed test are installed at this time.\n\
     * generator accordingly
     */
    if(fromfile == 1 && types[i] == gsl_rng_file_input && !output){
+     generator = i;
+   }
+   if(fromfile == 1 && types[i] == gsl_rng_file_input_raw && !output){
      generator = i;
    }
  }
