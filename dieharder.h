@@ -38,6 +38,7 @@
 #define NO	0
 #define PI 3.141592653589793238462643
 #define K       1024
+#define PAGE    4096
 
  typedef enum {
    D_QUIET,

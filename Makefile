@@ -49,6 +49,7 @@ SOURCES = $(SOURCE)\
     dev_urandom.c \
     empty_random.c \
     file_input.c \
+    file_input_raw.c \
     list_rand.c \
     list_rngs.c \
     measure_rate.c \
@@ -221,6 +222,7 @@ tgz:	$(SOURCES) $(SCSOURCES)
             --exclude=*.tar \
             --exclude=*.tgz \
             --exclude=*rpm \
+            --exclude=*dat.long \
             ./$(DIR)
 	gzip $(TAR)
 	mv $(TAR).gz $(TGZ)
@@ -278,9 +280,7 @@ clean:
 
 #========================================================================
 # Generic Rule to install.  Note that I presume that ALL applications
-# have a man page for documentation!  They'd better!  Note that I'm using
-# the (Grrr) stupid FHS specification for putting man pages in
-# /usr/share/man.  What a crock.
+# have a man page for documentation!  They'd better!
 #========================================================================
 install : $(PROGRAM)
 	(strip $(PROGRAM);\

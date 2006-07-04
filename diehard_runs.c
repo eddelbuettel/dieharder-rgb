@@ -8,9 +8,9 @@
 /*
  *========================================================================
  * This is the Diehard RUNS test, rewritten from the description
- * in tests.txt on  * George Marsaglia's diehard site.
+ * in tests.txt on George Marsaglia's diehard site.
  *
- * * Rewriting means that I can standardize the interface to
+ * Rewriting means that I can standardize the interface to
  * gsl-encapsulated routines more easily.  It also makes this
  * my own code.  Finally, since the C versions Marsaglia provides
  * are the result of f2c running on Fortran sources, they are really
@@ -29,7 +29,7 @@
  * then repeated.
  *
  * I modify this the following ways. First, I let the sequence length be
- * the variable -n (vector length) instead of fixing it at 10,000.  This
+ * the variable -t (vector length) instead of fixing it at 10,000.  This
  * lets one test sequences that are much longer (entirely possible with
  * a modern CPU even for a fairly slow RNG).  Second, I repeat this for
  * the variable -s (samples) times, default 100 and not just 10.  Third,
@@ -152,7 +152,7 @@ void diehard_runs_test()
  int i,j,k,t,ns;
  unsigned int ucount,dcount,increased;
  int upruns[RUN_MAX],downruns[RUN_MAX];
- double uv,dv,up_pks,down_pks;
+ double uv,dv,up_pks,dn_pks;
  double *uv_pvalue,*dv_pvalue;
 
  /*
@@ -211,6 +211,7 @@ void diehard_runs_test()
    upruns[ucount-1]++;
    ucount = 1;
  }
+
  /*
   * This ends a single sample.
   * Compute the test statistic for up and down runs.
@@ -231,6 +232,13 @@ void diehard_runs_test()
  }
  uv /= (double)tsamples;
  dv /= (double)tsamples;
+
+ /*
+  * This NEEDS WORK!  It isn't right, somehow...
+  */
+ up_pks = 1.0 - exp ( -0.5 * uv ) * ( 1.0 + 0.5 * uv + 0.125 * uv*uv );
+ dn_pks = 1.0 - exp ( -0.5 * dv ) * ( 1.0 + 0.5 * dv + 0.125 * dv*dv );
+ 
  if(verbose){
    printf("uv = %f   dv = %f\n",uv,dv);
  }
