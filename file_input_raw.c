@@ -45,7 +45,6 @@ file_input_raw_get (void *vstate)
     */
    if(state->rptr < state->flen){
      if((nread = fread(&iret,sizeof(uint),1,state->fp)) == 1){
-       /* printf("%4u/%4u:\t%9u\n",state->rptr,state->flen,iret); */
        /* Successful read */
        state->rptr++;
        /*
@@ -55,6 +54,7 @@ file_input_raw_get (void *vstate)
        if(state->rptr == state->flen){
          file_input_raw_set(vstate, 0);
        }
+       /* printf("%4u/%4u:\t%9u\n",state->rptr,state->flen,iret); */
        return(iret);
      } else {
        fprintf(stderr,"# file_input_raw(): Error.  This cannot happen.\n");

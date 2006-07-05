@@ -62,6 +62,9 @@ double rgb_bitdist()
  if(!quiet){
    help_rgb_bitdist();
    printf("# random number generator: %s\n",gsl_rng_name(rng));
+   if(strncmp(gsl_rng_name(rng),"file_input_raw",14) == 0){
+     printf("#      file %s contains %u binary integers\n",filename,filecount);
+   }
    printf("# p-samples = %u   bitstring samples = %u  bits sampled = %u\n",
      psamples,tsamples,bits);
  }

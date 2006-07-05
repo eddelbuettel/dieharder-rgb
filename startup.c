@@ -20,6 +20,7 @@ void startup()
 {
 
  int i,imax,j,k;
+ struct stat sbuf;
 
  /*
   * The very first thing we do is see if any simple help options
@@ -136,6 +137,26 @@ No user-developed test are installed at this time.\n\
    /* We'll fix it so we don't have to exit here later */
    exit(0);
  }
+
+ if(fromfile){
+   if(stat(filename, &sbuf)){
+     if(errno == EBADF){
+       fprintf(stderr,"# file_input_raw(): Error -- file descriptor %s bad.\n",filename);
+       exit(0);
+     }
+   }
+   /*
+    * Is this a regular file?  If so, turn its byte length into a 32 bit uint
+    * length and set global filecount.
+    */
+   if(S_ISREG(sbuf.st_mode)){
+     filecount = sbuf.st_size/sizeof(uint);
+   } else {
+     fprintf(stderr,"# file_input_raw(): Error -- path %s not regular file.\n",filename);
+     exit(0);
+   }
+ }
+
 
  /*
   * Simultaneously count the number of significant bits in the rng

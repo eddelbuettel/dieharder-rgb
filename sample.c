@@ -51,11 +51,13 @@ double sample(void *testfunc())
  }
  for(p=0;p<psamples;p++){
    /*
-    * Reseed every sample.  Eventually we'll want to be able to
-    * surpress this.
+    * Reseed every sample IF input isn't from a file.  Eventually we'll
+    * want to be able to surpress/control this more finely.
     */
-   seed = random_seed();
-   gsl_rng_set(rng,seed);
+   if(fromfile == 0){
+     seed = random_seed();
+     gsl_rng_set(rng,seed);
+   }
 
      
    if(verbose == D_SAMPLE || verbose == D_ALL){
