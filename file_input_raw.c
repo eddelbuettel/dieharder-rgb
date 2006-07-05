@@ -23,8 +23,8 @@ static void file_input_raw_set (void *vstate, unsigned long int s);
 typedef struct
   {
     FILE *fp;
-    unsigned long int flen;
-    unsigned long int rptr;
+    unsigned int flen;
+    unsigned int rptr;
   } file_input_raw_state_t;
 
 static unsigned long int
@@ -32,82 +32,35 @@ file_input_raw_get (void *vstate)
 {
 
  file_input_raw_state_t *state = (file_input_raw_state_t *) vstate;
- static unsigned int nread=0,cnt=0;
- unsigned int iret,inbuf[K];
+ unsigned int nread,iret;
 
  /*
-  * Check that the file is opened by file_input_raw_set().
+  * Check that the file is open (via file_input_raw_set()).
   */
  if(state->fp != NULL) {
 
    /*
-    * It is time to read in a new block of raw uints. n tells us how many
-    * uints we actually got.
+    * We'll hope and assume that the file read is already sensibly
+    * buffered and just read in the next one and return it.
     */
-   if((state->rptr % K) == 0){
-
-     /*
-      * Que suck!  We have to FIRST try to read in a new block.
-      * This may work, or it may not.  If it doesn't work (returns
-      * zero) THEN we test for EOF, rewind, and have to call
-      * nread again.  We manage it with a while loop, which
-      * (alas) has a few ways to become infinite...
-      */
-     while( (nread = fread(inbuf,sizeof(uint),K,state->fp)) == 0){
-       if(feof(state->fp)){
-         /* printf("state->rptr = %u at EOF\n",state->rptr); */
+   if(state->rptr < state->flen){
+     if((nread = fread(&iret,sizeof(uint),1,state->fp)) == 1){
+       /* printf("%4u/%4u:\t%9u\n",state->rptr,state->flen,iret); */
+       /* Successful read */
+       state->rptr++;
+       /*
+        * Now we KNOW where the last record lies, so we precisely
+        * rewind/reset when we've exhausted the file.
+        */
+       if(state->rptr == state->flen){
          file_input_raw_set(vstate, 0);
-         if(state->flen == 0){
-           state->flen = cnt;
-           if(verbose){
-             printf("# file_input_raw(): There are %u rands in file\n",state->flen);
-	   }
-	 }
-       } else {
-         fprintf(stderr,"# file_input_raw(): Error.  This cannot happen.\n");
-	 exit(0);
        }
+       return(iret);
+     } else {
+       fprintf(stderr,"# file_input_raw(): Error.  This cannot happen.\n");
+       exit(0);
      }
-
-     /*
-      * We just read in 0 < n <= K records, so we increment cnt, but only
-      * if state->flen still is zero (the first time we count).
-      */
-     if(state->flen == 0) cnt += nread;
-     
    }
-
-   /*
-    * OK if we get here, the file is open, the buffer contains at least
-    * one unread record and we're not at EOF.  So we prepare to return
-    * inbuf[state->rptr] and then do some thinking about what to make
-    * state->rptr for the next call.
-    */
-   iret = inbuf[state->rptr];
-   /* fprintf(stdout,"# file_input_raw(): %lu -> %lu\n",state->rptr,iret); */
-   if(verbose){
-     fprintf(stdout,"# file_input_raw(): %lu -> %lu\n",state->rptr,iret);
-   }
-
-   /*
-    * Increment state->rptr.  If the INCREMENTED one is K, no problem,
-    * the next call will trigger the next buffer.  If the INCREMENTED
-    * one is nread, however, we ARE at the EOF (or at any rate the last
-    * read was a short one returning less than K records).  We therefore
-    * need to set state->rptr to 0 to force the next call to trigger
-    * a (presumed) rewind.
-    */
-    state->rptr++;
-
-    /*
-     * Note that nread = K is normal and this works in this case too.
-     */
-    if(state->rptr == nread) state->rptr = 0;
-    if(verbose){
-      printf("# file_input_raw(): %u\n",iret);
-    }
-    return(iret);
-
  } else {
    fprintf(stderr,"# file_input_raw_get(): Error: %s not open, call file_input_raw_set() first.  Exiting.\n", filename);
    exit(0);
@@ -134,29 +87,67 @@ static void
 file_input_raw_set (void *vstate, unsigned long int s)
 {
 
- if(verbose){
-    fprintf(stdout,"entering file_input_raw_set\n");
- }
+ static uint first=1;
+ struct stat sbuf;
 
  file_input_raw_state_t *state = (file_input_raw_state_t *) vstate;
 
+
  /*
-  * Clear this pointer.  This will force a reread of the first data
-  * block on a rewind.
+  * Clear this pointer.  We always start over when file_input_raw_set() is
+  * called.
   */
+ /* printf("Setting state->rptr = %4u to zero.\n",state->rptr); */
  state->rptr = 0;
  
- if (state->fp == NULL){
-   /* If never opened, open */
-   if ((state->fp = fopen(filename,"r")) == NULL) {
-     fprintf(stderr,"Error: Cannot open %s, exiting.\n", filename);
+ /*
+  * Get and set the file length, check to make sure the file exists,
+  * whatever...
+  */
+ if(first){
+   if(verbose){
+     fprintf(stdout,"# file_input_raw(): entering file_input_raw_set 1st call.\n");
+   }
+
+   if(stat(filename, &sbuf)){
+     if(errno == EBADF){
+       fprintf(stderr,"# file_input_raw(): Error -- file descriptor %s bad.\n",filename);
+       exit(0);
+     }
+   }
+   /*
+    * Is this a regular file?  If so, turn its byte length into a 32 bit uint
+    * length.
+    */
+   if(S_ISREG(sbuf.st_mode)){
+     state->flen = sbuf.st_size/sizeof(uint);
+   } else {
+     fprintf(stderr,"# file_input_raw(): Error -- path %s not regular file.\n",filename);
      exit(0);
    }
+
+   /*
+    * If we get here, the file exists, is a regular file, and we know its
+    * length.  We can now open it.  The test catches all other conditions
+    * that might keep the file from reading, e.g. permissions.
+    */
+   if ((state->fp = fopen(filename,"r")) == NULL) {
+     fprintf(stderr,"# file_input_raw(): Error: Cannot open %s, exiting.\n", filename);
+     exit(0);
+   }
+
+   /*
+    * OK, so if we get here, the file is open.
+    */
+   fprintf(stdout,"# file_input_raw(): Opened %s for the first time.\n", filename);
+   fprintf(stdout,"# file_input_raw(): state->fp is %08x, file contains %u unsigned integers.\n",state->fp,state->flen);
    if(verbose){
      fprintf(stdout,"# file_input_raw(): Opened %s for the first time.\n", filename);
-     fprintf(stdout,"# file_input_raw(): state->fp is %08x\n",state->fp);
+     fprintf(stdout,"# file_input_raw(): state->fp is %08x, file contains %u unsigned integers.\n",state->fp,state->flen);
    }
+   first = 0;
  } else {
+   /* printf("Rewinding %s\n",filename); */
    rewind(state->fp);
    if(verbose){
      fprintf(stdout,"# file_input_raw():  Rewinding %s, resetting rptr = %lu\n", filename,state->rptr);
