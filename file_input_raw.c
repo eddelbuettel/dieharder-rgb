@@ -139,8 +139,6 @@ file_input_raw_set (void *vstate, unsigned long int s)
    /*
     * OK, so if we get here, the file is open.
     */
-   fprintf(stdout,"# file_input_raw(): Opened %s for the first time.\n", filename);
-   fprintf(stdout,"# file_input_raw(): state->fp is %08x, file contains %u unsigned integers.\n",state->fp,state->flen);
    if(verbose){
      fprintf(stdout,"# file_input_raw(): Opened %s for the first time.\n", filename);
      fprintf(stdout,"# file_input_raw(): state->fp is %08x, file contains %u unsigned integers.\n",state->fp,state->flen);

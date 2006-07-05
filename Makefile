@@ -34,7 +34,7 @@ SVNTIME = $(DIR:=.svn.time)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=0
-VERSION_MINOR=5.8
+VERSION_MINOR=6.11
 RELEASE=1
 
 #========================================================================
@@ -223,6 +223,7 @@ tgz:	$(SOURCES) $(SCSOURCES)
             --exclude=*.tgz \
             --exclude=*rpm \
             --exclude=*dat.long \
+            --exclude=*.raw \
             ./$(DIR)
 	gzip $(TAR)
 	mv $(TAR).gz $(TGZ)
@@ -292,12 +293,12 @@ install : $(PROGRAM)
 
 installweb : $(TGZ) $(RPM) $(SRPM)
 	(mkdir $(DIR);\
-	rsync -avz $(DIR) ganesh.phy.duke.edu:public_html/General/; \
-	rsync -avz $(TGZ) ganesh.phy.duke.edu:public_html/General/$(DIR)/; \
-	rsync -avz $(RPM) ganesh.phy.duke.edu:public_html/General/$(DIR)/; \
-	rsync -avz $(SRPM) ganesh.phy.duke.edu:public_html/General/$(DIR)/; \
-	rsync -avz $(ABS) ganesh.phy.duke.edu:public_html/General/$(DIR)/; \
-	rsync -avz $(PHP) ganesh.phy.duke.edu:public_html/General/; \
+	rsync -avz $(DIR) login.phy.duke.edu:public_html/General/; \
+	rsync -avz $(TGZ) login.phy.duke.edu:public_html/General/$(DIR)/; \
+	rsync -avz $(RPM) login.phy.duke.edu:public_html/General/$(DIR)/; \
+	rsync -avz $(SRPM) login.phy.duke.edu:public_html/General/$(DIR)/; \
+	rsync -avz $(ABS) login.phy.duke.edu:public_html/General/$(DIR)/; \
+	rsync -avz $(PHP) login.phy.duke.edu:public_html/General/; \
 	rmdir $(DIR))
 
 #========================================================================
