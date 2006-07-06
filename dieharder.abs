@@ -65,6 +65,29 @@ In general, though, documentation (including this page and built in
 documentation) may lag the bleeding edge snapshot by a few days or
 more.</p>
 
+<p>From Court Shrock:</p>
+<pre>
+I was reading about your work on dieharder.  First, some info
+about getting dieharder working in Gentoo:
+
+cd ~
+emerge rpm gsl
+wget
+http://www.phy.duke.edu/~rgb/General/dieharder/dieharder-0.6.11-1.i386.rpm
+rpm -i --nodeps dieharder-0.6.11-1.i386.rpm
+</pre>
+
+<p>Also, George Marsaglia retired from FSU in 1996, and diehard appears
+to have finally disappeared from FSU webspace.  However, the diehard
+CDROM is still mirrored <a
+href="http://www.csis.hku.hk/~diehard/cdrom/">here</a> in what appears
+to be an authorized copy.  The source code of diehard itself is of
+course copyright George Marsaglia but Marsaglia did not incorporate an
+explicit license into his code which muddles the issue.  Existing
+diehard sources are not directly incorporated into dieharder in any way
+in source form for that reason, to keep authorship and GPL licensing
+issues clear.</p>
+
 <hr>
 
 <center><h2>About DieHarder</h2></center>
@@ -82,13 +105,27 @@ interface, and it is strongly suggested that any random number generator
 to be tested by provided with such an interface.</p>
 
 <p>An file interface (still consistent with the GSL to the extent
-possible) is planned that would allow random numbers to be read in from
-a file, allowing the tool to be used with any generator (directly
-wrappable or not) that can generate a table of random numbers, but this
-will place severe limits on some of the tests, which can require very
-large numbers of random numbers.  In this respect, DieHarder differs
-significantly from Diehard, which used file based sources of random
-numbers exclusively.</p>
+possible) has been added that allows random numbers in either binary
+unsigned integer or a variety of ascii encoded formats to be read in
+from a file.  This permits dieharder to be used with "any" generator
+(directly wrappable or not) that can generate a table of random numbers,
+but this will place severe limits on some of the tests, which can
+require very large numbers of random numbers.</p>  
+
+<p>In this respect, DieHarder differs significantly from Diehard, which
+used file based sources of random numbers exclusively and would "work"
+with only a few million random numbers in such a file.  Modern random
+number generators in a typical simulation application can easily need to
+generate 10^18 or more random numbers, generated from hundreds,
+thousands, millions of different seeds, over months to years of
+accumlated run time and are therefore sensitive to weaknesses that might
+not be revealed by such short sequences even with excellent and
+sensitive tests.</p>
+
+<p>This was, in part, the motivation for the development for the
+Statistical Test Suite by NIST, which focusses more on cryptographical
+strength (although the general testing methodology is much the
+same).</p>
 
 <p>The development of DieHarder was motivated by the following, in
 rough order of importance:<p>
@@ -96,12 +133,13 @@ rough order of importance:<p>
 <ul>
 
 <li> To provide a <b>readily available, rpm-installable toolset</b> so
-that "consumers" of random numbers (who typically use large numbers of
-random numbers in e.g. simulation or other research) can test the
-generator(s) they are using to verify their quality.
+that "consumers" of random numbers (who typically use <i>large</i>
+numbers of random numbers in e.g. simulation or other research) can test
+the generator(s) they are using to verify their quality.
 
 <li> To provide a very <b>simple user interface</b> for that toolset for
-random number consumers.
+random number consumers.  A GUI is on the list of things to do, although
+it adds little to the practical utility of the tool.
 
 <li> To provide lots of <b>lots of knobs and dials</b> and low level
 control for statistical researchers that want to study particular
@@ -110,7 +148,7 @@ generators with particular tests in more detail.
 <li> To have the entire test code and documentation be fully <b>Gnu
 Public Licensed</b> and hence openly available for adaptation, testing,
 comment, and modification so that the testing suite itself becomes
-reliable.
+reliable and can be easily extended.
 
 <li> To provide a fairly <b>simple API</b> for adding new tests with a
 common set of low-level testing tools and a <b>common test structure</b>
@@ -134,12 +172,15 @@ combination, where possible.
 
 </ul>
 
-<p>Note well that the primary objections I have towards diehard and sts
+<p>Note well that the primary objections I have towards diehard and STS
 are not that they are or are not adequate and complete; it is that the
 code itself is not properly packaged for reuse, testing, and extension.
-DieHarder will hopefully rectify this situation and make it extremely
-easy for anybody to test random numbers on any GSL-supported
-platform.</p>
+Diehard is remarkably poorly documented, as well, where STS is really
+nothing <i>but</i> its description in documentation with no provided
+code for implementation.  DieHarder will hopefully rectify both
+situations and be <i>both</i> well documented <i>and</i> available in
+clearly publically licensed code to make it extremely easy for anybody
+to test random numbers on any GSL-supported platform.</p>
 
 <p>Although this tool is being developed on Linux/GCC-based platforms,
 it should port with no particular difficulty to other Unices, especially
@@ -160,7 +201,6 @@ it as:</p>
 <p>Choose alternative tests with -g number where</p>
 
 <tt>dieharder -g -1</tt>
-
 <p>will list all possible numbers known to the current snapshot of the
 DieHarder (mostly from the GSL).</p>
 
