@@ -45,6 +45,7 @@ reasonable amount of time).\n\
    -d 5 Diehard 32x32 Binary Rank test\n\
    -d 6 Diehard 6x8 Binary Rank test\n\
    -d 7 Diehard Parking Lot test\n\
+   -d 8 Diehard Craps test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\
@@ -241,6 +242,7 @@ No user-developed test are installed at this time.\n\
   * the first element of the vector.
   */
  ks_pvalue = (double *)malloc((size_t) KS_SAMPLES_PER_TEST_MAX*psamples*sizeof(double));
+ ks_pvalue2 = (double *)malloc((size_t) KS_SAMPLES_PER_TEST_MAX*psamples*sizeof(double));
  kspi = 0;
 
 }

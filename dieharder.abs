@@ -176,11 +176,11 @@ combination, where possible.
 are not that they are or are not adequate and complete; it is that the
 code itself is not properly packaged for reuse, testing, and extension.
 Diehard is remarkably poorly documented, as well, where STS is really
-nothing <i>but</i> its description in documentation with no provided
-code for implementation.  DieHarder will hopefully rectify both
-situations and be <i>both</i> well documented <i>and</i> available in
-clearly publically licensed code to make it extremely easy for anybody
-to test random numbers on any GSL-supported platform.</p>
+nothing <i>but</i> its description in documentation with no readily
+available code for implementation.  DieHarder will hopefully rectify
+both situations and be <i>both</i> well documented <i>and</i> available
+in clearly publically licensed code to make it extremely easy for
+anybody to test random numbers on any GSL-supported platform.</p>
 
 <p>Although this tool is being developed on Linux/GCC-based platforms,
 it should port with no particular difficulty to other Unices, especially
@@ -351,7 +351,7 @@ incorrect results for the p-value histograms unless there are enough
 rands to run EACH test without repetition (it is harmless to reuse the
 sequence for different tests).  Let the user beware!</p>
 
-<p>List of the CURRENT fully implemented tests (as of the 07/05/06
+<p>List of the CURRENT fully implemented tests (as of the 07/07/06
 snapshot):</p>
 <pre>
 rgb@lilith|B:1346>dieharder -l
@@ -370,6 +370,8 @@ reasonable amount of time).
    -d 4 Diehard 3D Spheres (minimum distance) test
    -d 5 Diehard 32x32 Binary Rank test
    -d 6 Diehard 6x8 Binary Rank test
+   -d 7 Diehard Parking Lot test
+   -d 8 Diehard Craps test
 
              RGB Tests
    -r 1 Bit Persist test
@@ -383,6 +385,10 @@ reasonable amount of time).
             User Tests
 No user-developed test are installed at this time.
 </pre>
+
+<p>Note that the design goal of completely encapsulating diehard is
+nearing completion with 8 tests supported and (apparently)
+functional as of 7/7/06.</p>
 
 <p>Full descriptions of the tests are available (as you can see) from
 within the tool and source documentation.  All tests are completely and

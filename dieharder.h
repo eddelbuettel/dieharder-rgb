@@ -53,6 +53,7 @@
    D_DIEHARD_RANK_32x32,
    D_DIEHARD_RANK_6x8,
    D_DIEHARD_PARKING_LOT,
+   D_DIEHARD_CRAPS,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_RGB_TIMING,
@@ -86,6 +87,7 @@
    DIEHARD_RANK_32x32,
    DIEHARD_RANK_6x8,
    DIEHARD_PARKING_LOT,
+   DIEHARD_CRAPS,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -181,6 +183,10 @@
  double diehard_parking_lot();
  void diehard_parking_lot_test();
  void help_diehard_parking_lot();
+ /* diehard "craps" test */
+ double diehard_craps();
+ void diehard_craps_test();
+ void help_diehard_craps();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();
@@ -261,7 +267,8 @@
   *========================================================================
   */
 #define KS_SAMPLES_PER_TEST_MAX 256
- double *ks_pvalue;
+ /* We need two of these to do diehard_craps.  Sigh. */
+ double *ks_pvalue,*ks_pvalue2;
  unsigned int kspi;
  struct timeval tv_start,tv_stop;
  int dummy,idiot;

@@ -65,13 +65,18 @@ anyway.  All the code in dieharder is GPL open source in any event, but
 academic credit matters.
 
 Similarly, DIEHARD is the work of George Marsaglia.  Dr. Marsaglia
-doen't have any written copyright that I could find on the website where
-he openly distributes source for his own suite, but in keeping with a
-minor design goal of completely original GPL code, all the DIEHARD
-algorithms have also been completely rewritten without reference to the
-actual diehard code.  Fortunately, Dr. Marsaglia also provides clear
+doen't have any written copyright notice or license terms that I could
+find in the sources provided on the website where he openly distributes
+source for his own suite, but in keeping with a minor design goal of
+completely original GPL code, all the DIEHARD algorithms have also been
+completely rewritten without directly utilizing any of the actual
+diehard code.  Fortunately, Dr.  Marsaglia also provides clear
 documentation for his test suite, making it a fairly simple matter to
-implement the tests.
+implement the tests.  Source code WAS examined (but not copied) to
+clarify places where the documentation of the tests was openly erroneous
+(as in the parking lot test) or unclear but dieharder code is completely
+original and its development thoroughly documented in CVS and (later)
+SVN tree form, checkin by checkin.
 
 The relatively few tests I have added are motivated by a desire to get a
 less ambiguous answer than many of these tests provide.  In many cases
@@ -469,3 +474,26 @@ course, and the lovely thing about binary is that I can always use a
 suitably masked integer conversion of the bit pattern itself as the
 histogram index!  So it needn't be TOO horrible to encode.
 
+=====================================================
+
+Note on diehard parking lot test.  First of all, the documentation for
+the test is incorrect -- it tests for "crashes" (overlap) of SQUARE cars
+with sides of length 1, not ROUND cars of RADIUS one as Marsaglia's
+documentation and comments assert.  If round cars ("helicopters", to
+borrow Marsaglia's term) are used a different distribution is obtained
+with mean over 4000.
+
+Actually to me, round cars seems very very similar to one of Knuth's
+tests for hyperplanar distribution of random coordinates, which has a
+much more solid theoretical foundation; I suspect the tests are more or
+less equivalent in sensitivity and will yield identical success/failure
+patterns in 99% of all cases (maybe even 100%).  And the sensitivity of
+this test sucks -- it was very difficult for me to find a test that
+failed it out of the entire GSL collection (trying a half dozen
+known-weak generators or more in the process).  The one that finally DID
+fail it really, really sucked and failed all sorts of other tests.
+
+I'd be interested to see if this test deserves to live, in the long run.
+I rather suspect that Knuth tests in variable dimensions will yield a
+much more systematic view of RNG failure, just as rgb_bitdist does
+compared to e.g. runs tests.

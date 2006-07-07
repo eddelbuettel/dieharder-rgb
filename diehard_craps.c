@@ -1,83 +1,41 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-*
-*/
+ * See copyright in copyright.h and the accompanying file COPYING
+ */
 
 /*
  *========================================================================
- * This is the Diehard RUNS test, rewritten from the description
- * in tests.txt on  * George Marsaglia's diehard site.
+ * This is the Diehard Craps test, rewritten from the description
+ * in tests.txt on George Marsaglia's diehard site.
  *
- * * Rewriting means that I can standardize the interface to
+ * Rewriting means that I can standardize the interface to
  * gsl-encapsulated routines more easily.  It also makes this
  * my own code.  Finally, since the C versions Marsaglia provides
  * are the result of f2c running on Fortran sources, they are really
  * ugly code and the rewrite should be much more manageable.
  *
- * From tests.txt:
- * This is the RUNS test. It counts runs up, and runs down,in a sequence
- * of uniform [0,1) variables, obtained by floating the 32-bit integers
- * in the specified file. This example shows how runs are counted:
- *  .123, .357, .789, .425,. 224, .416, .95
- * contains an up-run of length 3, a down-run of length 2 and an up-run
- * of (at least) 2, depending on the next values.  The covariance matrices
- * for the runs-up and runs-down are well-known, leading to chisquare tests
- * for quadratic forms in the weak inverses of the covariance matrices.
- * Runs are counted for sequences of length 10,000.  This is done ten times,
- * then repeated.
+ * Here is the test description from diehard_tests.txt:
  *
- * I modify this the following ways. First, I let the sequence length be
- * the variable -n (vector length) instead of fixing it at 10,000.  This
- * lets one test sequences that are much longer (entirely possible with
- * a modern CPU even for a fairly slow RNG).  Second, I repeat this for
- * the variable -s (samples) times, default 100 and not just 10.  Third,
- * because RNG's often have "bad seeds" for which they misbehave, the
- * individual sequences can be optionally -i reseeded for each sample.
- * Because this CAN let bad behavior be averaged out to where
- * it isn't apparent for many samples with few bad seeds, we may need to
- * plot the actual distribution of p-values for this and other tests where
- * this option is used.  Fourth, it is silly to convert integers into floats
- * in order to do this test.  Up sequences in integers are down sequences in
- * floats once one divides by the largest integer available to the generator,
- * period. Integer arithmetic is much faster than float AND one skips the
- * very costly division associated with conversion.
- * *========================================================================
+ *: This is the CRAPS TEST. It plays 200,000 games of craps, finds::
+ *: the number of wins and the number of throws necessary to end  ::
+ *: each game.  The number of wins should be (very close to) a    ::
+ *: normal with mean 200000p and variance 200000p(1-p), with      ::
+ *: p=244/495.  Throws necessary to complete the game can vary    ::
+ *: from 1 to infinity, but counts for all>21 are lumped with 21. ::
+ *: A chi-square test is made on the no.-of-throws cell counts.   ::
+ *: Each 32-bit integer from the test file provides the value for ::
+ *: the throw of a die, by floating to [0,1), multiplying by 6    ::
+ *: and taking 1 plus the integer part of the result.             ::
+ *
+ *========================================================================
  */
 
 
 #include "dieharder.h"
 
-
-/*
- * The following are the definitions and parameters for runs, based on
- * Journal of Applied Statistics v30, Algorithm AS 157, 1981:
- *    The Runs-Up and Runs-Down Tests, by R. G. T. Grafton.
- * (and before that Knuth's The Art of Programming v. 2).
- */
-
-#define RUN_MAX 6
-/*
- * a_ij
- */
-static double a[6][6] = {
- { 4529.4,   9044.9,  13568.0,   18091.0,   22615.0,   27892.0},
- { 9044.9,  18097.0,  27139.0,   36187.0,   45234.0,   55789.0},
- {13568.0,  27139.0,  40721.0,   54281.0,   67852.0,   83685.0},
- {18091.0,  36187.0,  54281.0,   72414.0,   90470.0,  111580.0},
- {22615.0,  45234.0,  67852.0,   90470.0,  113262.0,  139476.0},
- {27892.0,  55789.0,  83685.0,  111580.0,  139476.0,  172860.0}
-};
-/*
- * b_i
- */
-static double b[6];
-
-double diehard_runs()
+double diehard_craps()
 {
 
- double *pvalue,pks;
+ double *pvalue,pks_mean,pks_freq;
  uint tempsamples;
 
  /*
@@ -91,154 +49,205 @@ double diehard_runs()
   */
 
  /*
-  * Initialize b explicitly.  Might as well do it here.
+  * If this test is run by itself, we can ignore tsamples.  If it is
+  * part of a "standard run", we have to use specific values.  Either
+  * way, we have to adjust the sizes of e.g. the list of integers to
+  * be generated and sampled, and (re)allocate memory accordingly.
+  * Then at the bottom, we have to put it all back.
   */
- b[0] = 1.0/6.0;
- b[1] = 5.0/24.0;
- b[2] = 11.0/120.0;
- b[3] = 19.0/720.0;
- b[4] = 29.0/5040.0;
- b[5] = 1.0/840.0;
-
-
- /*
-  * If this is part of a sweep of tests, reset tsamples and
-  * resize rand_int.
-  */
- if(testnum < 0){
+ if(all == YES){
    tempsamples = tsamples;
-   tsamples = 100000 ;  /* Minimal value for this test */
+   tsamples = 200000;  /* Standard value from diehard */
  }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                Diehard \"runs\" test (modified).\n");
-   printf("# This tests the distribution of increasing and decreasing runs\n");
-   printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
-   printf("# or greater and -n 100000 or greater, it will compute a vector\n");
-   printf("# of p-values for up and down and verify that the proportion\n");
-   printf("# of these values less than 0.01 is consistent with a uniform\n");
-   printf("# distribution.\n");
-   printf("#==================================================================\n");
+   help_diehard_craps();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# size of vector tested = %u (100000 or more suggested)\n",tsamples);
+   printf("# Number of rands required is around 2x10^8 for 100 samples.\n");
  }
 
  kspi = 0;  /* Always zero first */
- pks = sample((void *)diehard_runs_test);
- printf("p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov test\n",pks);
- printf("     on %u pvalues (up runs + down runs).\n",kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));
+ pks_mean = sample((void *)diehard_craps_test);
+ /* This is an extra for craps only */
+ pks_freq = kstest_kuiper(ks_pvalue2,kspi);
+
+ /*
+  * Display histogram of ks p-values (optional)
+  */
+ if(hist_flag){
+   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
+ }
+ printf("# p = %8.6f for diehard_craps test (mean) from Kuiper Kolmogorov-Smirnov\n",pks_mean);
+ printf("#     test on %u pvalues.\n",kspi);
+ if(pks_mean < 0.0001){
+   printf("# Generator %s FAILS at 0.01%% for diehard_craps (mean).\n",gsl_rng_name(rng));
+ }
+ if(hist_flag){
+   histogram(ks_pvalue2,psamples,0.0,1.0,10,"p-values");
+ }
+ printf("# p = %8.6f for diehard_craps test (frequency) from Kuiper Kolmogorov-Smirnov\n",pks_freq);
+ printf("#     test on %u pvalues.\n",kspi);
+ if(pks_freq < 0.0001){
+   printf("# Generator %s FAILS at 0.01%% for diehard_craps (frequency).\n",gsl_rng_name(rng));
  }
 
  /*
   * Put back tsamples
   */
- if(testnum < 0){
+ if(all == YES){
    tsamples = tempsamples;
  }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
- return(pks);
+ return(pks_mean);
 
 }
 
-void diehard_runs_test()
+uint roll(){
+  uint d = 1 + gsl_rng_uniform_int(rng,6);
+  return d;
+}
+
+void diehard_craps_test()
 {
 
- int i,j,k,t,ns;
- unsigned int ucount,dcount,increased;
- int upruns[RUN_MAX],downruns[RUN_MAX];
- double uv,dv,up_pks,down_pks;
- double *uv_pvalue,*dv_pvalue;
+ uint i,j;
+ uint point,throw,tries,wins;
+ /* uint n2end[22];  /* use bins from 1-21 -- ignore bin 0 */
+ double sum,p;
+ Xtest ptest;
+ Btest btest;
 
  /*
-  * Fill vector of "random" integers with selected generator.
-  * Observe that this test does NOT not convert to floats but
-  * counts up down and down up on an integer compare.
+  * ptest.x = number of wins
+  *   p = 244.0/495.0 is the probability of winning, so the mean
+  * should be normally distributed with a binary distribution
+  * sigma (standard stuff).
+  * ptest.y = tsamples*p
+  * ptest.sigma = sqrt(tsamples*p*(1 - p))
+  *
+  * HOWEVER, it also counts the number of throws required to win
+  * each game, binned according to 1,2,3... 21+ (the last bin is
+  * holds all games that require more than 20 throws).  The
+  * vector of bin values is subjected to a chi-sq test.  BOTH
+  * tests must be passed, making this one a bit more complex to
+  * report on, as it is really two tests in one.
   */
+ p = 244.0/495.0;
+ ptest.y = (double) tsamples*p;
+ ptest.sigma = sqrt(ptest.y*(1.0 - p));
 
  /*
-  * Clear up and down run bins
+  * Allocate memory for Btest struct vector (length 21) and initialize
+  * it with the expected values.
   */
- for(k=0;k<RUN_MAX;k++){
-   upruns[k] = 0;
-   downruns[k] = 0;
+ Btest_create(&btest,21,"diehard_craps",gsl_rng_name(rng));
+ sum = 1.0/3.0;
+ btest.y[0] = sum;
+ for(i=1;i<20;i++){
+   btest.y[i] = (27.0*pow(27.0/36.0,i-1) + 40*pow(13.0/18.0,i-1) +
+                55.0*pow(25.0/36.0,i-1))/648.0;
+   sum += btest.y[i];
+   btest.sigma[i] = 0.0;   /* No longer used */
+ }
+ btest.y[20] = 1.0 - sum;
+ /*
+  * Normalize the probabilities by the expected number of trials
+  */
+ for(i=0;i<21;i++){
+   btest.y[i] *= tsamples;
  }
 
+
+
  /*
-  * Now count up and down runs and increment the bins.  Note
-  * that each successive up counts as a run of one down, and
-  * each successive down counts as a run of one up.
+  * Initialize sundry things.  This is short enough I'll use
+  * a loop instead of memset.
   */
- ucount = dcount = 1;
- if(verbose){
-   printf("j    rand    ucount  dcount\n");
- }
- rand_int[0] = gsl_rng_get(rng);
- for(t=1;t<tsamples;t++) {
-   rand_int[t] = gsl_rng_get(rng);
-   if(verbose){
-     printf("%d:  %10u   %u    %u\n",t,rand_int[t],ucount,dcount);
-   }
+ for(i=0;i<22;i++) btest.x[i] = 0;
+ wins = 0;
+
+ /*
+  * We now play tsamples games of craps!
+  */
+ for(i=0;i<tsamples;i++){
 
    /*
-    * Did we increase?
+    * This is the point count we have to make, the sum of two rolled
+    * dice.
     */
-   if(rand_int[t] > rand_int[t-1]){
-     ucount++;
-     if(ucount > RUN_MAX) ucount = RUN_MAX;
-     downruns[dcount-1]++;
-     dcount = 1;
+   point = roll() + roll();
+   tries = 0;
+
+   if(point == 7 || point == 11) {
+     /*
+      * If we rolled 7 or 11, we just win.
+      */
+     wins++;
+     btest.x[tries]++;
+   } else if(point == 2 || point == 3 || point == 12){
+     /*
+      * If we rolled 2, 3, or 12, we just lose.
+      */
+     btest.x[tries]++;
    } else {
-     dcount++;
-     if(dcount > RUN_MAX) dcount = RUN_MAX;
-     upruns[ucount-1]++;
-     ucount = 1;
+     /*
+      * We have to roll until we make the point (win) or roll
+      * a seven (lose).  We have to keep going until we win
+      * or lose, but have to compress the number of throws
+      * to bin 21 for all throw>21.
+      */
+     while(1){
+       /*
+        * This little ditty increments tries if it is less than 20
+	* then freezes it.
+        */
+       (tries<20)?tries++:tries;
+       throw = roll() + roll();
+       if(throw == 7){
+         btest.x[tries]++;
+	 break;
+       } else if(throw == point){
+         btest.x[tries]++;
+	 wins++;
+	 break;
+       }
+     }
    }
  }
- if(rand_int[size-1] > rand_int[0]){
-   ucount++;
-   if(ucount > RUN_MAX) ucount = RUN_MAX;
-   downruns[dcount-1]++;
-   dcount = 1;
- } else {
-   dcount++;
-   if(dcount > RUN_MAX) dcount = RUN_MAX;
-   upruns[ucount-1]++;
-   ucount = 1;
+
+ ptest.x = wins++;
+ Xtest_eval(&ptest);
+ ks_pvalue[kspi] = ptest.pvalue;
+
+ if(verbose == D_DIEHARD_CRAPS || verbose == D_ALL){
+   printf("# diehard_craps(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
- /*
-  * This ends a single sample.
-  * Compute the test statistic for up and down runs.
-  */
- uv=0.0;
- dv=0.0;
- if(verbose){
-   printf(" i      upruns    downruns\n");
+
+ Btest_eval(&btest);
+ ks_pvalue2[kspi] = btest.pvalue;
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# diehard_craps_freq(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue2[kspi]);
  }
- for(i=0;i<RUN_MAX;i++) {
-   if(verbose){
-     printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
-   }
-   for(j=0;j<RUN_MAX;j++) {
-     uv += ((double)upruns[i]   - tsamples*b[i])*(upruns[j]   - tsamples*b[j])*a[i][j];
-     dv += ((double)downruns[i] - tsamples*b[i])*(downruns[j] - tsamples*b[j])*a[i][j];
-   }
- }
- uv /= (double)tsamples;
- dv /= (double)tsamples;
- if(verbose){
-   printf("uv = %f   dv = %f\n",uv,dv);
- }
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
+ kspi++;
 
 }
 
+void help_diehard_craps()
+{
 
+ printf("\n\
+#==================================================================\n\
+#                Diehard \"craps\" test (modified).\n\
+#  This is the CRAPS TEST. It plays 200,000 games of craps, finds  \n\
+#  the number of wins and the number of throws necessary to end    \n\
+#  each game.  The number of wins should be (very close to) a      \n\
+#  normal with mean 200000p and variance 200000p(1-p), with        \n\
+#  p=244/495.  Throws necessary to complete the game can vary      \n\
+#  from 1 to infinity, but counts for all>21 are lumped with 21.   \n\
+#  A chi-square test is made on the no.-of-throws cell counts.     \n\
+#  Each 32-bit integer from the test file provides the value for   \n\
+#  the throw of a die, by floating to [0,1), multiplying by 6      \n\
+#  and taking 1 plus the integer part of the result.               \n\
+#==================================================================\n");
 
+}
