@@ -52,6 +52,7 @@
    D_DIEHARD_3DSPHERE,
    D_DIEHARD_RANK_32x32,
    D_DIEHARD_RANK_6x8,
+   D_DIEHARD_PARKING_LOT,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_RGB_TIMING,
@@ -84,6 +85,7 @@
    DIEHARD_3DSPHERE,
    DIEHARD_RANK_32x32,
    DIEHARD_RANK_6x8,
+   DIEHARD_PARKING_LOT,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -175,6 +177,10 @@
  double diehard_rank_6x8();
  void diehard_rank_6x8_test();
  void help_diehard_rank_6x8();
+ /* diehard "parking lot" test */
+ double diehard_parking_lot();
+ void diehard_parking_lot_test();
+ void help_diehard_parking_lot();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();

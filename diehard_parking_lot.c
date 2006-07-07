@@ -1,80 +1,78 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-*
-*/
+ * See copyright in copyright.h and the accompanying file COPYING
+ */
 
 /*
  *========================================================================
- * This is the Diehard RUNS test, rewritten from the description
- * in tests.txt on  * George Marsaglia's diehard site.
+ * This is the Diehard Parking Lot test, rewritten from the description
+ * in tests.txt on  George Marsaglia's diehard site.
  *
- * * Rewriting means that I can standardize the interface to
+ * Rewriting means that I can standardize the interface to
  * gsl-encapsulated routines more easily.  It also makes this
  * my own code.  Finally, since the C versions Marsaglia provides
  * are the result of f2c running on Fortran sources, they are really
  * ugly code and the rewrite should be much more manageable.
  *
- * From tests.txt:
- * This is the RUNS test. It counts runs up, and runs down,in a sequence
- * of uniform [0,1) variables, obtained by floating the 32-bit integers
- * in the specified file. This example shows how runs are counted:
- *  .123, .357, .789, .425,. 224, .416, .95
- * contains an up-run of length 3, a down-run of length 2 and an up-run
- * of (at least) 2, depending on the next values.  The covariance matrices
- * for the runs-up and runs-down are well-known, leading to chisquare tests
- * for quadratic forms in the weak inverses of the covariance matrices.
- * Runs are counted for sequences of length 10,000.  This is done ten times,
- * then repeated.
+ * Here is the test description from diehard_tests.txt:
  *
- * I modify this the following ways. First, I let the sequence length be
- * the variable -n (vector length) instead of fixing it at 10,000.  This
- * lets one test sequences that are much longer (entirely possible with
- * a modern CPU even for a fairly slow RNG).  Second, I repeat this for
- * the variable -s (samples) times, default 100 and not just 10.  Third,
- * because RNG's often have "bad seeds" for which they misbehave, the
- * individual sequences can be optionally -i reseeded for each sample.
- * Because this CAN let bad behavior be averaged out to where
- * it isn't apparent for many samples with few bad seeds, we may need to
- * plot the actual distribution of p-values for this and other tests where
- * this option is used.  Fourth, it is silly to convert integers into floats
- * in order to do this test.  Up sequences in integers are down sequences in
- * floats once one divides by the largest integer available to the generator,
- * period. Integer arithmetic is much faster than float AND one skips the
- * very costly division associated with conversion.
- * *========================================================================
+ * ::               THIS IS A PARKING LOT TEST                      ::
+ * :: In a square of side 100, randomly "park" a car---a circle of  ::
+ * :: radius 1.   Then try to park a 2nd, a 3rd, and so on, each    ::
+ * :: time parking "by ear".  That is, if an attempt to park a car  ::
+ * :: causes a crash with one already parked, try again at a new    ::
+ * :: random location. (To avoid path problems, consider parking    ::
+ * :: helicopters rather than cars.)   Each attempt leads to either ::
+ * :: a crash or a success, the latter followed by an increment to  ::
+ * :: the list of cars already parked. If we plot n:  the number of ::
+ * :: attempts, versus k::  the number successfully parked, we get a::
+ * :: curve that should be similar to those provided by a perfect   ::
+ * :: random number generator.  Theory for the behavior of such a   ::
+ * :: random curve seems beyond reach, and as graphics displays are ::
+ * :: not available for this battery of tests, a simple characteriz ::
+ * :: ation of the random experiment is used: k, the number of cars ::
+ * :: successfully parked after n=12,000 attempts. Simulation shows ::
+ * :: that k should average 3523 with sigma 21.9 and is very close  ::
+ * :: to normally distributed.  Thus (k-3523)/21.9 should be a st-  ::
+ * :: andard normal variable, which, converted to a uniform varia-  ::
+ * :: ble, provides input to a KSTEST based on a sample of 10.      ::
+ *
+ *                         Comments
+ *
+ *    First, the description above is incorrect in two regards.
+ *    As seen in the original code, the test measures
+ *    overlap of SQUARES of radius one, a thing I only observed after
+ *    actually programming circles as described (which are
+ *    also easy, although a bit more expensive to evaluate crashes
+ *    for).  Circles produce an altogether different mean and are
+ *    probably a bit more sensitive to 2d striping at arbitrary angles.
+ *
+ *    Note that I strongly suspect that this test is basically
+ *    equivalent to Knuth's better conceived hyperplane test, which
+ *    measures aggregation of N dimensional sets of "coordinates" in
+ *    hyperplanes.  To put it another way, if something fails a
+ *    hyperplane test in 2d, it will certainly fail this test as well.
+ *    If something fails this test, I'd bet serious money that it
+ *    is because of aggregation of points on hyperplanes although
+ *    there MAY be other failure patterns as well.
+ *
+ *    Finally, note that the probability that any given k is
+ *    obtained for a normal random distribution is just determined
+ *    from the erf() -- this is just an Xtest().
+ *
+ * As always, we will increase the number of tsamples and hopefully improve
+ * the resolution of the test.  However, it should be carefully noted
+ * that modern random number generators can almost certainly add many
+ * decimal places to the simulation value used in this test.  In other
+ * words, test failure at higher resolution can be INVERTED -- it can
+ * indicate the relative failure of the generators used to produce the
+ * earlier result!  This is really a subject for future research...
+ *========================================================================
  */
 
 
 #include "dieharder.h"
 
-
-/*
- * The following are the definitions and parameters for runs, based on
- * Journal of Applied Statistics v30, Algorithm AS 157, 1981:
- *    The Runs-Up and Runs-Down Tests, by R. G. T. Grafton.
- * (and before that Knuth's The Art of Programming v. 2).
- */
-
-#define RUN_MAX 6
-/*
- * a_ij
- */
-static double a[6][6] = {
- { 4529.4,   9044.9,  13568.0,   18091.0,   22615.0,   27892.0},
- { 9044.9,  18097.0,  27139.0,   36187.0,   45234.0,   55789.0},
- {13568.0,  27139.0,  40721.0,   54281.0,   67852.0,   83685.0},
- {18091.0,  36187.0,  54281.0,   72414.0,   90470.0,  111580.0},
- {22615.0,  45234.0,  67852.0,   90470.0,  113262.0,  139476.0},
- {27892.0,  55789.0,  83685.0,  111580.0,  139476.0,  172860.0}
-};
-/*
- * b_i
- */
-static double b[6];
-
-double diehard_runs()
+double diehard_parking_lot()
 {
 
  double *pvalue,pks;
@@ -91,154 +89,134 @@ double diehard_runs()
   */
 
  /*
-  * Initialize b explicitly.  Might as well do it here.
+  * tsamples are irrelevant to this test, which consumes roughly
+  * 12000x2x100 = 2.4x10^6 rands.
   */
- b[0] = 1.0/6.0;
- b[1] = 5.0/24.0;
- b[2] = 11.0/120.0;
- b[3] = 19.0/720.0;
- b[4] = 29.0/5040.0;
- b[5] = 1.0/840.0;
-
-
- /*
-  * If this is part of a sweep of tests, reset tsamples and
-  * resize rand_int.
-  */
- if(testnum < 0){
-   tempsamples = tsamples;
-   tsamples = 100000 ;  /* Minimal value for this test */
- }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                Diehard \"runs\" test (modified).\n");
-   printf("# This tests the distribution of increasing and decreasing runs\n");
-   printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
-   printf("# or greater and -n 100000 or greater, it will compute a vector\n");
-   printf("# of p-values for up and down and verify that the proportion\n");
-   printf("# of these values less than 0.01 is consistent with a uniform\n");
-   printf("# distribution.\n");
-   printf("#==================================================================\n");
+   help_diehard_parking_lot();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# size of vector tested = %u (100000 or more suggested)\n",tsamples);
+   printf("# Number of rands required is 2,400,000 for 100 samples.\n");
  }
 
  kspi = 0;  /* Always zero first */
- pks = sample((void *)diehard_runs_test);
- printf("p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov test\n",pks);
- printf("     on %u pvalues (up runs + down runs).\n",kspi);
- if(pks < 0.0001){
-   printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));
- }
+ pks = sample((void *)diehard_parking_lot_test);
 
  /*
-  * Put back tsamples
+  * Display histogram of ks p-values (optional)
   */
- if(testnum < 0){
-   tsamples = tempsamples;
+ if(hist_flag){
+   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
  }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
+ printf("# p = %8.6f for diehard_parking_lot test from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues (up runs + down runs).\n",kspi);
+ if(pks < 0.0001){
+   printf("# Generator %s FAILS at 0.01%% for diehard_parking_lot.\n",gsl_rng_name(rng));
+ }
 
  return(pks);
 
 }
 
-void diehard_runs_test()
+typedef struct {
+  double x;
+  double y;
+} Cars;
+
+void diehard_parking_lot_test()
 {
 
- int i,j,k,t,ns;
- unsigned int ucount,dcount,increased;
- int upruns[RUN_MAX],downruns[RUN_MAX];
- double uv,dv,up_pks,down_pks;
- double *uv_pvalue,*dv_pvalue;
+ /*
+  * This is the most that could under any circumstances be parked.
+  */
+ Cars parked[12000];
+ uint k,n,i,crashed;
+ double xtry,ytry,knorm;
+ Xtest ptest;
 
  /*
-  * Fill vector of "random" integers with selected generator.
-  * Observe that this test does NOT not convert to floats but
-  * counts up down and down up on an integer compare.
+  * ptest.x = (double) k
+  * ptest.y = 3523.0
+  * ptest.sigma = 21.9
+  * This will generate ptest->pvalue when Xtest(ptest) is called
   */
+ ptest.y = 3523.0;
+ ptest.sigma = 21.9;
 
  /*
-  * Clear up and down run bins
+  * Clear the parking lot the fast way.
   */
- for(k=0;k<RUN_MAX;k++){
-   upruns[k] = 0;
-   downruns[k] = 0;
- }
+ memset(parked,0,12000*sizeof(Cars));
 
  /*
-  * Now count up and down runs and increment the bins.  Note
-  * that each successive up counts as a run of one down, and
-  * each successive down counts as a run of one up.
+  * Park a single car to have something to avoid and count it.
   */
- ucount = dcount = 1;
- if(verbose){
-   printf("j    rand    ucount  dcount\n");
- }
- rand_int[0] = gsl_rng_get(rng);
- for(t=1;t<tsamples;t++) {
-   rand_int[t] = gsl_rng_get(rng);
-   if(verbose){
-     printf("%d:  %10u   %u    %u\n",t,rand_int[t],ucount,dcount);
+ parked[0].x = 100.0*gsl_rng_uniform(rng);
+ parked[0].y = 100.0*gsl_rng_uniform(rng);
+ k = 1;
+ 
+
+ /*
+  * This is now a really simple test.  Park them cars!  We try to park
+  * 12000 times, and increment k (the number successfully parked) on
+  * successes.  We brute force the crash test.
+  */
+ for(n=1;n<12000;n++){
+   xtry = 100.0*gsl_rng_uniform(rng);
+   ytry = 100.0*gsl_rng_uniform(rng);
+   crashed = 0;
+   for(i=0;i<k;i++){
+     /*
+      * We do this REASONABLY efficiently.  As soon as we know we didn't
+      * crash we move on until we learn that we crashed, trying to skip
+      * arithmetic.  Once we've crashed, we break out of the loop.
+      * Uncrashed survivors join the parked list.
+      */
+     if( (fabs(parked[i].x - xtry) <= 1.0) && (fabs(parked[i].y - ytry) <= 1.0)){
+       crashed = 1;  /* We crashed! */
+       break;        /* So quit the loop here */
+     }
    }
-
    /*
-    * Did we increase?
+    * Save uncrashed helicopter coordinates.
     */
-   if(rand_int[t] > rand_int[t-1]){
-     ucount++;
-     if(ucount > RUN_MAX) ucount = RUN_MAX;
-     downruns[dcount-1]++;
-     dcount = 1;
-   } else {
-     dcount++;
-     if(dcount > RUN_MAX) dcount = RUN_MAX;
-     upruns[ucount-1]++;
-     ucount = 1;
+   if(crashed == 0){
+     parked[k].x = xtry;
+     parked[k].y = ytry;
+     crashed = 0;
+     k++;
    }
  }
- if(rand_int[size-1] > rand_int[0]){
-   ucount++;
-   if(ucount > RUN_MAX) ucount = RUN_MAX;
-   downruns[dcount-1]++;
-   dcount = 1;
- } else {
-   dcount++;
-   if(dcount > RUN_MAX) dcount = RUN_MAX;
-   upruns[ucount-1]++;
-   ucount = 1;
- }
- /*
-  * This ends a single sample.
-  * Compute the test statistic for up and down runs.
-  */
- uv=0.0;
- dv=0.0;
- if(verbose){
-   printf(" i      upruns    downruns\n");
- }
- for(i=0;i<RUN_MAX;i++) {
-   if(verbose){
-     printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
-   }
-   for(j=0;j<RUN_MAX;j++) {
-     uv += ((double)upruns[i]   - tsamples*b[i])*(upruns[j]   - tsamples*b[j])*a[i][j];
-     dv += ((double)downruns[i] - tsamples*b[i])*(downruns[j] - tsamples*b[j])*a[i][j];
-   }
- }
- uv /= (double)tsamples;
- dv /= (double)tsamples;
- if(verbose){
-   printf("uv = %f   dv = %f\n",uv,dv);
- }
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
 
+ ptest.x = (double)k;
+ Xtest_eval(&ptest);
+ ks_pvalue[kspi] = ptest.pvalue;
+
+ if(verbose == D_DIEHARD_PARKING_LOT || verbose == D_ALL){
+   printf("# diehard_parking_lot(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
+ }
+ kspi++;
+     
 }
 
 
+void help_diehard_parking_lot()
+{
 
+ printf("\n\
+#==================================================================\n\
+#                Diehard \"parking lot\" test (modified).\n\
+# This tests the distribution of attempts to randomly park a\n\
+# square car of length 1 on a 100x100 parking lot without\n\
+# crashing.  We plot n (number of attempts) versus k (number of\n\
+# attempts that didn't \"crash\" because the car squares \n\
+# overlapped and compare to the expected result from a perfectly\n\
+# random set of parking coordinates.  This is, alas, not really\n\
+# known on theoretical grounds so instead we compare to n=12,000\n\
+# where k should average 3523 with sigma 21.9 and is very close\n\
+# to normally distributed.  Thus (k-3523)/21.9 is a standard\n\
+# normal variable, which converted to a uniform p-value, provides\n\
+# input to a KS test with a default 100 samples.\n\
+#==================================================================\n");
+
+}

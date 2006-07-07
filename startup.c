@@ -44,6 +44,7 @@ reasonable amount of time).\n\
    -d 4 Diehard 3D Spheres (minimum distance) test\n\
    -d 5 Diehard 32x32 Binary Rank test\n\
    -d 6 Diehard 6x8 Binary Rank test\n\
+   -d 7 Diehard Parking Lot test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\

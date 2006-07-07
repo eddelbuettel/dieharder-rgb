@@ -55,6 +55,9 @@ void help()
    case DIEHARD_RANK_6x8:
      help_diehard_rank_6x8();
      break;
+   case DIEHARD_PARKING_LOT:
+     help_diehard_parking_lot();
+     break;
  }
  switch(rgb){
    default:

@@ -33,6 +33,7 @@ void work()
    diehard_3dsphere();
    diehard_rank_32x32();
    diehard_rank_6x8();
+   diehard_parking_lot();
    rgb_persist();
    rgb_bitdist();
    sts_monobit();
@@ -65,6 +66,10 @@ void work()
      break;
    case DIEHARD_RANK_6x8:
      diehard_rank_6x8();
+     exit(0);
+     break;
+   case DIEHARD_PARKING_LOT:
+     diehard_parking_lot();
      exit(0);
      break;
  }
