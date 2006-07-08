@@ -48,6 +48,7 @@ reasonable amount of time).\n\
    -d 8  Diehard Craps test\n\
    -d 9  Diehard Squeeze test\n\
    -d 10 Diehard OPSO test\n\
+   -d 11 Diehard OQSO test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\

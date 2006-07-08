@@ -29,6 +29,15 @@
  * consecutive bits. It then restarts the file for the next de-  ::
  * signated 10 bits, and so on.                                  ::
  *
+ *                         Comment
+ * Damn good test.  Very few generators in the GSL survive it,
+ * not even the various glibc generators.  Pretty much mt1997,
+ * ranldx, rand48 -- nearly everything else I tried in a very
+ * non-exhaustive trial failed -- all the NR generators, R250,
+ * and more.  It appears to be related (I think) to Knuth's
+ * hyperplanar distribution tests -- a matter for future research --
+ * when you code it (as I did) thinking of it as a kind of really
+ * big "parking lot" test or as generating a pixel graph in 2d.
  *========================================================================
  */
 
@@ -215,6 +224,11 @@ void help_diehard_opso()
 # a time from the test file and uses a designated set of ten    \n\
 # consecutive bits. It then restarts the file for the next de-  \n\
 # signated 10 bits, and so on.                                  \n\
+# \n\
+# Note that of course we do not \"restart file\", when using gsl \n\
+# generators, we just crank out the next random number. \n\
+# We also do not bother to overlap the two letter words.  rands \n\
+# are cheap. \n\
 #==================================================================\n");
 
 }

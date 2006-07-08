@@ -1,80 +1,39 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-*
-*/
+ * See copyright in copyright.h and the accompanying file COPYING
+ */
 
 /*
  *========================================================================
- * This is the Diehard RUNS test, rewritten from the description
- * in tests.txt on  * George Marsaglia's diehard site.
+ * This is the Diehard QPSO test, rewritten from the description
+ * in tests.txt on George Marsaglia's diehard site.
  *
- * * Rewriting means that I can standardize the interface to
+ * Rewriting means that I can standardize the interface to
  * gsl-encapsulated routines more easily.  It also makes this
  * my own code.  Finally, since the C versions Marsaglia provides
  * are the result of f2c running on Fortran sources, they are really
  * ugly code and the rewrite should be much more manageable.
  *
- * From tests.txt:
- * This is the RUNS test. It counts runs up, and runs down,in a sequence
- * of uniform [0,1) variables, obtained by floating the 32-bit integers
- * in the specified file. This example shows how runs are counted:
- *  .123, .357, .789, .425,. 224, .416, .95
- * contains an up-run of length 3, a down-run of length 2 and an up-run
- * of (at least) 2, depending on the next values.  The covariance matrices
- * for the runs-up and runs-down are well-known, leading to chisquare tests
- * for quadratic forms in the weak inverses of the covariance matrices.
- * Runs are counted for sequences of length 10,000.  This is done ten times,
- * then repeated.
+ * Here is the test description from diehard_tests.txt:
  *
- * I modify this the following ways. First, I let the sequence length be
- * the variable -n (vector length) instead of fixing it at 10,000.  This
- * lets one test sequences that are much longer (entirely possible with
- * a modern CPU even for a fairly slow RNG).  Second, I repeat this for
- * the variable -s (samples) times, default 100 and not just 10.  Third,
- * because RNG's often have "bad seeds" for which they misbehave, the
- * individual sequences can be optionally -i reseeded for each sample.
- * Because this CAN let bad behavior be averaged out to where
- * it isn't apparent for many samples with few bad seeds, we may need to
- * plot the actual distribution of p-values for this and other tests where
- * this option is used.  Fourth, it is silly to convert integers into floats
- * in order to do this test.  Up sequences in integers are down sequences in
- * floats once one divides by the largest integer available to the generator,
- * period. Integer arithmetic is much faster than float AND one skips the
- * very costly division associated with conversion.
- * *========================================================================
+ *    OQSO means Overlapping-Quadruples-Sparse-Occupancy        ::
+ *  The test OQSO is similar, except that it considers 4-letter ::
+ *  words from an alphabet of 32 letters, each letter determined  ::
+ *  by a designated string of 5 consecutive bits from the test    ::
+ *  file, elements of which are assumed 32-bit random integers.   ::
+ *  The mean number of missing words in a sequence of 2^21 four-  ::
+ *  letter words,  (2^21+3 "keystrokes"), is again 141909, with   ::
+ *  sigma = 295.  The mean is based on theory; sigma comes from   ::
+ *  extensive simulation.                                         ::
+ *
+ *  Note 2^21 = 2097152
+ *
+ *========================================================================
  */
 
 
 #include "dieharder.h"
 
-
-/*
- * The following are the definitions and parameters for runs, based on
- * Journal of Applied Statistics v30, Algorithm AS 157, 1981:
- *    The Runs-Up and Runs-Down Tests, by R. G. T. Grafton.
- * (and before that Knuth's The Art of Programming v. 2).
- */
-
-#define RUN_MAX 6
-/*
- * a_ij
- */
-static double a[6][6] = {
- { 4529.4,   9044.9,  13568.0,   18091.0,   22615.0,   27892.0},
- { 9044.9,  18097.0,  27139.0,   36187.0,   45234.0,   55789.0},
- {13568.0,  27139.0,  40721.0,   54281.0,   67852.0,   83685.0},
- {18091.0,  36187.0,  54281.0,   72414.0,   90470.0,  111580.0},
- {22615.0,  45234.0,  67852.0,   90470.0,  113262.0,  139476.0},
- {27892.0,  55789.0,  83685.0,  111580.0,  139476.0,  172860.0}
-};
-/*
- * b_i
- */
-static double b[6];
-
-double diehard_runs()
+double diehard_oqso()
 {
 
  double *pvalue,pks;
@@ -91,154 +50,175 @@ double diehard_runs()
   */
 
  /*
-  * Initialize b explicitly.  Might as well do it here.
+  * This test requires a fixed number of tsamples, alas.  Deviation
+  * not permitted, whether or not we are running a single test and
+  * trying to set -t whatever.
   */
- b[0] = 1.0/6.0;
- b[1] = 5.0/24.0;
- b[2] = 11.0/120.0;
- b[3] = 19.0/720.0;
- b[4] = 29.0/5040.0;
- b[5] = 1.0/840.0;
-
-
- /*
-  * If this is part of a sweep of tests, reset tsamples and
-  * resize rand_int.
-  */
- if(testnum < 0){
-   tempsamples = tsamples;
-   tsamples = 100000 ;  /* Minimal value for this test */
- }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
+ tempsamples = tsamples;
+ tsamples = 2097152;  /* Standard value from diehard */
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                Diehard \"runs\" test (modified).\n");
-   printf("# This tests the distribution of increasing and decreasing runs\n");
-   printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
-   printf("# or greater and -n 100000 or greater, it will compute a vector\n");
-   printf("# of p-values for up and down and verify that the proportion\n");
-   printf("# of these values less than 0.01 is consistent with a uniform\n");
-   printf("# distribution.\n");
-   printf("#==================================================================\n");
+   help_diehard_oqso();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# size of vector tested = %u (100000 or more suggested)\n",tsamples);
+   printf("# Number of rands required is around 2^28 for 100 samples.\n");
  }
 
  kspi = 0;  /* Always zero first */
- pks = sample((void *)diehard_runs_test);
- printf("p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov test\n",pks);
- printf("     on %u pvalues (up runs + down runs).\n",kspi);
+ pks = sample((void *)diehard_oqso_test);
+
+ /*
+  * Display histogram of ks p-values (optional)
+  */
+ if(hist_flag){
+   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
+ }
+ printf("# p = %8.6f for diehard_oqso test from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.01%% for diehard_oqso.\n",gsl_rng_name(rng));
  }
 
  /*
   * Put back tsamples
   */
- if(testnum < 0){
-   tsamples = tempsamples;
- }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
+ tsamples = tempsamples;
 
  return(pks);
 
 }
 
-void diehard_runs_test()
+void diehard_oqso_test()
 {
 
- int i,j,k,t,ns;
- unsigned int ucount,dcount,increased;
- int upruns[RUN_MAX],downruns[RUN_MAX];
- double uv,dv,up_pks,down_pks;
- double *uv_pvalue,*dv_pvalue;
+ uint i,j,k,l,t,boffset;
+ Xtest ptest;
+ char ****w;
 
  /*
-  * Fill vector of "random" integers with selected generator.
-  * Observe that this test does NOT not convert to floats but
-  * counts up down and down up on an integer compare.
+  * p = 141909, with sigma 290, FOR tsamples 2^21+1 2 letter words.
+  * These cannot be varied unless one figures out the actual
+  * expected "missing works" count as a function of sample size.  SO:
+  *
+  * ptest.x = number of "missing words" given 2^21+1 trials
+  * ptest.y = 141909
+  * ptest.sigma = 295
   */
+ ptest.y = 141909.0;
+ ptest.sigma = 290.0;
 
  /*
-  * Clear up and down run bins
+  * We now make tsamples measurements, as usual, to generate the
+  * missing statistic.  We proceed exactly as we did in opso, but
+  * with a 4d 32x32x32x32 matrix and 5 bit indices.  This should
+  * basically be strongly related to a Knuth hyperplane test in
+  * four dimensions.  Equally obviously there is a sequence of
+  * tests, all basically identical, that can be done here much
+  * as rgb_bitdist tries to do them.  I'll postpone thinking about
+  * this in detail until I'm done with diehard and some more of STS
+  * and maybe have implemented the REAL Knuth tests from the Art of
+  * Programming.
   */
- for(k=0;k<RUN_MAX;k++){
-   upruns[k] = 0;
-   downruns[k] = 0;
- }
 
- /*
-  * Now count up and down runs and increment the bins.  Note
-  * that each successive up counts as a run of one down, and
-  * each successive down counts as a run of one up.
-  */
- ucount = dcount = 1;
- if(verbose){
-   printf("j    rand    ucount  dcount\n");
- }
- rand_int[0] = gsl_rng_get(rng);
- for(t=1;t<tsamples;t++) {
-   rand_int[t] = gsl_rng_get(rng);
-   if(verbose){
-     printf("%d:  %10u   %u    %u\n",t,rand_int[t],ucount,dcount);
+ w = (char ****)malloc(32*sizeof(char ***));
+ for(i=0;i<32;i++){
+   w[i] = (char ***)malloc(32*sizeof(char **));
+   for(j=0;j<32;j++){
+     w[i][j] = (char **)malloc(32*sizeof(char *));
+     for(k=0;k<32;k++){
+       w[i][j][k] = (char *)malloc(32*sizeof(char));
+       /* Zero the column */
+       memset(w[i][j][k],0,32*sizeof(char));
+     }
    }
+ }
 
+ /*
+  * To minimize the number of rng calls, we use each j and k mod 32
+  * to determine the offset of the 10-bit long string (with
+  * periodic wraparound) to be used for the next iteration.  We
+  * therefore have to "seed" the process with a random l
+  */
+ l = gsl_rng_get(rng);
+ for(t=0;t<tsamples;t++){
    /*
-    * Did we increase?
+    * Get two "letters" (indices into w)
     */
-   if(rand_int[t] > rand_int[t-1]){
-     ucount++;
-     if(ucount > RUN_MAX) ucount = RUN_MAX;
-     downruns[dcount-1]++;
-     dcount = 1;
-   } else {
-     dcount++;
-     if(dcount > RUN_MAX) dcount = RUN_MAX;
-     upruns[ucount-1]++;
-     ucount = 1;
-   }
- }
- if(rand_int[size-1] > rand_int[0]){
-   ucount++;
-   if(ucount > RUN_MAX) ucount = RUN_MAX;
-   downruns[dcount-1]++;
-   dcount = 1;
- } else {
-   dcount++;
-   if(dcount > RUN_MAX) dcount = RUN_MAX;
-   upruns[ucount-1]++;
-   ucount = 1;
+   boffset = l%32;
+   i = gsl_rng_get(rng);
+   i = get_bit_ntuple(&i,1,5,boffset);
+   boffset = i%32;
+   j = gsl_rng_get(rng);
+   j = get_bit_ntuple(&j,1,5,boffset);
+   boffset = j%32;
+   k = gsl_rng_get(rng);
+   k = get_bit_ntuple(&k,1,5,boffset);
+   boffset = k%32;
+   l = gsl_rng_get(rng);
+   l = get_bit_ntuple(&l,1,5,boffset);
+   w[i][j][k][l]++;
  }
  /*
-  * This ends a single sample.
-  * Compute the test statistic for up and down runs.
+  * Now we count the holes, so to speak
   */
- uv=0.0;
- dv=0.0;
- if(verbose){
-   printf(" i      upruns    downruns\n");
- }
- for(i=0;i<RUN_MAX;i++) {
-   if(verbose){
-     printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
+ ptest.x = 0;
+ for(i=0;i<32;i++){
+   for(j=0;j<32;j++){
+     for(k=0;k<32;k++){
+       for(l=0;l<32;l++){
+         if(w[i][j][k][l] == 0){
+           ptest.x += 1.0;
+           /* printf("ptest.x = %f  Hole: w[%u][%u][%u][%u] = %u\n",ptest.x,i,j,k,l,w[i][j][k][l]); */
+	 }
+       }
+     }
    }
-   for(j=0;j<RUN_MAX;j++) {
-     uv += ((double)upruns[i]   - tsamples*b[i])*(upruns[j]   - tsamples*b[j])*a[i][j];
-     dv += ((double)downruns[i] - tsamples*b[i])*(downruns[j] - tsamples*b[j])*a[i][j];
+ }
+ if(verbose == D_DIEHARD_OQSO || verbose == D_ALL){
+   printf("%f %f %f\n",ptest.y,ptest.x,ptest.x-ptest.y);
+ }
+
+ Xtest_eval(&ptest);
+ ks_pvalue[kspi] = ptest.pvalue;
+
+ if(verbose == D_DIEHARD_OQSO || verbose == D_ALL){
+   printf("# diehard_craps(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
+ }
+
+ kspi++;
+
+ /*
+  * Don't forget to free w when done, in reverse order
+  */
+ for(i=0;i<32;i++){
+   for(j=0;j<32;j++){
+      for(k=0;k<32;k++){
+         free(w[i][j][k]);
+      }
+      free(w[i][j]);
    }
+   free(w[i]);
  }
- uv /= (double)tsamples;
- dv /= (double)tsamples;
- if(verbose){
-   printf("uv = %f   dv = %f\n",uv,dv);
- }
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
+ free(w);
 
 }
 
+void help_diehard_oqso()
+{
 
+ printf("\n\
+#==================================================================\n\
+#                Diehard \"OQSO\" test.\n\
+#  OQSO means Overlapping-Quadruples-Sparse-Occupancy.        \n\
+#  The test OQSO is similar, except that it considers 4-letter \n\
+#  words from an alphabet of 32 letters, each letter determined  \n\
+#  by a designated string of 5 consecutive bits from the test    \n\
+#  file, elements of which are assumed 32-bit random integers.   \n\
+#  The mean number of missing words in a sequence of 2^21 four-  \n\
+#  letter words,  (2^21+3 \"keystrokes\"), is again 141909, with   \n\
+#  sigma = 295.  The mean is based on theory; sigma comes from   \n\
+#  extensive simulation.                                         \n\
+# \n\
+#  Note 2^21 = 2097152\n\
+#==================================================================\n");
 
+}

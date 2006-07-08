@@ -56,6 +56,7 @@
    D_DIEHARD_CRAPS,
    D_DIEHARD_SQUEEZE,
    D_DIEHARD_OPSO,
+   D_DIEHARD_OQSO,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_RGB_TIMING,
@@ -92,6 +93,7 @@
    DIEHARD_CRAPS,
    DIEHARD_SQUEEZE,
    DIEHARD_OPSO,
+   DIEHARD_OQSO,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -199,6 +201,10 @@
  double diehard_opso();
  void diehard_opso_test();
  void help_diehard_opso();
+ /* diehard "qpso" test */
+ double diehard_oqso();
+ void diehard_oqso_test();
+ void help_diehard_oqso();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();

@@ -37,6 +37,7 @@ void work()
    diehard_craps();
    diehard_squeeze();
    diehard_opso();
+   diehard_oqso();
    rgb_persist();
    rgb_bitdist();
    sts_monobit();
@@ -85,6 +86,10 @@ void work()
      break;
    case DIEHARD_OPSO:
      diehard_opso();
+     exit(0);
+     break;
+   case DIEHARD_OQSO:
+     diehard_oqso();
      exit(0);
      break;
  }
