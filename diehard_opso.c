@@ -134,28 +134,36 @@ void diehard_opso_test()
    memset(w[i],0,1024*sizeof(char));
  }
 
+/*
  printf("w is allocated and zero'd\n");
  printf("About to generate %u samples\n",tsamples);
+ */
+ /*
+  * To minimize the number of rng calls, we use each j and k mod 32
+  * to determine the offset of the 10-bit long string (with
+  * periodic wraparound) to be used for the next iteration.  We
+  * therefore have to "seed" the process with a random k.
+  */
+ k = gsl_rng_get(rng);
  for(i=0;i<tsamples;i++){
    /*
     * Get two "letters" (indices into w)
     */
-   boffset = gsl_rng_uniform_int(rng,32);
+   boffset = k%32;
    /* printf("boffset = %d\n",boffset); */
    j = gsl_rng_get(rng);
    /* dumpbits(&j,32); */
    j = get_bit_ntuple(&j,1,10,boffset);
    /* dumpbits(&j,32); */
    /* printf("j = %d\n",j);*/
-   boffset = gsl_rng_uniform_int(rng,32);
+   boffset = j%32;
    /* printf("boffset = %d\n",boffset); */
    k = gsl_rng_get(rng);
    /* dumpbits(&k,32);*/
    k = get_bit_ntuple(&k,1,10,boffset);
    /* dumpbits(&k,32); */
    /* printf("k = %d\n",k); */
-   w[j][k] = 1;
-   printf("Setting w[%u][%u] = %u\n",j,k,w[j][k]);
+   w[j][k]++;
  }
  /*
   * Now we count the holes, so to speak
@@ -163,18 +171,29 @@ void diehard_opso_test()
  ptest.x = 0;
  for(j=0;j<1024;j++){
    for(k=0;k<1024;k++){
-     ptest.x += w[j][k]?0:1;
+     if(w[j][k] == 0){
+       ptest.x += 1.0;
+       /* printf("ptest.x = %f  Hole: w[%u][%u] = %u\n",ptest.x,j,k,w[j][k]); */
+     }
    }
+ }
+ if(verbose == D_DIEHARD_OPSO || verbose == D_ALL){
+   printf("%f %f %f\n",ptest.y,ptest.x,ptest.x-ptest.y);
  }
 
  Xtest_eval(&ptest);
  ks_pvalue[kspi] = ptest.pvalue;
 
- if(verbose == D_DIEHARD_CRAPS || verbose == D_ALL){
+ if(verbose == D_DIEHARD_OPSO || verbose == D_ALL){
    printf("# diehard_craps(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
 
  kspi++;
+
+ for(i=0;i<1024;i++){
+   free(w[i]);
+ }
+ free(w);
 
 }
 
