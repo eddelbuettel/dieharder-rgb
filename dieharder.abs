@@ -372,6 +372,7 @@ reasonable amount of time).
    -d 6 Diehard 6x8 Binary Rank test
    -d 7 Diehard Parking Lot test
    -d 8 Diehard Craps test
+   -d 9 Diehard Squeeze test
 
              RGB Tests
    -r 1 Bit Persist test

@@ -1,80 +1,41 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-*
-*/
+ * See copyright in copyright.h and the accompanying file COPYING
+ */
 
 /*
  *========================================================================
- * This is the Diehard RUNS test, rewritten from the description
- * in tests.txt on  * George Marsaglia's diehard site.
+ * This is the Diehard OPSO test, rewritten from the description
+ * in tests.txt on George Marsaglia's diehard site.
  *
- * * Rewriting means that I can standardize the interface to
+ * Rewriting means that I can standardize the interface to
  * gsl-encapsulated routines more easily.  It also makes this
  * my own code.  Finally, since the C versions Marsaglia provides
  * are the result of f2c running on Fortran sources, they are really
  * ugly code and the rewrite should be much more manageable.
  *
- * From tests.txt:
- * This is the RUNS test. It counts runs up, and runs down,in a sequence
- * of uniform [0,1) variables, obtained by floating the 32-bit integers
- * in the specified file. This example shows how runs are counted:
- *  .123, .357, .789, .425,. 224, .416, .95
- * contains an up-run of length 3, a down-run of length 2 and an up-run
- * of (at least) 2, depending on the next values.  The covariance matrices
- * for the runs-up and runs-down are well-known, leading to chisquare tests
- * for quadratic forms in the weak inverses of the covariance matrices.
- * Runs are counted for sequences of length 10,000.  This is done ten times,
- * then repeated.
+ * Here is the test description from diehard_tests.txt:
  *
- * I modify this the following ways. First, I let the sequence length be
- * the variable -n (vector length) instead of fixing it at 10,000.  This
- * lets one test sequences that are much longer (entirely possible with
- * a modern CPU even for a fairly slow RNG).  Second, I repeat this for
- * the variable -s (samples) times, default 100 and not just 10.  Third,
- * because RNG's often have "bad seeds" for which they misbehave, the
- * individual sequences can be optionally -i reseeded for each sample.
- * Because this CAN let bad behavior be averaged out to where
- * it isn't apparent for many samples with few bad seeds, we may need to
- * plot the actual distribution of p-values for this and other tests where
- * this option is used.  Fourth, it is silly to convert integers into floats
- * in order to do this test.  Up sequences in integers are down sequences in
- * floats once one divides by the largest integer available to the generator,
- * period. Integer arithmetic is much faster than float AND one skips the
- * very costly division associated with conversion.
- * *========================================================================
+ *         OPSO means Overlapping-Pairs-Sparse-Occupancy         ::
+ * The OPSO test considers 2-letter words from an alphabet of    ::
+ * 1024 letters.  Each letter is determined by a specified ten   ::
+ * bits from a 32-bit integer in the sequence to be tested. OPSO ::
+ * generates  2^21 (overlapping) 2-letter words  (from 2^21+1    ::
+ * "keystrokes")  and counts the number of missing words---that  ::
+ * is 2-letter words which do not appear in the entire sequence. ::
+ * That count should be very close to normally distributed with  ::
+ * mean 141,909, sigma 290. Thus (missingwrds-141909)/290 should ::
+ * be a standard normal variable. The OPSO test takes 32 bits at ::
+ * a time from the test file and uses a designated set of ten    ::
+ * consecutive bits. It then restarts the file for the next de-  ::
+ * signated 10 bits, and so on.                                  ::
+ *
+ *========================================================================
  */
 
 
 #include "dieharder.h"
 
-
-/*
- * The following are the definitions and parameters for runs, based on
- * Journal of Applied Statistics v30, Algorithm AS 157, 1981:
- *    The Runs-Up and Runs-Down Tests, by R. G. T. Grafton.
- * (and before that Knuth's The Art of Programming v. 2).
- */
-
-#define RUN_MAX 6
-/*
- * a_ij
- */
-static double a[6][6] = {
- { 4529.4,   9044.9,  13568.0,   18091.0,   22615.0,   27892.0},
- { 9044.9,  18097.0,  27139.0,   36187.0,   45234.0,   55789.0},
- {13568.0,  27139.0,  40721.0,   54281.0,   67852.0,   83685.0},
- {18091.0,  36187.0,  54281.0,   72414.0,   90470.0,  111580.0},
- {22615.0,  45234.0,  67852.0,   90470.0,  113262.0,  139476.0},
- {27892.0,  55789.0,  83685.0,  111580.0,  139476.0,  172860.0}
-};
-/*
- * b_i
- */
-static double b[6];
-
-double diehard_runs()
+double diehard_opso()
 {
 
  double *pvalue,pks;
@@ -91,154 +52,150 @@ double diehard_runs()
   */
 
  /*
-  * Initialize b explicitly.  Might as well do it here.
+  * This test requires a fixed number of tsamples, alas.  Deviation
+  * not permitted, whether or not we are running a single test and
+  * trying to set -t whatever.
   */
- b[0] = 1.0/6.0;
- b[1] = 5.0/24.0;
- b[2] = 11.0/120.0;
- b[3] = 19.0/720.0;
- b[4] = 29.0/5040.0;
- b[5] = 1.0/840.0;
-
-
- /*
-  * If this is part of a sweep of tests, reset tsamples and
-  * resize rand_int.
-  */
- if(testnum < 0){
-   tempsamples = tsamples;
-   tsamples = 100000 ;  /* Minimal value for this test */
- }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
+ tempsamples = tsamples;
+ tsamples = 2097153;  /* Standard value from diehard */
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                Diehard \"runs\" test (modified).\n");
-   printf("# This tests the distribution of increasing and decreasing runs\n");
-   printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
-   printf("# or greater and -n 100000 or greater, it will compute a vector\n");
-   printf("# of p-values for up and down and verify that the proportion\n");
-   printf("# of these values less than 0.01 is consistent with a uniform\n");
-   printf("# distribution.\n");
-   printf("#==================================================================\n");
+   help_diehard_opso();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# size of vector tested = %u (100000 or more suggested)\n",tsamples);
+   printf("# Number of rands required is around 2^23 for 100 samples.\n");
  }
 
  kspi = 0;  /* Always zero first */
- pks = sample((void *)diehard_runs_test);
- printf("p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov test\n",pks);
- printf("     on %u pvalues (up runs + down runs).\n",kspi);
+ pks = sample((void *)diehard_opso_test);
+
+ /*
+  * Display histogram of ks p-values (optional)
+  */
+ if(hist_flag){
+   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
+ }
+ printf("# p = %8.6f for diehard_opso test from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.01%% for diehard_opso.\n",gsl_rng_name(rng));
  }
 
  /*
   * Put back tsamples
   */
- if(testnum < 0){
-   tsamples = tempsamples;
- }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
+ tsamples = tempsamples;
 
  return(pks);
 
 }
 
-void diehard_runs_test()
+void diehard_opso_test()
 {
 
- int i,j,k,t,ns;
- unsigned int ucount,dcount,increased;
- int upruns[RUN_MAX],downruns[RUN_MAX];
- double uv,dv,up_pks,down_pks;
- double *uv_pvalue,*dv_pvalue;
+ uint i,j,k,boffset;
+ Xtest ptest;
+ char **w;
 
  /*
-  * Fill vector of "random" integers with selected generator.
-  * Observe that this test does NOT not convert to floats but
-  * counts up down and down up on an integer compare.
+  * p = 141909, with sigma 290, FOR tsamples 2^21+1 2 letter words.
+  * These cannot be varied unless one figures out the actual
+  * expected "missing works" count as a function of sample size.  SO:
+  *
+  * ptest.x = number of "missing words" given 2^21+1 trials
+  * ptest.y = 141909
+  * ptest.sigma = 290
   */
+ ptest.y = 141909.0;
+ ptest.sigma = 290.0;
 
  /*
-  * Clear up and down run bins
+  * We now make tsamples measurements, as usual, to generate the
+  * missing statistic.  The easiest way to proceed, I think, will
+  * be to generate a simple char matrix 1024x1024 in size and empty.
+  * Each pair of "letters" generated become indices, and a (char) 1
+  * is inserted there.  At the end we just loop the matrix and count
+  * the zeros.
+  *
+  * Of course doing it THIS way it is pretty obvious that we could,
+  * say, display the 2-color 1024x1024 bitmap this represented graphically.
+  * Missing words are just pixels that are still in the background color.
+  * Hmmm, sounds a whole lot like Knuth's test looking for hyperplanes
+  * in 2 dimensions, hmmm.  At the very least, any generator that produces
+  * hyperplanar banding at 2 dimensions should fail this test, but it is
+  * possible for it to find distributions that do NOT have banding but
+  * STILL fail the test, I suppose.  Projectively speaking, though,
+  * I have some fairly serious doubts about this, though.
   */
- for(k=0;k<RUN_MAX;k++){
-   upruns[k] = 0;
-   downruns[k] = 0;
+
+ w = (char **)malloc(1024*sizeof(char *));
+ for(i=0;i<1024;i++){
+   w[i] = (char *)malloc(1024*sizeof(char));
+   /* Zero the column */
+   memset(w[i],0,1024*sizeof(char));
  }
 
- /*
-  * Now count up and down runs and increment the bins.  Note
-  * that each successive up counts as a run of one down, and
-  * each successive down counts as a run of one up.
-  */
- ucount = dcount = 1;
- if(verbose){
-   printf("j    rand    ucount  dcount\n");
- }
- rand_int[0] = gsl_rng_get(rng);
- for(t=1;t<tsamples;t++) {
-   rand_int[t] = gsl_rng_get(rng);
-   if(verbose){
-     printf("%d:  %10u   %u    %u\n",t,rand_int[t],ucount,dcount);
-   }
-
+ printf("w is allocated and zero'd\n");
+ printf("About to generate %u samples\n",tsamples);
+ for(i=0;i<tsamples;i++){
    /*
-    * Did we increase?
+    * Get two "letters" (indices into w)
     */
-   if(rand_int[t] > rand_int[t-1]){
-     ucount++;
-     if(ucount > RUN_MAX) ucount = RUN_MAX;
-     downruns[dcount-1]++;
-     dcount = 1;
-   } else {
-     dcount++;
-     if(dcount > RUN_MAX) dcount = RUN_MAX;
-     upruns[ucount-1]++;
-     ucount = 1;
-   }
- }
- if(rand_int[size-1] > rand_int[0]){
-   ucount++;
-   if(ucount > RUN_MAX) ucount = RUN_MAX;
-   downruns[dcount-1]++;
-   dcount = 1;
- } else {
-   dcount++;
-   if(dcount > RUN_MAX) dcount = RUN_MAX;
-   upruns[ucount-1]++;
-   ucount = 1;
+   boffset = gsl_rng_uniform_int(rng,32);
+   /* printf("boffset = %d\n",boffset); */
+   j = gsl_rng_get(rng);
+   /* dumpbits(&j,32); */
+   j = get_bit_ntuple(&j,1,10,boffset);
+   /* dumpbits(&j,32); */
+   /* printf("j = %d\n",j);*/
+   boffset = gsl_rng_uniform_int(rng,32);
+   /* printf("boffset = %d\n",boffset); */
+   k = gsl_rng_get(rng);
+   /* dumpbits(&k,32);*/
+   k = get_bit_ntuple(&k,1,10,boffset);
+   /* dumpbits(&k,32); */
+   /* printf("k = %d\n",k); */
+   w[j][k] = 1;
+   printf("Setting w[%u][%u] = %u\n",j,k,w[j][k]);
  }
  /*
-  * This ends a single sample.
-  * Compute the test statistic for up and down runs.
+  * Now we count the holes, so to speak
   */
- uv=0.0;
- dv=0.0;
- if(verbose){
-   printf(" i      upruns    downruns\n");
- }
- for(i=0;i<RUN_MAX;i++) {
-   if(verbose){
-     printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
-   }
-   for(j=0;j<RUN_MAX;j++) {
-     uv += ((double)upruns[i]   - tsamples*b[i])*(upruns[j]   - tsamples*b[j])*a[i][j];
-     dv += ((double)downruns[i] - tsamples*b[i])*(downruns[j] - tsamples*b[j])*a[i][j];
+ ptest.x = 0;
+ for(j=0;j<1024;j++){
+   for(k=0;k<1024;k++){
+     ptest.x += w[j][k]?0:1;
    }
  }
- uv /= (double)tsamples;
- dv /= (double)tsamples;
- if(verbose){
-   printf("uv = %f   dv = %f\n",uv,dv);
+
+ Xtest_eval(&ptest);
+ ks_pvalue[kspi] = ptest.pvalue;
+
+ if(verbose == D_DIEHARD_CRAPS || verbose == D_ALL){
+   printf("# diehard_craps(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
+
+ kspi++;
 
 }
 
+void help_diehard_opso()
+{
 
+ printf("\n\
+#==================================================================\n\
+#                Diehard \"OPSO\" test.\n\
+# The OPSO test considers 2-letter words from an alphabet of    \n\
+# 1024 letters.  Each letter is determined by a specified ten   \n\
+# bits from a 32-bit integer in the sequence to be tested. OPSO \n\
+# generates  2^21 (overlapping) 2-letter words  (from 2^21+1    \n\
+# \"keystrokes\")  and counts the number of missing words---that  \n\
+# is 2-letter words which do not appear in the entire sequence. \n\
+# That count should be very close to normally distributed with  \n\
+# mean 141,909, sigma 290. Thus (missingwrds-141909)/290 should \n\
+# be a standard normal variable. The OPSO test takes 32 bits at \n\
+# a time from the test file and uses a designated set of ten    \n\
+# consecutive bits. It then restarts the file for the next de-  \n\
+# signated 10 bits, and so on.                                  \n\
+#==================================================================\n");
 
+}

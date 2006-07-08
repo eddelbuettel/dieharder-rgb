@@ -55,6 +55,7 @@
    D_DIEHARD_PARKING_LOT,
    D_DIEHARD_CRAPS,
    D_DIEHARD_SQUEEZE,
+   D_DIEHARD_OPSO,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_RGB_TIMING,
@@ -90,6 +91,7 @@
    DIEHARD_PARKING_LOT,
    DIEHARD_CRAPS,
    DIEHARD_SQUEEZE,
+   DIEHARD_OPSO,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -193,6 +195,10 @@
  double diehard_squeeze();
  void diehard_squeeze_test();
  void help_diehard_squeeze();
+ /* diehard "opso" test */
+ double diehard_opso();
+ void diehard_opso_test();
+ void help_diehard_opso();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();

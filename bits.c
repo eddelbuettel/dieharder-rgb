@@ -65,14 +65,20 @@ unsigned int get_bit_ntuple(unsigned int *bitstring,
   * value of length blen.
   */
  nmask = 1;
+ /* dumpbits(&nmask,32); */
  for(b=0;b<blen-1;b++) {
    nmask = nmask <<1;
    nmask++;
+   /* dumpbits(&nmask,32); */
  }
+ /* dumpbits(&nmask,32); */
  
  if(verbose == D_BITS || verbose == D_ALL){
-   printf("bslen = %u, blen = %u, boffset = %u\n",bslen,blen,boffset);
-   printf("nmask =                   ");
+   printf("# get_bit_ntuple(): bslen = %u, blen = %u, boffset = %u\n",bslen,blen,boffset);
+   printf("# get_bit_ntuple(): bitstring (uint) = %u\n",*bitstring);
+   printf("# get_bit_ntuple(): bitstring = ");
+   dumpbits(&bitstring[0],32);
+   printf("# get_bit_ntuple(): nmask     = ");
    dumpbits(&nmask,32);
  }
 
@@ -183,23 +189,27 @@ unsigned int get_bit_ntuple(unsigned int *bitstring,
 void dumpbits(unsigned int *data, unsigned int nbits)
 {
 
- int i,j;
- unsigned int mask;
+ uint i,j;
+ uint mask;
 
  if(nbits > 8*sizeof(unsigned int)) {
    nbits = 8*sizeof(unsigned int);
  }
  
  mask = (int)pow(2,nbits);
+ if(verbose){
+   printf("\nmask = %0x :",mask);
+ }
  for(i=0;i<nbits;i++){
-   if(mask & *data){
-     printf("1");
-   } else {
-     printf("0");
-   }
+   j = (mask & *data)?1:0;
+   printf("%1u",j);
    mask = mask >> 1;
+   if(verbose){
+     printf("\nmask = %0x = %u :",mask,mask);
+   }
  }
  printf("\n");
+
 }
 
 void cycle(unsigned int *data, unsigned int nbits)

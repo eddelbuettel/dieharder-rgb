@@ -36,6 +36,7 @@ void work()
    diehard_parking_lot();
    diehard_craps();
    diehard_squeeze();
+   diehard_opso();
    rgb_persist();
    rgb_bitdist();
    sts_monobit();
@@ -80,6 +81,10 @@ void work()
      break;
    case DIEHARD_SQUEEZE:
      diehard_squeeze();
+     exit(0);
+     break;
+   case DIEHARD_OPSO:
+     diehard_opso();
      exit(0);
      break;
  }

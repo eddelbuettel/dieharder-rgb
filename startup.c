@@ -38,14 +38,16 @@ they are needed to get a satisfactory result (such as completion in a\n\
 reasonable amount of time).\n\
 \n\
             Diehard Tests\n\
-   -d 1 Diehard Runs test\n\
-   -d 2 Diehard Birthdays test (-t 100, or less than 200) \n\
-   -d 3 Diehard Minimum Distance (2D Spheres) test\n\
-   -d 4 Diehard 3D Spheres (minimum distance) test\n\
-   -d 5 Diehard 32x32 Binary Rank test\n\
-   -d 6 Diehard 6x8 Binary Rank test\n\
-   -d 7 Diehard Parking Lot test\n\
-   -d 8 Diehard Craps test\n\
+   -d 1  Diehard Runs test\n\
+   -d 2  Diehard Birthdays test (-t 100, or less than 200) \n\
+   -d 3  Diehard Minimum Distance (2D Spheres) test\n\
+   -d 4  Diehard 3D Spheres (minimum distance) test\n\
+   -d 5  Diehard 32x32 Binary Rank test\n\
+   -d 6  Diehard 6x8 Binary Rank test\n\
+   -d 7  Diehard Parking Lot test\n\
+   -d 8  Diehard Craps test\n\
+   -d 9  Diehard Squeeze test\n\
+   -d 10 Diehard OPSO test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\
