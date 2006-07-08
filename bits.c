@@ -197,14 +197,14 @@ void dumpbits(unsigned int *data, unsigned int nbits)
  }
  
  mask = (int)pow(2,nbits);
- if(verbose){
+ if(verbose == -1){
    printf("\nmask = %0x :",mask);
  }
  for(i=0;i<nbits;i++){
    j = (mask & *data)?1:0;
    printf("%1u",j);
    mask = mask >> 1;
-   if(verbose){
+   if(verbose == -1){
      printf("\nmask = %0x = %u :",mask,mask);
    }
  }

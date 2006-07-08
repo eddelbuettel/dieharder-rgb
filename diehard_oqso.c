@@ -95,16 +95,16 @@ void diehard_oqso_test()
  char ****w;
 
  /*
-  * p = 141909, with sigma 290, FOR tsamples 2^21+1 2 letter words.
+  * p = 141909, with sigma 295, FOR tsamples 2^21 2 letter words.
   * These cannot be varied unless one figures out the actual
   * expected "missing works" count as a function of sample size.  SO:
   *
-  * ptest.x = number of "missing words" given 2^21+1 trials
+  * ptest.x = number of "missing words" given 2^21 trials
   * ptest.y = 141909
   * ptest.sigma = 295
   */
  ptest.y = 141909.0;
- ptest.sigma = 290.0;
+ ptest.sigma = 295.0;
 
  /*
   * We now make tsamples measurements, as usual, to generate the

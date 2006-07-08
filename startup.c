@@ -47,8 +47,10 @@ reasonable amount of time).\n\
    -d 7  Diehard Parking Lot test\n\
    -d 8  Diehard Craps test\n\
    -d 9  Diehard Squeeze test\n\
-   -d 10 Diehard OPSO test\n\
-   -d 11 Diehard OQSO test\n\
+   -d 10 Diehard Bitstream test\n\
+   -d 11 Diehard OPSO test\n\
+   -d 12 Diehard OQSO test\n\
+   -d 13 Diehard DNA test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\

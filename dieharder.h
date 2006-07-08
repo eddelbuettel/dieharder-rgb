@@ -55,8 +55,10 @@
    D_DIEHARD_PARKING_LOT,
    D_DIEHARD_CRAPS,
    D_DIEHARD_SQUEEZE,
+   D_DIEHARD_BITSTREAM,
    D_DIEHARD_OPSO,
    D_DIEHARD_OQSO,
+   D_DIEHARD_DNA,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_RGB_TIMING,
@@ -92,8 +94,10 @@
    DIEHARD_PARKING_LOT,
    DIEHARD_CRAPS,
    DIEHARD_SQUEEZE,
+   DIEHARD_BITSTREAM,
    DIEHARD_OPSO,
    DIEHARD_OQSO,
+   DIEHARD_DNA,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -197,14 +201,22 @@
  double diehard_squeeze();
  void diehard_squeeze_test();
  void help_diehard_squeeze();
+ /* diehard "bitstream" test */
+ double diehard_bitstream();
+ void diehard_bitstream_test();
+ void help_diehard_bitstream();
  /* diehard "opso" test */
  double diehard_opso();
  void diehard_opso_test();
  void help_diehard_opso();
- /* diehard "qpso" test */
+ /* diehard "oqso" test */
  double diehard_oqso();
  void diehard_oqso_test();
  void help_diehard_oqso();
+ /* diehard "dna" test */
+ double diehard_dna();
+ void diehard_dna_test();
+ void help_diehard_dna();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();

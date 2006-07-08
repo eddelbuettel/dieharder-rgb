@@ -36,8 +36,10 @@ void work()
    diehard_parking_lot();
    diehard_craps();
    diehard_squeeze();
+   diehard_bitstream();
    diehard_opso();
    diehard_oqso();
+   diehard_dna();
    rgb_persist();
    rgb_bitdist();
    sts_monobit();
@@ -84,12 +86,20 @@ void work()
      diehard_squeeze();
      exit(0);
      break;
+   case DIEHARD_BITSTREAM:
+     diehard_bitstream();
+     exit(0);
+     break;
    case DIEHARD_OPSO:
      diehard_opso();
      exit(0);
      break;
    case DIEHARD_OQSO:
      diehard_oqso();
+     exit(0);
+     break;
+   case DIEHARD_DNA:
+     diehard_dna();
      exit(0);
      break;
  }

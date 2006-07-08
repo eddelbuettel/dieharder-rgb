@@ -1,80 +1,80 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-*
-*/
+ * See copyright in copyright.h and the accompanying file COPYING
+ */
 
 /*
  *========================================================================
- * This is the Diehard RUNS test, rewritten from the description
- * in tests.txt on  * George Marsaglia's diehard site.
+ * This is the Diehard OPSO test, rewritten from the description
+ * in tests.txt on George Marsaglia's diehard site.
  *
- * * Rewriting means that I can standardize the interface to
+ * Rewriting means that I can standardize the interface to
  * gsl-encapsulated routines more easily.  It also makes this
  * my own code.  Finally, since the C versions Marsaglia provides
  * are the result of f2c running on Fortran sources, they are really
  * ugly code and the rewrite should be much more manageable.
  *
- * From tests.txt:
- * This is the RUNS test. It counts runs up, and runs down,in a sequence
- * of uniform [0,1) variables, obtained by floating the 32-bit integers
- * in the specified file. This example shows how runs are counted:
- *  .123, .357, .789, .425,. 224, .416, .95
- * contains an up-run of length 3, a down-run of length 2 and an up-run
- * of (at least) 2, depending on the next values.  The covariance matrices
- * for the runs-up and runs-down are well-known, leading to chisquare tests
- * for quadratic forms in the weak inverses of the covariance matrices.
- * Runs are counted for sequences of length 10,000.  This is done ten times,
- * then repeated.
+ * Here is the test description from diehard_tests.txt:
  *
- * I modify this the following ways. First, I let the sequence length be
- * the variable -n (vector length) instead of fixing it at 10,000.  This
- * lets one test sequences that are much longer (entirely possible with
- * a modern CPU even for a fairly slow RNG).  Second, I repeat this for
- * the variable -s (samples) times, default 100 and not just 10.  Third,
- * because RNG's often have "bad seeds" for which they misbehave, the
- * individual sequences can be optionally -i reseeded for each sample.
- * Because this CAN let bad behavior be averaged out to where
- * it isn't apparent for many samples with few bad seeds, we may need to
- * plot the actual distribution of p-values for this and other tests where
- * this option is used.  Fourth, it is silly to convert integers into floats
- * in order to do this test.  Up sequences in integers are down sequences in
- * floats once one divides by the largest integer available to the generator,
- * period. Integer arithmetic is much faster than float AND one skips the
- * very costly division associated with conversion.
- * *========================================================================
+ *                   THE BITSTREAM TEST                          ::
+ * The file under test is viewed as a stream of bits. Call them  ::
+ * b1,b2,... .  Consider an alphabet with two "letters", 0 and 1 ::
+ * and think of the stream of bits as a succession of 20-letter  ::
+ * "words", overlapping.  Thus the first word is b1b2...b20, the ::
+ * second is b2b3...b21, and so on.  The bitstream test counts   ::
+ * the number of missing 20-letter (20-bit) words in a string of ::
+ * 2^21 overlapping 20-letter words.  There are 2^20 possible 20 ::
+ * letter words.  For a truly random string of 2^21+19 bits, the ::
+ * number of missing words j should be (very close to) normally  ::
+ * distributed with mean 141,909 and sigma 428.  Thus            ::
+ *  (j-141909)/428 should be a standard normal variate (z score) ::
+ * that leads to a uniform [0,1) p value.  The test is repeated  ::
+ * twenty times.                                                 ::
+ *
+ *                         Comment
+ * The tests BITSTREAM, OPSO, OQSO and DNA are all closely related.
+ * They all measure global distribution properties of extended
+ * bit combinations in projections of varying dimension.  I
+ * believe that they are closely related to the Knuth tests that
+ * will code when diehard is finished that look for N-dimensional
+ * hyperplanes (known to be a problem with pretty much all
+ * linear congruential generators, for example).  I would LIKE to
+ * have a series of tests like this that is more systematic and
+ * not quite so creatively named to emphasize the relationship
+ * between the tests, and I suspect that either Knuth or a homebrew
+ * RGB test (like bitdist, but looking at projections of different
+ * dimension) would be the way to go here.  Note that this test is
+ * also closely related to rgb_bitdist, which measures (as much as
+ * possible) the uniformity of the distribution of ntuples of bits.
+ *
+ * However, ALL rng's fail rgb_bitdist long before they get to
+ * 20 bit strings -- the distributions of ntuples stop being random
+ * (uniform to the extent required by true randomness) by the time you
+ * hit six bit ntuples even with a good rng.  This is an area of
+ * future research, as a "proper" test procedure -- in my opinion --
+ * would a) determine test dependencies -- if test X is failed, then
+ * test Y will always be failed, for example (more generally, the
+ * covariance of test failure); b) determine a SYSTEMATIC series of
+ * tests that make specific, useful statements about where and how
+ * a failure occurs -- basically, tests that determine the MOMENT of
+ * the failures in a generalized sense in a suitable series.
+ *
+ * There may well yet remain specific "oddball" tests that are failed
+ * even when moment tests are passed -- in principle, of course, one
+ * could test EVERY known distribution that can be generated from
+ * uniform deviates and measure the extent to which the generated
+ * distribution differs from the ideal -- but I suspect that functional
+ * analysis applied to the underlying distributions ultimately connects
+ * most failures to an observed failure pattern in a moment study via
+ * projective covariance in functional expansion space.
+ *========================================================================
  */
 
 
 #include "dieharder.h"
 
+#define M 1048576
 
-/*
- * The following are the definitions and parameters for runs, based on
- * Journal of Applied Statistics v30, Algorithm AS 157, 1981:
- *    The Runs-Up and Runs-Down Tests, by R. G. T. Grafton.
- * (and before that Knuth's The Art of Programming v. 2).
- */
-
-#define RUN_MAX 6
-/*
- * a_ij
- */
-static double a[6][6] = {
- { 4529.4,   9044.9,  13568.0,   18091.0,   22615.0,   27892.0},
- { 9044.9,  18097.0,  27139.0,   36187.0,   45234.0,   55789.0},
- {13568.0,  27139.0,  40721.0,   54281.0,   67852.0,   83685.0},
- {18091.0,  36187.0,  54281.0,   72414.0,   90470.0,  111580.0},
- {22615.0,  45234.0,  67852.0,   90470.0,  113262.0,  139476.0},
- {27892.0,  55789.0,  83685.0,  111580.0,  139476.0,  172860.0}
-};
-/*
- * b_i
- */
-static double b[6];
-
-double diehard_runs()
+double diehard_bitstream()
 {
 
  double *pvalue,pks;
@@ -91,154 +91,152 @@ double diehard_runs()
   */
 
  /*
-  * Initialize b explicitly.  Might as well do it here.
+  * This test requires a fixed number of tsamples, alas.  Deviation
+  * not permitted, whether or not we are running a single test and
+  * trying to set -t whatever.
   */
- b[0] = 1.0/6.0;
- b[1] = 5.0/24.0;
- b[2] = 11.0/120.0;
- b[3] = 19.0/720.0;
- b[4] = 29.0/5040.0;
- b[5] = 1.0/840.0;
-
-
- /*
-  * If this is part of a sweep of tests, reset tsamples and
-  * resize rand_int.
-  */
- if(testnum < 0){
-   tempsamples = tsamples;
-   tsamples = 100000 ;  /* Minimal value for this test */
- }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
+ tempsamples = tsamples;
+ tsamples = 2097152;  /* Standard value from diehard */
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                Diehard \"runs\" test (modified).\n");
-   printf("# This tests the distribution of increasing and decreasing runs\n");
-   printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
-   printf("# or greater and -n 100000 or greater, it will compute a vector\n");
-   printf("# of p-values for up and down and verify that the proportion\n");
-   printf("# of these values less than 0.01 is consistent with a uniform\n");
-   printf("# distribution.\n");
-   printf("#==================================================================\n");
+   help_diehard_bitstream();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# size of vector tested = %u (100000 or more suggested)\n",tsamples);
+   printf("# Number of rands required is around 2^26 for 100 samples.\n");
  }
 
  kspi = 0;  /* Always zero first */
- pks = sample((void *)diehard_runs_test);
- printf("p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov test\n",pks);
- printf("     on %u pvalues (up runs + down runs).\n",kspi);
+ pks = sample((void *)diehard_bitstream_test);
+
+ /*
+  * Display histogram of ks p-values (optional)
+  */
+ if(hist_flag){
+   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
+ }
+ printf("# p = %8.6f for diehard_bitstream test from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.01%% for diehard_bitstream.\n",gsl_rng_name(rng));
  }
 
  /*
   * Put back tsamples
   */
- if(testnum < 0){
-   tsamples = tempsamples;
- }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
+ tsamples = tempsamples;
 
  return(pks);
 
 }
 
-void diehard_runs_test()
+void diehard_bitstream_test()
 {
 
- int i,j,k,t,ns;
- unsigned int ucount,dcount,increased;
- int upruns[RUN_MAX],downruns[RUN_MAX];
- double uv,dv,up_pks,down_pks;
- double *uv_pvalue,*dv_pvalue;
+ uint i,t,boffset;
+ Xtest ptest;
+ char *w;
 
  /*
-  * Fill vector of "random" integers with selected generator.
-  * Observe that this test does NOT not convert to floats but
-  * counts up down and down up on an integer compare.
+  * p = 141909, with sigma 428, for tsamples 2^21 20 bit ntuples.
+  * tsamples cannot be varied unless one figures out the actual
+  * expected "missing works" count as a function of sample size.  SO:
+  *
+  * ptest.x = number of "missing ntuples" given 2^21 trials
+  * ptest.y = 141909
+  * ptest.sigma = 428
   */
+ ptest.y = 141909.0;
+ ptest.sigma = 428.0;
 
  /*
-  * Clear up and down run bins
+  * We now make tsamples measurements, as usual, to generate the
+  * missing statistic.  The easiest way to proceed is to just increment
+  * a vector of length 2^20 using the generated ntuples as the indices
+  * of the slot being incremented.  Then we zip through the vector
+  * counting the remaining zeros.
   */
- for(k=0;k<RUN_MAX;k++){
-   upruns[k] = 0;
-   downruns[k] = 0;
- }
+
+ w = (char *)malloc(M*sizeof(char));
+ memset(w,0,M*sizeof(char));
+
+/*
+ printf("w is allocated and zero'd\n");
+ printf("About to generate %u samples\n",tsamples);
+ */
 
  /*
-  * Now count up and down runs and increment the bins.  Note
-  * that each successive up counts as a run of one down, and
-  * each successive down counts as a run of one up.
+  * To minimize the number of rng calls, we use each j and k mod 32
+  * to determine the offset of the 10-bit long string (with
+  * periodic wraparound) to be used for the next iteration.  We
+  * therefore have to "seed" the process with a random k.
   */
- ucount = dcount = 1;
- if(verbose){
-   printf("j    rand    ucount  dcount\n");
- }
- rand_int[0] = gsl_rng_get(rng);
- for(t=1;t<tsamples;t++) {
-   rand_int[t] = gsl_rng_get(rng);
-   if(verbose){
-     printf("%d:  %10u   %u    %u\n",t,rand_int[t],ucount,dcount);
-   }
-
+ i = gsl_rng_get(rng);
+ for(t=0;t<tsamples;t++){
    /*
-    * Did we increase?
+    * Get a 20-bit ntuple as an index into w.  Use each (presumed
+    * random) value to determine the uint offset for the next
+    * 20-bit window.
     */
-   if(rand_int[t] > rand_int[t-1]){
-     ucount++;
-     if(ucount > RUN_MAX) ucount = RUN_MAX;
-     downruns[dcount-1]++;
-     dcount = 1;
-   } else {
-     dcount++;
-     if(dcount > RUN_MAX) dcount = RUN_MAX;
-     upruns[ucount-1]++;
-     ucount = 1;
-   }
+   boffset = i%32;
+   i = gsl_rng_get(rng);
+   i = get_bit_ntuple(&i,1,20,boffset);
+   w[i]++;
  }
- if(rand_int[size-1] > rand_int[0]){
-   ucount++;
-   if(ucount > RUN_MAX) ucount = RUN_MAX;
-   downruns[dcount-1]++;
-   dcount = 1;
- } else {
-   dcount++;
-   if(dcount > RUN_MAX) dcount = RUN_MAX;
-   upruns[ucount-1]++;
-   ucount = 1;
- }
+
  /*
-  * This ends a single sample.
-  * Compute the test statistic for up and down runs.
+  * Now we count the holes, so to speak
   */
- uv=0.0;
- dv=0.0;
- if(verbose){
-   printf(" i      upruns    downruns\n");
- }
- for(i=0;i<RUN_MAX;i++) {
-   if(verbose){
-     printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
-   }
-   for(j=0;j<RUN_MAX;j++) {
-     uv += ((double)upruns[i]   - tsamples*b[i])*(upruns[j]   - tsamples*b[j])*a[i][j];
-     dv += ((double)downruns[i] - tsamples*b[i])*(downruns[j] - tsamples*b[j])*a[i][j];
+ ptest.x = 0;
+ for(i=0;i<M;i++){
+   if(w[i] == 0){
+     ptest.x++;
+     /* printf("ptest.x = %f  Hole: w[%u] = %u\n",ptest.x,i,w[i]); */
    }
  }
- uv /= (double)tsamples;
- dv /= (double)tsamples;
- if(verbose){
-   printf("uv = %f   dv = %f\n",uv,dv);
+ if(verbose == D_DIEHARD_BITSTREAM || verbose == D_ALL){
+   printf("%f %f %f\n",ptest.y,ptest.x,ptest.x-ptest.y);
  }
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
+
+ Xtest_eval(&ptest);
+ ks_pvalue[kspi] = ptest.pvalue;
+
+ if(verbose == D_DIEHARD_BITSTREAM || verbose == D_ALL){
+   printf("# diehard_bitstream(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
+ }
+
+ kspi++;
+
+ /*
+  * Don't forget to free or we'll leak.  Hate to have to wear
+  * depends...
+  */
+ free(w);
 
 }
 
+void help_diehard_bitstream()
+{
 
+ printf("\n\
+#==================================================================\n\
+#                Diehard \"BITSTREAM\" test.\n\
+# The file under test is viewed as a stream of bits. Call them  \n\
+# b1,b2,... .  Consider an alphabet with two \"letters\", 0 and 1 \n\
+# and think of the stream of bits as a succession of 20-letter  \n\
+# \"words\", overlapping.  Thus the first word is b1b2...b20, the \n\
+# second is b2b3...b21, and so on.  The bitstream test counts   \n\
+# the number of missing 20-letter (20-bit) words in a string of \n\
+# 2^21 overlapping 20-letter words.  There are 2^20 possible 20 \n\
+# letter words.  For a truly random string of 2^21+19 bits, the \n\
+# number of missing words j should be (very close to) normally  \n\
+# distributed with mean 141,909 and sigma 428.  Thus            \n\
+#  (j-141909)/428 should be a standard normal variate (z score) \n\
+# that leads to a uniform [0,1) p value.  The test is repeated  \n\
+# twenty times.                                                 \n\
+# \n\
+# Note that of course we do not \"restart file\", when using gsl \n\
+# generators, we just crank out the next random number. \n\
+# We also do not bother to overlap the words.  rands are cheap. \n\
+# Finally, we repeat the test (usually) more than twenty time.\n\
+#==================================================================\n");
 
+}
