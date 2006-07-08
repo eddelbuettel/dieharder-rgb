@@ -54,6 +54,7 @@
    D_DIEHARD_RANK_6x8,
    D_DIEHARD_PARKING_LOT,
    D_DIEHARD_CRAPS,
+   D_DIEHARD_SQUEEZE,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_RGB_TIMING,
@@ -88,6 +89,7 @@
    DIEHARD_RANK_6x8,
    DIEHARD_PARKING_LOT,
    DIEHARD_CRAPS,
+   DIEHARD_SQUEEZE,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -187,6 +189,10 @@
  double diehard_craps();
  void diehard_craps_test();
  void help_diehard_craps();
+ /* diehard "squeeze" test */
+ double diehard_squeeze();
+ void diehard_squeeze_test();
+ void help_diehard_squeeze();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();

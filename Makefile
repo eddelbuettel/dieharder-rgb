@@ -83,6 +83,7 @@ SOURCES = $(SOURCE)\
     diehard_rank_6x8.c \
     diehard_parking_lot.c \
     diehard_craps.c \
+    diehard_squeeze.c \
     rgb_bitdist.c \
     rgb_persist.c \
     rgb_timing.c \

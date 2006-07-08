@@ -112,7 +112,6 @@ void diehard_craps_test()
 
  uint i,j;
  uint point,throw,tries,wins;
- /* uint n2end[22];  /* use bins from 1-21 -- ignore bin 0 */
  double sum,p;
  Xtest ptest;
  Btest btest;

@@ -1,80 +1,53 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-*
-*/
+ * See copyright in copyright.h and the accompanying file COPYING
+ */
 
 /*
  *========================================================================
- * This is the Diehard RUNS test, rewritten from the description
- * in tests.txt on  * George Marsaglia's diehard site.
+ * This is the Diehard Squeeze test, rewritten from the description
+ * in tests.txt on George Marsaglia's diehard site.
  *
- * * Rewriting means that I can standardize the interface to
+ * Rewriting means that I can standardize the interface to
  * gsl-encapsulated routines more easily.  It also makes this
  * my own code.  Finally, since the C versions Marsaglia provides
  * are the result of f2c running on Fortran sources, they are really
  * ugly code and the rewrite should be much more manageable.
  *
- * From tests.txt:
- * This is the RUNS test. It counts runs up, and runs down,in a sequence
- * of uniform [0,1) variables, obtained by floating the 32-bit integers
- * in the specified file. This example shows how runs are counted:
- *  .123, .357, .789, .425,. 224, .416, .95
- * contains an up-run of length 3, a down-run of length 2 and an up-run
- * of (at least) 2, depending on the next values.  The covariance matrices
- * for the runs-up and runs-down are well-known, leading to chisquare tests
- * for quadratic forms in the weak inverses of the covariance matrices.
- * Runs are counted for sequences of length 10,000.  This is done ten times,
- * then repeated.
+ * Here is the test description from diehard_tests.txt:
  *
- * I modify this the following ways. First, I let the sequence length be
- * the variable -n (vector length) instead of fixing it at 10,000.  This
- * lets one test sequences that are much longer (entirely possible with
- * a modern CPU even for a fairly slow RNG).  Second, I repeat this for
- * the variable -s (samples) times, default 100 and not just 10.  Third,
- * because RNG's often have "bad seeds" for which they misbehave, the
- * individual sequences can be optionally -i reseeded for each sample.
- * Because this CAN let bad behavior be averaged out to where
- * it isn't apparent for many samples with few bad seeds, we may need to
- * plot the actual distribution of p-values for this and other tests where
- * this option is used.  Fourth, it is silly to convert integers into floats
- * in order to do this test.  Up sequences in integers are down sequences in
- * floats once one divides by the largest integer available to the generator,
- * period. Integer arithmetic is much faster than float AND one skips the
- * very costly division associated with conversion.
- * *========================================================================
+ *:      This is the SQEEZE test                                  ::
+ *:  Random integers are floated to get uniforms on [0,1). Start- ::
+ *:  ing with k=2^31=2147483647, the test finds j, the number of  ::
+ *:  iterations necessary to reduce k to 1, using the reduction   ::
+ *:  k=ceiling(k*U), with U provided by floating integers from    ::
+ *:  the file being tested.  Such j's are found 100,000 times,    ::
+ *:  then counts for the number of times j was <=6,7,...,47,>=48  ::
+ *:  are used to provide a chi-square test for cell frequencies.  ::
+ *
+ *                   Comment on SQUEEZE
+ * This adaptation fixes a number of screwy fortranisms in the
+ * original code.  First of all, the actual bin probabilities were
+ * presented scaled up by 10^6 (suitable for 10^6 trials).  Then
+ * they were multipled by 0.1.  Finally the test was run for 10^5
+ * trials.  Now we just input the vector of actual bin probabilities
+ * as doubles (naturally) and scale the probabilities by tsamples.
+ * This yields the expected bin frequencies much more simply and
+ * in a way that permits tsamples to be varied.
+ *
+ * Honestly, from my limited experimentation, this test is uselessly
+ * insensitive on at least the rng's in the GSL with a few notable
+ * exceptions (the worst of the worst).  It passes a number of
+ * generators with known, serious flaws though.  Not a lot of
+ * tests in diehard that seem to be good at picking out particular
+ * flaws in particular generators -- they're struggling to identify
+ * bad generators at all.  Sorry, but that's just the way I see it.
+ *========================================================================
  */
 
 
 #include "dieharder.h"
 
-
-/*
- * The following are the definitions and parameters for runs, based on
- * Journal of Applied Statistics v30, Algorithm AS 157, 1981:
- *    The Runs-Up and Runs-Down Tests, by R. G. T. Grafton.
- * (and before that Knuth's The Art of Programming v. 2).
- */
-
-#define RUN_MAX 6
-/*
- * a_ij
- */
-static double a[6][6] = {
- { 4529.4,   9044.9,  13568.0,   18091.0,   22615.0,   27892.0},
- { 9044.9,  18097.0,  27139.0,   36187.0,   45234.0,   55789.0},
- {13568.0,  27139.0,  40721.0,   54281.0,   67852.0,   83685.0},
- {18091.0,  36187.0,  54281.0,   72414.0,   90470.0,  111580.0},
- {22615.0,  45234.0,  67852.0,   90470.0,  113262.0,  139476.0},
- {27892.0,  55789.0,  83685.0,  111580.0,  139476.0,  172860.0}
-};
-/*
- * b_i
- */
-static double b[6];
-
-double diehard_runs()
+double diehard_squeeze()
 {
 
  double *pvalue,pks;
@@ -91,154 +64,150 @@ double diehard_runs()
   */
 
  /*
-  * Initialize b explicitly.  Might as well do it here.
+  * If this test is run by itself, we can ignore tsamples.  If it is
+  * part of a "standard run", we have to use specific values.  Either
+  * way, we have to adjust the sizes of e.g. the list of integers to
+  * be generated and sampled, and (re)allocate memory accordingly.
+  * Then at the bottom, we have to put it all back.
   */
- b[0] = 1.0/6.0;
- b[1] = 5.0/24.0;
- b[2] = 11.0/120.0;
- b[3] = 19.0/720.0;
- b[4] = 29.0/5040.0;
- b[5] = 1.0/840.0;
-
-
- /*
-  * If this is part of a sweep of tests, reset tsamples and
-  * resize rand_int.
-  */
- if(testnum < 0){
+ if(all == YES){
    tempsamples = tsamples;
-   tsamples = 100000 ;  /* Minimal value for this test */
+   tsamples = 100000;  /* Standard value from diehard */
  }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
  if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                Diehard \"runs\" test (modified).\n");
-   printf("# This tests the distribution of increasing and decreasing runs\n");
-   printf("# of integers.  If called with reasonable parameters e.g. -s 100\n");
-   printf("# or greater and -n 100000 or greater, it will compute a vector\n");
-   printf("# of p-values for up and down and verify that the proportion\n");
-   printf("# of these values less than 0.01 is consistent with a uniform\n");
-   printf("# distribution.\n");
-   printf("#==================================================================\n");
+   help_diehard_squeeze();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# size of vector tested = %u (100000 or more suggested)\n",tsamples);
+   printf("# Number of rands required is around 3x10^8 for 100 samples.\n");
  }
 
  kspi = 0;  /* Always zero first */
- pks = sample((void *)diehard_runs_test);
- printf("p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov test\n",pks);
- printf("     on %u pvalues (up runs + down runs).\n",kspi);
+ pks = sample((void *)diehard_squeeze_test);
+
+ /*
+  * Display histogram of ks p-values (optional)
+  */
+ if(hist_flag){
+   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
+ }
+ printf("# p = %8.6f for diehard_squeeze test (mean) from Kuiper Kolmogorov-Smirnov\n",pks);
+ printf("#     test on %u pvalues.\n",kspi);
  if(pks < 0.0001){
-   printf("Generator %s fails for diehard_runs.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILS at 0.01%% for diehard_squeeze.\n",gsl_rng_name(rng));
  }
 
  /*
   * Put back tsamples
   */
- if(testnum < 0){
+ if(all == YES){
    tsamples = tempsamples;
  }
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
  return(pks);
 
 }
 
-void diehard_runs_test()
+/*
+ * We have to memset to get this into Btest.  Alternatively we could
+ * futz a bit with the pointer, but memset is cheap so who cares.
+ */
+double sdata[]={
+0.00002103, 0.00005779, 0.00017554, 0.00046732, 0.00110783,
+0.00236784, 0.00460944, 0.00824116, 0.01362781, 0.02096849,
+0.03017612, 0.04080197, 0.05204203, 0.06283828, 0.07205637,
+0.07869451, 0.08206755, 0.08191935, 0.07844008, 0.07219412,
+0.06398679, 0.05470931, 0.04519852, 0.03613661, 0.02800028,
+0.02105567, 0.01538652, 0.01094020, 0.00757796, 0.00511956,
+0.00337726, 0.00217787, 0.00137439, 0.00084970, 0.00051518,
+0.00030666, 0.00017939, 0.00010324, 0.00005851, 0.00003269,
+0.00001803, 0.00000982, 0.00001121
+};
+void diehard_squeeze_test()
 {
 
- int i,j,k,t,ns;
- unsigned int ucount,dcount,increased;
- int upruns[RUN_MAX],downruns[RUN_MAX];
- double uv,dv,up_pks,down_pks;
- double *uv_pvalue,*dv_pvalue;
+ int i,j,k;
+ Btest btest;
 
  /*
-  * Fill vector of "random" integers with selected generator.
-  * Observe that this test does NOT not convert to floats but
-  * counts up down and down up on an integer compare.
+  * Squeeze counts the iterations required to reduce 2^31 to
+  * to 1 with k = ceiling(k*U) where U is a uniform deviate. It
+  * does this tsamples times, binning the result in a vector from
+  * <= 6 to >= 48 (where it has nontrivial support).  A chisq test
+  * on the vector (Btest) then yields a pvalue for the test run.
   */
 
  /*
-  * Clear up and down run bins
+  * Allocate memory for Btest struct vector (length 51) and initialize
+  * it with the expected values.
   */
- for(k=0;k<RUN_MAX;k++){
-   upruns[k] = 0;
-   downruns[k] = 0;
+ Btest_create(&btest,43,"diehard_squeeze",gsl_rng_name(rng));
+ /*
+  * Initialize the expected value vector
+  */
+ for(i=0;i<43;i++){
+   btest.y[i] = tsamples*sdata[i];
+ }
+ memset(btest.x,0,43*sizeof(double));
+
+ /*
+  * Test this.
+  */
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   for(i=0;i<43;i++){
+     printf("%d:   %f    %f\n",i+6,btest.x[i],btest.y[i]);
+   }
  }
 
  /*
-  * Now count up and down runs and increment the bins.  Note
-  * that each successive up counts as a run of one down, and
-  * each successive down counts as a run of one up.
+  * We now squeeze tsamples times.
   */
- ucount = dcount = 1;
- if(verbose){
-   printf("j    rand    ucount  dcount\n");
- }
- rand_int[0] = gsl_rng_get(rng);
- for(t=1;t<tsamples;t++) {
-   rand_int[t] = gsl_rng_get(rng);
-   if(verbose){
-     printf("%d:  %10u   %u    %u\n",t,rand_int[t],ucount,dcount);
+ for(i=0;i<tsamples;i++){
+   k = 2147483647;
+   j = 0;
+
+   /* printf("%d:   %d\n",j,k); */
+   while((k != 1) && (j < 48)){
+     k = ceil(k*gsl_rng_uniform(rng));
+     j++;
+     /* printf("%d:   %d\n",j,k); */
    }
 
    /*
-    * Did we increase?
+    * keep j in range 6-48 inclusive and increment the test/counting vector.
     */
-   if(rand_int[t] > rand_int[t-1]){
-     ucount++;
-     if(ucount > RUN_MAX) ucount = RUN_MAX;
-     downruns[dcount-1]++;
-     dcount = 1;
-   } else {
-     dcount++;
-     if(dcount > RUN_MAX) dcount = RUN_MAX;
-     upruns[ucount-1]++;
-     ucount = 1;
+   j = (j<6)?6:j;
+   btest.x[j-6]++;
+
+ }
+
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   for(i=0;i<43;i++){
+     printf("%d:   %f    %f\n",i+6,btest.x[i],btest.y[i]);
    }
  }
- if(rand_int[size-1] > rand_int[0]){
-   ucount++;
-   if(ucount > RUN_MAX) ucount = RUN_MAX;
-   downruns[dcount-1]++;
-   dcount = 1;
- } else {
-   dcount++;
-   if(dcount > RUN_MAX) dcount = RUN_MAX;
-   upruns[ucount-1]++;
-   ucount = 1;
+
+ Btest_eval(&btest);
+ ks_pvalue[kspi] = btest.pvalue;
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+   printf("# diehard_squeeze_freq(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
- /*
-  * This ends a single sample.
-  * Compute the test statistic for up and down runs.
-  */
- uv=0.0;
- dv=0.0;
- if(verbose){
-   printf(" i      upruns    downruns\n");
- }
- for(i=0;i<RUN_MAX;i++) {
-   if(verbose){
-     printf("%d:   %7d   %7d\n",i,upruns[i],downruns[i]);
-   }
-   for(j=0;j<RUN_MAX;j++) {
-     uv += ((double)upruns[i]   - tsamples*b[i])*(upruns[j]   - tsamples*b[j])*a[i][j];
-     dv += ((double)downruns[i] - tsamples*b[i])*(downruns[j] - tsamples*b[j])*a[i][j];
-   }
- }
- uv /= (double)tsamples;
- dv /= (double)tsamples;
- if(verbose){
-   printf("uv = %f   dv = %f\n",uv,dv);
- }
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
+ kspi++;
 
 }
 
+void help_diehard_squeeze()
+{
 
+ printf("\n\
+#==================================================================\n\
+#                Diehard \"squeeze\" test (modified).\n\
+#  Random integers are floated to get uniforms on [0,1). Start- \n\
+#  ing with k=2^31=2147483647, the test finds j, the number of  \n\
+#  iterations necessary to reduce k to 1, using the reduction   \n\
+#  k=ceiling(k*U), with U provided by floating integers from    \n\
+#  the file being tested.  Such j's are found 100,000 times,    \n\
+#  then counts for the number of times j was <=6,7,...,47,>=48  \n\
+#  are used to provide a chi-square test for cell frequencies.  \n\
+#==================================================================\n");
 
+}
