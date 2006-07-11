@@ -131,14 +131,20 @@ double diehard_bitstream()
 void diehard_bitstream_test()
 {
 
- uint i,t,boffset;
+ uint i,j,t,boffset;
  Xtest ptest;
  char *w;
 
  /*
-  * p = 141909, with sigma 428, for tsamples 2^21 20 bit ntuples.
-  * tsamples cannot be varied unless one figures out the actual
-  * expected "missing works" count as a function of sample size.  SO:
+  * p = 141909, with sigma 428, for tsamples = 2^21 20 bit ntuples.
+  * a.k.a. the number of 20 bit integers missing from 2^21 random
+  * samples drawn from this field.  At some point, I should be able
+  * to figure out the expected value for missing integers as a rigorous
+  * function of the size of the field sampled and number of samples drawn
+  * and hence make this test capable of being run with variable sample
+  * sizes, but at the moment I cannot do this and so tsamples cannot be
+  * varied.  Hence we work with diehard's values and hope that they are
+  * correct.
   *
   * ptest.x = number of "missing ntuples" given 2^21 trials
   * ptest.y = 141909
@@ -153,6 +159,30 @@ void diehard_bitstream_test()
   * a vector of length 2^20 using the generated ntuples as the indices
   * of the slot being incremented.  Then we zip through the vector
   * counting the remaining zeros.
+  *
+  * The validity of this test SHOULDN'T depend strongly on whether or
+  * not the bit strings sampled are "overlapping" (something Marsaglia
+  * did frequently I think because his supply of random numbers was so
+  * limited compared to the size of the spaces he was sampling).  I
+  * therefore implemented it without overlap -- every 20 bit string sampled
+  * is truly independent of the rest.  Overlap DOES make me nervous, as
+  * it is effectively a left/right shift operation on the bit string plus
+  * the addition of a single random bit.  That is, it samples points as
+  * 2*previous_point + random_bit, in principle throughout the entire
+  * string.  This makes me doubt that the "independent samples" requirement for
+  * sampling a distribution has been satisfied by Marsaglia's implementation,
+  * so that the sample size is actually smaller than he believes it to be.
+  * To put it another way, although the generator itself may well be producing
+  * random bitstrings, the overlapping bitstrings sampled by the test
+  * obviously have significant bit-level correlations by construction!
+  *
+  * In any event, an interesting consequence of implementing it with
+  * completely disjoint 20 bit integers drawn from the GSL generators is
+  * that NONE OF THEM PASS THIS TEST any more, at least on 100 trials.
+  * I am very, very tempted to see if re-implementing it (with a #define
+  * flag I can toggle at compile time so as not to lose the current
+  * implementation) as OVERLAPPING causes the "good" GSL generators to
+  * pass all of a sudden.  That would be worth publishing right there.
   */
 
  w = (char *)malloc(M*sizeof(char));
@@ -169,17 +199,36 @@ void diehard_bitstream_test()
   * periodic wraparound) to be used for the next iteration.  We
   * therefore have to "seed" the process with a random k.
   */
+#define OVERLAP 1
  i = gsl_rng_get(rng);
  for(t=0;t<tsamples;t++){
-   /*
-    * Get a 20-bit ntuple as an index into w.  Use each (presumed
-    * random) value to determine the uint offset for the next
-    * 20-bit window.
-    */
-   boffset = i%32;
-   i = gsl_rng_get(rng);
-   i = get_bit_ntuple(&i,1,20,boffset);
-   w[i]++;
+   if(OVERLAP){
+     /*
+      * Let's do this the cheap/easy way first, sliding a 20 bit
+      * window along each int for the 32 possible starting
+      * positions a la birthdays, before trying to slide it all
+      * the way down the whole random bitstring implicit in a
+      * long sequence of random ints.  That way we can exit
+      * the tsamples loop at tsamples = 2^15...
+      */
+     if(tsamples%32 == 0) {
+       i = gsl_rng_get(rng);
+       boffset = 0;
+     }
+     j = get_bit_ntuple(&i,1,20,boffset);
+     w[j]++;
+     boffset++;
+   } else {
+     /*
+      * Get a 20-bit ntuple as an index into w.  Use each (presumed
+      * random) value to determine the uint offset for the next
+      * 20-bit window.
+      */
+     boffset = i%32;
+     i = gsl_rng_get(rng);
+     i = get_bit_ntuple(&i,1,20,boffset);
+     w[i]++;
+   }
  }
 
  /*
