@@ -497,3 +497,37 @@ I'd be interested to see if this test deserves to live, in the long run.
 I rather suspect that Knuth tests in variable dimensions will yield a
 much more systematic view of RNG failure, just as rgb_bitdist does
 compared to e.g. runs tests.
+
+==================================================================
+07/11/06
+
+I've just finished testing Marsaglia's bitstream test, and it is (like
+rgb_bitdist) a test that nothing survives.  In fact, it is a dead
+certainty that rgb_bitdist is a better version of the same basic test,
+and that generators that fail rgb_bitdist at (say) 6 bits are going to
+fail Marsaglia's less sensitive 20-bit test.  What his test does that
+bitstream doesn't is use a single relatively coarse grained test
+statistic -- the expected number of missing 20 bit numbers out of 2
+million trials -- instead of doing what rgb_bitdist does, which is
+do a chisq test on the fractional occupancy of the entire VECTOR of 20
+bit numbers.
+
+Research question:  Which is more sensitive AT 20 bits?  It seems to me
+that the chisq vector test is clearly superior as it would catch many
+possible "bad" distributions that conserved the mean number of missing
+numbers at this sample size (however unlikely such special deviations
+might be in practice) but then there is the question of sensitivity
+given a fixed sample size.  SO FAR, however, rgb_bitdist continues to
+be the premier test for revealing failure, with nothing getting out
+alive past 6 bits, ASSUMING that I'm computing the vector chisq and
+p-value per run correctly and not just revealing that I'm using the
+wrong form as the number of bits goes up.
+
+Oh, and nothing survives diehard_bitdist EITHER, at least when one
+cranks the test up past Marsaglia's wimply 20 iterations to (say) 200.
+At that point the non-uniformity of the p-distribution is absolutely
+apparent -- it even has structure.  That is, some seeds lead to biased
+results that are TOO CLOSE to the mean value and not properly
+distributed... an interesting observation all by itself.
+
+   rgb

@@ -102,6 +102,11 @@ double diehard_bitstream()
    help_diehard_bitstream();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
    printf("# Number of rands required is around 2^26 for 100 samples.\n");
+   if(overlap){
+     printf("# Using overlapping samples.\n");
+   } else {
+     printf("# Using non-overlapping samples (default).\n");
+   }
  }
 
  kspi = 0;  /* Always zero first */
@@ -199,10 +204,9 @@ void diehard_bitstream_test()
   * periodic wraparound) to be used for the next iteration.  We
   * therefore have to "seed" the process with a random k.
   */
-#define OVERLAP 1
  i = gsl_rng_get(rng);
  for(t=0;t<tsamples;t++){
-   if(OVERLAP){
+   if(overlap){
      /*
       * Let's do this the cheap/easy way first, sliding a 20 bit
       * window along each int for the 32 possible starting

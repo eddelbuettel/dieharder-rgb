@@ -106,7 +106,7 @@ Usage:\n\
   dieharder [-a] [-b bits] [-d diehard test number] [-f filename]\n\
            [-g generator number] [-h] [-i iterations] [-l] \n\
            [-n ntuple] [-p number of p samples] [-q] [-o filename] \n\
-           [-r rgb test number] [-s sts test number] \n\
+           [-O] [-r rgb test number] [-s sts test number] \n\
 	   [-t number of test samples] [-u user test number] \n\
 	   [-v verbose flag] [-x xvalue] [-y yvalue] [-z zvalue] \n\
 \n\
@@ -126,6 +126,7 @@ Usage:\n\
   -n ntuple - set ntuple length for tests on short bit strings that permit\n\
      the length to be varied (e.g. rgb bitdist).\n\
   -o filename - output -t count random numbers to file.\n\
+  -O force the usage of overlapping samples in certain diehard tests.\n\
   -p count - sets the number of p-value samples per test (default 100).\n\
   -q selects \"quiet\" operation: results only are printed on a single line\n\
      (where applicable).  This is a way of getting a very compact report.\n\
