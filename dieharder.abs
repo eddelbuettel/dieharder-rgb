@@ -377,6 +377,8 @@ reasonable amount of time).
    -d 11 Diehard OPSO test
    -d 12 Diehard OQSO test
    -d 13 Diehard DNA test
+   -d 14 Diehard Count the 1's (stream) test
+   -d 15 Diehard Count the 1's (byte) test
 
              RGB Tests
    -r 1 Bit Persist test

@@ -60,6 +60,7 @@
    D_DIEHARD_OQSO,
    D_DIEHARD_DNA,
    D_DIEHARD_COUNT_1S_STREAM,
+   D_DIEHARD_COUNT_1S_BYTE,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_RGB_TIMING,
@@ -100,6 +101,7 @@
    DIEHARD_OQSO,
    DIEHARD_DNA,
    DIEHARD_COUNT_1S_STREAM,
+   DIEHARD_COUNT_1S_BYTE,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -223,6 +225,10 @@
  double diehard_count_1s_stream();
  void diehard_count_1s_stream_test();
  void help_diehard_count_1s_stream();
+ /* diehard "count_1s_byte" test */
+ double diehard_count_1s_byte();
+ void diehard_count_1s_byte_test();
+ void help_diehard_count_1s_byte();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();

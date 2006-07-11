@@ -34,7 +34,7 @@ SVNTIME = $(DIR:=.svn.time)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=0
-VERSION_MINOR=6.19
+VERSION_MINOR=6.20
 RELEASE=1
 
 #========================================================================
@@ -89,6 +89,7 @@ SOURCES = $(SOURCE)\
     diehard_oqso.c \
     diehard_dna.c \
     diehard_count_1s_stream.c \
+    diehard_count_1s_byte.c \
     rgb_bitdist.c \
     rgb_persist.c \
     rgb_timing.c \

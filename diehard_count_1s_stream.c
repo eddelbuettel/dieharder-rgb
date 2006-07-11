@@ -182,7 +182,7 @@ double diehard_count_1s_stream()
  }
  */
 
-char b5[] = {
+char b5s[] = {
 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 2,
 0, 0, 0, 1, 0, 1, 1, 2, 0, 1, 1, 2, 1, 2, 2, 3,
 0, 0, 0, 1, 0, 1, 1, 2, 0, 1, 1, 2, 1, 2, 2, 3,
@@ -209,7 +209,7 @@ const double mu=2500, std=70.7106781;
  * Vector of probabilities for each integer.
  * 37.0/256.0,56.0/256.0,70.0/256.0,56.0/256.0,37.0/256.0
  */
-const double p[]={
+const double ps[]={
 0.144531250,
 0.218750000,
 0.273437500,
@@ -249,7 +249,7 @@ void diehard_count_1s_stream_test()
   */
  if(verbose == -1){
    for(i=0;i<256;i++){
-     printf("%u, ",b5[i]);
+     printf("%u, ",b5s[i]);
      /* dumpbits(&i,8); */
      if((i+1)%16 == 0){
        printf("\n");
@@ -286,7 +286,7 @@ void diehard_count_1s_stream_test()
      /*
       * multiply by the probability of getting this letter
       */
-     btest4.y[i] *= p[letter];
+     btest4.y[i] *= ps[letter];
      /*
       * Right shift j to get next digit.
       */
@@ -313,7 +313,7 @@ void diehard_count_1s_stream_test()
      /*
       * multiply by the probability of getting this letter
       */
-     btest5.y[i] *= p[letter];
+     btest5.y[i] *= ps[letter];
      /*
       * Right shift j to get next digit.
       */
@@ -333,30 +333,30 @@ void diehard_count_1s_stream_test()
    }
    /* 1st byte */
    j = get_bit_ntuple(&i,1,8,0);
-   index5 = b5[j];
+   index5 = b5s[j];
    if(verbose == D_DIEHARD_COUNT_1S_STREAM || verbose == D_ALL){
-     printf("b5[%u] = %u, index5 = %u\n",j,b5[j],index5);
+     printf("b5s[%u] = %u, index5 = %u\n",j,b5s[j],index5);
      dumpbits(&j,8);
    }
    /* 2nd byte */
    j = get_bit_ntuple(&i,1,8,8);
-   index5 = LSHIFT5(index5,b5[j]);
+   index5 = LSHIFT5(index5,b5s[j]);
    if(verbose == D_DIEHARD_COUNT_1S_STREAM || verbose == D_ALL){
-     printf("b5[%u] = %u, index5 = %u\n",j,b5[j],index5);
+     printf("b5s[%u] = %u, index5 = %u\n",j,b5s[j],index5);
      dumpbits(&j,8);
    }
    /* 3rd byte */
    j = get_bit_ntuple(&i,1,8,16);
-   index5 = LSHIFT5(index5,b5[j]);
+   index5 = LSHIFT5(index5,b5s[j]);
    if(verbose == D_DIEHARD_COUNT_1S_STREAM || verbose == D_ALL){
-     printf("b5[%u] = %u, index5 = %u\n",j,b5[j],index5);
+     printf("b5s[%u] = %u, index5 = %u\n",j,b5s[j],index5);
      dumpbits(&j,8);
    }
    /* 4th byte */
    j = get_bit_ntuple(&i,1,8,24);
-   index5 = LSHIFT5(index5,b5[j]);
+   index5 = LSHIFT5(index5,b5s[j]);
    if(verbose == D_DIEHARD_COUNT_1S_STREAM || verbose == D_ALL){
-     printf("b5[%u] = %u, index5 = %u\n",j,b5[j],index5);
+     printf("b5s[%u] = %u, index5 = %u\n",j,b5s[j],index5);
      dumpbits(&j,8);
    }
  }
@@ -392,7 +392,7 @@ void diehard_count_1s_stream_test()
       * get next byte from the last rand we generated.
       */
      j = get_bit_ntuple(&i,1,8,boffset);
-     index5 = LSHIFT5(index5,b5[j]);
+     index5 = LSHIFT5(index5,b5s[j]);
      /*
       * I THINK that this basically throws away the sixth digit in the
       * left-shifted base 5 value, keeping the value of the 5-digit base 5
@@ -400,7 +400,7 @@ void diehard_count_1s_stream_test()
       */
      index5 = index5%3125;
      if(verbose == D_DIEHARD_COUNT_1S_STREAM || verbose == D_ALL){
-       printf("b5[%u] = %u, index5 = %u\n",j,b5[j],index5);
+       printf("b5s[%u] = %u, index5 = %u\n",j,b5s[j],index5);
        dumpbits(&j,8);
      }
      boffset+=8;
@@ -424,9 +424,9 @@ void diehard_count_1s_stream_test()
         * get next byte from the last rand we generated.
         */
        j = get_bit_ntuple(&i,1,8,boffset);
-       index5 = LSHIFT5(index5,b5[j]);
+       index5 = LSHIFT5(index5,b5s[j]);
        if(verbose == D_DIEHARD_COUNT_1S_STREAM || verbose == D_ALL){
-         printf("b5[%u] = %u, index5 = %u\n",j,b5[j],index5);
+         printf("b5s[%u] = %u, index5 = %u\n",j,b5s[j],index5);
          dumpbits(&j,8);
        }
        boffset+=8;
