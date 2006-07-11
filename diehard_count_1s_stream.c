@@ -31,6 +31,44 @@
  * the covariance matrix of the cell counts provides a chisquare ::
  * test::  Q5-Q4, the difference of the naive Pearson sums of    ::
  * (OBS-EXP)^2/EXP on counts for 5- and 4-letter cell counts.    ::
+ *
+ *                       Comment
+ *
+ * For the less statistically trained amongst us, the translation
+ * of the above is:
+ *  Generate a string of base-5 digits derived as described from
+ * random bytes (where we by default generate NON-overlapping bytes
+ * but overlapping ones can be selected by setting the overlap flag
+ * on the command line).
+ *  Turn four and five digit base 5 numbers (created from these digits)
+ * into indices and incrementally count the frequency of occurrence of
+ * each index.
+ *  Compute the expected value of these counts given tsamples samples,
+ * and thereby (from the vector of actual vs expected counts) generate
+ * a chisq for 4 and 5 digit numbers separately.  These chisq's are
+ * expected, for a large number of trials, to be equal to the number of
+ * degrees of freedom of the vectors, (5^5 - 1) or (5^4 - 1).  Generate
+ * the mean DIFFERENCE = 2500 as the expected value of the difference
+ * chisq_5 - chisq_4 and compute a pvalue based on this expected value and
+ * the associated standard deviation sqrt(2*2500).
+ *
+ * This test is written so overlap can be flag-controlled and so that
+ * tsamples can be freely varied compared to diehard's presumed 256,000.
+ * As usual, it also runs at 100 times and not 10 to generate the final
+ * KS pvalue for the test.
+ *
+ * One can easily prove that this test will fail whenever rgb_bitdist
+ * fails at 40 bits and pass when rgb_bitdist passes, as rgb_bitdist
+ * tests the much more stringent requirement that the actual underlying
+ * 40 bit strings are correctly distributed not just with respect to
+ * the morphed number of 1 bits but with respect to the actual underlying
+ * bit patterns.  It is, however, vastly less sensitive -- rgb_bitdist
+ * already FAILS at six bit strings for every generator thus far tested,
+ * meaning that two OCTAL digits WITHOUT any transformations or bit counts
+ * are already incorrectly distributed.  It is then perfectly obvious that
+ * all bitstrings with higher numbers of bits will be incorrectly
+ * distributed as well (including 40 bit strings), but count_the_1s is
+ * distressingly insensitive to this embedded but invisible failure.
  *========================================================================
  */
 

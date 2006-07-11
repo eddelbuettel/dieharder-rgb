@@ -531,3 +531,68 @@ results that are TOO CLOSE to the mean value and not properly
 distributed... an interesting observation all by itself.
 
    rgb
+
+==================================================================
+07/11/06 later that day...
+
+diehard_count_1s_stream() now WORKS!  What a PITA!  And (I suspect) how
+unnecessary all the complexity!  This test (as it turns out) computes
+chisq on what amounts to a strangely remapped rgb_bitdist test
+(precisely!) on four and five digit base 5 integers obtained by
+remapping bytes based on the number of 1's therein.
+
+That is, 256 possibilities are reduced to 5, each with a
+trivial-to-compute frequency/probability, the base 5 integer is left
+shifted (base 5!) and added to the next one to cumulate 4 or 5 digit
+numbers, those numbers are then counted, and the counts compared to the
+EXPECTED counts given the number of samples and turned into chisq (one
+each, for 4 and for 5 digit numbers).  Sigh.
+
+OK then, we COULD just print the p-value of those chisq's -- an
+absolutely straightforward process.  Alternatively, we could do what
+Marsaglia does -- compute the DIFFERENCE of the chisq's themselves,
+which of course are supposedly distributed around the number of degrees
+of freedom of each one separately, that is 3125 - 625 = 2500!  This is
+the mean value of the difference, with stddev = sqrt(2*2500).  This
+final result is turned into a p-value.
+
+This of course is wierd and wrong in so many ways.  For one, it is
+entirely possible for chisq_4 and chisq_5 to differ systematically from
+their expected values, and it is perfectly possible and likely that
+those deviations would occur in the same direction -- e.g. down -- so
+that the 4 byte and 5 byte streams BOTH have fewer degrees of freedom
+than expected.  Of course in this case part of the individual deviations
+CANCEL and is not visible in the final p-value!  
+
+Honestly, I can think of pretty much "no" reasonable ways that this
+final pvalue can fail where any/all of the p-values for the 4 or 5 (or 2
+or 3 or 1 or 17) digit distributions would not also fail, but I can (and
+just did) think of a way that the final p-value might MARGINALLY pass
+while the individual p-values fail.
+
+Although the general approach is a good one, what is clearly needed is a
+new test -- one that extends rgb_bitdist to multidigit strings of smaller
+base.  For example, right now rgb_bitdist tests the FREQUENCY of the
+occurrence of all 5 digit strings but not all 5 digit strings taken two
+at a time (32 x 32 = 1K possbilities).  Of course one REASON that I
+don't do that is that I >>already<< do e.g. 10 bit strings -- the DIRECT
+frequency distribution of those 1K possibilities, which obviously
+samples all the 5 bit combos taken two at a time!.  And besides, every
+rng I have tested fails at the level of what amounts to two digit octal
+numbers -- six bit strings.  So I'm cynical about this.
+
+I also don't think that this really counts 1's.  How is this one iota
+different from simply evaluating the distribution of bytes (8 bit
+randoms)?  If the complete distribution of 8 bit bytes (rgb_bitdist at 8
+bits) is random, ALL DERIVED DISTRIBUTIONS are random, with the only
+catchy part being temporal/sequential correlations that might be
+revealed from taking the strings four or five bytes at a time (at the
+expense of compressing the information tremendously).
+
+Once again, this test seems reduceable to but not as sensitive as
+rgb_bitdist at a given level, unfortunately a level far beyond where all
+known rng's fail anyway.  It is a MEASURE of the lack of sensitivity
+that this does does NOT fail for many of those rng's where rgb_bitdist
+does...
+
+   rgb
