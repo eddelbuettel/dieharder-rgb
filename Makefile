@@ -33,8 +33,8 @@ SVNTIME = $(DIR:=.svn.time)
 # used to set variables in an accompanying spec file (see template in
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
-VERSION_MAJOR=0
-VERSION_MINOR=6.20
+VERSION_MAJOR=1
+VERSION_MINOR=6.21
 RELEASE=1
 
 #========================================================================
@@ -90,6 +90,7 @@ SOURCES = $(SOURCE)\
     diehard_dna.c \
     diehard_count_1s_stream.c \
     diehard_count_1s_byte.c \
+    diehard_operm5.c \
     rgb_bitdist.c \
     rgb_persist.c \
     rgb_timing.c \

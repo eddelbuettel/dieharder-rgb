@@ -53,6 +53,7 @@ reasonable amount of time).\n\
    -d 13 Diehard DNA test\n\
    -d 14 Diehard COUNT_1S_STREAM test\n\
    -d 15 Diehard COUNT_1S_BYTE test\n\
+   -d 15 Diehard OPERM5 test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\

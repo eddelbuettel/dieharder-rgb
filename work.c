@@ -42,6 +42,7 @@ void work()
    diehard_dna();
    diehard_count_1s_stream();
    diehard_count_1s_byte();
+   diehard_operm5();
    rgb_persist();
    rgb_bitdist();
    sts_monobit();
@@ -110,6 +111,10 @@ void work()
      break;
    case DIEHARD_COUNT_1S_BYTE:
      diehard_count_1s_byte();
+     exit(0);
+     break;
+   case DIEHARD_OPERM5:
+     diehard_operm5();
      exit(0);
      break;
  }

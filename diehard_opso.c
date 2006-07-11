@@ -194,7 +194,7 @@ void diehard_opso_test()
  ks_pvalue[kspi] = ptest.pvalue;
 
  if(verbose == D_DIEHARD_OPSO || verbose == D_ALL){
-   printf("# diehard_craps(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
+   printf("# diehard_opso(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
 
  kspi++;
