@@ -186,7 +186,7 @@ unsigned int get_bit_ntuple(unsigned int *bitstring,
 /*
  * dumpbits only can dump 8*sizeof(unsigned int) bits at a time.
  */
-void dumpbits(unsigned int *data, unsigned int nbits)
+void dumpbits(uint *data, unsigned int nbits)
 {
 
  uint i,j;
@@ -196,17 +196,14 @@ void dumpbits(unsigned int *data, unsigned int nbits)
    nbits = 8*sizeof(unsigned int);
  }
  
- mask = (int)pow(2,nbits);
- if(verbose == -1){
-   printf("\nmask = %0x :",mask);
- }
+ mask = (uint)pow(2,nbits-1);
  for(i=0;i<nbits;i++){
+   if(verbose == -1){
+     printf("\nmask = %u = %04x :",mask,mask);
+   }
    j = (mask & *data)?1:0;
    printf("%1u",j);
    mask = mask >> 1;
-   if(verbose == -1){
-     printf("\nmask = %0x = %u :",mask,mask);
-   }
  }
  printf("\n");
 
@@ -310,18 +307,21 @@ int get_int_bit(uint i, uint n)
   * limited checking to ensure that n is in the range 0-sizeof(uint)
   * Note
   */
- if(n < 0 || n > sizeof(uint)){
-   fprintf(stderr,"Error: bit offset %d exceeds length %d of uint.\n",n,sizeof(uint));
+ if(n < 0 || n > 8*sizeof(uint)){
+   fprintf(stderr,"Error: bit offset %d exceeds length %d of uint.\n",n,8*sizeof(uint));
    exit(0);
  }
 
  
  /*
-  * Then we have to compute the offset of the bit desired, starting from
-  * the first significant/valid bit in the unsigned int.
+  * Then we have make a mask and shift it over from the first (least
+  * significant) bit in the unsigned int.  AND the result with i and
+  * we're done.
   */
- mask = (int)pow(2,8*sizeof(uint) - 1);
- mask = mask>>n;
+ mask = 1;
+ mask = mask<<n;
+ /* dumpbits(&mask,32); */
+ /* dumpbits(&i,32); */
  if(mask & i){
    return(1);
  } else {

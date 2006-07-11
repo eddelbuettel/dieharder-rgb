@@ -137,6 +137,7 @@ void Btest_eval(Btest *btest)
    printf("#==================================================================\n");
    printf("Evaluated chisq = %f for %u degrees of freedom\n",chisq,ndof);
  }
+ btest->chisq = chisq;
 
  /*
   * Now evaluate the corresponding pvalue.  The only real question

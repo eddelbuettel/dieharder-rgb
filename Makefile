@@ -88,7 +88,7 @@ SOURCES = $(SOURCE)\
     diehard_opso.c \
     diehard_oqso.c \
     diehard_dna.c \
-    diehard_count_1s.c \
+    diehard_count_1s_stream.c \
     rgb_bitdist.c \
     rgb_persist.c \
     rgb_timing.c \
