@@ -40,6 +40,7 @@ void work()
    diehard_opso();
    diehard_oqso();
    diehard_dna();
+   diehard_count_1s_stream();
    rgb_persist();
    rgb_bitdist();
    sts_monobit();
@@ -100,6 +101,10 @@ void work()
      break;
    case DIEHARD_DNA:
      diehard_dna();
+     exit(0);
+     break;
+   case DIEHARD_COUNT_1S_STREAM:
+     diehard_count_1s_stream();
      exit(0);
      break;
  }

@@ -300,6 +300,36 @@ int get_bit(unsigned int n)
  
 }
 
+int get_int_bit(uint i, uint n)
+{
+
+ unsigned int mask;
+
+ /*
+  * This routine gets the nth bit of the unsigned int i.  It does very
+  * limited checking to ensure that n is in the range 0-sizeof(uint)
+  * Note
+  */
+ if(n < 0 || n > sizeof(uint)){
+   fprintf(stderr,"Error: bit offset %d exceeds length %d of uint.\n",n,sizeof(uint));
+   exit(0);
+ }
+
+ 
+ /*
+  * Then we have to compute the offset of the bit desired, starting from
+  * the first significant/valid bit in the unsigned int.
+  */
+ mask = (int)pow(2,8*sizeof(uint) - 1);
+ mask = mask>>n;
+ if(mask & i){
+   return(1);
+ } else {
+   return(0);
+ }
+ 
+}
+
 /*
  * dumpbits only can dump 8*sizeof(unsigned int) bits at a time.
  */

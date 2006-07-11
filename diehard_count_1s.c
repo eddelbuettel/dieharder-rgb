@@ -100,8 +100,10 @@ double diehard_count_1s_stream()
 void diehard_count_1s_stream_test()
 {
 
- int i,j,k;
- Ptest ptest;  /* I think this is a ptest.  We'll see. */
+ uint i,j,k;
+ Xtest ptest;      /* I think this is an Xtest.  We'll see. */
+ char table[256];  /* Table mapping bytes to base 5 values */
+ uint bitcnt;
 
  /*
   * Count a Stream of 1's is very strange.  Basically, take a byte outta
@@ -136,6 +138,40 @@ void diehard_count_1s_stream_test()
   * We begin, therefore, by generating a lookup table.  I can even print
   * the generated table and read it in as permanent data.
   */
+ for(i=0;i<256;i++){
+   table[i] = 0;
+   for(j=0;j<sizeof(uint);j++){
+     table[i] += get_int_bit(i,j);
+   }
+   switch(table[i]){
+     case 0:
+     case 1:
+     case 2:
+       table[i] = 0;    /* letter A, but really 0, base 5 */
+       break;
+     case 3:
+       table[i] = 1;    /* letter B */
+       break;
+     case 4:
+       table[i] = 2;    /* letter C */
+       break;
+     case 5:
+       table[i] = 3;    /* letter D */
+       break;
+     case 6:
+     case 7:
+     case 8:
+       table[i] = 4;    /* letter E, 4 base 5 */
+       break;
+     default:
+       fprintf(stderr,"Hahahahah\n");
+       exit(0);
+       break;
+   }
+   printf("table[%u] = %u\n",i,table[i]);
+ }
+ exit(0);
+ 
 
  
 

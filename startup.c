@@ -51,6 +51,7 @@ reasonable amount of time).\n\
    -d 11 Diehard OPSO test\n\
    -d 12 Diehard OQSO test\n\
    -d 13 Diehard DNA test\n\
+   -d 14 Diehard COUNT_1S_STREAM test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\
