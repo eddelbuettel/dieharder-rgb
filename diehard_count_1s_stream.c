@@ -80,6 +80,7 @@ double diehard_count_1s_stream()
 
  double *pvalue,pks;
  uint tempsamples;
+ uint est_num_rands;
 
  /*
   * This is the merest shell to set any test-specific variables, call
@@ -100,13 +101,23 @@ double diehard_count_1s_stream()
   */
  if(all == YES){
    tempsamples = tsamples;
-   tsamples = 2560000;  /* Standard value from diehard */
+   tsamples = 256000;  /* Standard value from diehard */
  }
 
  if(!quiet){
    help_diehard_count_1s_stream();
    printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# Number of rands required is around 3x10^8 for 100 samples.\n");
+   if(overlap){
+     /* One new five digit sample per BYTE, four per new uint  */
+     est_num_rands = (int)(tsamples*psamples/4.0);
+     printf("# Number of rands required is around %u for %u\n",est_num_rands,psamples);
+     printf("# overlapping p-samples containing %u samples.\n",tsamples);
+   } else {
+     /* 1.25 uints required per five digit sample */
+     est_num_rands = (int)(tsamples*psamples*1.25);
+     printf("# Number of rands required is around %u for %u\n",est_num_rands,psamples);
+     printf("# non-overlapping p-samples containing %u samples.\n",tsamples);
+   }
  }
 
  kspi = 0;  /* Always zero first */

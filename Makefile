@@ -34,7 +34,7 @@ SVNTIME = $(DIR:=.svn.time)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=0
-VERSION_MINOR=6.18
+VERSION_MINOR=6.19
 RELEASE=1
 
 #========================================================================
