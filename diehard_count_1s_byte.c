@@ -1,19 +1,14 @@
 /*
+ * $Id$
+ *
  * See copyright in copyright.h and the accompanying file COPYING
+ *
  */
 
 /*
  *========================================================================
  * This is the Diehard Count a Stream of 1's test, rewritten from the
  * description in tests.txt on George Marsaglia's diehard site.
- *
- * Rewriting means that I can standardize the interface to
- * gsl-encapsulated routines more easily.  It also makes this
- * my own code.  Finally, since the C versions Marsaglia provides
- * are the result of f2c running on Fortran sources, they are really
- * ugly code and the rewrite should be much more manageable.
- *
- * Here is the test description from diehard_tests.txt:
  *
  *     This is the COUNT-THE-1's TEST for specific bytes.        ::
  * Consider the file under test as a stream of 32-bit integers.  ::
@@ -110,13 +105,27 @@ double diehard_count_1s_byte()
    tsamples = 256000;  /* Standard value from diehard */
  }
 
+ /*
+  * Allocate space for ks_pvalue.  Free it below
+  */
+ ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
+
  if(!quiet){
    help_diehard_count_1s_byte();
-   printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   /* 5 uints required per five digit sample */
-   est_num_rands = (int)(tsamples*psamples*5);
+   printf("#                        Run Details\n");
+   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
+   } else {
+     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+   }
+   printf("# Samples per test = %u.  Diehard recommends 256000\n",tsamples);
+   printf("# Test run %u times to cumulate p-values for KS test.\n",psamples);
+   printf("# Number of rands required is around 2^28 for 100 samples.\n");
+   /* 1.25 uints required per five digit sample */
+   est_num_rands = (int)(tsamples*psamples*1.25);
    printf("# Number of rands required is around %u for %u\n",est_num_rands,psamples);
-   printf("# non-overlapping uint p-samples containing %u samples.\n",tsamples);
+   printf("# non-overlapping p-samples containing %u samples.\n",tsamples);
  }
 
  kspi = 0;  /* Always zero first */
@@ -128,18 +137,36 @@ double diehard_count_1s_byte()
  if(hist_flag){
    histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
  }
- printf("# p = %8.6f for diehard_count_1s_byte test (mean) from Kuiper Kolmogorov-Smirnov\n",pks);
- printf("#     test on %u pvalues.\n",kspi);
- if(pks < 0.0001){
-   printf("# Generator %s FAILS at 0.01%% for diehard_count_1s_byte.\n",gsl_rng_name(rng));
+ if(!quiet){
+   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
+     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
+   }
  }
+ printf("#                          Results\n");
+ printf("# p = %8.6f for diehard_count_1s_byte test (mean) from\n",pks);
+ printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",kspi);
+ /* Work through some ranges here */
+ if(pks < 0.0001){
+   printf("# Generator %s FAILED at < 0.01%% for diehard_count_1s_byte.\n",gsl_rng_name(rng));
+ } else if(pks < 0.01){
+   printf("# Generator %s POOR at < 1%% for diehard_count_1s_byte.\n",gsl_rng_name(rng));
+   printf("# Recommendation:  Repeat test to verify failure.\n");
+ } else if(pks < 0.05){
+   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_count_1s_byte.\n",gsl_rng_name(rng));
+   printf("# Recommendation:  Repeat test to verify failure.\n");
+ } else {
+   printf("# Generator %s PASSED at > 5%% for diehard_count_1s_byte.\n",gsl_rng_name(rng));
+ }
+ printf("#==================================================================\n");
 
  /*
-  * Put back tsamples
+  * Put back tsamples, free ks_pvalue.
   */
  if(all == YES){
    tsamples = tempsamples;
  }
+ free(ks_pvalue);
 
  return(pks);
 
@@ -231,7 +258,7 @@ void diehard_count_1s_byte_test()
 
  /*
   * count_1s in specific bytes is straightforward after looking over
-  * count_1s in a stream.  The statistic is identical; we just have to
+  * count_1s in a byte.  The statistic is identical; we just have to
   * cycle the offset of the bytes selected and generate 1 random uint
   * per digit.
   */
@@ -318,6 +345,7 @@ void diehard_count_1s_byte_test()
  /*
   * Here is the test.  We cycle boffset through tsamples
   */
+ boffset = 0;
  for(t=0;t<tsamples;t++){
 
    boffset = t%32;  /* Remember that get_bit_ntuple periodic wraps the uint */
