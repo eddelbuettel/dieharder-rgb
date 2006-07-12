@@ -26,6 +26,8 @@
  * twenty times.                                                 ::
  *
  *                         Comment
+ * Damn good test.  Very few generators in the GSL survive it,
+ *
  * The tests BITSTREAM, OPSO, OQSO and DNA are all closely related.
  * They all measure global distribution properties of extended
  * bit combinations in projections of varying dimension.  I
@@ -98,7 +100,7 @@ double diehard_bitstream()
   */
  ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
 
-if(!quiet){
+ if(!quiet){
    help_diehard_bitstream();
    printf("#                        Run Details\n");
    if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
@@ -131,7 +133,6 @@ if(!quiet){
      printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
      printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
    }
-   printf("#==================================================================\n");
  }
  printf("#                          Results\n");
  printf("# p = %8.6f for diehard_bitstream test from\n",pks);
