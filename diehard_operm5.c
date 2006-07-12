@@ -100,31 +100,38 @@ double diehard_operm5()
  * kperm computes the permutation number of a vector of five integers
  * passed to it.
  */
-uint kperm(uint v[])
+uint kperm(uint v[],uint voffset)
 {
 
- uint i,j,k,t;
+ uint i,j,k,max;
  uint w[5];
- uint pi,uret,tmp;
+ uint pindex,uret,tmp;
 
- memcpy(w,v,5*sizeof(uint));
+ /*
+  * work on a copy of v, not v itself in case we are using overlapping
+  * 5-patterns.
+  */
+ for(i=0;i<5;i++){
+   j = (i+voffset)%5;
+   w[i] = v[j];
+ }
 
- pi = 0;
  if(verbose == -1){
    printf("==================================================================\n");
    printf("%10u %10u %10u %10u %10u\n",w[0],w[1],w[2],w[3],w[4]);
    printf(" Permutations = \n");
  }
+ pindex = 0;
  for(i=4;i>0;i--){
-   t = w[0];
+   max = w[0];
    k = 0;
    for(j=1;j<=i;j++){
-     if(t <= w[j]){
-       t = w[j];
+     if(max <= w[j]){
+       max = w[j];
        k = j;
      }
    }
-   pi = (i+1)*pi + k;
+   pindex = (i+1)*pindex + k;
    tmp = w[i];
    w[i] = w[k];
    w[k] = tmp;
@@ -132,27 +139,50 @@ uint kperm(uint v[])
      printf("%10u %10u %10u %10u %10u\n",w[0],w[1],w[2],w[3],w[4]);
    }
  }
- if(pi < 60 ){
-   uret = map[pi];
+ if(pindex < 60 ){
+   uret = map[pindex];
  } else {
-   uret = pi;
+   uret = pindex;
  }
 
  if(verbose == -1){
-   printf(" => %u\n",pi);
-   printf("map[%u] = %u\n",pi,uret);
+   printf(" => %u\n",pindex);
+   printf("map[%u] = %u\n",pindex,uret);
  }
 
  return uret;
    
 }
 
+#include "d_raw.h"
+
 void diehard_operm5_test()
 {
 
- uint i,j,k,kp,t,vind;
- uint count[120],v[5];
- double pvalue;
+ uint i,j,k,kp,t,vind,v[5];
+ double count[120];
+ double av,norm,x[60],y[60],chisq,ndof,pvalue;
+
+ /*
+  * Just read in the raw r half-matrix and s half-matrix from d_raw = perm.txt
+ k = 0;
+ for(i=0;i<60;i++){
+   for(j=i;j<60;j++){
+     r[i][j] = d_raw[k++];
+   }
+ }
+ for(i=0;i<60;i++){
+   for(j=i;j<60;j++){
+     s[i][j] = d_raw[k++];
+   }
+ }
+ for(i=0;i<59;i++){
+   for(j=i+1;j<60;j++){
+     r[j][i] = r[i][j];
+     s[j][i] = s[i][j];
+   }
+ }
+  */
 
  if(verbose == D_DIEHARD_OPERM5 || verbose == D_ALL){
    printf("int r[][] = {\n");
@@ -178,7 +208,7 @@ void diehard_operm5_test()
  /*
   * Zero count vector, was t(120) in diehard.f90.
   */
- memset(count,0,120*sizeof(uint));
+ for(i=0;i<120;i++) count[i] = 0.0;
  if(overlap){
    for(i=0;i<5;i++){
      v[i] = gsl_rng_get(rng);
@@ -195,27 +225,56 @@ void diehard_operm5_test()
     * rotate bytes.
     */
    if(overlap){
-     v[vind] = gsl_rng_get(rng);
-     kp = kperm(v);
+     kp = kperm(v,vind);
+     /* printf("kp = %u\n",kp); */
      count[kp]++;
-     vind++;
-     vind = vind%5;
+     v[vind] = gsl_rng_get(rng);
+     vind = (vind+1)%5;
    } else {
      for(i=0;i<5;i++){
        v[i] = gsl_rng_get(rng);
      }
-     kp = kperm(v);
+     kp = kperm(v,0);
      count[kp]++;
    }
  }
 
- for(i=0;i<120;i++){
-   printf("%u: %u\n",i,count[i]);
+ if(verbose){
+   for(i=0;i<120;i++){
+     printf("%u: %f\n",i,count[i]);
+   }
  }
- exit(0);
 
+ /*
+  * Now (at last) we compute the statistic and get a p-value.  The
+  * computation is straightforward, but involves the r and s matrices
+  * so it doesn't fit the existing X or B models.
+  */
+ chisq = 0.0;
+ /*
+  * Not at all sure about this, yet.
+  */
+ av = 2.0*tsamples/120.0;
+ norm = 2.e5*tsamples;
+ for(i=0;i<60;i++){
+   x[i] = count[i] + count[i+60] - av;
+   y[i] = count[i] - count[i+60];
+   /* printf("count[%u] = %f  count[%u] = %f  x[%u] = %f  y[%u] = %f\n",i,count[i],i+60,count[i+60],i,x[i],i,y[i]);*/
+ }
+ for(i=0;i<60;i++){
+   for(j=0;j<60;j++){
+     chisq = chisq + x[i]*r[i][j]*x[j] + y[i]*s[i][j]*y[j];
+   }
+ }
+ chisq = chisq / norm;
+ ndof = 99;
+ if(verbose){
+   printf("# diehard_operm5(): chisq[%u] = %f\n",kspi,chisq);
+ }
+ printf("# diehard_operm5(): chisq[%u] = %f\n",kspi,chisq);
+ pvalue = gsl_sf_gamma_inc_Q((double)(ndof)/2.0,chisq/2.0);
  ks_pvalue[kspi] = pvalue;
-
+ printf("# diehard_operm5(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  if(verbose == D_DIEHARD_OPERM5 || verbose == D_ALL){
    printf("# diehard_operm5(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
