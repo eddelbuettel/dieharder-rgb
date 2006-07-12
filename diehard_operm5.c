@@ -214,6 +214,10 @@ void diehard_operm5_test()
      v[i] = gsl_rng_get(rng);
    }
    vind = 0;
+ } else {
+   for(i=0;i<5;i++){
+     v[i] = gsl_rng_get(rng);
+   }
  }
  for(t=0;t<tsamples;t++){
 
@@ -236,6 +240,16 @@ void diehard_operm5_test()
      }
      kp = kperm(v,0);
      count[kp]++;
+     /*
+      * This is the other way to get the same result as above.  It
+      * yields the exact same numbers.  This strongly suggests that
+      * there is nothing wrong with the code, overlapping or not,
+      * relative to diehard.
+     for(i=0;i<4;i++){
+       v[i] = v[i+1];
+     }
+     v[4] = gsl_rng_get(rng);
+      */
    }
  }
 
@@ -266,15 +280,31 @@ void diehard_operm5_test()
      chisq = chisq + x[i]*r[i][j]*x[j] + y[i]*s[i][j]*y[j];
    }
  }
- chisq = chisq / norm;
+ /*
+  * The absolute value "shouldn't" be necessary but it is -- every
+  * few hundred runs we get a negative chisq, which seems very
+  * plausible (actually) given the numbers and wierd chisq in the
+  * first place.  The other possibility (alas a very reasonable one)
+  * is that some of the numbers in r[][], s[][] or map[] are incorrect.
+  * Noting well that they AGREE with an INDEPENDENT PORT of diehard
+  * to C to 12 significant figures when run on identical binary files
+  * and flagged to use the same algorithm...
+  *
+  * It would be nice, so nice, to have SOME clue how to actually generate
+  * the matrices and other numbers since even a simple sign error on
+  * a single number could make the test useless and (incidentally) cause
+  * it to sometimes return a negative chisq.
+  *
+  * In the meantime, negative chisq causes the incomplete gamma function
+  * routine to crash, so we protect it with the fabs() call.
+  */
+ chisq = fabs(chisq / norm);
  ndof = 99;
  if(verbose){
-   printf("# diehard_operm5(): chisq[%u] = %f\n",kspi,chisq);
+   printf("# diehard_operm5(): chisq[%u] = %10.5f\n",kspi,chisq);
  }
- printf("# diehard_operm5(): chisq[%u] = %f\n",kspi,chisq);
  pvalue = gsl_sf_gamma_inc_Q((double)(ndof)/2.0,chisq/2.0);
  ks_pvalue[kspi] = pvalue;
- printf("# diehard_operm5(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  if(verbose == D_DIEHARD_OPERM5 || verbose == D_ALL){
    printf("# diehard_operm5(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
