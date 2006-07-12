@@ -96,11 +96,62 @@ double diehard_operm5()
  */
 #include "diehard_operm5.h"
 
-void diehard_operm5_test()
+/*
+ * kperm computes the permutation number of a vector of five integers
+ * passed to it.
+ */
+uint kperm(uint v[])
 {
 
  uint i,j,k,t;
- uint count[120];
+ uint w[5];
+ uint pi,uret,tmp;
+
+ memcpy(w,v,5*sizeof(uint));
+
+ pi = 0;
+ if(verbose == -1){
+   printf("==================================================================\n");
+   printf("%10u %10u %10u %10u %10u\n",w[0],w[1],w[2],w[3],w[4]);
+   printf(" Permutations = \n");
+ }
+ for(i=4;i>0;i--){
+   t = w[0];
+   k = 0;
+   for(j=1;j<=i;j++){
+     if(t <= w[j]){
+       t = w[j];
+       k = j;
+     }
+   }
+   pi = (i+1)*pi + k;
+   tmp = w[i];
+   w[i] = w[k];
+   w[k] = tmp;
+   if(verbose == -1){
+     printf("%10u %10u %10u %10u %10u\n",w[0],w[1],w[2],w[3],w[4]);
+   }
+ }
+ if(pi < 60 ){
+   uret = map[pi];
+ } else {
+   uret = pi;
+ }
+
+ if(verbose == -1){
+   printf(" => %u\n",pi);
+   printf("map[%u] = %u\n",pi,uret);
+ }
+
+ return uret;
+   
+}
+
+void diehard_operm5_test()
+{
+
+ uint i,j,k,kp,t,vind;
+ uint count[120],v[5];
  double pvalue;
 
  if(verbose == D_DIEHARD_OPERM5 || verbose == D_ALL){
@@ -128,10 +179,40 @@ void diehard_operm5_test()
   * Zero count vector, was t(120) in diehard.f90.
   */
  memset(count,0,120*sizeof(uint));
- for(t=0;t<tsamples;t++){
-   
-
+ if(overlap){
+   for(i=0;i<5;i++){
+     v[i] = gsl_rng_get(rng);
+   }
+   vind = 0;
  }
+ for(t=0;t<tsamples;t++){
+
+   /*
+    * OK, now we are ready to generate a list of permutation indices.
+    * Basically, we take a vector of 5 integers and transform it into a
+    * number with the kperm function.  We will use the overlap flag to
+    * determine whether or not to refill the entire v vector or just
+    * rotate bytes.
+    */
+   if(overlap){
+     v[vind] = gsl_rng_get(rng);
+     kp = kperm(v);
+     count[kp]++;
+     vind++;
+     vind = vind%5;
+   } else {
+     for(i=0;i<5;i++){
+       v[i] = gsl_rng_get(rng);
+     }
+     kp = kperm(v);
+     count[kp]++;
+   }
+ }
+
+ for(i=0;i<120;i++){
+   printf("%u: %u\n",i,count[i]);
+ }
+ exit(0);
 
  ks_pvalue[kspi] = pvalue;
 
