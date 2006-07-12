@@ -36,12 +36,6 @@ int histogram(double *input,int inum,double min,double max,int nbins,char *label
  binscale = (max - min)/(double)nbins;
 
  /*
-  * Set the vertical scale, in multiples of 2.  Basically, the
-  * default is for psamples of 100.
-  */
- vscale = ceil(psamples/100.0);
-
- /*
   * Now we loop the data, incrementing bins accordingly.  There
   * are LOTS of ways to do this; we pick a brute force one instead
   * of e.g. sorting first because we don't quibble about microseconds
@@ -62,12 +56,19 @@ int histogram(double *input,int inum,double min,double max,int nbins,char *label
  }
  
  /*
-  * OK, at this point bin[] contains a histogram of the data.
-  * All that remains is to make a scaling decision and display it.
-  * We'll arbitrarily assume that the peak * scale is at 20, with
-  * two lines per 0.1 of the scale.
+  * OK, at this point bin[] contains a histogram of the data.  All that
+  * remains is to make a scaling decision and display it.  We'll
+  * arbitrarily assume that the peak * scale is at 20, with two lines per
+  * 0.1 of the scale, but we'll then scale this assumption using vscale.
+  * Basically, the default is for psamples of 100, but we really need
+  * to check the actual bins to ensure that we're good.
   */
-
+ vscale = ceil(psamples/100.0);
+ /* printf("psamples = %u   vscale = %u\n",psamples,vscale); */
+ while(binmax >= 20*vscale) {
+   vscale++;
+   /* printf("binmax = %u   vscale = %u\n",binmax,vscale); */
+ }
 
  /*
   * Now we just display the histogram, which should be in range to

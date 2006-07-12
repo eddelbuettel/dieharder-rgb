@@ -103,6 +103,7 @@ double diehard_birthdays()
    tempsamples = tsamples;
    tsamples = 100;  /* Standard value */
  }
+
  /*
   * Allocate space for ks_pvalue.  Free it below
   */
@@ -139,6 +140,14 @@ double diehard_birthdays()
    printf("# %u samples drawn from %u-bit integers masked out of a\n",nms,nbits);
    printf("# %u bit random integer.  lambda = %f, kmax = %u, tsamples = %u\n",rmax_bits,lambda,kmax,tsamples);
  }
+ if(tsamples > 1000){
+   printf("#==================================================================\n");
+   printf("# WARNING WARNING WARNING!  This test rarely requires more than\n");
+   printf("#   -t 300 to make nearly any generator fail, and will take a\n");
+   printf("#   very long time to run even there.  Consider restarting.\n");
+   printf("#==================================================================\n");
+ }
+
 
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_birthdays_test);
