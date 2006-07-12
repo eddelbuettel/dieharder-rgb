@@ -1,9 +1,9 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-*
-*/
+ * $Id$
+ *
+ * See copyright in copyright.h and the accompanying file COPYING
+ *
+ */
 
 #include "dieharder.h"
 
@@ -34,7 +34,8 @@ void parsecl(int argc, char **argv)
  quiet = 0;		/* Default is to be not be quiet -- full report. */
  rgb = 0;               /* rgb test number */
  sts = 0;               /* sts test number */
- seed = 0;              /* user selected seed.  != 0 surpresses reseeding per sample.*/
+ seed = 0;              /* saves the current (possibly randomly selected) seed */
+ Seed = 0;              /* user selected seed.  != 0 surpresses reseeding per sample.*/
  tsamples = 10000;	/* Generally should be "a lot". */
  user = 0;              /* user defined test number */
  verbose = 0;		/* Default is not to be verbose. */
@@ -89,6 +90,9 @@ void parsecl(int argc, char **argv)
        break;
      case 'r':
        rgb = strtol(optarg,(char **) NULL,10);
+       break;
+     case 'S':
+       Seed = strtol(optarg,(char **) NULL,10);
        break;
      case 's':
        sts = strtol(optarg,(char **) NULL,10);

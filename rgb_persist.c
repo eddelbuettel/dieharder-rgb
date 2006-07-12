@@ -8,18 +8,16 @@
 
 /*
  *========================================================================
- * This is a test that checks to see if the rng generates bits that are
- * binomially distributed.  It checks the actual distribution of bits for
- * relatively small strings (small enough that n! doesn't overflow and
- * 2^-n doesn't underflow, so we can evaluate meaningful probabilities).
- * It >>also<< does the sts_monobit test on the aggregate string across
- * all smaller samples.
+ * This is a test that checks to see if all the bits returned by the
+ * rng change.  Surprisingly, several generators have bits that do NOT
+ * change, hence the test.  It also reveals tests that for whatever reason
+ * return less than the expected uint number of bits (32) as unchanging
+ * high bits
  *
- * This (and all further rgb_ tests) are "my own" in that I'm BOTH
- * making them up AND writing them as I go.  If they turn out to be
- * equivalent to STS tests I'll document this and probably convert to
- * the STS versions.  The exercise of conceiving and writing tests is
- * still invaluable.
+ * This (and all further rgb_ tests) are "my own".  Some of them may turn
+ * out to be formally equivalent to diehard or sts or knuth tests in the
+ * specific sense that failure in one always matches or precedes failure
+ * in the other.
  *========================================================================
  */
 
@@ -32,10 +30,20 @@ double rgb_persist()
  unsigned int *rand_uint;
  static unsigned and_mask,cumulative_mask,last_rand;
 
+ file_input_set_rtot(rng,0);
  if(!quiet){
    help_rgb_persist();
+   printf("#                        Run Details\n");
+   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
+   } else {
+     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+   }
+   printf("# Samples per test run = %u, tsamples ignored\n",256);
+   printf("# Test run %u times to cumulate unchanged bit mask\n",psamples);
  }
-
+ 
  /*
   * We arbitrarily choose 256 successive random numbers as enough.
   * This should be plenty -- the probability of any bit slot not
@@ -57,8 +65,15 @@ double rgb_persist()
 
  cumulative_mask = 0;
  for(j=0;j<psamples;j++){
-   seed = random_seed();
-   gsl_rng_set(rng,seed);
+   /*
+    * Do not reset the total count of rands or rewind file input
+    * files -- let them auto-rewind as needed.  Otherwise try
+    * different seeds for different samples.
+    */
+   if(strncmp("file_input",gsl_rng_name(rng),10)){
+     seed = random_seed();
+     gsl_rng_set(rng,seed);
+   }
    /*
     * Fill rand_int with a string of random numbers
     */
@@ -85,6 +100,12 @@ double rgb_persist()
    cumulative_mask = cumulative_mask | and_mask;
  }
  if(!quiet){
+   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
+     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
+   }
+   printf("#==================================================================\n");
+   printf("#                          Results\n");
    printf("# Results for %s rng, using its %d valid bits:\n",gsl_rng_name(rng),rmax_bits);
    printf("# (Cumulated mask of zero is good.)\n");
    printf("# cumulated_mask = %10u = ",cumulative_mask);
@@ -98,6 +119,7 @@ double rgb_persist()
    } else {
      printf("# rgb_persist test PASSED (no bits repeat)\n");
    }
+   printf("#==================================================================\n");
  }
 
  free(rand_uint);

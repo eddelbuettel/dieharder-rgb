@@ -89,29 +89,15 @@ No user-developed test are installed at this time.\n\
  /*
   * Now add my own types and count THEM.
   */
-
  add_my_types();
- GSL_VAR const gsl_rng_type *gsl_rng_file_input;
- GSL_VAR const gsl_rng_type *gsl_rng_file_input_raw;
  while(types[i] != NULL){
    i++;
-
-   /* check if input is coming from file, and if so sets 
-    * generator accordingly
-    */
-   if(fromfile == 1 && types[i] == gsl_rng_file_input && !output){
-     generator = i;
-   }
-   if(fromfile == 1 && types[i] == gsl_rng_file_input_raw && !output){
-     generator = i;
-   }
  }
 
  num_rngs = i;
  num_my_rngs = num_rngs - num_gsl_rngs;
 
- if(types[generator] == gsl_rng_file_input && fromfile == 0){
-   fprintf(stderr,"Error: generator set to file_input but no file has been loaded");
+ if(generator == -1){
    list_rngs();
    exit(0);
  }
@@ -123,50 +109,55 @@ No user-developed test are installed at this time.\n\
  }
 
  /*
-  * Initialize the selected gsl rng.  random_seed() seeds from
-  * /dev/random.  Note that any locally defined rng's were "added"
-  * to the gsl set above and can now be called with the gsl
-  * wrapper!  So we either initialize the selected generator or list
-  * the generators and exit.  We had to wait until now for the latter
-  * or we'd miss our own additions!
+  * We need a sanity check for file input.  File input is permitted
+  * iff we have a file name, if the output flag is not set, AND if
+  * generator is either file_input or file_input_raw.  Otherwise
+  * IF generator is a file input type (primary condition) we punt
+  * with a list of types and a honk.
   */
- if(generator >= 0){
-   rng = gsl_rng_alloc (types[generator]);
-   random_max = gsl_rng_max(rng);
-   if(seed == 0){
-	seed = random_seed();
+ if(strncmp("file_input",types[generator]->name,10) == 0){
+   if(fromfile != 1){
+     fprintf(stderr,"Error: generator %s uses file input but no file has been loaded",types[generator]->name);
+     list_rngs();
+     exit(0);
    }
-   gsl_rng_set(rng,seed);
- } else {
-   list_rngs();
-   exit(0);
- }
-
- if(output){
-   output_rnds();
-   /* We'll fix it so we don't have to exit here later */
-   exit(0);
- }
-
- if(fromfile){
-   if(stat(filename, &sbuf)){
-     if(errno == EBADF){
-       fprintf(stderr,"# file_input_raw(): Error -- file descriptor %s bad.\n",filename);
-       exit(0);
-     }
-   }
-   /*
-    * Is this a regular file?  If so, turn its byte length into a 32 bit uint
-    * length and set global filecount.
-    */
-   if(S_ISREG(sbuf.st_mode)){
-     filecount = sbuf.st_size/sizeof(uint);
-   } else {
-     fprintf(stderr,"# file_input_raw(): Error -- path %s not regular file.\n",filename);
+   if(output){
+     fprintf(stderr,"Error: generator %s uses file input but output flag set.",types[generator]->name);
+     Usage();
      exit(0);
    }
  }
 
+ /*
+  * If we get here, in principle the generator is valid and the right
+  * inputs are defined to run it (in the case of file_input). We therefore
+  * initialize the selected gsl rng using (if possible) random_seed()
+  * seeds from /dev/random.  Note that we had to wait until now for the to
+  * do this or we'd miss our own additions!
+  */
+ if(verbose == D_STARTUP || verbose == D_SEED || verbose == D_ALL){
+   fprintf(stdout,"# startup(): Creating and seeding generator %s\n",types[generator]->name);
+ }
+ rng = gsl_rng_alloc (types[generator]);
+ random_max = gsl_rng_max(rng);
+ if(Seed == 0){
+   seed = random_seed();
+   if(verbose == D_STARTUP || verbose == D_SEED || verbose == D_ALL){
+     fprintf(stdout,"# startup(): Generating random seed %u\n",seed);
+   }
+ } else {
+   seed = Seed;
+   if(verbose == D_STARTUP || verbose == D_SEED || verbose == D_ALL){
+     fprintf(stdout,"# startup(): Setting random seed %u by hand.\n",seed);
+   }
+ }
+ gsl_rng_set(rng,seed);
+
+ if(output){
+   output_rnds();
+   /* We'll fix it so we don't have to exit here later, maybe. */
+   exit(0);
+ }
 
  /*
   * Simultaneously count the number of significant bits in the rng
@@ -184,46 +175,6 @@ No user-developed test are installed at this time.\n\
  }
 
  /*
-  * Allocate the global list of random numbers and store all the 
-  * necessary numbers from the selected rng.  Each test must check
-  * that it requires fewer than num_randoms rand int's, because that's all
-  * it gets.  num_randoms can be increased at will if the rng is creating
-  * rands as you go, but if you're getting rands from a file you have
-  * to make sure that the file has more numbers in it than num_randoms or else
-  * the program will quit.  If you decrease num_randoms to below the number of
-  * ints used by a program, it will run but some rands will be reused which 
-  * will artificially deflate the final p-values.
-  */
-
-
- /*
-  * This section sets the global rng to num_source, so that numbers are 
-  * accessed faster and also so that non-32 bit rand int files can be used.
-  * gsl_rng_set requires the global rng to have a different generator in it
-  * than gsl_rng_num_source to provide num_randoms integers for it, so set
-  * must come first or else this thing will be buggy at best.
-  *
-  * num_randoms is the number of integers to read into
-  * memory in num_source - this number must be larger than
-  * the maximum number of integers used in any one test
-  * or else non-randomness will be introduced (numbers will
-  * be cyclically reused). In general, each test should
-  * check that the number of randoms it will use is less
-  * than the global num_randoms, and exit/print a warning
-  * if it isn't.
-
- GSL_VAR const gsl_rng_type *gsl_rng_num_source;
- gsl_rng * temp_rng = gsl_rng_alloc(gsl_rng_num_source);
- if(verbose){
-    fprintf(stdout,"num_randoms is %d\n",num_randoms);
- }
- gsl_rng_set(temp_rng,(unsigned long int)num_randoms);
- rng = temp_rng;
- random_max = gsl_rng_max(rng);
-  */
-
-
- /*
   * Allocate the global vector that will hold random integers
   * loaded from gsl generators (usually) or from a file (sometimes).
   * One day (soon) we'll need to figure out file I/O.  Not exactly
@@ -236,6 +187,10 @@ No user-developed test are installed at this time.\n\
   * This size is possibly overkill, but otherwise we'd have to
   * figure out how big it is per test.  This is big enough
   * for all of them, I'm pretty sure.
+  *
+  * Actually, I'm hoping that this is cruft, but it probably isn't,
+  * yet.  We do need to alter how it is used, though, and ALWAYS
+  * allocate/free it on a per-test basis...
   */
  rand_int = (uint *) malloc((size_t) (tsamples*sizeof(unsigned int)));
 
@@ -248,9 +203,19 @@ No user-developed test are installed at this time.\n\
   * the end-stage e.g. KS tests that globally validate the distribution
   * of p-values returned by the test.  Set the kspi index to point to
   * the first element of the vector.
-  */
+  *
+  * I think the following is cruft
  ks_pvalue = (double *)malloc((size_t) KS_SAMPLES_PER_TEST_MAX*psamples*sizeof(double));
  ks_pvalue2 = (double *)malloc((size_t) KS_SAMPLES_PER_TEST_MAX*psamples*sizeof(double));
+  *
+  * and I'm HOPING that every test uses an absolute maximum of psamples
+  * samples for its concluding KS test, although in the case of e.g. diehard
+  * tests this is probably not always true.  I actually think that the
+  * right way to do this at this point is to malloc the memory inside
+  * the test itself and free it at the end.  Why not?
+ ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
+ ks_pvalue2 = (double *)malloc((size_t) psamples*sizeof(double));
+  */
  kspi = 0;
 
 }

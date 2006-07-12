@@ -68,6 +68,7 @@
    D_STS_MONOBIT,
    D_STS_RUNS,
    D_STS_BLOCK,
+   D_STARTUP,
    D_BITS,
    D_SAMPLE,
    D_CHISQ,
@@ -75,6 +76,8 @@
    D_BTEST,
    D_XTEST,
    D_BRANK,
+   D_FILE_INPUT,
+   D_FILE_INPUT_RAW,
    N_DEBUG
  } Debug;
 
@@ -157,6 +160,11 @@
  double kstest_kuiper(double *pvalue,int count);
  double q_ks(double x);
  double q_ks_kuiper(double x);
+
+ uint file_input_get_rewind_cnt(gsl_rng *rng);
+ uint file_input_get_rtot(gsl_rng *rng);
+ void file_input_set_rtot(gsl_rng *rng,uint value);
+ 
  /*
   Cruft
  char **allocate_fields(size_t maxfields,size_t maxfieldlength);
@@ -331,10 +339,10 @@
   */
 
  char filename[K];      /* Input file name */
- unsigned int filecount;	/* number of rands in file */
  int fromfile;		/* set true if file is used for rands */
- int filenumbits;		/* number of bits per integer */
-
+ int filenumbits;	/* number of bits per integer */
+ uint filecount;	/* number of rands in file */
+ char filetype;         /* file type */
 
  /*
   * rng global vectors and variables for setup and tests.

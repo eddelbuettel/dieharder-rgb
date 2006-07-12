@@ -131,6 +131,9 @@ Usage:\n\
   -q selects \"quiet\" operation: results only are printed on a single line\n\
      (where applicable).  This is a way of getting a very compact report.\n\
   -r test number - selects specific rgb test.\n\
+  -S seed.  Any (uint) seed but (default) 0 surpresses per-test,\n\
+     fully automated reseeding from /dev/random if available or the \n\
+     clock if not (where the latter is NOT really desireable).\n\
   -s test number - selects specific sts test.\n\
   -t count - sets the number of random entities used in each test, where\n\
      possible.  Be warned -- some tests will take a long time with the\n\

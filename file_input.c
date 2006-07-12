@@ -1,29 +1,71 @@
 /*
- * file_input
+ *========================================================================
+ * $Id: dieharder.h 176 2006-07-11 21:18:27Z rgb $
+ *
+ * file_input (GSL compatible).
  * 
  * By Daniel Summerhays
  * Mar. 10, 2005
+ *
+ * Heavily modifed by rgb, June-July 2006
  * 
  * See copyright in copyright.h and the accompanying file COPYING
- *
+ *========================================================================
  */
 
 #include "dieharder.h"
 
 /*
- * This is a wrapper for getting random numbers from a file
+ * This is a wrapper for getting random numbers from a file.  OH MY
+ * have we been screwing up the use of state.  Note CAREFULLY how
+ * we must proceed to access the state variables inside of a given
+ * rng.
  */
 
+/* static unsigned long int file_input_get (gsl_rng *rng); */
 static unsigned long int file_input_get (void *vstate);
 static double file_input_get_double (void *vstate);
 static void file_input_set (void *vstate, unsigned long int s);
 
+/*
+ * This struct contains the data maintained on the operation of
+ * the file_input rng.
+ *  fp is the file pointer
+ *  filenumtype is a character used to determine how to read it
+ *     (snitched from the associated fscanf type, basically)
+ *  rptr is a count of rands returned since last rewind
+ *  rtot is a count of rands returned since the file was opened
+ *  rewind_cnt is a count of how many times the file was rewound
+ *     since its last open.
+ */
 typedef struct
   {
     FILE *fp;
-    char filenumtype;
-    unsigned long int rptr;
+    uint rptr;
+    uint rtot;
+    uint rewind_cnt;
   } file_input_state_t;
+
+uint
+file_input_get_rewind_cnt(gsl_rng *rng)
+{
+  file_input_state_t *state = (file_input_state_t *) rng->state;
+  return state->rewind_cnt;
+}
+
+uint
+file_input_get_rtot(gsl_rng *rng)
+{
+  file_input_state_t *state = (file_input_state_t *) rng->state;
+  return state->rtot;
+}
+
+void
+file_input_set_rtot(gsl_rng *rng,uint value)
+{
+  file_input_state_t *state = (file_input_state_t *) rng;
+  state->rtot = 0;
+}
 
 static unsigned long int
 file_input_get (void *vstate)
@@ -42,15 +84,16 @@ file_input_get (void *vstate)
       exit(0);
     }
     /*
-     * Increment the pointer/count of rands read so far.
+     * Increment the counter of rands read so far.
      */
     state->rptr++;
+    state->rtot++;
 
     /*
      * Convert the STRING input above into a uint according to
      * the "type" (basically matching scanf type).
      */
-    switch(state->filenumtype){
+    switch(filetype){
       /*
        * 32 bit unsigned int by assumption
        */
@@ -114,12 +157,18 @@ file_input_get (void *vstate)
         break;
     }
     if(verbose){
-       fprintf(stdout,"# file_input(): %lu -> %lu\n",state->rptr,j);
+       fprintf(stdout,"# file_input() %u: %u/%u -> %u\n",state->rtot,state->rptr,filecount,j);
     }
     /*
-     * This basically rewinds the file and resets state->rptr to 0
+     * This (with seed s == 0) basically rewinds the file and resets
+     * state->rptr to 0, but rtot keeps running,
      */
-    if(state->rptr == filecount) file_input_set(vstate, 0);
+    if(state->rptr == filecount) {
+      /*
+       * Should be resetting/rewinding files
+       */
+      file_input_set(vstate, 0);
+    }
     return j;
   } else {
     fprintf(stderr,"Error: %s not open.  Exiting.\n", filename);
@@ -150,24 +199,46 @@ file_input_set (void *vstate, unsigned long int s)
  int cnt;
  int numfields;
  char inbuf[K]; /* input buffer */
- if(verbose){
-    fprintf(stdout,"entering file_input_set\n");
+ file_input_state_t *state = (file_input_state_t *) vstate;
+
+ if(verbose == D_FILE_INPUT || verbose == D_ALL){
+   fprintf(stdout,"# file_input(): entering file_input_set\n");
+   fprintf(stdout,"# file_input(): state->fp = %0x, seed = %lu\n",state->fp,s);
  }
 
- file_input_state_t *state = (file_input_state_t *) vstate;
- 
+ /*
+  * We use the "seed" to determine whether or not to reopen or
+  * rewind.  A seed s == 0 for an open file means rewind; a seed
+  * of anything else forces a close (resetting rewind_cnt) followed
+  * by a reopen.
+  */
+ if(state->fp && s ) {
+   if(verbose == D_FILE_INPUT || verbose == D_ALL){
+     fprintf(stdout,"# file_input(): Closing/reopening/resetting %s\n",filename);
+   }
+   fclose(state->fp);
+   state->fp = NULL;
+ }
+
  if (state->fp == NULL){
+   if(verbose == D_FILE_INPUT || verbose == D_ALL){
+     fprintf(stdout,"# file_input(): Opening %s\n", filename);
+   }
    /* If never opened, open */
    if ((state->fp = fopen(filename,"r")) == NULL) {
      fprintf(stderr,"Error: Cannot open %s, exiting.\n", filename);
      exit(0);
    }
-   if(verbose){
+   if(verbose == D_FILE_INPUT || verbose == D_ALL){
      fprintf(stdout,"# file_input(): Opened %s for the first time at %x\n", filename,state->fp);
      fprintf(stdout,"# file_input(): state->fp is %08x\n",state->fp);
      fprintf(stdout,"# file_input(): Parsing header:\n");
    }
-   state->rptr = 0;  /* Point this at the first record */
+   state->rptr = 0;  /* No rands read yet */
+   if(s) {
+     state->rtot = 0;  /* Only set this if it is a reseed */
+   }
+   state->rewind_cnt = 0;  /* No rewinds yet */
  } else {
    /*
     * Rewinding is a problem.  Rather, it is easy, but it seriously
@@ -178,10 +249,12 @@ file_input_set (void *vstate, unsigned long int s)
     */
    if(state->rptr >= filecount){
      rewind(state->fp);
-     fprintf(stderr,"# file_input(): Warning rptr = %lu equals filecount\n",state->rptr);
      state->rptr = 0;
-     fprintf(stderr,"# file_input():   Rewinding %s, resetting rptr = %lu\n", filename,state->rptr);
-     fprintf(stderr,"# file_input(): Parsing header:\n");
+     state->rewind_cnt++;
+     if(verbose == D_FILE_INPUT || verbose == D_ALL){
+       fprintf(stderr,"# file_input(): Rewinding %s at rtot = %u\n", filename,state->rtot);
+       fprintf(stderr,"# file_input(): Rewind count = %u, resetting rptr = %lu\n",state->rewind_cnt,state->rptr);
+     }
    } else {
      return;
    }
@@ -219,11 +292,11 @@ file_input_set (void *vstate, unsigned long int s)
        exit(0);
      }
      if(strncmp(splitbuf[0],"type",4) == 0){
-       state->filenumtype = splitbuf[1][0];
+       filetype = splitbuf[1][0];
        cnt++;
        if(verbose){
          fprintf(stdout,"# file_input(): cnt = %d\n",cnt);
-         fprintf(stdout,"# file_input(): filenumtype set to %c\n",state->filenumtype);
+         fprintf(stdout,"# file_input(): filenumtype set to %c\n",filetype);
        }
      }
      if(strncmp(splitbuf[0],"count",5) == 0){
@@ -231,7 +304,7 @@ file_input_set (void *vstate, unsigned long int s)
        cnt++;
        if(verbose){ 
          fprintf(stdout,"# file_input(): cnt = %d\n",cnt);
-         fprintf(stdout,"# file_input(): filecount set to %i\n",filecount);
+         fprintf(stdout,"# file_input(): filecount set to %d\n",filecount);
        }
      }
      if(strncmp(splitbuf[0],"numbit",6) == 0){
@@ -256,6 +329,6 @@ static const gsl_rng_type file_input_type =
  sizeof (file_input_state_t),
  &file_input_set,
  &file_input_get,
- &file_input_get_double};
+ &file_input_get_double };
 
 const gsl_rng_type *gsl_rng_file_input = &file_input_type;

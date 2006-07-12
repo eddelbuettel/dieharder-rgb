@@ -22,8 +22,8 @@ void list_rngs()
  if(verbose){
    printf("list_rngs():\n");
  }
- 
- printf("              Listing available built-in gsl-linked generators:           |\n");
+ printf("\n");
+ printf("            Listing available built-in gsl-linked generators:             |\n");
  printf("%3s %-20s|%3s %-20s|%3s %-20s|\n"," Id","Test Name",
          " Id","Test Name"," Id","Test Name");
  printf("==========================================================================|\n");
@@ -41,7 +41,7 @@ void list_rngs()
    if(((i)%3) == 0 && i>0) printf("\n");
    i++;
  }
- printf("\n");
+ printf("\n\n");
 
 }
 

@@ -22,6 +22,7 @@
  * fill N myself personally...
  */
 #define N 100
+
 /* #define GSL_VAR */
 /* List new rng types to be added. */
 GSL_VAR const gsl_rng_type *gsl_rng_dev_random;
@@ -39,15 +40,25 @@ void add_my_types()
   * Get to the end of types
   */
  while(types[i] != NULL){
-  i++;
+   i++;
  }
  /*
   * and add the new ones...
   */
- types[i++] = (gsl_rng_dev_random);
- types[i++] = (gsl_rng_dev_urandom);
- types[i++] = (gsl_rng_empty_random);
- types[i++] = (gsl_rng_file_input);
- types[i++] = (gsl_rng_file_input_raw);
-
+ types[i] = (gsl_rng_dev_random);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_dev_urandom);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_empty_random);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_file_input);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_file_input_raw);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ 
 }

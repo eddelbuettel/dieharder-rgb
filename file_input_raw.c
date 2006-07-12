@@ -99,7 +99,7 @@ file_input_raw_set (void *vstate, unsigned long int s)
   */
  /* printf("Setting state->rptr = %4u to zero.\n",state->rptr); */
  state->rptr = 0;
- 
+
  /*
   * Get and set the file length, check to make sure the file exists,
   * whatever...
@@ -121,6 +121,7 @@ file_input_raw_set (void *vstate, unsigned long int s)
     */
    if(S_ISREG(sbuf.st_mode)){
      state->flen = sbuf.st_size/sizeof(uint);
+     filecount = state->flen;
    } else {
      fprintf(stderr,"# file_input_raw(): Error -- path %s not regular file.\n",filename);
      exit(0);
