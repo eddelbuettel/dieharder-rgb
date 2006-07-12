@@ -38,22 +38,23 @@ they are needed to get a satisfactory result (such as completion in a\n\
 reasonable amount of time).\n\
 \n\
             Diehard Tests\n\
-   -d 1  Diehard Runs test\n\
-   -d 2  Diehard Birthdays test (-t 100, or less than 200) \n\
-   -d 3  Diehard Minimum Distance (2D Spheres) test\n\
-   -d 4  Diehard 3D Spheres (minimum distance) test\n\
-   -d 5  Diehard 32x32 Binary Rank test\n\
-   -d 6  Diehard 6x8 Binary Rank test\n\
-   -d 7  Diehard Parking Lot test\n\
-   -d 8  Diehard Craps test\n\
-   -d 9  Diehard Squeeze test\n\
-   -d 10 Diehard Bitstream test\n\
-   -d 11 Diehard OPSO test\n\
-   -d 12 Diehard OQSO test\n\
-   -d 13 Diehard DNA test\n\
-   -d 14 Diehard COUNT_1S_STREAM test\n\
-   -d 15 Diehard COUNT_1S_BYTE test\n\
-   -d 16 Diehard OPERM5 test\n\
+   -d 1  Diehard Birthdays test\n\
+   -d 2  Diehard Overlapping Permutations test\n\
+   -d 3  Diehard 32x32 Binary Rank test\n\
+   -d 4  Diehard 6x8 Binary Rank test\n\
+   -d 5  Diehard Bitstream test\n\
+   -d 6  Diehard OPSO test\n\
+   -d 7  Diehard OQSO test\n\
+   -d 8  Diehard DNA test\n\
+   -d 9  Diehard Count the 1s (stream) test\n\
+   -d 10 Diehard Count the 1s (byte) test\n\
+   -d 11 Diehard Parking Lot test\n\
+   -d 12 Diehard Minimum Distance (2D Spheres) test\n\
+   -d 13 Diehard 3D Spheres (minimum distance) test\n\
+   -d 14 Diehard Squeeze test\n\
+   -d 15 Diehard Sums test\n\
+   -d 16 Diehard Runs test\n\
+   -d 17 Diehard Craps test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\

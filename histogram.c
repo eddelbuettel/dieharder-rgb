@@ -22,6 +22,7 @@ int histogram(double *input,int inum,double min,double max,int nbins,char *label
  int i,j,k,hindex;
  uint *bin,binmax;
  double binscale;
+ uint vscale;
 
  /*
   * This is where we put the binned count(s).  Make and zero it
@@ -33,6 +34,12 @@ int histogram(double *input,int inum,double min,double max,int nbins,char *label
   * Set up the double precision size of a bin in the data range.
   */
  binscale = (max - min)/(double)nbins;
+
+ /*
+  * Set the vertical scale, in multiples of 2.  Basically, the
+  * default is for psamples of 100.
+  */
+ vscale = ceil(psamples/100.0);
 
  /*
   * Now we loop the data, incrementing bins accordingly.  There
@@ -68,12 +75,12 @@ int histogram(double *input,int inum,double min,double max,int nbins,char *label
   */
  for(i=20;i>0;i--){
    if(i%2 == 0){
-     printf("#  %3d|",i);
+     printf("#  %3d|",i*vscale);
    } else {
      printf("#     |");
    }
    for(j=0;j<nbins;j++){
-     if(bin[j] >= i){
+     if(bin[j] >= i*vscale ){
        printf("****|");
      } else {
        printf("    |");

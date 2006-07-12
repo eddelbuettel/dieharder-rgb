@@ -104,23 +104,23 @@ double rgb_persist()
      printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
      printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
    }
-   printf("#==================================================================\n");
-   printf("#                          Results\n");
-   printf("# Results for %s rng, using its %d valid bits:\n",gsl_rng_name(rng),rmax_bits);
-   printf("# (Cumulated mask of zero is good.)\n");
-   printf("# cumulated_mask = %10u = ",cumulative_mask);
-   dumpbits(&cumulative_mask,nbits);
-   printf("# randm_mask     = %10u = ",rmax_mask);
-   dumpbits(&rmax_mask,nbits);
-   printf("# random_max     = %10u = ",random_max);
-   dumpbits(&random_max,nbits);
-   if(cumulative_mask){
-     printf("# rgb_persist test FAILED (bits repeat)\n");
-   } else {
-     printf("# rgb_persist test PASSED (no bits repeat)\n");
-   }
-   printf("#==================================================================\n");
  }
+ printf("#==================================================================\n");
+ printf("#                          Results\n");
+ printf("# Results for %s rng, using its %d valid bits:\n",gsl_rng_name(rng),rmax_bits);
+ printf("# (Cumulated mask of zero is good.)\n");
+ printf("# cumulated_mask = %10u = ",cumulative_mask);
+ dumpbits(&cumulative_mask,nbits);
+ printf("# randm_mask     = %10u = ",rmax_mask);
+ dumpbits(&rmax_mask,nbits);
+ printf("# random_max     = %10u = ",random_max);
+ dumpbits(&random_max,nbits);
+ if(cumulative_mask){
+   printf("# rgb_persist test FAILED (bits repeat)\n");
+ } else {
+   printf("# rgb_persist test PASSED (no bits repeat)\n");
+ }
+ printf("#==================================================================\n");
 
  free(rand_uint);
  if(cumulative_mask) {

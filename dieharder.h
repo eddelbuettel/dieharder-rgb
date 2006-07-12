@@ -45,29 +45,30 @@
  typedef enum {
    D_QUIET,
    D_ALL,
-   D_SEED,
-   D_DIEHARD_RUNS,
    D_DIEHARD_BDAY,
-   D_DIEHARD_2DSPHERE,
-   D_DIEHARD_3DSPHERE,
+   D_DIEHARD_OPERM5,
    D_DIEHARD_RANK_32x32,
    D_DIEHARD_RANK_6x8,
-   D_DIEHARD_PARKING_LOT,
-   D_DIEHARD_CRAPS,
-   D_DIEHARD_SQUEEZE,
    D_DIEHARD_BITSTREAM,
    D_DIEHARD_OPSO,
    D_DIEHARD_OQSO,
    D_DIEHARD_DNA,
    D_DIEHARD_COUNT_1S_STREAM,
    D_DIEHARD_COUNT_1S_BYTE,
-   D_DIEHARD_OPERM5,
+   D_DIEHARD_PARKING_LOT,
+   D_DIEHARD_2DSPHERE,
+   D_DIEHARD_3DSPHERE,
+   D_DIEHARD_SQUEEZE,
+   D_DIEHARD_SUMS,
+   D_DIEHARD_RUNS,
+   D_DIEHARD_CRAPS,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
    D_RGB_TIMING,
    D_STS_MONOBIT,
    D_STS_RUNS,
    D_STS_BLOCK,
+   D_SEED,
    D_STARTUP,
    D_BITS,
    D_SAMPLE,
@@ -91,22 +92,23 @@
  /* Diehard Tests (by number) */
  typedef enum {
    DIEHARD_NONE,
-   DIEHARD_RUNS,
    DIEHARD_BDAY,
-   DIEHARD_2DSPHERE,
-   DIEHARD_3DSPHERE,
+   DIEHARD_OPERM5,
    DIEHARD_RANK_32x32,
    DIEHARD_RANK_6x8,
-   DIEHARD_PARKING_LOT,
-   DIEHARD_CRAPS,
-   DIEHARD_SQUEEZE,
    DIEHARD_BITSTREAM,
    DIEHARD_OPSO,
    DIEHARD_OQSO,
    DIEHARD_DNA,
    DIEHARD_COUNT_1S_STREAM,
    DIEHARD_COUNT_1S_BYTE,
-   DIEHARD_OPERM5,
+   DIEHARD_PARKING_LOT,
+   DIEHARD_2DSPHERE,
+   DIEHARD_3DSPHERE,
+   DIEHARD_SQUEEZE,
+   DIEHARD_SUMS,
+   DIEHARD_RUNS,
+   DIEHARD_CRAPS,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -176,70 +178,90 @@
   *========================================================================
   */
 
- /* diehard "runs" test */
- double diehard_runs();
- void diehard_runs_test();
- void help_diehard_runs();
- /* diehard "birthdays" test */
+ /* 1: diehard "birthdays" test */
  double diehard_birthdays();
  void diehard_birthdays_test();
  void help_diehard_birthdays();
- /* diehard "minimum distance" test, renamed */
- double diehard_2dsphere();
- void diehard_2dsphere_test();
- void help_diehard_2dsphere();
- /* diehard "3D spheres" test */
- double diehard_3dsphere();
- void diehard_3dsphere_test();
- void help_diehard_3dsphere();
- /* diehard "binary rank" test 32x32*/
- double diehard_rank_32x32();
- void diehard_rank_32x32_test();
- void help_diehard_rank_32x32();
- /* diehard "binary rank" test 6x8*/
- double diehard_rank_6x8();
- void diehard_rank_6x8_test();
- void help_diehard_rank_6x8();
- /* diehard "parking lot" test */
- double diehard_parking_lot();
- void diehard_parking_lot_test();
- void help_diehard_parking_lot();
- /* diehard "craps" test */
- double diehard_craps();
- void diehard_craps_test();
- void help_diehard_craps();
- /* diehard "squeeze" test */
- double diehard_squeeze();
- void diehard_squeeze_test();
- void help_diehard_squeeze();
- /* diehard "bitstream" test */
- double diehard_bitstream();
- void diehard_bitstream_test();
- void help_diehard_bitstream();
- /* diehard "opso" test */
- double diehard_opso();
- void diehard_opso_test();
- void help_diehard_opso();
- /* diehard "oqso" test */
- double diehard_oqso();
- void diehard_oqso_test();
- void help_diehard_oqso();
- /* diehard "dna" test */
- double diehard_dna();
- void diehard_dna_test();
- void help_diehard_dna();
- /* diehard "count_1s_stream" test */
- double diehard_count_1s_stream();
- void diehard_count_1s_stream_test();
- void help_diehard_count_1s_stream();
- /* diehard "count_1s_byte" test */
- double diehard_count_1s_byte();
- void diehard_count_1s_byte_test();
- void help_diehard_count_1s_byte();
- /* diehard "operm5" test */
+
+ /* 2: diehard "operm5" test */
  double diehard_operm5();
  void diehard_operm5_test();
  void help_diehard_operm5();
+
+ /* 3: diehard "binary rank" test 32x32*/
+ double diehard_rank_32x32();
+ void diehard_rank_32x32_test();
+ void help_diehard_rank_32x32();
+
+ /* 4: diehard "binary rank" test 6x8*/
+ double diehard_rank_6x8();
+ void diehard_rank_6x8_test();
+ void help_diehard_rank_6x8();
+
+ /* 5: diehard "bitstream" test */
+ double diehard_bitstream();
+ void diehard_bitstream_test();
+ void help_diehard_bitstream();
+
+ /* 6: diehard "opso" test */
+ double diehard_opso();
+ void diehard_opso_test();
+ void help_diehard_opso();
+
+ /* 7: diehard "oqso" test */
+ double diehard_oqso();
+ void diehard_oqso_test();
+ void help_diehard_oqso();
+
+ /* 8: diehard "dna" test */
+ double diehard_dna();
+ void diehard_dna_test();
+ void help_diehard_dna();
+
+ /* 9: diehard "count_1s_stream" test */
+ double diehard_count_1s_stream();
+ void diehard_count_1s_stream_test();
+ void help_diehard_count_1s_stream();
+
+ /* 10: diehard "count_1s_byte" test */
+ double diehard_count_1s_byte();
+ void diehard_count_1s_byte_test();
+ void help_diehard_count_1s_byte();
+
+ /* 11: diehard "parking lot" test */
+ double diehard_parking_lot();
+ void diehard_parking_lot_test();
+ void help_diehard_parking_lot();
+
+ /* 12: diehard "minimum distance" test, renamed */
+ double diehard_2dsphere();
+ void diehard_2dsphere_test();
+ void help_diehard_2dsphere();
+
+ /* 13: diehard "3D spheres" test */
+ double diehard_3dsphere();
+ void diehard_3dsphere_test();
+ void help_diehard_3dsphere();
+
+ /* 14: diehard "squeeze" test */
+ double diehard_squeeze();
+ void diehard_squeeze_test();
+ void help_diehard_squeeze();
+
+ /* 15: diehard "sums" test */
+ double diehard_sums();
+ void diehard_sums_test();
+ void help_diehard_sums();
+
+ /* 16: diehard "runs" test */
+ double diehard_runs();
+ void diehard_runs_test();
+ void help_diehard_runs();
+
+ /* 17: diehard "craps" test */
+ double diehard_craps();
+ void diehard_craps_test();
+ void help_diehard_craps();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();
