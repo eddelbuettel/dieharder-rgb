@@ -71,7 +71,7 @@ double diehard_opso()
  ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
 
  if(!quiet){
-   help_diehard_opso();
+  help_diehard_opso();
   printf("#                        Run Details\n");
    if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
      printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
@@ -109,15 +109,15 @@ double diehard_opso()
  printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",kspi);
  /* Work through some ranges here */
  if(pks < 0.0001){
-   printf("# Generator %s FAILED at < 0.01%% for diehard_bitstream.\n",gsl_rng_name(rng));
+   printf("# Generator %s FAILED at < 0.01%% for diehard_opso.\n",gsl_rng_name(rng));
  } else if(pks < 0.01){
-   printf("# Generator %s POOR at < 1%% for diehard_bitstream.\n",gsl_rng_name(rng));
+   printf("# Generator %s POOR at < 1%% for diehard_opso.\n",gsl_rng_name(rng));
    printf("# Recommendation:  Repeat test to verify failure.\n");
  } else if(pks < 0.05){
-   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_bitstream.\n",gsl_rng_name(rng));
+   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_opso.\n",gsl_rng_name(rng));
    printf("# Recommendation:  Repeat test to verify failure.\n");
  } else {
-   printf("# Generator %s PASSED at > 5%% for diehard_bitstream.\n",gsl_rng_name(rng));
+   printf("# Generator %s PASSED at > 5%% for diehard_opso.\n",gsl_rng_name(rng));
  }
  printf("#==================================================================\n");
 
