@@ -78,7 +78,7 @@ double diehard_runs()
 {
 
  double *pvalue,pks;
- uint tempsamples;
+ uint tempsamples,temppsamples;
 
  /*
   * This is the merest shell to set any test-specific variables, call
@@ -109,6 +109,12 @@ double diehard_runs()
    tempsamples = tsamples;
    tsamples = 100000 ;  /* Minimal value for this test */
  }
+ /*
+  * We generate TWO samples per test run, so we have to halve
+  * psamples and put it back at the end.
+  */
+ temppsamples = psamples;
+ psamples = psamples/2;
  free(rand_int);
  rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
@@ -125,7 +131,7 @@ double diehard_runs()
   * Display histogram of ks p-values (optional)
   */
  if(hist_flag){
-   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
+   histogram(ks_pvalue,2*psamples,0.0,1.0,10,"p-values");
  }
  printf("# p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov\n",pks);
  printf("#     test on %u pvalues (up runs + down runs).\n",kspi);
@@ -139,6 +145,7 @@ double diehard_runs()
  if(all == YES){
    tsamples = tempsamples;
  }
+ psamples = temppsamples;
  free(rand_int);
  rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
@@ -244,6 +251,7 @@ void diehard_runs_test()
  }
  ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
  ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
+ /* printf("%12.6f\t%12.6f\n",ks_pvalue[kspi-2],ks_pvalue[kspi-1]); */
 
 }
 

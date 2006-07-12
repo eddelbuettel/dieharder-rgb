@@ -2,7 +2,7 @@
 
 <center><H3>by Robert G. Brown (rgb)</H3></center>
 
-<center><H2>Current: dieharder Version 0.5.9</H2></center>
+<center><H2>Current: dieharder Version 1.0.21</H2></center>
 
 <p>At the suggestion of Linas Vepstas on the Gnu Scientific Library
 (GSL) list this GPL'd suite of random number tests will be named
@@ -38,18 +38,19 @@ Area</a></h2></center>
 
 <li> First number (major).  Bumped only when major goals in the
 design roadmap are reached (for example, finishing all the diehard
-tests).
+tests).  Version 1.x.x, for example, means that ALL of diehard is now
+incorporated in the program.
 
 <li> Second number (first minor).  Bumped only when major design
 features are added or altered.  For example, this new project page
 accompanies the new 0.5.x release, where I completely rewrote the
 command line options, global variable list, and the test structure so
-that it was convenient and uniform for all tests that run so far.
+that it was convenient and uniform for all tests that run so far.  This
+number is reset to 0 when the major is bumped to flag a debugging/beta
+release.
 
-<li> Third number (second minor).  The first digit is the combined
-number of tests that are supported.  The second digit (if any) indicates
-bug fixes or minor improvements.  When the number of tests reaches
-double digits (shortly) the third digit will be the bugfix digit.
+<li> Third number (second minor).  This number indicates the number of
+tests currently supported e.g. 16 diehard + 3 rgb + 2 sts = 21.
 
 </ul>
 
@@ -88,6 +89,28 @@ diehard sources are not directly incorporated into dieharder in any way
 in source form for that reason, to keep authorship and GPL licensing
 issues clear.</p>
 
+<p>Note that the same is not true about data.  Several of the diehard
+tests require that one use precomputed numbers as e.g. targets for some
+statistic.  Obviously in these cases we use the same numbers as diehard
+so we get the same, or comparable, results.</p>
+
+<p>Note also that a number of the tests are modified, usually in a way
+that should improve them.  For example, diehard relies heavily on
+overlapping -- testing random sequences that differ only in the number
+on the end -- to conserve rands that were "precious" when diehard was
+originally written in terms of disk space and other resources consumed.
+dieharder, on the other hand, has an indefinitely large source of rands
+in the many GSL routines built in and usually uses truly independent
+samples without any bytewise overlap, although some effort is being
+expended to allow the "overlap" flag -O to force the use of diehard-like
+overlapping samples for direct comparison.</p>  
+
+<p>Even aside from this sort of major difference, though, the algorithms
+were independently written and may do things in a slightly different
+(but equally valid) order and hence produce slightly different (but
+equally valid) results even when run on the same data with the same
+basic parameters.  Then, there may be bugs.  Be warned.</p>
+
 <hr>
 
 <center><h2>About DieHarder</h2></center>
@@ -104,7 +127,7 @@ systems) and inserting it so that it is can be called via the GSL
 interface, and it is strongly suggested that any random number generator
 to be tested by provided with such an interface.</p>
 
-<p>An file interface (still consistent with the GSL to the extent
+<p>A file interface (still consistent with the GSL to the extent
 possible) has been added that allows random numbers in either binary
 unsigned integer or a variety of ascii encoded formats to be read in
 from a file.  This permits dieharder to be used with "any" generator
@@ -135,7 +158,7 @@ rough order of importance:<p>
 <li> To provide a <b>readily available, rpm-installable toolset</b> so
 that "consumers" of random numbers (who typically use <i>large</i>
 numbers of random numbers in e.g. simulation or other research) can test
-the generator(s) they are using to verify their quality.
+the generator(s) they are using to verify their quality or lack thereof.
 
 <li> To provide a very <b>simple user interface</b> for that toolset for
 random number consumers.  A GUI is on the list of things to do, although
@@ -175,9 +198,12 @@ combination, where possible.
 <p>Note well that the primary objections I have towards diehard and STS
 are not that they are or are not adequate and complete; it is that the
 code itself is not properly packaged for reuse, testing, and extension.
-Diehard is remarkably poorly documented, as well, where STS is really
-nothing <i>but</i> its description in documentation with no readily
-available code for implementation.  DieHarder will hopefully rectify
+Diehard is remarkably poorly documented (with one small paragraph of
+text describing each test, even very complex ones, and with no
+accompanying description of how certain important data used in the
+program were actually computed). STS, in contrast, is really nothing
+<i>but</i> its description in documentation with no readily available
+open source code for implementation.  DieHarder will hopefully rectify
 both situations and be <i>both</i> well documented <i>and</i> available
 in clearly publically licensed code to make it extremely easy for
 anybody to test random numbers on any GSL-supported platform.</p>
@@ -187,7 +213,8 @@ it should port with no particular difficulty to other Unices, especially
 ones that support RPMs.  No particular effort is being expended at this
 time to make it run on Windows based compute platforms (due to a lack of
 availability of such platforms and compilers to rgb) but there is no
-reason to think that such a port would be terribly difficult.</p>
+reason to think that such a port would be terribly difficult PROVIDED
+that the Gnu Scientific Library is installable under Windows.</p>
 
 <center><h2>Essential Usage Synopsis</h2></center>
 
@@ -333,25 +360,31 @@ Indeed, dieharder runs many of the diehard tests 100 <i>independent</i>
 times, generating a p-value for each, and plots a histogram of the
 p-values and generates a p-value for the (presumed uniform) distribution
 of p-values!  This approach mimics the histogram presented in the STS
-suite but augments it with a hard number.</p>  
+suite but augments it with a hard Kolmogorov-Smirnov p-value that
+describes the distribution of p itself in many independent test
+runs!</p>
 
-<p>It protects one from the "p happens" problem -- every now and then
-you <i>will</i> have a run with a very low or high p from a <i>good</i>
-generator, but a good generator will generate a uniform distribution of
-p-values.  Dieharder lets you visually decide if the distribution is or
-isn't credibly uniform, while giving you an index that in most cases is
-a fairly clear "good" or "bad" indicator for a given random sequence or
-generator.</p>
+<p>This protects one somewhat from the "p happens" problem described by
+Marsaglia -- every now and then you <i>will</i> have a run with a very
+low p from a <i>good</i> generator, but overall a good generator will
+generate a uniform distribution of p-values.  Dieharder lets you
+visually decide if the distribution is or isn't credibly uniform, while
+giving you an index that in most cases is a fairly clear "good" or "bad"
+indicator for a given random sequence or generator.  Direct control over
+the number of samples used in the computation of the KS p-value (as well
+as other important test parameters) permit one to "crank up" the
+generator to clarify what appears to be a marginal level of success or
+failure based on a few separate runs.</p>
 
 <p>File input rands are delivered to the tests on demand, but if the
 test needs more than are available it simply rewinds the file and cycles
 through it again, and again, and again as needed.  Obviously this
-signifnicantly reduces the sample space and can lead to completely
+significantly reduces the sample space and can lead to completely
 incorrect results for the p-value histograms unless there are enough
 rands to run EACH test without repetition (it is harmless to reuse the
 sequence for different tests).  Let the user beware!</p>
 
-<p>List of the CURRENT fully implemented tests (as of the 07/07/06
+<p>List of the CURRENT fully implemented tests (as of the 07/12/06
 snapshot):</p>
 <pre>
 rgb@lilith|B:1346>dieharder -l
@@ -379,6 +412,7 @@ reasonable amount of time).
    -d 13 Diehard DNA test
    -d 14 Diehard Count the 1's (stream) test
    -d 15 Diehard Count the 1's (byte) test
+   -d 16 Diehard Operm5 test
 
              RGB Tests
    -r 1 Bit Persist test
@@ -394,8 +428,11 @@ No user-developed test are installed at this time.
 </pre>
 
 <p>Note that the design goal of completely encapsulating diehard is
-nearing completion with 8 tests supported and (apparently)
-functional as of 7/7/06.</p>
+<b>COMPLETED</b> with all tests apparently functional as of 7/12/06.
+dieharder is now in a "beta" debugging/testing phase until the new code
+shakes out, but it produces what are for the most part very reasonable
+and consistent values for all the tests on known "good" or "bad" random
+number generators encapsulated in the GSL.</p>
 
 <p>Full descriptions of the tests are available (as you can see) from
 within the tool and source documentation.  All tests are completely and
@@ -404,37 +441,39 @@ functionally modified or extended relative to the original source code
 published in the originating suite.  The author (rgb) bears complete
 responsibility for these changes, subject to the standard GPL code
 disclaimer (in essence, yes it's my fault if they don't work but using
-the tool is at your own risk).</p>
+the tool is at your own risk and you can <i>fix it</i> if it bothers
+you and/or I don't fix it first).</p>
 
 <center><h2>Development Notes</h2></center>
 
-<p>All tests are currently using the x.6.x test encapsulation and
-underlying KS and chisq tests.  I'm in the process of adding the rest of
-Diehard as fast as I can rewrite them in the standard test encapsulation
-while adding new generators (e.g. file input) and debugging as needed.
-Some of the tests will likely require extension of the underlying tools,
-e.g.  covariance matrix to p-value, that I'm hoping is facilitated by
-the GSL.  I also have my eye on the as-yet unimplemented tests from
-Knuth's <i>The Art of Programming</i> and lagged correlation.</p>
+<p>All tests are encapsulated to be as standard as possible in the way
+they compute p-values from single statistics or from vectors of
+statistics, and in the way they implement the underlying KS and chisq
+tests.  Diehard is now complete in dieharder, and attention will turn
+towards implementing more selected tests from the STS.  I also have my
+eye on the as-yet unimplemented tests from Knuth's <i>The Art of
+Programming</i>, lagged correlation, and more bitwise tests that have
+occurred to me as I ported diehard (which does some things somewhat
+backwards or indirectly, IMO).</p>
 
 <center><h2>Thoughts for the Future/Wish List/To Do</h2></center>
 
 <ul>
 
-<li> Tests of GSL distribution generators. 
+<li> Tests of GSL random distribution generators. 
 
-<li> Anderson-Darling KS test.
+<li> Anderson-Darling KS test.  Kuiper works, but seems less intuitive.
 
 <li> Covariance matrix to p-value (required by various Diehard tests).
 
 <li> STS binning of final p-value sampling to determine uniformity
-(alternative to KS test).
+(poor man's alternative to KS test?).
 
 <li> New tests, compressions of existing ones that are "different" but
 really the same.  Hyperplane tests.  Spectral tests.
 
-<li> Collaborators.  Co-developers welcome, as are contributions from
-users.
+<li> Collaborators.  Co-developers welcome, as are contributions or
+suggestions from users.
 
 </ul>
 
@@ -445,88 +484,249 @@ generator that clearly passes (mt19937) and one that clearly fails
 (randu):</p>
 
 <pre>
-rgb@lilith|B:1350>dieharder -d 1 -g 12
+
+rgb@lilith|B:1361>dieharder -g 45 -d 16 -t 1000000 -O
 
 #==================================================================
-#                Diehard "runs" test (modified).
-# This tests the distribution of increasing and decreasing runs
-# of integers.  If called with reasonable parameters e.g. -s 100
-# or greater and -n 100000 or greater, it will compute a vector
-# of p-values for up and down and verify that the proportion
-# of these values less than 0.01 is consistent with a uniform
-# distribution.
+#                Diehard "OPERM5" test.
+# This is the OPERM5 test.  It looks at a sequence of one mill- 
+# ion 32-bit random integers.  Each set of five consecutive     
+# integers can be in one of 120 states, for the 5! possible or- 
+# derings of five numbers.  Thus the 5th, 6th, 7th,...numbers   
+# each provide a state. As many thousands of state transitions  
+# are observed,  cumulative counts are made of the number of    
+# occurences of each state.  Then the quadratic form in the     
+# weak inverse of the 120x120 covariance matrix yields a test   
+# equivalent to the likelihood ratio test that the 120 cell     
+# counts came from the specified (asymptotically) normal dis-   
+# tribution with the specified 120x120 covariance matrix (with  
+# rank 99).  This version uses 1,000,000 integers, twice.       
 #==================================================================
-# Random number generator tested: mt19937
-# size of vector tested = 10000 (100000 or more suggested)
-# p = 0.102725 for diehard_runs test from Kuiper Kolmogorov-Smirnov
-#     test on 200 pvalues (up runs + down runs).
-
-rgb@lilith|B:1352>dieharder -d 1 -g 40
-
+# Random number generator tested: ranlxd2
+# Number of rands required is around 2^23 for 100 samples.
 #==================================================================
-#                Diehard "runs" test (modified).
-# This tests the distribution of increasing and decreasing runs
-# of integers.  If called with reasonable parameters e.g. -s 100
-# or greater and -n 100000 or greater, it will compute a vector
-# of p-values for up and down and verify that the proportion
-# of these values less than 0.01 is consistent with a uniform
-# distribution.
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#   20|    |    |    |    |    |    |    |    |    |    |
+#     |    |    |    |    |    |    |    |    |    |    |
+#   18|    |    |    |    |    |    |    |    |    |    |
+#     |    |    |    |    |    |    |    |    |    |    |
+#   16|    |    |    |    |    |    |    |    |    |****|
+#     |****|    |    |    |    |    |    |    |****|****|
+#   14|****|    |    |    |    |    |    |    |****|****|
+#     |****|    |    |    |    |    |    |    |****|****|
+#   12|****|    |    |    |    |****|    |    |****|****|
+#     |****|    |    |    |    |****|    |    |****|****|
+#   10|****|****|    |    |    |****|    |    |****|****|
+#     |****|****|    |    |    |****|    |    |****|****|
+#    8|****|****|    |    |    |****|    |    |****|****|
+#     |****|****|    |****|****|****|****|    |****|****|
+#    6|****|****|****|****|****|****|****|    |****|****|
+#     |****|****|****|****|****|****|****|****|****|****|
+#    4|****|****|****|****|****|****|****|****|****|****|
+#     |****|****|****|****|****|****|****|****|****|****|
+#    2|****|****|****|****|****|****|****|****|****|****|
+#     |****|****|****|****|****|****|****|****|****|****|
+#     |--------------------------------------------------
+#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
 #==================================================================
-# Random number generator tested: randu
-# size of vector tested = 10000 (100000 or more suggested)
-# p = 0.006163 for diehard_runs test from Kuiper Kolmogorov-Smirnov
-#     test on 200 pvalues (up runs + down runs).
+# p = 0.055352 for diehard_operm5 test from Kuiper Kolmogorov-Smirnov
+#     test on 100 pvalues.
 </pre>
 
-<p>In the latter case, the value of p indicates that there is only a
-0.6% chance that a perfect random number generator could have produced
-the observed distribution of p-values from 100 independent runs of 10000
-samples each.  It is thus unlikely (in a manner of speaking) that randu
-is a good random number generator, but it is still possible -- even a
-perfect generator <i>could</i> have produced the observed result, it
-just isn't likely.  One advantage of dieharder is that one can easily
-crank up the number of samples per test (-t) to make failure
-certain:</p> 
-<pre> 
-rgb@lilith|B:1355>dieharder -d 1 -g 40 -t 1000000
+<p>dieharder suggests that the ranlxd2 generator (one of the best
+generators in the GSL!) only marginally passes the operm5 test from
+diehard, at least when it is run 100 times.  The histogram above is not
+terribly uniform, although histograms as bad as this might well result
+every twenty or thirty runs.  In actual fact, if one increases the
+number of p-value samples to 200 or more, the failure becomes apparent
+and inescapable as the p-value of the resulting distribution drops to
+zero.  This illustrates very clearly the importance of being able to
+vary the number of independent runs and the computation of a final KS
+score based on the resulting distribution of p.</p>
+
+<p>Now let's look at the results of the same test applied to a
+<i>weak</i> generator, randu:</p>
+<pre>
+rgb@lilith|B:1363>dieharder -g 40 -d 16 -t 1000000 -O
 
 #==================================================================
-#                Diehard "runs" test (modified).
-# This tests the distribution of increasing and decreasing runs
-# of integers.  If called with reasonable parameters e.g. -s 100
-# or greater and -n 100000 or greater, it will compute a vector
-# of p-values for up and down and verify that the proportion
-# of these values less than 0.01 is consistent with a uniform
-# distribution.
+#                Diehard "OPERM5" test.
+# This is the OPERM5 test.  It looks at a sequence of one mill- 
+# ion 32-bit random integers.  Each set of five consecutive     
+# integers can be in one of 120 states, for the 5! possible or- 
+# derings of five numbers.  Thus the 5th, 6th, 7th,...numbers   
+# each provide a state. As many thousands of state transitions  
+# are observed,  cumulative counts are made of the number of    
+# occurences of each state.  Then the quadratic form in the     
+# weak inverse of the 120x120 covariance matrix yields a test   
+# equivalent to the likelihood ratio test that the 120 cell     
+# counts came from the specified (asymptotically) normal dis-   
+# tribution with the specified 120x120 covariance matrix (with  
+# rank 99).  This version uses 1,000,000 integers, twice.       
 #==================================================================
 # Random number generator tested: randu
-# size of vector tested = 1000000 (100000 or more suggested)
-# p = 0.000000 for diehard_runs test from Kuiper Kolmogorov-Smirnov
-#     test on 200 pvalues (up runs + down runs).
-# Generator randu FAILS at 0.01% for diehard_runs.
+# Number of rands required is around 2^23 for 100 samples.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#   20|****|    |    |    |    |    |    |    |    |    |
+#     |****|    |    |    |    |    |    |    |    |    |
+#   18|****|    |    |    |    |    |    |    |    |    |
+#     |****|    |    |    |    |    |    |    |    |    |
+#   16|****|    |    |    |    |    |    |    |    |    |
+#     |****|    |    |    |    |    |    |    |    |    |
+#   14|****|    |    |    |    |    |    |    |    |    |
+#     |****|    |    |    |    |    |    |    |    |    |
+#   12|****|    |    |    |    |    |    |    |    |    |
+#     |****|    |    |    |    |    |    |    |    |    |
+#   10|****|    |    |    |    |    |    |    |    |    |
+#     |****|    |    |    |    |    |    |    |    |    |
+#    8|****|    |    |    |    |    |    |    |    |    |
+#     |****|    |    |    |    |    |    |    |    |    |
+#    6|****|    |    |    |    |    |    |    |    |    |
+#     |****|    |    |    |    |    |    |    |    |    |
+#    4|****|    |    |    |    |    |    |    |    |    |
+#     |****|    |    |    |    |    |    |    |    |    |
+#    2|****|    |    |****|    |    |    |    |    |    |
+#     |****|****|****|****|    |    |****|    |    |    |
+#     |--------------------------------------------------
+#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+# p = 0.000000 for diehard_operm5 test from Kuiper Kolmogorov-Smirnov
+#     test on 100 pvalues.
+# Generator randu FAILS at 0.01% for diehard_operm5.
 </pre>
+
+<p>Here there is no doubt whatsoever that the generator is a poor one --
+its distribution of p is not uniform at all.  Running the test once or
+twice <i>might</i> have resulted in the five "reasonable" values of p
+being returned and one might have erroneously concluded that the
+generator was not unsound with respect to this test.  Running the test
+100 times leaves one in a state of clarity.</p>
 
 <p>randu <i>fails</i> this test.  To be more precise, the probability
 that randu is a "good" generator but produced the observed distribution
-is less than 0.000001, according to this test.  mt19937, on the other
-hand, still returns perfectly reasonable values of p from the final KS
-test, even when run repeatedly with still larger -t.</p>
+is less than 0.000000, according to this test.</p>
+
+<p>It isn't fair, of course, to conclude that using any generator that
+fails a test (or even fails all the tests) is a "bad thing to do" in all
+programming contexts.  It is important to remember that <i>all
+pseudorandom number generators will fail</i> careful enough or sensitive
+enough tests because "random number generator" is indeed a mathematical
+oxymoron.  Good generators simply <i>pass</i> many of the tests as far
+as we are able to push them.</p>
+
+<p>It is worth observing this failure with a test that <i>no</i>
+generator can pass -- the simple test of uniformly distributing all
+possible n-tuple bit patterns in the string of presumably random bits
+emitted by the generator:</p>
+
+<pre>
+rgb@lilith|B:1369>dieharder -r 2 -g 45 -t 100000
+#==================================================================
+#                 rgb_bitdist Test Description
+# Accumulates the frequencies of all n-tuples of bits in a list
+# of random integers and compares the distribution thus generated
+# with the theoretical (binomial) histogram, forming chisq and the
+# associated p-value.  In this test n-tuples are selected without
+# WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+# are independent.  Every other sample is offset modulus of the
+# sample index and ntuple_max.
+#==================================================================
+# random number generator: ranlxd2
+# p-samples = 100   bitstring samples = 100000  bits sampled = 128
+ntuple = 0
+p =  1.000 for 1-tuplet test from Kuiper Kolmogorov-Smirnov
+#     test on 100 pvalues.
+p =  0.238 for 2-tuplet test from Kuiper Kolmogorov-Smirnov
+#     test on 100 pvalues.
+p =  0.030 for 3-tuplet test from Kuiper Kolmogorov-Smirnov
+#     test on 100 pvalues.
+p =  0.410 for 4-tuplet test from Kuiper Kolmogorov-Smirnov
+#     test on 100 pvalues.
+p =  0.303 for 5-tuplet test from Kuiper Kolmogorov-Smirnov
+#     test on 100 pvalues.
+p =  0.000 for 6-tuplet test from Kuiper Kolmogorov-Smirnov
+#     test on 100 pvalues.
+# Generator ranlxd2 FAILS at 0.01% for 6-tuplets.  rgb_bitdist
+terminating.
+</pre>
+
+<p>This test shows that ranlxd2 is in fact a strong random number
+generator as many bit patterns show up with the correct average
+frequency -- it has the "right" number of 1's and 0's (perhaps too right
+-- the p-value is suspiciously high).  It has reasonable p-values for
+the frequencies of the four two-bit patterns, the eight three-bit
+patterns, the sixteen four-bit patterns, and even the 32 five-bit
+patterns.  However, it finds that the 64 six-bit patterns are <i>not</i>
+uniformly distributed within the bounds permitted by statistics, and
+consequently <i>all higher n-bit patterns</i> will similarly fail.</p>
+
+<p>Again, compare this to a <i>bad</i> random number generator such as
+R250:</p>
+
+<pre>
+rgb@lilith|B:1371>dieharder -r 2 -g 15 -t 100000
+#==================================================================
+#                 rgb_bitdist Test Description
+# Accumulates the frequencies of all n-tuples of bits in a list
+# of random integers and compares the distribution thus generated
+# with the theoretical (binomial) histogram, forming chisq and the
+# associated p-value.  In this test n-tuples are selected without
+# WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+# are independent.  Every other sample is offset modulus of the
+# sample index and ntuple_max.
+#==================================================================
+# random number generator: r250
+# p-samples = 100   bitstring samples = 100000  bits sampled = 128
+ntuple = 0
+p =  0.000 for 1-tuplet test from Kuiper Kolmogorov-Smirnov
+#     test on 100 pvalues.
+# Generator r250 FAILS at 0.01% for 1-tuplets.  rgb_bitdist terminating.
+</pre>
+
+<p>R250 doesn't even have balanced numbers of 0 bits and 1 bits within
+the bounds required by a presumed binomial distribution with p = q =
+0.5 for a "bit" over 3 million bits per sample, and 100 samples.  Again,
+it cannot possibly have the right fraction of 00, 01, 10 and 11 patterns
+as balance in these <i>implies</i> balance in 0 vs 1.</p>
+
+<p>Hopefully these two simple examples show that dieharder can easily
+reveal interesting information about <i>how</i> a random number fails
+and can be used to <i>push</i> a generator to failure (or not) rather
+than leave it in a kind of "limbo" if you test a file of presumed random
+numbers and get an ambiguous result.</p>
 
 <p>All the tests have a similar call format, and share control
-parameters to the extent possible.  At this point I expect to live with
-the overall structure and encapsulation of the tests for a while (after
-completing a fairly major overhaul) and will spend time in the near term
-just adding tests.</p>
+parameters and the code used to evaluate the underlying statistics to
+the extent possible.  At this point I plan to spend most of my time in
+the near term just adding tests and fixing bugs.  The general design of
+dieharder is reasonably sound, although I may compress parts of the code
+that are somewhat repetitious (per test) still further.</p>
 
 <center><h2>Conclusions</h2></center>
 
-<p>I hope that even during development, you find dieharder useful.  If
-you have any interest in participating in its development, be sure to
-let me know, especially if you have decent coding skills and a basic
-knowledge of statistics.  I have documents to help with the latter, if
-you have the programming skills and want to LEARN statistics.</p>
+<p>I hope that even during its development, you find dieharder useful.
+Remember, it is fully open source, so you can freely modify and
+redistribute the code according to the rules laid out in the Gnu Public
+License (version 2b).  In particular, you can easily add random number
+generators using the provided examples as templates, or you can add
+tests of your own by copying the general layout of the existing tests
+(working toward a p-value per run, cumulating (say) 100 runs, and
+turning the resulting KS test into an overall p-value).  Best of all,
+you can look inside the code and see how the tests work, which may
+inspire you to create a new test -- or a new generator that can
+<i>pass</i> a test.</p>
+
+<p>ITo conclude, if you have any interest in participating in the
+development of dieharder, be sure to let me know, especially if you have
+decent C coding skills (including familiarity with Subversion and the
+GSL) and a basic knowledge of statistics.  I even have documents to help
+with the latter, if you have the programming skills and want to LEARN
+statistics.</p>
 
 <p>Submit bug reports, etc. to</p>
 <address>
-  <a href="mailto:rgb@phy.duke.edu">rgb@phy.duke.edu</a> 
+  rgb at phy dot duke dot edu
 </address>
