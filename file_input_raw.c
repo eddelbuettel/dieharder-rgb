@@ -20,19 +20,28 @@ static unsigned long int file_input_raw_get (void *vstate);
 static double file_input_raw_get_double (void *vstate);
 static void file_input_raw_set (void *vstate, unsigned long int s);
 
-typedef struct
-  {
-    FILE *fp;
-    unsigned int flen;
-    unsigned int rptr;
-  } file_input_raw_state_t;
+/*
+ * This typedef struct file_input_state_t struct contains the data
+ * maintained on the operation of the file_input rng, and can be accessed
+ * via rng->state->whatever
+ *
+ *   fp is the file pointer
+ *   flen is the number of rands in the file (filecount)
+ *   rptr is a count of rands returned since last rewind
+ *   rtot is  * a count of rands returned since the file was opened or it
+ *      was deliberately reset.
+ *   rewind_cnt is a count of how many times the file was rewound since
+ *      its last open.
+ *
+ * file_input_state_t is defined in dieharder.h currently and shared with
+ * file_input_raw.c
+ */
 
-static unsigned long int
-file_input_raw_get (void *vstate)
+static unsigned long int file_input_raw_get(void *vstate)
 {
 
- file_input_raw_state_t *state = (file_input_raw_state_t *) vstate;
- unsigned int nread,iret;
+ file_input_state_t *state = (file_input_state_t *) vstate;
+ unsigned int iret;
 
  /*
   * Check that the file is open (via file_input_raw_set()).
@@ -40,36 +49,42 @@ file_input_raw_get (void *vstate)
  if(state->fp != NULL) {
 
    /*
-    * We'll hope and assume that the file read is already sensibly
-    * buffered and just read in the next one and return it.
+    * Read in the next random number from the file
     */
-   if(state->rptr < state->flen){
-     if((nread = fread(&iret,sizeof(uint),1,state->fp)) == 1){
-       /* Successful read */
-       state->rptr++;
-       /*
-        * Now we KNOW where the last record lies, so we precisely
-        * rewind/reset when we've exhausted the file.
-        */
-       if(state->rptr == state->flen){
-         file_input_raw_set(vstate, 0);
-       }
-       /* printf("%4u/%4u:\t%9u\n",state->rptr,state->flen,iret); */
-       return(iret);
-     } else {
-       fprintf(stderr,"# file_input_raw(): Error.  This cannot happen.\n");
-       exit(0);
-     }
+   if(fread(&iret,sizeof(uint),1,state->fp) != 1){
+     fprintf(stderr,"# file_input_raw(): Error.  This cannot happen.\n");
+     exit(0);
    }
+
+   /*
+    * Success. iret is presumably valid and ready to return.  Increment the
+    * counter of rands read so far.
+    */
+   state->rptr++;
+   state->rtot++;
+   if(verbose){
+     fprintf(stdout,"# file_input() %u: %u/%u -> %u\n",state->rtot,state->rptr,state->flen,iret);
+   }
+
+   /*
+    * This (with seed s == 0) basically rewinds the file and resets
+    * state->rptr to 0, but rtot keeps running,
+    */
+   if(state->rptr == state->flen){
+     /*
+      * Reset/rewind the file
+      */
+     file_input_raw_set(vstate, 0);
+   }
+   return(iret);
  } else {
-   fprintf(stderr,"# file_input_raw_get(): Error: %s not open, call file_input_raw_set() first.  Exiting.\n", filename);
+   fprintf(stderr,"Error: %s not open.  Exiting.\n", filename);
    exit(0);
  }
 
 }
 
-static double
-file_input_raw_get_double (void *vstate)
+static double file_input_raw_get_double (void *vstate)
 {
   return file_input_raw_get (vstate) / (double) UINT_MAX;
 }
@@ -83,22 +98,18 @@ file_input_raw_get_double (void *vstate)
  * page by file_input_raw_get().
  */
 
-static void
-file_input_raw_set (void *vstate, unsigned long int s)
+static void file_input_raw_set (void *vstate, unsigned long int s)
 {
 
  static uint first=1;
  struct stat sbuf;
 
- file_input_raw_state_t *state = (file_input_raw_state_t *) vstate;
+ file_input_state_t *state = (file_input_state_t *) vstate;
 
-
- /*
-  * Clear this pointer.  We always start over when file_input_raw_set() is
-  * called.
-  */
- /* printf("Setting state->rptr = %4u to zero.\n",state->rptr); */
- state->rptr = 0;
+ if(verbose == D_FILE_INPUT_RAW || verbose == D_ALL){
+   fprintf(stdout,"# file_input_raw(): entering file_input_raw_set\n");
+   fprintf(stdout,"# file_input_raw(): state->fp = %0x, seed = %lu\n",state->fp,s);
+ }
 
  /*
   * Get and set the file length, check to make sure the file exists,
@@ -126,6 +137,30 @@ file_input_raw_set (void *vstate, unsigned long int s)
      fprintf(stderr,"# file_input_raw(): Error -- path %s not regular file.\n",filename);
      exit(0);
    }
+   /*
+    * This segment is executed only one time when the file is FIRST opened.
+    */
+   first = 0;
+ }
+
+ /*
+  * We use the "seed" to determine whether or not to reopen or
+  * rewind.  A seed s == 0 for an open file means rewind; a seed
+  * of anything else forces a close (resetting rewind_cnt) followed
+  * by a reopen.
+  */
+ if(state->fp && s ) {
+   if(verbose == D_FILE_INPUT || verbose == D_ALL){
+     fprintf(stdout,"# file_input(): Closing/reopening/resetting %s\n",filename);
+   }
+   fclose(state->fp);
+   state->fp = NULL;
+ }
+
+ if (state->fp == NULL){
+   if(verbose == D_FILE_INPUT_RAW || verbose == D_ALL){
+     fprintf(stdout,"# file_input_raw(): Opening %s\n", filename);
+   }
 
    /*
     * If we get here, the file exists, is a regular file, and we know its
@@ -140,17 +175,39 @@ file_input_raw_set (void *vstate, unsigned long int s)
    /*
     * OK, so if we get here, the file is open.
     */
-   if(verbose){
+   if(verbose == D_FILE_INPUT_RAW || verbose == D_ALL){
      fprintf(stdout,"# file_input_raw(): Opened %s for the first time.\n", filename);
      fprintf(stdout,"# file_input_raw(): state->fp is %08x, file contains %u unsigned integers.\n",state->fp,state->flen);
    }
-   first = 0;
- } else {
-   /* printf("Rewinding %s\n",filename); */
-   rewind(state->fp);
-   if(verbose){
-     fprintf(stdout,"# file_input_raw():  Rewinding %s, resetting rptr = %lu\n", filename,state->rptr);
+   state->rptr = 0;  /* No rands read yet */
+   /*
+    * We only reset the entire file if there is a nonzero seed passed in.
+    * This clears both rtot and rewind_cnt in addition to rptr.
+    */
+   if(s) {
+     state->rtot = 0;
+     state->rewind_cnt = 0;
    }
+
+ } else {
+   /*
+    * Rewinding seriously reduces the size of the space being explored.
+    * On the other hand, bombing a test also sucks, especially in a long
+    * -a(ll) run.  Therefore we rewind every time our file pointer reaches
+    * the end of the file or call gsl_rng_set(rng,0).
+    */
+   if(state->rptr >= state->flen){
+     rewind(state->fp);
+     state->rptr = 0;
+     state->rewind_cnt++;
+     if(verbose == D_FILE_INPUT_RAW || verbose == D_ALL){
+       fprintf(stderr,"# file_input_raw(): Rewinding %s at rtot = %u\n", filename,state->rtot);
+       fprintf(stderr,"# file_input_raw(): Rewind count = %u, resetting rptr = %lu\n",state->rewind_cnt,state->rptr);
+     }
+   } else {
+     return;
+   }
+
  }
 
 }
@@ -159,7 +216,7 @@ static const gsl_rng_type file_input_raw_type =
 {"file_input_raw",                        /* name */
  UINT_MAX,                    /* RAND_MAX */
  0,                           /* RAND_MIN */
- sizeof (file_input_raw_state_t),
+ sizeof (file_input_state_t),
  &file_input_raw_set,
  &file_input_raw_get,
  &file_input_raw_get_double};

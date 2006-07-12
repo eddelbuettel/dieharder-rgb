@@ -16,38 +16,37 @@
 #include "dieharder.h"
 
 /*
- * This is a wrapper for getting random numbers from a file.  OH MY
- * have we been screwing up the use of state.  Note CAREFULLY how
- * we must proceed to access the state variables inside of a given
- * rng.
+ * This is a wrapper for getting random numbers from a file.  Note
+ * CAREFULLY how we must proceed to access the state variables inside of a
+ * given rng.
  */
 
-/* static unsigned long int file_input_get (gsl_rng *rng); */
 static unsigned long int file_input_get (void *vstate);
 static double file_input_get_double (void *vstate);
 static void file_input_set (void *vstate, unsigned long int s);
 
 /*
- * This struct contains the data maintained on the operation of
- * the file_input rng.
- *  fp is the file pointer
- *  filenumtype is a character used to determine how to read it
- *     (snitched from the associated fscanf type, basically)
- *  rptr is a count of rands returned since last rewind
- *  rtot is a count of rands returned since the file was opened
- *  rewind_cnt is a count of how many times the file was rewound
- *     since its last open.
+ * This typedef struct file_input_state_t struct contains the data
+ * maintained on the operation of the file_input rng, and can be accessed
+ * via rng->state->whatever
+ *
+ *   fp is the file pointer
+ *   flen is the number of rands in the file (state->flen)
+ *   rptr is a count of rands returned since last rewind
+ *   rtot is  * a count of rands returned since the file was opened or it
+ *      was deliberately reset.
+ *   rewind_cnt is a count of how many times the file was rewound since
+ *      its last open.
+ *
+ * file_input_state_t is defined in dieharder.h currently and shared with
+ * file_input_raw.c
+ *
+ * In this way the routines below should work for BOTH file_input AND
+ * file_input_raw (as would rng->state->rtot, e.g., from the calling
+ * routine :-).
  */
-typedef struct
-  {
-    FILE *fp;
-    uint rptr;
-    uint rtot;
-    uint rewind_cnt;
-  } file_input_state_t;
 
-uint
-file_input_get_rewind_cnt(gsl_rng *rng)
+uint file_input_get_rewind_cnt(gsl_rng *rng)
 {
   file_input_state_t *state = (file_input_state_t *) rng->state;
   return state->rewind_cnt;
@@ -67,118 +66,124 @@ file_input_set_rtot(gsl_rng *rng,uint value)
   state->rtot = 0;
 }
 
-static unsigned long int
-file_input_get (void *vstate)
+static unsigned long int file_input_get (void *vstate)
 {
-  file_input_state_t *state = (file_input_state_t *) vstate;
-  int i;
-  unsigned long int j,nmask = 0xFFFFFFFF;
-  double f;
-  char inbuf[K]; /* input buffer */
-  if(state->fp != NULL) {
-    /*
-     * Read in the next random number from the file
-     */
-    if(fgets(inbuf,K,state->fp) == 0){
-      fprintf(stderr,"# file_input(): Error: EOF on %s\n",filename);
-      exit(0);
-    }
-    /*
-     * Increment the counter of rands read so far.
-     */
-    state->rptr++;
-    state->rtot++;
 
-    /*
-     * Convert the STRING input above into a uint according to
-     * the "type" (basically matching scanf type).
-     */
-    switch(filetype){
-      /*
-       * 32 bit unsigned int by assumption
-       */
-      case 'd':
-      case 'i':
-      case 'u':
-        if(0 == sscanf(inbuf,"%lu",&j)){
-          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
-          exit(0);
-        }
-        break;
-      /*
-       * double precision floats get converted to 32 bit uint
-       */
-      case 'e':
-      case 'E':
-      case 'f':
-      case 'F':
-      case 'g':
-        if(0 == sscanf(inbuf,"%g",&f)){
-          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
-          exit(0);
-        }
-	j = (uint) f*UINT_MAX;
-        break;
-      /*
-       * OK, so octal is really pretty silly, but we got it.  Still uint.
-       */
-      case 'o':
-        if(0 == sscanf(inbuf,"%lo",&j)){
-          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
-          exit(0);
-        }
-        break;
-      /*
-       * hexadecimal is silly too, but we got it.  uint, of course.
-       */
-      case 'x':
-        if(0 == sscanf(inbuf,"%lx",&j)){
-          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
-          exit(0);
-        }
-        break;
-      case 'X':
-        if(0 == sscanf(inbuf,"%lX",&j)){
-          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
-          exit(0);
-        }
-        break;
-      /*
-       * binary is NOT so silly.  Let's do it.  The hard way.  A typical
-       * entry should look like:
-       *    01110101001010100100111101101110
-       */
-      case 'b':
-        j = bit2uint(inbuf,filenumbits);
-	/* Debugging cruft
-	printf("j = %u: binary = ",j);
-	dumpbits((uint *)&j,32);
-	*/
-        break;
-    }
-    if(verbose){
-       fprintf(stdout,"# file_input() %u: %u/%u -> %u\n",state->rtot,state->rptr,filecount,j);
-    }
-    /*
-     * This (with seed s == 0) basically rewinds the file and resets
-     * state->rptr to 0, but rtot keeps running,
-     */
-    if(state->rptr == filecount) {
-      /*
-       * Should be resetting/rewinding files
-       */
-      file_input_set(vstate, 0);
-    }
-    return j;
-  } else {
-    fprintf(stderr,"Error: %s not open.  Exiting.\n", filename);
-    exit(0);
-  }
+ file_input_state_t *state = (file_input_state_t *) vstate;
+ unsigned int iret;
+ double f;
+ char inbuf[K]; /* input buffer */
+
+ /*
+  * Check that the file is open (via file_input_set()).
+  */
+ if(state->fp != NULL) {
+
+   /*
+    * Read in the next random number from the file
+    */
+   if(fgets(inbuf,K,state->fp) == 0){
+     fprintf(stderr,"# file_input(): Error: EOF on %s\n",filename);
+     exit(0);
+   }
+   /*
+    * Got one (as we pretty much have to unless the file is badly
+    * broken).  Convert the STRING input above into a uint according to
+    * the "type" (basically matching scanf type).
+    */
+   switch(filetype){
+     /*
+      * 32 bit unsigned int by assumption
+      */
+     case 'd':
+     case 'i':
+     case 'u':
+       if(0 == sscanf(inbuf,"%lu",&iret)){
+         fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+         exit(0);
+       }
+       break;
+     /*
+      * double precision floats get converted to 32 bit uint
+      */
+     case 'e':
+     case 'E':
+     case 'f':
+     case 'F':
+     case 'g':
+       if(0 == sscanf(inbuf,"%g",&f)){
+         fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+         exit(0);
+       }
+       iret = (uint) f*UINT_MAX;
+       break;
+     /*
+      * OK, so octal is really pretty silly, but we got it.  Still uint.
+      */
+     case 'o':
+       if(0 == sscanf(inbuf,"%lo",&iret)){
+         fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+         exit(0);
+       }
+       break;
+     /*
+      * hexadecimal is silly too, but we got it.  uint, of course.
+      */
+     case 'x':
+       if(0 == sscanf(inbuf,"%lx",&iret)){
+         fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+         exit(0);
+       }
+       break;
+     case 'X':
+       if(0 == sscanf(inbuf,"%lX",&iret)){
+         fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
+         exit(0);
+       }
+       break;
+     /*
+      * binary is NOT so silly.  Let's do it.  The hard way.  A typical
+      * entry should look like:
+      *    01110101001010100100111101101110
+      */
+     case 'b':
+       iret = bit2uint(inbuf,filenumbits);
+       break;
+     default:
+       fprintf(stderr,"# file_input(): Error. File type %c is not recognized.\n",filetype);
+       exit(0);
+       break;
+   }
+
+   /*
+    * Success. iret is presumably valid and ready to return.  Increment the
+    * counter of rands read so far.
+    */
+   state->rptr++;
+   state->rtot++;
+   if(verbose){
+     fprintf(stdout,"# file_input() %u: %u/%u -> %u\n",state->rtot,state->rptr,state->flen,iret);
+   }
+
+   /*
+    * This (with seed s == 0) basically rewinds the file and resets
+    * state->rptr to 0, but rtot keeps running,
+    */
+   if(state->rptr == state->flen) {
+     /*
+      * Reset/rewind the file
+      */
+     file_input_set(vstate, 0);
+   }
+   return iret;
+ } else {
+   fprintf(stderr,"Error: %s not open.  Exiting.\n", filename);
+   exit(0);
+ }
 
 }
 
-static double
-file_input_get_double (void *vstate)
+static double file_input_get_double (void *vstate)
 {
   return file_input_get (vstate) / (double) UINT_MAX;
 }
@@ -191,14 +196,12 @@ file_input_get_double (void *vstate)
  * header
  */
 
-static void
-file_input_set (void *vstate, unsigned long int s)
+static void file_input_set (void *vstate, unsigned long int s)
 {
 
- int i;  /* loop variable */
- int cnt;
- int numfields;
+ int cnt,numfields;
  char inbuf[K]; /* input buffer */
+
  file_input_state_t *state = (file_input_state_t *) vstate;
 
  if(verbose == D_FILE_INPUT || verbose == D_ALL){
@@ -224,30 +227,44 @@ file_input_set (void *vstate, unsigned long int s)
    if(verbose == D_FILE_INPUT || verbose == D_ALL){
      fprintf(stdout,"# file_input(): Opening %s\n", filename);
    }
-   /* If never opened, open */
+
+   /*
+    * If we get here, the file exists, is a regular file, and we know its
+    * length.  We can now open it.  The test catches all other conditions
+    * that might keep the file from reading, e.g. permissions.
+    */
    if ((state->fp = fopen(filename,"r")) == NULL) {
-     fprintf(stderr,"Error: Cannot open %s, exiting.\n", filename);
+     fprintf(stderr,"# file_input(): Error: Cannot open %s, exiting.\n", filename);
      exit(0);
    }
+
+
+   /*
+    * OK, so if we get here, the file is open.
+    */
    if(verbose == D_FILE_INPUT || verbose == D_ALL){
      fprintf(stdout,"# file_input(): Opened %s for the first time at %x\n", filename,state->fp);
      fprintf(stdout,"# file_input(): state->fp is %08x\n",state->fp);
      fprintf(stdout,"# file_input(): Parsing header:\n");
    }
    state->rptr = 0;  /* No rands read yet */
+   /*
+    * We only reset the entire file if there is a nonzero seed passed in.
+    * This clears both rtot and rewind_cnt in addition to rptr.
+    */
    if(s) {
-     state->rtot = 0;  /* Only set this if it is a reseed */
+     state->rtot = 0;
+     state->rewind_cnt = 0;
    }
-   state->rewind_cnt = 0;  /* No rewinds yet */
+
  } else {
    /*
-    * Rewinding is a problem.  Rather, it is easy, but it seriously
-    * reduces the size of the space being explored.  We rewind every
-    * time our file pointer reaches the end of the file, otherwise
-    * we do not actually reopen the file (and of course seed is
-    * ignored).
+    * Rewinding seriously reduces the size of the space being explored.
+    * On the other hand, bombing a test also sucks, especially in a long
+    * -a(ll) run.  Therefore we rewind every time our file pointer reaches
+    * the end of the file or call gsl_rng_set(rng,0).
     */
-   if(state->rptr >= filecount){
+   if(state->rptr >= state->flen){
      rewind(state->fp);
      state->rptr = 0;
      state->rewind_cnt++;
@@ -300,11 +317,12 @@ file_input_set (void *vstate, unsigned long int s)
        }
      }
      if(strncmp(splitbuf[0],"count",5) == 0){
-       filecount = atoi(splitbuf[1]);
+       state->flen = atoi(splitbuf[1]);
+       filecount = state->flen;
        cnt++;
        if(verbose){ 
          fprintf(stdout,"# file_input(): cnt = %d\n",cnt);
-         fprintf(stdout,"# file_input(): filecount set to %d\n",filecount);
+         fprintf(stdout,"# file_input(): state->flen set to %d\n",state->flen);
        }
      }
      if(strncmp(splitbuf[0],"numbit",6) == 0){

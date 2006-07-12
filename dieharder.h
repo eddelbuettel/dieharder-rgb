@@ -161,10 +161,7 @@
  double q_ks(double x);
  double q_ks_kuiper(double x);
 
- uint file_input_get_rewind_cnt(gsl_rng *rng);
- uint file_input_get_rtot(gsl_rng *rng);
- void file_input_set_rtot(gsl_rng *rng,uint value);
- 
+
  /*
   Cruft
  char **allocate_fields(size_t maxfields,size_t maxfieldlength);
@@ -334,15 +331,39 @@
  char **fields;
 
  /*
-  * Global variables that store information about the file, if rand ints
-  * are taken from a file rather than generated ad hoc.
+  * Global variables and prototypes associated with file_input and
+  * file_input_raw.
   */
+ uint file_input_get_rewind_cnt(gsl_rng *rng);
+ uint file_input_get_rtot(gsl_rng *rng);
+ void file_input_set_rtot(gsl_rng *rng,uint value);
 
  char filename[K];      /* Input file name */
  int fromfile;		/* set true if file is used for rands */
  int filenumbits;	/* number of bits per integer */
  uint filecount;	/* number of rands in file */
  char filetype;         /* file type */
+/*
+ * This struct contains the data maintained on the operation of
+ * the file_input rng, and can be accessed via rng->state->whatever
+ *
+ *  fp is the file pointer
+ *  flen is the number of rands in the file (filecount)
+ *  rptr is a count of rands returned since last rewind
+ *  rtot is a count of rands returned since the file was opened
+ *  rewind_cnt is a count of how many times the file was rewound
+ *     since its last open.
+ */
+typedef struct
+  {
+    FILE *fp;
+    uint flen;
+    uint rptr;
+    uint rtot;
+    uint rewind_cnt;
+  } file_input_state_t;
+
+ 
 
  /*
   * rng global vectors and variables for setup and tests.
