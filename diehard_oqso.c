@@ -59,8 +59,7 @@ double diehard_oqso()
 
  if(!quiet){
    help_diehard_oqso();
-  help_diehard_opso();
-  printf("#                        Run Details\n");
+   printf("#                        Run Details\n");
    if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
      printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
      printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
