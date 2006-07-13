@@ -3,7 +3,7 @@
  * Craps test.
  */
 
-Dtest dtest = {
+Dtest craps = {
   "Diehard(er) Craps Test",
   "\n\
 #==================================================================\n\

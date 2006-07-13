@@ -29,6 +29,7 @@
  * Test specific stuff
  */
 #include "dc2.h"
+static Dtest *dtest = &craps2;
 
 double dc2()
 {
@@ -41,19 +42,19 @@ double dc2()
   */
  if(all == YES){
    ts_save = tsamples;
-   tsamples = dtest.tsamples_std;
+   tsamples = dtest->tsamples_std;
    ps_save = psamples;
-   psamples = dtest.psamples_std;
+   psamples = dtest->psamples_std;
  }
 
  /*
   * ALSO use standard values if tsamples or psamples are 0
   */
  if(tsamples == 0){
-   tsamples = dtest.tsamples_std;
+   tsamples = dtest->tsamples_std;
  }
  if(psamples == 0){
-   psamples = dtest.psamples_std;
+   psamples = dtest->psamples_std;
  }
  
 
@@ -64,7 +65,7 @@ double dc2()
  if(ks_pvalue) free(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
- test_header(&dtest);
+ test_header(dtest);
 
  /*
   * Any custom test header output lines go here.  They should be
@@ -77,7 +78,7 @@ double dc2()
  kspi = 0;  /* Always zero first */
  pks = sample((void *)dc2_test);
 
- test_footer(&dtest,pks,ks_pvalue,"Craps Test (mean)");
+ test_footer(dtest,pks,ks_pvalue,"Craps Test (mean)");
 
  /*
   * Put back tsamples

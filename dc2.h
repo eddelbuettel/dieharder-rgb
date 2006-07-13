@@ -2,7 +2,7 @@
  * Hopefully this is a valid default initialization of the dc2 test.
  */
 
-Dtest dtest = {
+Dtest craps2 = {
   "Diehard(er) Craps Test",
   "\n\
 #==================================================================\n\

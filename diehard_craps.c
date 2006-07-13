@@ -30,6 +30,7 @@
  * Test specific stuff
  */
 #include "diehard_craps.h"
+static Dtest *dtest = &craps;
 
 double diehard_craps()
 {
@@ -42,19 +43,19 @@ double diehard_craps()
   */
  if(all == YES){
    ts_save = tsamples;
-   tsamples = dtest.tsamples_std;
+   tsamples = dtest->tsamples_std;
    ps_save = psamples;
-   psamples = dtest.psamples_std;
+   psamples = dtest->psamples_std;
  }
 
  /*
   * ALSO use standard values if tsamples or psamples are 0
   */
  if(tsamples == 0){
-   tsamples = dtest.tsamples_std;
+   tsamples = dtest->tsamples_std;
  }
  if(psamples == 0){
-   psamples = dtest.psamples_std;
+   psamples = dtest->psamples_std;
  }
  
 
@@ -67,7 +68,7 @@ double diehard_craps()
  if(ks_pvalue2) free(ks_pvalue2);
  ks_pvalue2  = (double *)malloc((size_t) psamples*sizeof(double));
 
- test_header(&dtest);
+ test_header(dtest);
 
  /*
   * Any custom test header output lines go here.  They should be
@@ -84,13 +85,13 @@ double diehard_craps()
  /*
   * Results of the mean test
   */
- test_footer(&dtest,pks,ks_pvalue,"Craps Test (mean)");
+ test_footer(dtest,pks,ks_pvalue,"Craps Test (mean)");
 
  /*
   * This is an extra for craps only.  Results of the freqency test.
   */
  pks = kstest_kuiper(ks_pvalue2,kspi);
- test_footer(&dtest,pks,ks_pvalue2,"Craps Test (freq)");
+ test_footer(dtest,pks,ks_pvalue2,"Craps Test (freq)");
 
  /*
   * Put back tsamples

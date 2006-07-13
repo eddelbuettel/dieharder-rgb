@@ -92,7 +92,7 @@ SOURCES = $(SOURCE)\
     diehard_squeeze.c \
     diehard_sums.c \
     diehard_runs.c \
-    diehard_craps.c diehard_craps.h \
+    diehard_craps.c \
     dc2.c \
     rgb_bitdist.c \
     rgb_persist.c \
