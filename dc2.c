@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: diehard_craps.c 191 2006-07-13 08:23:50Z rgb $
  *
  * See copyright in copyright.h and the accompanying file COPYING
  *
@@ -24,14 +24,13 @@
  *========================================================================
  */
 
-
 #include "dieharder.h"
 /*
  * Test specific stuff
  */
-#include "diehard_craps.h"
+#include "dc2.h"
 
-double diehard_craps()
+double dc2()
 {
 
  double pks;
@@ -64,8 +63,6 @@ double diehard_craps()
   */
  if(ks_pvalue) free(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
- if(ks_pvalue2) free(ks_pvalue2);
- ks_pvalue2  = (double *)malloc((size_t) psamples*sizeof(double));
 
  test_header(&dtest);
 
@@ -78,19 +75,9 @@ double diehard_craps()
   * This is now the standard test call.
   */
  kspi = 0;  /* Always zero first */
- pks = sample((void *)diehard_craps_test);
+ pks = sample((void *)dc2_test);
 
-
- /*
-  * Results of the mean test
-  */
  test_footer(&dtest,pks,ks_pvalue,"Craps Test (mean)");
-
- /*
-  * This is an extra for craps only.  Results of the freqency test.
-  */
- pks = kstest_kuiper(ks_pvalue2,kspi);
- test_footer(&dtest,pks,ks_pvalue2,"Craps Test (freq)");
 
  /*
   * Put back tsamples
@@ -101,25 +88,26 @@ double diehard_craps()
  }
 
  if(ks_pvalue) free(ks_pvalue);
- if(ks_pvalue2) free(ks_pvalue2);
 
  return(pks);
 
 }
 
+/* Save for when we roll this one in.
 uint roll(){
   uint d = 1 + gsl_rng_uniform_int(rng,6);
   return d;
 }
+*/
 
-void diehard_craps_test()
+void dc2_test()
 {
 
  uint i,j;
  uint point,throw,tries,wins;
  double sum,p;
  Xtest ptest;
- Btest btest;
+ Btest *btest;
 
  /*
   * ptest.x = number of wins
@@ -144,21 +132,22 @@ void diehard_craps_test()
   * Allocate memory for Btest struct vector (length 21) and initialize
   * it with the expected values.
   */
- Btest_create(&btest,21,"diehard_craps",gsl_rng_name(rng));
+ btest = (Btest *)malloc(sizeof(Btest));
+ Btest_create(btest,21,"diehard_craps",gsl_rng_name(rng));
  sum = 1.0/3.0;
- btest.y[0] = sum;
+ btest->y[0] = sum;
  for(i=1;i<20;i++){
-   btest.y[i] = (27.0*pow(27.0/36.0,i-1) + 40*pow(13.0/18.0,i-1) +
+   btest->y[i] = (27.0*pow(27.0/36.0,i-1) + 40*pow(13.0/18.0,i-1) +
                 55.0*pow(25.0/36.0,i-1))/648.0;
-   sum += btest.y[i];
-   btest.sigma[i] = 0.0;   /* No longer used */
+   sum += btest->y[i];
+   btest->sigma[i] = 0.0;   /* No longer used */
  }
- btest.y[20] = 1.0 - sum;
+ btest->y[20] = 1.0 - sum;
  /*
   * Normalize the probabilities by the expected number of trials
   */
  for(i=0;i<21;i++){
-   btest.y[i] *= tsamples;
+   btest->y[i] *= tsamples;
  }
 
 
@@ -167,7 +156,7 @@ void diehard_craps_test()
   * Initialize sundry things.  This is short enough I'll use
   * a loop instead of memset.
   */
- for(i=0;i<21;i++) btest.x[i] = 0;
+ for(i=0;i<21;i++) btest->x[i] = 0;
  wins = 0;
 
  /*
@@ -187,12 +176,12 @@ void diehard_craps_test()
       * If we rolled 7 or 11, we just win.
       */
      wins++;
-     btest.x[tries]++;
+     btest->x[tries]++;
    } else if(point == 2 || point == 3 || point == 12){
      /*
       * If we rolled 2, 3, or 12, we just lose.
       */
-     btest.x[tries]++;
+     btest->x[tries]++;
    } else {
      /*
       * We have to roll until we make the point (win) or roll
@@ -208,10 +197,10 @@ void diehard_craps_test()
        (tries<20)?tries++:tries;
        throw = roll() + roll();
        if(throw == 7){
-         btest.x[tries]++;
+         btest->x[tries]++;
 	 break;
        } else if(throw == point){
-         btest.x[tries]++;
+         btest->x[tries]++;
 	 wins++;
 	 break;
        }
@@ -227,35 +216,20 @@ void diehard_craps_test()
    printf("# diehard_craps(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
 
- Btest_eval(&btest);
- ks_pvalue2[kspi] = btest.pvalue;
+ Btest_eval(btest);
+ /* kpv[kspi] = btest->pvalue;
  if(verbose == D_RGB_BITDIST || verbose == D_ALL){
-   printf("# diehard_craps_freq(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue2[kspi]);
- }
+   printf("# diehard_craps_freq(): ks_pvalue2[%u] = %10.5f\n",kspi,kpv[kspi]);
+ } */
+
  kspi++;
 
-}
-
-void help_diehard_craps()
-{
-
- printf("\n\
-#==================================================================\n\
-#                Diehard \"craps\" test (modified).\n\
-#  This is the CRAPS TEST. It plays 200,000 games of craps, finds  \n\
-#  the number of wins and the number of throws necessary to end    \n\
-#  each game.  The number of wins should be (very close to) a      \n\
-#  normal with mean 200000p and variance 200000p(1-p), with        \n\
-#  p=244/495.  Throws necessary to complete the game can vary      \n\
-#  from 1 to infinity, but counts for all>21 are lumped with 21.   \n\
-#  A chi-square test is made on the no.-of-throws cell counts.     \n\
-#  Each 32-bit integer from the test file provides the value for   \n\
-#  the throw of a die, by floating to [0,1), multiplying by 6      \n\
-#  and taking 1 plus the integer part of the result.               \n\
-#==================================================================\n");
+ /*
+  * Oops, looks like I need to FREE the bloody btest->..
+  */
+ Btest_destroy(btest);
+ free(btest);
+ 
 
 }
-
-
-
 
