@@ -6,16 +6,24 @@
 
 /*
  *========================================================================
- * This is the Diehard 3d spheres test, rewritten from the description
- * in tests.txt on George Marsaglia's diehard site.
+ * This is the Diehard minimum distance (2d sphere) test, rewritten from 
+ * the description in tests.txt on George Marsaglia's diehard site.
  *
- * Basically, we choose 4000 points in a cube of side 1000.  Compute the
- * smallest nearest neighbor distance (radius R of the smallest sphere
- * that doesn't overlap any neighboring point). R^3 is exponentially
- * distributed with an empirical exponential distribution with mean 30.
- * Thus p = 1.0 - exp(-R^3/30.0) should be a uniform distribution.  Run
- * a KS test on a vector of independent samples of this entire test to
- * find out.
+ *               THE MINIMUM DISTANCE TEST                       ::
+ * It does this 100 times::   choose n=8000 random points in a   ::
+ * square of side 10000.  Find d, the minimum distance between   ::
+ * the (n^2-n)/2 pairs of points.  If the points are truly inde- ::
+ * pendent uniform, then d^2, the square of the minimum distance ::
+ * should be (very close to) exponentially distributed with mean ::
+ * .995 .  Thus 1-exp(-d^2/.995) should be uniform on [0,1) and  ::
+ * a KSTEST on the resulting 100 values serves as a test of uni- ::
+ * formity for random points in the square. Test numbers=0 mod 5 ::
+ * are printed but the KSTEST is based on the full set of 100    ::
+ * random choices of 8000 points in the 10000x10000 square.      ::
+ *
+ *                      Comment
+ * Obviously the same test as 3d Spheres but in 2d, hence the
+ * name.
  *========================================================================
  */
 
@@ -33,10 +41,22 @@ double diehard_2dsphere()
 
  double pks;
  
+ /*
+  * Allocate space for ks_pvalue.  Free it below
+  */
+ ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
+
  if(!quiet){
    help_diehard_2dsphere();
-   printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# Number of points tested = %u\n",POINTS);
+   printf("#                        Run Details\n");
+   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
+   } else {
+     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+   }
+   printf("# Samples per test FIXED at %u.\n",POINTS);
+   printf("# Test run %u times to cumulate p-values for KS test.\n",psamples);
  }
 
  kspi = 0;  /* Always zero first */
@@ -48,11 +68,33 @@ double diehard_2dsphere()
  if(hist_flag){
    histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
  }
- printf("# p = %8.6f for diehard_2dsphere test from Kuiper Kolmogorov-Smirnov\n",pks);
- printf("#     test on %u pvalues.\n",kspi);
- if(pks < 0.0001){
-   printf("# Generator %s FAILS at 0.01%% for diehard_2dsphere.\n",gsl_rng_name(rng));
+ if(!quiet){
+   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
+     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
+   }
  }
+ printf("#                          Results\n");
+ printf("# p = %8.6f for diehard_2dsphere test from\n",pks);
+ printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",kspi);
+ /* Work through some ranges here */
+ if(pks < 0.0001){
+   printf("# Generator %s FAILED at < 0.01%% for diehard_2dsphere.\n",gsl_rng_name(rng));
+ } else if(pks < 0.01){
+   printf("# Generator %s POOR at < 1%% for diehard_2dsphere.\n",gsl_rng_name(rng));
+   printf("# Recommendation:  Repeat test to verify failure.\n");
+ } else if(pks < 0.05){
+   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_2dsphere.\n",gsl_rng_name(rng));
+   printf("# Recommendation:  Repeat test to verify failure.\n");
+ } else {
+   printf("# Generator %s PASSED at > 5%% for diehard_2dsphere.\n",gsl_rng_name(rng));
+ }
+ printf("#==================================================================\n");
+
+ /*
+  * free ks_pvalue.
+  */
+ free(ks_pvalue);
 
  return(pks);
 

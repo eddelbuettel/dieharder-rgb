@@ -1,5 +1,8 @@
 /*
+ * $Id$
+ *
  * See copyright in copyright.h and the accompanying file COPYING
+ *
  */
 
 /*
@@ -7,15 +10,7 @@
  * This is the Diehard Squeeze test, rewritten from the description
  * in tests.txt on George Marsaglia's diehard site.
  *
- * Rewriting means that I can standardize the interface to
- * gsl-encapsulated routines more easily.  It also makes this
- * my own code.  Finally, since the C versions Marsaglia provides
- * are the result of f2c running on Fortran sources, they are really
- * ugly code and the rewrite should be much more manageable.
- *
- * Here is the test description from diehard_tests.txt:
- *
- *:      This is the SQEEZE test                                  ::
+ *:               This is the SQEEZE test                                  ::
  *:  Random integers are floated to get uniforms on [0,1). Start- ::
  *:  ing with k=2^31=2147483647, the test finds j, the number of  ::
  *:  iterations necessary to reduce k to 1, using the reduction   ::
@@ -75,10 +70,22 @@ double diehard_squeeze()
    tsamples = 100000;  /* Standard value from diehard */
  }
 
+ /*
+  * Allocate space for ks_pvalue.  Free it below
+  */
+ ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
+
  if(!quiet){
    help_diehard_squeeze();
-   printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   printf("# Number of rands required is around 3x10^8 for 100 samples.\n");
+   printf("#                        Run Details\n");
+   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
+   } else {
+     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
+   }
+   printf("# Samples per test = %u.  Diehard default is 100000\n",tsamples);
+   printf("# Test run %u times to cumulate p-values for KS test.\n",psamples);
  }
 
  kspi = 0;  /* Always zero first */
@@ -90,18 +97,36 @@ double diehard_squeeze()
  if(hist_flag){
    histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
  }
- printf("# p = %8.6f for diehard_squeeze test (mean) from Kuiper Kolmogorov-Smirnov\n",pks);
- printf("#     test on %u pvalues.\n",kspi);
- if(pks < 0.0001){
-   printf("# Generator %s FAILS at 0.01%% for diehard_squeeze.\n",gsl_rng_name(rng));
+ if(!quiet){
+   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
+     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
+   }
  }
+ printf("#                          Results\n");
+ printf("# p = %8.6f for diehard_squeeze test (mean) from\n",pks);
+ printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",kspi);
+ /* Work through some ranges here */
+ if(pks < 0.0001){
+   printf("# Generator %s FAILED at < 0.01%% for diehard_squeeze.\n",gsl_rng_name(rng));
+ } else if(pks < 0.01){
+   printf("# Generator %s POOR at < 1%% for diehard_squeeze.\n",gsl_rng_name(rng));
+   printf("# Recommendation:  Repeat test to verify failure.\n");
+ } else if(pks < 0.05){
+   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_squeeze.\n",gsl_rng_name(rng));
+   printf("# Recommendation:  Repeat test to verify failure.\n");
+ } else {
+   printf("# Generator %s PASSED at > 5%% for diehard_squeeze.\n",gsl_rng_name(rng));
+ }
+ printf("#==================================================================\n");
 
  /*
-  * Put back tsamples
+  * Put back tsamples, free ks_pvalue.
   */
  if(all == YES){
    tsamples = tempsamples;
  }
+ free(ks_pvalue);
 
  return(pks);
 

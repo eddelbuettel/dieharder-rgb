@@ -75,22 +75,23 @@ SOURCES = $(SOURCE)\
     startup.c \
     work.c \
     bits.c \
-    diehard_runs.c \
     diehard_birthdays.c \
+    diehard_operm5.c \
     diehard_2dsphere.c \
     diehard_3dsphere.c \
     diehard_rank_32x32.c \
     diehard_rank_6x8.c \
     diehard_parking_lot.c \
-    diehard_craps.c \
-    diehard_squeeze.c \
     diehard_bitstream.c \
     diehard_opso.c \
     diehard_oqso.c \
     diehard_dna.c \
     diehard_count_1s_stream.c \
     diehard_count_1s_byte.c \
-    diehard_operm5.c \
+    diehard_squeeze.c \
+    diehard_sums.c \
+    diehard_runs.c \
+    diehard_craps.c \
     rgb_bitdist.c \
     rgb_persist.c \
     rgb_timing.c \

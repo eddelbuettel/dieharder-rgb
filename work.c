@@ -27,22 +27,23 @@ void work()
 
  if(all == YES){
    rgb_timing();
-   diehard_runs();
    diehard_birthdays();
-   diehard_2dsphere();
-   diehard_3dsphere();
+   diehard_operm5();
    diehard_rank_32x32();
    diehard_rank_6x8();
-   diehard_parking_lot();
-   diehard_craps();
-   diehard_squeeze();
    diehard_bitstream();
    diehard_opso();
    diehard_oqso();
    diehard_dna();
    diehard_count_1s_stream();
    diehard_count_1s_byte();
-   diehard_operm5();
+   diehard_parking_lot();
+   diehard_2dsphere();
+   diehard_3dsphere();
+   diehard_squeeze();
+   diehard_sums();
+   diehard_runs();
+   diehard_craps();
    rgb_persist();
    rgb_bitdist();
    sts_monobit();
@@ -53,20 +54,12 @@ void work()
  switch(diehard){
    default:
      break;
-   case DIEHARD_RUNS:
-     diehard_runs();
-     exit(0);
-     break;
    case DIEHARD_BDAY:
      diehard_birthdays();
      exit(0);
      break;
-   case DIEHARD_2DSPHERE:
-     diehard_2dsphere();
-     exit(0);
-     break;
-   case DIEHARD_3DSPHERE:
-     diehard_3dsphere();
+   case DIEHARD_OPERM5:
+     diehard_operm5();
      exit(0);
      break;
    case DIEHARD_RANK_32x32:
@@ -75,18 +68,6 @@ void work()
      break;
    case DIEHARD_RANK_6x8:
      diehard_rank_6x8();
-     exit(0);
-     break;
-   case DIEHARD_PARKING_LOT:
-     diehard_parking_lot();
-     exit(0);
-     break;
-   case DIEHARD_CRAPS:
-     diehard_craps();
-     exit(0);
-     break;
-   case DIEHARD_SQUEEZE:
-     diehard_squeeze();
      exit(0);
      break;
    case DIEHARD_BITSTREAM:
@@ -113,8 +94,32 @@ void work()
      diehard_count_1s_byte();
      exit(0);
      break;
-   case DIEHARD_OPERM5:
-     diehard_operm5();
+   case DIEHARD_PARKING_LOT:
+     diehard_parking_lot();
+     exit(0);
+     break;
+   case DIEHARD_2DSPHERE:
+     diehard_2dsphere();
+     exit(0);
+     break;
+   case DIEHARD_3DSPHERE:
+     diehard_3dsphere();
+     exit(0);
+     break;
+   case DIEHARD_SQUEEZE:
+     diehard_squeeze();
+     exit(0);
+     break;
+   case DIEHARD_SUMS:
+     diehard_sums();
+     exit(0);
+     break;
+   case DIEHARD_RUNS:
+     diehard_runs();
+     exit(0);
+     break;
+   case DIEHARD_CRAPS:
+     diehard_craps();
      exit(0);
      break;
  }
