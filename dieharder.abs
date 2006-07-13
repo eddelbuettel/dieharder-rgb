@@ -397,22 +397,23 @@ they are needed to get a satisfactory result (such as completion in a
 reasonable amount of time).
 
             Diehard Tests
-   -d 1 Diehard Runs test
-   -d 2 Diehard Birthdays test (-t 100, or less than 200) 
-   -d 3 Diehard Minimum Distance (2D Spheres) test
-   -d 4 Diehard 3D Spheres (minimum distance) test
-   -d 5 Diehard 32x32 Binary Rank test
-   -d 6 Diehard 6x8 Binary Rank test
-   -d 7 Diehard Parking Lot test
-   -d 8 Diehard Craps test
-   -d 9 Diehard Squeeze test
-   -d 10 Diehard Bitstream test
-   -d 11 Diehard OPSO test
-   -d 12 Diehard OQSO test
-   -d 13 Diehard DNA test
-   -d 14 Diehard Count the 1's (stream) test
-   -d 15 Diehard Count the 1's (byte) test
-   -d 16 Diehard Operm5 test
+   -d 1  Diehard Birthdays test
+   -d 2  Diehard Overlapping Permutations test
+   -d 3  Diehard 32x32 Binary Rank test
+   -d 4  Diehard 6x8 Binary Rank test
+   -d 5  Diehard Bitstream test
+   -d 6  Diehard OPSO test
+   -d 7  Diehard OQSO test
+   -d 8  Diehard DNA test
+   -d 9  Diehard Count the 1s (stream) test
+   -d 10 Diehard Count the 1s (byte) test
+   -d 11 Diehard Parking Lot test
+   -d 12 Diehard Minimum Distance (2D Spheres) test
+   -d 13 Diehard 3D Spheres (minimum distance) test
+   -d 14 Diehard Squeeze test
+   -d 15 Diehard Sums test
+   -d 16 Diehard Runs test
+   -d 17 Diehard Craps test
 
              RGB Tests
    -r 1 Bit Persist test

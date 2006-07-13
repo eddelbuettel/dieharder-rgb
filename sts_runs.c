@@ -1,10 +1,10 @@
 /*
-* $Id$
-*
-* See copyright in copyright.h and the accompanying file COPYING
-* See also accompanying file STS.COPYING
-*
-*/
+ * $Id$
+ *
+ * See copyright in copyright.h and the accompanying file COPYING
+ * See also accompanying file STS.COPYING
+ *
+ */
 
 /*
  *========================================================================
@@ -23,6 +23,11 @@ double sts_runs()
 
  int i,j,k;
  double pks;
+
+ /*
+  * Allocate space for ks_pvalue.  Free it below
+  */
+ ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
  if(!quiet){
    help_sts_runs();
@@ -50,6 +55,9 @@ double sts_runs()
  if(pks < 0.0001){
    printf("# Generator %s FAILS at 0.01%% for sts_runs.\n",gsl_rng_name(rng));
  }
+
+ free(ks_pvalue);
+
  return(pks);
 
 }

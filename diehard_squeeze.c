@@ -10,14 +10,14 @@
  * This is the Diehard Squeeze test, rewritten from the description
  * in tests.txt on George Marsaglia's diehard site.
  *
- *:               This is the SQEEZE test                                  ::
- *:  Random integers are floated to get uniforms on [0,1). Start- ::
- *:  ing with k=2^31=2147483647, the test finds j, the number of  ::
- *:  iterations necessary to reduce k to 1, using the reduction   ::
- *:  k=ceiling(k*U), with U provided by floating integers from    ::
- *:  the file being tested.  Such j's are found 100,000 times,    ::
- *:  then counts for the number of times j was <=6,7,...,47,>=48  ::
- *:  are used to provide a chi-square test for cell frequencies.  ::
+ *               This is the SQUEEZE test                        ::
+ *  Random integers are floated to get uniforms on [0,1). Start- ::
+ *  ing with k=2^31=2147483647, the test finds j, the number of  ::
+ *  iterations necessary to reduce k to 1, using the reduction   ::
+ *  k=ceiling(k*U), with U provided by floating integers from    ::
+ *  the file being tested.  Such j's are found 100,000 times,    ::
+ *  then counts for the number of times j was <=6,7,...,47,>=48  ::
+ *  are used to provide a chi-square test for cell frequencies.  ::
  *
  *                   Comment on SQUEEZE
  * This adaptation fixes a number of screwy fortranisms in the

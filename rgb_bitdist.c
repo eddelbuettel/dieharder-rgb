@@ -2,7 +2,6 @@
  * $Id$
  *
  * See copyright in copyright.h and the accompanying file COPYING
- * See also accompanying file STS.COPYING
  *
  */
 
@@ -59,6 +58,11 @@ double rgb_bitdist()
  int ntuple_max,n,p,pcnt;
  double *pvalue,pks;
 
+ /*
+  * Allocate space for ks_pvalue.  Free it below
+  */
+ ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
+
  if(!quiet){
    help_rgb_bitdist();
    printf("# random number generator: %s\n",gsl_rng_name(rng));
@@ -105,6 +109,8 @@ double rgb_bitdist()
      return(pks);
    }
  }
+
+ free(ks_pvalue);
 
  return(pks);
 
