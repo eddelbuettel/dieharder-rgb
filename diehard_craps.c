@@ -24,7 +24,7 @@
  *========================================================================
  */
 
-
+#define MALLOC_CHECK 1
 #include "dieharder.h"
 
 double diehard_craps()
@@ -56,9 +56,11 @@ double diehard_craps()
  }
 
  /*
-  * Allocate space for ks_pvalue.  Free it below
+  * Safely allocate memory for ks pvalues.
   */
+ if(ks_pvalue) free(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
+ if(ks_pvalue2) free(ks_pvalue2);
  ks_pvalue2 = (double *)malloc((size_t) psamples*sizeof(double));
 
  if(!quiet){
@@ -78,7 +80,6 @@ double diehard_craps()
  pks_mean = sample((void *)diehard_craps_test);
  /* This is an extra for craps only */
  pks_freq = kstest_kuiper(ks_pvalue2,kspi);
- printf("kspv2 = %0x\n",ks_pvalue2);
 
  /*
   * Display histogram of ks p-values (optional)
@@ -133,7 +134,10 @@ double diehard_craps()
  if(all == YES){
    tsamples = tempsamples;
  }
- free(ks_pvalue);
+
+ if(ks_pvalue) free(ks_pvalue);
+ if(ks_pvalue2) free(ks_pvalue2);
+ 
 
  return(pks_mean);
 
@@ -199,7 +203,7 @@ void diehard_craps_test()
   * Initialize sundry things.  This is short enough I'll use
   * a loop instead of memset.
   */
- for(i=0;i<22;i++) btest.x[i] = 0;
+ for(i=0;i<21;i++) btest.x[i] = 0;
  wins = 0;
 
  /*

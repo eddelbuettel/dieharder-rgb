@@ -214,9 +214,9 @@ No user-developed test are installed at this time.\n\
   * tests this is probably not always true.  I actually think that the
   * right way to do this at this point is to malloc the memory inside
   * the test itself and free it at the end.  Why not?
- ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
- ks_pvalue2 = (double *)malloc((size_t) psamples*sizeof(double));
   */
+ ks_pvalue = 0;
+ ks_pvalue2 = 0;
  kspi = 0;
 
 }

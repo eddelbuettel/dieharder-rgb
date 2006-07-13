@@ -50,11 +50,12 @@ double sample(void *testfunc())
    printf("# samples():    sample\n");
  }
  for(p=0;p<psamples;p++){
+
    /*
-    * Reseed every sample IF input isn't from a file.  Eventually we'll
-    * want to be able to surpress/control this more finely.
+    * Reseed every sample IF input isn't from a file AND if no seed was
+    * specified on the command line.
     */
-   if(fromfile == 0){
+   if(fromfile == 0 && Seed == 0){
      seed = random_seed();
      gsl_rng_set(rng,seed);
    }
@@ -64,6 +65,7 @@ double sample(void *testfunc())
      printf("# sample():  %6u\n",p);
    }
    (*testfunc)();
+
  }
 
  /*

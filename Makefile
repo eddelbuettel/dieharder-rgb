@@ -73,6 +73,7 @@ SOURCES = $(SOURCE)\
     kstest.c \
     random_seed.c \
     startup.c \
+    test.c \
     work.c \
     bits.c \
     diehard_birthdays.c \
@@ -92,6 +93,7 @@ SOURCES = $(SOURCE)\
     diehard_sums.c \
     diehard_runs.c \
     diehard_craps.c \
+    dc2.c \
     rgb_bitdist.c \
     rgb_persist.c \
     rgb_timing.c \

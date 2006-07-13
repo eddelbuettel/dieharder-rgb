@@ -162,3 +162,13 @@ Usage:\n\
  exit(0);
 
 }
+
+/*
+ * This is a standard way of putting out a test description
+ */
+void help_test(Dtest *dtest)
+{
+
+ printf("%s",dtest->description);
+ 
+}

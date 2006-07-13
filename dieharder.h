@@ -136,6 +136,7 @@
  typedef enum {
    USER_NONE,
    USER_DUMMY,
+   USER_DC2,
    N_USER_TESTS
  } User_Tests;
 
@@ -289,6 +290,10 @@
 
 
  /* User "dummy" test.  Replace with your own test(s) */
+ double dc2();
+ void dc2_test();
+
+ /* User "dummy" test.  Replace with your own test(s) */
  double user_dummy();
  void user_dummy_test();
  void help_user_dummy();
@@ -394,6 +399,7 @@ typedef struct
  gsl_rng *rng;               /* global gsl random number generator */
  unsigned int *rand_int;        /* vector of "random" uints */
  unsigned int **rand_mtx;       /* matrix of "random" uints */
+ double *rand_dbl;              /* vector of "random" uniform deviates */
 
  /*
   * All required for GSL Singular Value Decomposition (to obtain
@@ -407,7 +413,6 @@ typedef struct
  unsigned int rmax;             /* scratch space for random_max manipulation */
  unsigned int rmax_bits;        /* Number of valid bits in rng */
  unsigned int rmax_mask;        /* Mask for valid section of uint */
- double *rand_uniform;          /* vector of "random" uniform deviates */
  int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
  
 
@@ -452,4 +457,30 @@ typedef struct
    char testname[128];
    char rngname[128];
  } Xtest;
- 
+
+ /*
+  * OK, I've got a TON of boilerplate code that would be greatly
+  * simplified if I could create a generic test struct and make e.g.
+  * the toplevel test wrapper for MOST tests a single call plus at most
+  * a single set of boilerplate for customized test description.
+  * This struct will contain INDIVIDUAL pointers for all requisite
+  * standard data structures or control parameters, e.g. tsamples,
+  * psamples, etc.
+  */
+ typedef struct {
+   /* The name of the test */
+   char *name;
+
+   /* pointer to a test description */
+   char *description;
+
+   /* Standard test default */
+   uint psamples_std;
+
+   /* Standard test default */
+   uint tsamples_std;
+
+ } Dtest;
+
+ void test_header(Dtest *dtest);
+ void test_footer(Dtest *dtest, double pvalue, double *pvalues, char *desc);

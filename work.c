@@ -154,6 +154,15 @@ void work()
      break;
  }
 
+ switch(user){
+   default:
+     break;
+   case USER_DC2:
+     dc2();
+     exit(0);
+     break;
+ }
+
  list_rngs();
 
 }
