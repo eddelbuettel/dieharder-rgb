@@ -361,4 +361,446 @@
 # Number of rands required is around 2^28 for 100 samples.
 # Using non-overlapping samples (default).
 #==================================================================
-#                Histogram of p-
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |****|    |    |    |
+#       |    |    |    |    |    |    |****|    |    |    |
+#     16|    |    |    |    |    |    |****|    |    |    |
+#       |    |    |    |    |    |    |****|    |    |    |
+#     14|    |    |    |****|    |    |****|    |    |    |
+#       |    |    |    |****|    |    |****|    |    |    |
+#     12|    |    |    |****|    |    |****|    |    |    |
+#       |    |    |    |****|    |    |****|    |    |****|
+#     10|    |    |****|****|    |    |****|    |****|****|
+#       |    |****|****|****|    |    |****|****|****|****|
+#      8|****|****|****|****|    |    |****|****|****|****|
+#       |****|****|****|****|    |    |****|****|****|****|
+#      6|****|****|****|****|****|    |****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# p = 0.689360 for diehard_oqso test from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_oqso.
+#==================================================================
+
+#==================================================================
+#                  Diehard "DNA" test.
+# 
+#   The DNA test considers an alphabet of 4 letters::  C,G,A,T,
+# determined by two designated bits in the sequence of random   
+# integers being tested.  It considers 10-letter words, so that 
+# as in OPSO and OQSO, there are 2^20 possible words, and the   
+# mean number of missing words from a string of 2^21  (over-    
+# lapping)  10-letter  words (2^21+9 "keystrokes") is 141909.   
+# The standard deviation sigma=339 was determined as for OQSO   
+# by simulation.  (Sigma for OPSO, 290, is the true value (to   
+# three places), not determined by simulation.                  
+# 
+# Note 2^21 = 2097152
+# Note also that we don't bother with overlapping keystrokes 
+# (and sample more rands -- rands are now cheap). 
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test FIXED at 2097152.
+# Test run 100 times to cumulate p-values for KS test.
+# Number of rands required is around 2^28 for 100 samples.
+# Using non-overlapping samples (default).
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |****|
+#     16|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     14|    |    |****|    |    |    |    |    |    |****|
+#       |    |    |****|    |    |    |    |    |    |****|
+#     12|    |    |****|    |    |    |****|****|****|****|
+#       |    |    |****|    |    |    |****|****|****|****|
+#     10|    |    |****|    |    |    |****|****|****|****|
+#       |    |    |****|****|    |    |****|****|****|****|
+#      8|    |    |****|****|****|****|****|****|****|****|
+#       |    |    |****|****|****|****|****|****|****|****|
+#      6|    |    |****|****|****|****|****|****|****|****|
+#       |    |****|****|****|****|****|****|****|****|****|
+#      4|    |****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# p = 0.186237 for diehard_dna test from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_dna.
+#==================================================================
+
+#==================================================================
+#            Diehard "count_1s_stream" test (modified).
+# Consider the file under test as a stream of bytes (four per   
+# 32 bit integer).  Each byte can contain from 0 to 8 1's,      
+# with probabilities 1,8,28,56,70,56,28,8,1 over 256.  Now let  
+# the stream of bytes provide a string of overlapping  5-letter 
+# words, each "letter" taking values A,B,C,D,E. The letters are 
+# determined by the number of 1's in a byte::  0,1,or 2 yield A,
+# 3 yields B, 4 yields C, 5 yields D and 6,7 or 8 yield E. Thus 
+# we have a monkey at a typewriter hitting five keys with vari- 
+# ous probabilities (37,56,70,56,37 over 256).  There are 5^5   
+# possible 5-letter words, and from a string of 256,000 (over-  
+# lapping) 5-letter words, counts are made on the frequencies   
+# for each word.   The quadratic form in the weak inverse of    
+# the covariance matrix of the cell counts provides a chisquare 
+# test::  Q5-Q4, the difference of the naive Pearson sums of    
+# (OBS-EXP)^2/EXP on counts for 5- and 4-letter cell counts.    
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test = 256000.  Diehard recommends 256000
+# Test run 100 times to cumulate p-values for KS test.
+# Number of rands required is around 2^28 for 100 samples.
+# Number of rands required is around 32000000 for 100
+# non-overlapping p-samples containing 256000 samples.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |****|    |    |    |    |    |    |    |
+#     14|    |    |****|    |    |    |    |    |    |    |
+#       |    |    |****|    |    |    |    |    |    |    |
+#     12|    |    |****|    |****|    |    |    |    |    |
+#       |    |    |****|****|****|    |    |    |    |    |
+#     10|****|****|****|****|****|    |****|    |****|    |
+#       |****|****|****|****|****|****|****|    |****|    |
+#      8|****|****|****|****|****|****|****|    |****|    |
+#       |****|****|****|****|****|****|****|****|****|    |
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# p = 0.595395 for diehard_count_1s_stream test (mean) from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_count_1s_stream.
+#==================================================================
+
+#==================================================================
+#            Diehard "count_1s_byte" test (modified).
+#     This is the COUNT-THE-1's TEST for specific bytes.        
+# Consider the file under test as a stream of 32-bit integers.  
+# From each integer, a specific byte is chosen , say the left-  
+# most::  bits 1 to 8. Each byte can contain from 0 to 8 1's,   
+# with probabilitie 1,8,28,56,70,56,28,8,1 over 256.  Now let   
+# the specified bytes from successive integers provide a string 
+# of (overlapping) 5-letter words, each "letter" taking values  
+# A,B,C,D,E. The letters are determined  by the number of 1's,  
+# in that byte::  0,1,or 2 ---> A, 3 ---> B, 4 ---> C, 5 ---> D,
+# and  6,7 or 8 ---> E.  Thus we have a monkey at a typewriter  
+# hitting five keys with with various probabilities::  37,56,70,
+# 56,37 over 256. There are 5^5 possible 5-letter words, and    
+# from a string of 256,000 (overlapping) 5-letter words, counts 
+# are made on the frequencies for each word. The quadratic form 
+# in the weak inverse of the covariance matrix of the cell      
+# counts provides a chisquare test::  Q5-Q4, the difference of  
+# the naive Pearson  sums of (OBS-EXP)^2/EXP on counts for 5-   
+# and 4-letter cell counts.                                     
+# 
+# Note: We actually cycle samples over all 0-31 bit offsets, so 
+# that if there is a problem with any particular offset it has 
+# a chance of being observed.  One can imagine problems with odd 
+# offsets but not even, for example, or only with the offset 7.
+# tsamples and psamples can be freely varied, but you'll likely 
+# need tsamples >> 100,000 to have enough to get a reliable kstest 
+# result. 
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test = 256000.  Diehard recommends 256000
+# Test run 100 times to cumulate p-values for KS test.
+# Number of rands required is around 2^28 for 100 samples.
+# Number of rands required is around 32000000 for 100
+# non-overlapping p-samples containing 256000 samples.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |****|
+#     16|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     14|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     12|    |    |    |    |    |    |****|    |    |****|
+#       |    |    |****|    |****|    |****|    |    |****|
+#     10|    |****|****|    |****|    |****|    |    |****|
+#       |    |****|****|    |****|****|****|****|    |****|
+#      8|****|****|****|****|****|****|****|****|    |****|
+#       |****|****|****|****|****|****|****|****|    |****|
+#      6|****|****|****|****|****|****|****|****|    |****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# p = 0.809771 for diehard_count_1s_byte test (mean) from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_count_1s_byte.
+#==================================================================
+
+#==================================================================
+#                Diehard "parking lot" test (modified).
+# This tests the distribution of attempts to randomly park a
+# square car of length 1 on a 100x100 parking lot without
+# crashing.  We plot n (number of attempts) versus k (number of
+# attempts that didn't "crash" because the car squares 
+# overlapped and compare to the expected result from a perfectly
+# random set of parking coordinates.  This is, alas, not really
+# known on theoretical grounds so instead we compare to n=12,000
+# where k should average 3523 with sigma 21.9 and is very close
+# to normally distributed.  Thus (k-3523)/21.9 is a standard
+# normal variable, which converted to a uniform p-value, provides
+# input to a KS test with a default 100 samples.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test FIXED at 10000.
+# Test run 100 times to cumulate p-values for KS test.
+# Number of rands required is 2,400,000 for 100 samples.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |****|    |    |
+#     18|    |    |    |    |    |    |    |****|    |    |
+#       |    |    |    |    |    |    |    |****|    |    |
+#     16|    |    |    |    |    |    |    |****|    |    |
+#       |    |    |    |    |****|    |    |****|    |    |
+#     14|    |    |    |    |****|    |    |****|    |    |
+#       |****|    |    |    |****|    |    |****|    |    |
+#     12|****|    |    |    |****|    |    |****|    |    |
+#       |****|    |    |    |****|    |    |****|****|    |
+#     10|****|    |    |    |****|****|****|****|****|    |
+#       |****|    |    |    |****|****|****|****|****|    |
+#      8|****|    |    |****|****|****|****|****|****|    |
+#       |****|    |    |****|****|****|****|****|****|    |
+#      6|****|    |    |****|****|****|****|****|****|    |
+#       |****|****|****|****|****|****|****|****|****|    |
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# p = 0.095054 for diehard_parking_lot test from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues (up runs + down runs).
+# Generator mt19937_1999 PASSED at > 5% for diehard_parking_lot.
+#==================================================================
+#==================================================================
+#         Diehard "Minimum Distance" test (modified).
+# Generate 8000 points in a 10000^2 square.  Determine the
+# the shortest nearest neighbor distance R.  This should generate
+# p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a
+# KS test to see if p is uniform.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test FIXED at 8000.
+# Test run 100 times to cumulate p-values for KS test.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |****|    |    |    |    |    |    |    |
+#     12|    |    |****|    |****|    |****|    |    |    |
+#       |    |    |****|    |****|    |****|    |    |****|
+#     10|    |    |****|    |****|    |****|****|****|****|
+#       |    |    |****|****|****|    |****|****|****|****|
+#      8|****|    |****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# p = 0.876129 for diehard_2dsphere test from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_2dsphere.
+#==================================================================
+#==================================================================
+#              Diehard "3d Sphere" test (modified).
+# Generate 4000 points in a 1000^3 integer cube.  Determine the
+# the shortest nearest neighbor distance R.  This should generate
+# p = 1.0 - exp(-R^3/30).  Repeat for lots of samples, apply a
+# KS test to see if p is uniform.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test FIXED at 4000.
+# Test run 100 times to cumulate p-values for KS test.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |****|    |    |
+#       |    |    |    |    |    |    |    |****|    |    |
+#     16|    |    |    |    |    |    |    |****|    |    |
+#       |    |    |    |    |    |    |    |****|    |    |
+#     14|    |    |    |    |    |    |    |****|    |    |
+#       |    |    |    |    |    |    |    |****|    |    |
+#     12|    |****|    |    |    |    |    |****|    |    |
+#       |    |****|****|    |****|    |****|****|    |    |
+#     10|    |****|****|****|****|****|****|****|    |    |
+#       |    |****|****|****|****|****|****|****|    |    |
+#      8|    |****|****|****|****|****|****|****|    |    |
+#       |    |****|****|****|****|****|****|****|    |    |
+#      6|    |****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# p = 0.099981 for diehard_2dsphere test from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_3dsphere.
+#==================================================================
+
+#==================================================================
+#                Diehard "squeeze" test (modified).
+#  Random integers are floated to get uniforms on [0,1). Start- 
+#  ing with k=2^31=2147483647, the test finds j, the number of  
+#  iterations necessary to reduce k to 1, using the reduction   
+#  k=ceiling(k*U), with U provided by floating integers from    
+#  the file being tested.  Such j's are found 100,000 times,    
+#  then counts for the number of times j was <=6,7,...,47,>=48  
+#  are used to provide a chi-square test for cell frequencies.  
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test = 100000.  Diehard default is 100000
+# Test run 100 times to cumulate p-values for KS test.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |    |****|    |    |    |    |    |    |
+#       |    |    |    |****|    |    |****|    |****|    |
+#     12|    |    |    |****|    |    |****|****|****|    |
+#       |    |    |    |****|    |    |****|****|****|    |
+#     10|    |    |    |****|    |    |****|****|****|    |
+#       |****|    |****|****|    |    |****|****|****|****|
+#      8|****|****|****|****|    |    |****|****|****|****|
+#       |****|****|****|****|    |****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# p = 0.724571 for diehard_squeeze test (mean) from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_squeeze.
+#==================================================================
+
+#==================================================================
+#                Diehard "sums" test (modified).
+# Integers are floated to get a sequence U(1),U(2),... of uni-  
+# form [0,1) variables.  Then overlapping sums,                 
+#   S(1)=U(1)+...+U(100), S2=U(2)+...+U(101),... are formed.    
+# The S's are virtually normal with a certain covariance mat-   
+# rix.  A linear transformation of the S's converts them to a   
+# sequence of independent standard normals, which are converted 
+# to uniform variables for a KSTEST. The  p-values from ten     
+# KSTESTs are given still another KSTEST.                       
+#
+# Note well:  -O causes the old diehard version to be run (more or
+# less).  Omitting it causes non-overlapping sums to be used and 
+# directly tests the overall balance of uniform rands.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test = 100.  Diehard default is 100
+# Test run 100 times to cumulate p-values for final KS test.
+# Note that diehard only used 10 p-values in its final KS test.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |****|    |    |****|
+#       |    |    |    |    |    |    |****|    |    |****|
+#     14|    |    |    |    |    |    |****|    |    |****|
+#       |    |    |    |    |    |    |****|    |    |****|
+#     12|    |    |    |    |    |    |****|    |    |****|
+#       |    |    |    |    |    |    |****|    |    |****|
+#     10|    |****|    |    |****|    |****|****|    |****|
+#       |****|****|    |    |****|    |****|****|    |****|
+#      8|****|****|****|    |****|    |****|****|    |****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# p = 0.819735 for diehard_sums test (mean) from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_sums.
+#==================================================================

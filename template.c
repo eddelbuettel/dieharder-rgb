@@ -73,7 +73,7 @@
 
 #include "dieharder.h"
 /*
- * Test specific stuff
+ * Test specific data
  */
 #include "template.h"
 
@@ -108,7 +108,6 @@ double template()
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
  test_header(dtest);
-
  /*
   * Any custom test header output lines go here.  They should be
   * used VERY sparingly.
@@ -121,7 +120,7 @@ double template()
  pks = sample((void *)template_test);
 
  /*
-  * Results of the mean test
+  * Test Results, standard form.
   */
  test_footer(dtest,pks,ks_pvalue,"Lagged Sum Test");
 
@@ -190,3 +189,9 @@ void template_test()
 
 }
 
+void help_template()
+{
+
+  printf("%s",dtest->description);
+
+}

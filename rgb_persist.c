@@ -2,8 +2,6 @@
  * $Id$
  *
  * See copyright in copyright.h and the accompanying file COPYING
- * See also accompanying file STS.COPYING
- *
  */
 
 /*
@@ -22,29 +20,42 @@
  */
 
 #include "dieharder.h"
+/*
+ * Test specific data
+ */
+#include "rgb_persist.h"
 
 double rgb_persist()
 {
+
+ double pks;
+ uint ps_save,ts_save;
 
  int i,j,nbits,csamples;
  unsigned int *rand_uint;
  static unsigned and_mask,cumulative_mask,last_rand;
 
- file_input_set_rtot(rng,0);
- if(!quiet){
-   help_rgb_persist();
-   printf("#                        Run Details\n");
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
-   } else {
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   }
-   printf("# Samples per test run = %u, tsamples ignored\n",256);
-   printf("# Test run %u times to cumulate unchanged bit mask\n",psamples);
- }
- 
  /*
+  * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0
+  */
+ if(all == YES){
+   ts_save = tsamples;
+   tsamples = dtest->tsamples_std;
+   ps_save = psamples;
+   psamples = dtest->psamples_std;
+ }
+ if(tsamples == 0){
+   tsamples = dtest->tsamples_std;
+ }
+ if(psamples == 0){
+   psamples = dtest->psamples_std;
+ }
+
+ /*
+  * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
+  * any missed prior allocations are freed.
+  *
   * We arbitrarily choose 256 successive random numbers as enough.
   * This should be plenty -- the probability of any bit slot not
   * changing by CHANCE in 256 tries is 2^-256 or almost 10^-26,
@@ -52,7 +63,12 @@ double rgb_persist()
   * to see it in our lifetime unless we run this test continuously for
   * months at a time (yes, a dumb idea).
   */
+ if(rand_uint) free(rand_uint);
  rand_uint = (unsigned int*)malloc(256 * sizeof(unsigned int));
+
+ test_header(dtest);
+ printf("# Samples per test run = %u, tsamples ignored\n",256);
+ printf("# Test run %u times to cumulate unchanged bit mask\n",psamples);
 
  /*
   * Now go through the list and dump the numbers several ways.
@@ -99,11 +115,11 @@ double rgb_persist()
    and_mask = and_mask & rmax_mask;
    cumulative_mask = cumulative_mask | and_mask;
  }
- if(!quiet){
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
-     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
-   }
+
+
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
+   printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
  }
  printf("#==================================================================\n");
  printf("#                          Results\n");
@@ -122,7 +138,7 @@ double rgb_persist()
  }
  printf("#==================================================================\n");
 
- free(rand_uint);
+ if(rand_uint) free(rand_uint);
  if(cumulative_mask) {
    return(0.0);
  } else {
@@ -134,25 +150,6 @@ double rgb_persist()
 void help_rgb_persist()
 {
 
- if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                        rgb_persist\n");
-   printf("# This test generates 256 sequential samples of an random unsigned\n");
-   printf("# integer from the given rng.  Successive integers are logically\n");
-   printf("# processed to extract a mask with 1's whereever bits do not\n");
-   printf("# change.  Since bits will NOT change when filling e.g. unsigned\n");
-   printf("# ints with 16 bit ints, this mask logically &'d with the maximum\n");
-   printf("# random number returned by the rng.  All the remaining 1's in the\n");
-   printf("# resulting mask are therefore significant -- they represent bits\n");
-   printf("# that never change over the length of the test.  These bits are\n");
-   printf("# very likely the reason that certain rng's fail the monobit\n");
-   printf("# test -- extra persistent e.g. 1's or 0's inevitably bias the\n");
-   printf("# total bitcount.  In many cases the particular bits repeated\n");
-   printf("# appear to depend on the seed.  If the -i flag is given, the\n");
-   printf("# entire test is repeated with the rng reseeded to generate a mask\n");
-   printf("# and the extracted mask cumulated to show all the possible bit\n");
-   printf("# positions that might be repeated for different seeds.\n");
-   printf("#==================================================================\n");
- }
+ printf("%s",dtest->description);
 
 }

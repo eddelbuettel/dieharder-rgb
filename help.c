@@ -18,16 +18,19 @@ void help()
   * "#" so it is easy to filter out of standard test results output.
   */
  if(all==YES){
-   help_diehard_runs();
    help_diehard_birthdays();
+   help_diehard_operm5();
    help_diehard_2dsphere();
    help_diehard_3dsphere();
    help_diehard_rank_32x32();
    help_diehard_rank_6x8();
+   help_diehard_runs();
+   help_diehard_craps();
    help_rgb_persist();
    help_rgb_bitdist();
    help_sts_monobit();
    help_sts_runs();
+   help_template();
    exit(0);
  }
 
@@ -37,11 +40,11 @@ void help()
  switch(diehard){
    default:
      break;
-   case DIEHARD_RUNS:
-     help_diehard_runs();
-     break;
    case DIEHARD_BDAY:
      help_diehard_birthdays();
+     break;
+   case DIEHARD_OPERM5:
+     help_diehard_operm5();
      break;
    case DIEHARD_2DSPHERE:
      help_diehard_2dsphere();
@@ -57,6 +60,12 @@ void help()
      break;
    case DIEHARD_PARKING_LOT:
      help_diehard_parking_lot();
+     break;
+   case DIEHARD_RUNS:
+     help_diehard_runs();
+     break;
+   case DIEHARD_CRAPS:
+     help_diehard_craps();
      break;
  }
  switch(rgb){

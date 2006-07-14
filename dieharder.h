@@ -293,6 +293,7 @@
  /* User/template test.  Replace/copy/rename with your own test(s) */
  double template();
  void template_test();
+ void help_template();
 
  /* User "dummy" test.  Replace with your own test(s) */
  double user_dummy();
