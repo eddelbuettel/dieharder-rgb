@@ -124,7 +124,7 @@ double template()
  /*
   * Results of the mean test
   */
- test_footer(dtest,pks,ks_pvalue,"Craps Test (mean)");
+ test_footer(dtest,pks,ks_pvalue,"Lagged Sum Test");
 
  /*
   * Put back tsamples

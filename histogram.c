@@ -76,7 +76,7 @@ int histogram(double *input,int inum,double min,double max,int nbins,char *label
   */
  for(i=20;i>0;i--){
    if(i%2 == 0){
-     printf("#    %3d|",i*vscale);
+     printf("#  %5d|",i*vscale);
    } else {
      printf("#       |");
    }

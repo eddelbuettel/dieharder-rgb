@@ -7,6 +7,8 @@ static Dtest temp = {
   "\n\
 #==================================================================\n\
 #                   Example Dieharder Test\n\
+#\n\
+#                     Lagged Sum Test\n\
 # This package contains many very lovely tests.  Very few of them,\n\
 # however, test for lagged correlations -- the possibility that\n\
 # the random number generator has a bitlevel correlation after\n\
