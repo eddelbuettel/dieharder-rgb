@@ -68,96 +68,72 @@
 
 
 #include "dieharder.h"
-
-#define M 1048576
+/*
+ * Test specific data
+ */
+#include "diehard_bitstream.h"
 
 double diehard_bitstream()
 {
 
- double *pvalue,pks;
- uint tempsamples;
+ double pks;
+ uint ps_save,ts_save;
 
  /*
-  * This is the merest shell to set any test-specific variables, call
-  * the main test routine (which fills one or more slots in ks_pvalue[]
-  * and increments kspi accordingly), and run a Kuiper Kolmogorov-Smirnov
-  * test on the vector of pvalues produced and turn it into a single,
-  * cumulative p-value (pks) for the entire test.  If the test parameters
-  * are set properly, this will USUALLY yield an unambiguous signal of
-  * failure.
+  * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0
+  *
+  * MUST use 2^21 = 2097152 diehard standard value, no choice.
   */
-
- /*
-  * This test requires a fixed number of tsamples, alas.  Deviation
-  * not permitted, whether or not we are running a single test and
-  * trying to set -t whatever.
-  */
- tempsamples = tsamples;
- tsamples = 2097152;  /* Standard value from diehard */
-
- /*
-  * Allocate space for ks_pvalue.  Free it below
-  */
- ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
-
- if(!quiet){
-   help_diehard_bitstream();
-   printf("#                        Run Details\n");
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
-   } else {
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   }
-   printf("# Samples per test FIXED at %u.\n",tsamples);
-   printf("# Test run %u times to cumulate p-values for KS test.\n",psamples);
-   printf("# Number of rands required is around 2^28 for 100 samples.\n");
-   if(overlap){
-     printf("# Using overlapping samples (diehard).\n");
-   } else {
-     printf("# Using non-overlapping samples (default).\n");
-   }
+ ts_save = tsamples;
+ tsamples = dtest->tsamples_std;  /* 
+ if(all == YES){
+   ps_save = psamples;
+   psamples = dtest->psamples_std;
+ }
+ if(psamples == 0){
+   psamples = dtest->psamples_std;
  }
 
+ /*
+  * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
+  * any missed prior allocations are freed.
+  */
+ if(ks_pvalue) nullfree(ks_pvalue);
+ ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
+
+ test_header(dtest);
+ /*
+  * Any custom test header output lines go here.  They should be
+  * used VERY sparingly.
+  */
+ printf("# Number of rands required is around 2^21 per psample.\n");
+ if(overlap){
+   printf("# Using overlapping samples (diehard).\n");
+ } else {
+   printf("# Using non-overlapping samples (default).\n");
+ }
+
+ /*
+  * This is the standard test call.
+  */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_bitstream_test);
 
  /*
-  * Display histogram of ks p-values (optional)
+  * Test Results, standard form.
   */
- if(hist_flag){
-   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
- }
- if(!quiet){
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
-     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
-   }
- }
- printf("#                          Results\n");
- printf("# p = %8.6f for diehard_bitstream test from\n",pks);
- printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",kspi);
- /* Work through some ranges here */
- if(pks < 0.0001){
-   printf("# Generator %s FAILED at < 0.01%% for diehard_bitstream.\n",gsl_rng_name(rng));
- } else if(pks < 0.01){
-   printf("# Generator %s POOR at < 1%% for diehard_bitstream.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else if(pks < 0.05){
-   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_bitstream.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else {
-   printf("# Generator %s PASSED at > 5%% for diehard_bitstream.\n",gsl_rng_name(rng));
- }
- printf("#==================================================================\n");
+ test_footer(dtest,pks,ks_pvalue,"Diehard Bitstream Test");
 
  /*
-  * Put back tsamples, free ks_pvalue.
+  * Put back tsamples
   */
  if(all == YES){
-   tsamples = tempsamples;
+   tsamples = ts_save;
+   psamples = ps_save;
  }
- free(ks_pvalue);
+
+ if(ks_pvalue) nullfree(ks_pvalue);
 
  return(pks);
 
@@ -299,27 +275,6 @@ void diehard_bitstream_test()
 void help_diehard_bitstream()
 {
 
- printf("\n\
-#==================================================================\n\
-#                Diehard \"BITSTREAM\" test.\n\
-# The file under test is viewed as a stream of bits. Call them  \n\
-# b1,b2,... .  Consider an alphabet with two \"letters\", 0 and 1 \n\
-# and think of the stream of bits as a succession of 20-letter  \n\
-# \"words\", overlapping.  Thus the first word is b1b2...b20, the \n\
-# second is b2b3...b21, and so on.  The bitstream test counts   \n\
-# the number of missing 20-letter (20-bit) words in a string of \n\
-# 2^21 overlapping 20-letter words.  There are 2^20 possible 20 \n\
-# letter words.  For a truly random string of 2^21+19 bits, the \n\
-# number of missing words j should be (very close to) normally  \n\
-# distributed with mean 141,909 and sigma 428.  Thus            \n\
-#  (j-141909)/428 should be a standard normal variate (z score) \n\
-# that leads to a uniform [0,1) p value.  The test is repeated  \n\
-# twenty times.                                                 \n\
-# \n\
-# Note that of course we do not \"restart file\", when using gsl \n\
-# generators, we just crank out the next random number. \n\
-# We also do not bother to overlap the words.  rands are cheap. \n\
-# Finally, we repeat the test (usually) more than twenty time.\n\
-#==================================================================\n");
+ printf("%s",dtest->description);
 
 }

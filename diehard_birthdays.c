@@ -106,9 +106,9 @@ double diehard_birthdays()
   * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
   * any missed prior allocations are freed.
   */
- if(ks_pvalue) free(ks_pvalue);
+ if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
- if(rand_int) free(rand_int);
+ if(rand_int) nullfree(rand_int);
  rand_int = (unsigned int *)malloc(nms*sizeof(unsigned int));
  intervals = (unsigned int *)malloc(nms*sizeof(unsigned int));
 
@@ -154,9 +154,9 @@ double diehard_birthdays()
    psamples = ps_save;
  }
 
- if(ks_pvalue) free(ks_pvalue);
- if(rand_int) free(rand_int);
- if(intervals) free(intervals);
+ if(ks_pvalue) nullfree(ks_pvalue);
+ if(rand_int) nullfree(rand_int);
+ if(intervals) nullfree(intervals);
 
  return(pks);
 

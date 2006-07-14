@@ -58,16 +58,16 @@ double diehard_rank_32x32()
   * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
   * any missed prior allocations are freed.
   */
- if(ks_pvalue) free(ks_pvalue);
+ if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
  /*
   * Note that this assumes that 8*sizeof(uint) >= 32!
   */
  if(rand_mtx) {
    for(i=0;i<32;i++){
-     if(rand_mtx[i]) free(rand_mtx[i]);
+     if(rand_mtx[i]) nullfree(rand_mtx[i]);
    }
-   free(rand_mtx);
+   nullfree(rand_mtx);
  }
  rand_mtx = (uint **)malloc(32*sizeof(uint*));
  for(i=0;i<32;i++)rand_mtx[i] = (uint *)malloc(sizeof(uint));
@@ -98,12 +98,12 @@ double diehard_rank_32x32()
    psamples = ps_save;
  }
 
- free(ks_pvalue);
+ if(ks_pvalue) nullfree(ks_pvalue);
  if(rand_mtx) {
    for(i=0;i<32;i++){
-     if(rand_mtx[i]) free(rand_mtx[i]);
+     if(rand_mtx[i]) nullfree(rand_mtx[i]);
    }
-   free(rand_mtx);
+   nullfree(rand_mtx);
  }
 
 

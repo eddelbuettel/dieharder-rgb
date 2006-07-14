@@ -72,7 +72,7 @@ double diehard_operm5()
   * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
   * any missed prior allocations are freed.
   */
- if(ks_pvalue) free(ks_pvalue);
+ if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
  test_header(dtest);
@@ -97,7 +97,7 @@ double diehard_operm5()
    psamples = ps_save;
  }
 
- if(ks_pvalue) free(ks_pvalue);
+ if(ks_pvalue) nullfree(ks_pvalue);
 
  return(pks);
 

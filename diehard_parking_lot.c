@@ -66,80 +66,64 @@
 
 
 #include "dieharder.h"
+/*
+ * Test specific data
+ */
+#include "diehard_parking_lot.h"
 
 double diehard_parking_lot()
 {
 
- double *pvalue,pks;
- uint tempsamples;
+ double pks;
+ uint ps_save,ts_save;
 
  /*
-  * This is the merest shell to set any test-specific variables, call
-  * the main test routine (which fills one or more slots in ks_pvalue[]
-  * and increments kspi accordingly), and run a Kuiper Kolmogorov-Smirnov
-  * test on the vector of pvalues produced and turn it into a single,
-  * cumulative p-value (pks) for the entire test.  If the test parameters
-  * are set properly, this will USUALLY yield an unambiguous signal of
-  * failure.
-  */
-
- /*
+  * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0
+  *
   * tsamples are irrelevant to this test, which consumes roughly
   * 12000x2x100 = 2.4x10^6 rands.
   */
-
- /*
-  * Allocate space for ks_pvalue.  Free it below
-  */
- ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
-
- if(!quiet){
-   help_diehard_parking_lot();
-   printf("#                        Run Details\n");
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
-   } else {
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   }
-   printf("# Samples per test FIXED at %u.\n",tsamples);
-   printf("# Test run %u times to cumulate p-values for KS test.\n",psamples);
-   printf("# Number of rands required is 2,400,000 for 100 samples.\n");
+ ts_save = tsamples;
+ tsamples = dtest->tsamples_std;
+ if(all == YES){
+   ps_save = psamples;
+   psamples = dtest->psamples_std;
+ }
+ if(psamples == 0){
+   psamples = dtest->psamples_std;
  }
 
+ /*
+  * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
+  * any missed prior allocations are freed.
+  */
+ if(ks_pvalue) nullfree(ks_pvalue);
+ ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
+
+ test_header(dtest);
+ printf("# Number of rands required is 2,400,000 for 100 samples.\n");
+
+ /*
+  * This is the standard test call.
+  */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_parking_lot_test);
 
  /*
-  * Display histogram of ks p-values (optional)
+  * Test Results, standard form.
   */
- if(hist_flag){
-   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
- }
- if(!quiet){
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
-     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
-   }
- }
- printf("#                          Results\n");
- printf("# p = %8.6f for diehard_parking_lot test from\n",pks);
- printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues (up runs + down runs).\n",kspi);
- /* Work through some ranges here */
- if(pks < 0.0001){
-   printf("# Generator %s FAILED at < 0.01%% for diehard_parking_lot.\n",gsl_rng_name(rng));
- } else if(pks < 0.01){
-   printf("# Generator %s POOR at < 1%% for diehard_parking_lot.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else if(pks < 0.05){
-   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_parking_lot.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else {
-   printf("# Generator %s PASSED at > 5%% for diehard_parking_lot.\n",gsl_rng_name(rng));
- }
- printf("#==================================================================\n");
+ test_footer(dtest,pks,ks_pvalue,"Diehard Parking Lot Test");
 
- free(ks_pvalue);
+ /*
+  * Put back tsamples
+  */
+ if(all == YES){
+   tsamples = ts_save;
+   psamples = ps_save;
+ }
+
+ if(ks_pvalue) nullfree(ks_pvalue);
 
  return(pks);
 
@@ -230,20 +214,6 @@ void diehard_parking_lot_test()
 void help_diehard_parking_lot()
 {
 
- printf("\n\
-#==================================================================\n\
-#                Diehard \"parking lot\" test (modified).\n\
-# This tests the distribution of attempts to randomly park a\n\
-# square car of length 1 on a 100x100 parking lot without\n\
-# crashing.  We plot n (number of attempts) versus k (number of\n\
-# attempts that didn't \"crash\" because the car squares \n\
-# overlapped and compare to the expected result from a perfectly\n\
-# random set of parking coordinates.  This is, alas, not really\n\
-# known on theoretical grounds so instead we compare to n=12,000\n\
-# where k should average 3523 with sigma 21.9 and is very close\n\
-# to normally distributed.  Thus (k-3523)/21.9 is a standard\n\
-# normal variable, which converted to a uniform p-value, provides\n\
-# input to a KS test with a default 100 samples.\n\
-#==================================================================\n");
+ printf("%s",dtest->description);
 
 }

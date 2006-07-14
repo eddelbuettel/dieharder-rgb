@@ -75,98 +75,69 @@
 
 
 #include "dieharder.h"
+/*
+ * Test specific data
+ */
+#include "diehard_count_1s_byte.h"
 
 double diehard_count_1s_byte()
 {
 
- double *pvalue,pks;
- uint tempsamples;
- uint est_num_rands;
+ double pks;
+ uint ps_save,ts_save;
 
  /*
-  * This is the merest shell to set any test-specific variables, call
-  * the main test routine (which fills one or more slots in ks_pvalue[]
-  * and increments kspi accordingly), and run a Kuiper Kolmogorov-Smirnov
-  * test on the vector of pvalues produced and turn it into a single,
-  * cumulative p-value (pks) for the entire test.  If the test parameters
-  * are set properly, this will USUALLY yield an unambiguous signal of
-  * failure.
-  */
-
- /*
-  * If this test is run by itself, we can ignore tsamples.  If it is
-  * part of a "standard run", we have to use specific values.  Either
-  * way, we have to adjust the sizes of e.g. the list of integers to
-  * be generated and sampled, and (re)allocate memory accordingly.
-  * Then at the bottom, we have to put it all back.
+  * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0
   */
  if(all == YES){
-   tempsamples = tsamples;
-   tsamples = 256000;  /* Standard value from diehard */
+   ts_save = tsamples;
+   tsamples = dtest->tsamples_std;
+   ps_save = psamples;
+   psamples = dtest->psamples_std;
  }
-
+ if(tsamples == 0){
+   tsamples = dtest->tsamples_std;
+ }
+ if(psamples == 0){
+   psamples = dtest->psamples_std;
+ }
+ 
  /*
-  * Allocate space for ks_pvalue.  Free it below
+  * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
+  * any missed prior allocations are freed.
   */
- ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
+ if(ks_pvalue) nullfree(ks_pvalue);
+ ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
- if(!quiet){
-   help_diehard_count_1s_byte();
-   printf("#                        Run Details\n");
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
-   } else {
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   }
-   printf("# Samples per test = %u.  Diehard recommends 256000\n",tsamples);
-   printf("# Test run %u times to cumulate p-values for KS test.\n",psamples);
-   printf("# Number of rands required is around 2^28 for 100 samples.\n");
-   /* 1.25 uints required per five digit sample */
-   est_num_rands = (int)(tsamples*psamples*1.25);
-   printf("# Number of rands required is around %u for %u\n",est_num_rands,psamples);
-   printf("# non-overlapping p-samples containing %u samples.\n",tsamples);
- }
-
- kspi = 0;  /* Always zero first */
- pks = sample((void *)diehard_count_1s_byte_test);
-
- /*
-  * Display histogram of ks p-values (optional)
-  */
- if(hist_flag){
-   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
- }
- if(!quiet){
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
-     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
-   }
- }
- printf("#                          Results\n");
- printf("# p = %8.6f for diehard_count_1s_byte test (mean) from\n",pks);
- printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",kspi);
- /* Work through some ranges here */
- if(pks < 0.0001){
-   printf("# Generator %s FAILED at < 0.01%% for diehard_count_1s_byte.\n",gsl_rng_name(rng));
- } else if(pks < 0.01){
-   printf("# Generator %s POOR at < 1%% for diehard_count_1s_byte.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else if(pks < 0.05){
-   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_count_1s_byte.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
+ test_header(dtest);
+ if(overlap){
+   printf("# Using overlapping samples (diehard).\n");
+   /* One new five digit sample per BYTE, four per new uint  */
  } else {
-   printf("# Generator %s PASSED at > 5%% for diehard_count_1s_byte.\n",gsl_rng_name(rng));
+   printf("# Using non-overlapping samples (default).\n");
  }
- printf("#==================================================================\n");
 
  /*
-  * Put back tsamples, free ks_pvalue.
+  * This is the standard test call.
+  */
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)diehard_count_1s_stream_test);
+
+ /*
+  * Test Results, standard form.
+  */
+ test_footer(dtest,pks,ks_pvalue,"Diehard Count the 1s (byte)");
+
+ /*
+  * Put back tsamples
   */
  if(all == YES){
-   tsamples = tempsamples;
+   tsamples = ts_save;
+   psamples = ps_save;
  }
- free(ks_pvalue);
+
+ if(ks_pvalue) nullfree(ks_pvalue);
 
  return(pks);
 
@@ -410,35 +381,6 @@ void diehard_count_1s_byte_test()
 void help_diehard_count_1s_byte()
 {
 
- printf("\n\
-#==================================================================\n\
-#            Diehard \"count_1s_byte\" test (modified).\n\
-#     This is the COUNT-THE-1's TEST for specific bytes.        \n\
-# Consider the file under test as a stream of 32-bit integers.  \n\
-# From each integer, a specific byte is chosen , say the left-  \n\
-# most::  bits 1 to 8. Each byte can contain from 0 to 8 1's,   \n\
-# with probabilitie 1,8,28,56,70,56,28,8,1 over 256.  Now let   \n\
-# the specified bytes from successive integers provide a string \n\
-# of (overlapping) 5-letter words, each \"letter\" taking values  \n\
-# A,B,C,D,E. The letters are determined  by the number of 1's,  \n\
-# in that byte::  0,1,or 2 ---> A, 3 ---> B, 4 ---> C, 5 ---> D,\n\
-# and  6,7 or 8 ---> E.  Thus we have a monkey at a typewriter  \n\
-# hitting five keys with with various probabilities::  37,56,70,\n\
-# 56,37 over 256. There are 5^5 possible 5-letter words, and    \n\
-# from a string of 256,000 (overlapping) 5-letter words, counts \n\
-# are made on the frequencies for each word. The quadratic form \n\
-# in the weak inverse of the covariance matrix of the cell      \n\
-# counts provides a chisquare test::  Q5-Q4, the difference of  \n\
-# the naive Pearson  sums of (OBS-EXP)^2/EXP on counts for 5-   \n\
-# and 4-letter cell counts.                                     \n\
-# \n\
-# Note: We actually cycle samples over all 0-31 bit offsets, so \n\
-# that if there is a problem with any particular offset it has \n\
-# a chance of being observed.  One can imagine problems with odd \n\
-# offsets but not even, for example, or only with the offset 7.\n\
-# tsamples and psamples can be freely varied, but you'll likely \n\
-# need tsamples >> 100,000 to have enough to get a reliable kstest \n\
-# result. \n\
-#==================================================================\n");
+ printf("%s",dtest->description);
 
 }

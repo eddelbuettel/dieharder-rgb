@@ -38,9 +38,22 @@
 #define STDERR	stderr
 #define YES	1
 #define NO	0
-#define PI 3.141592653589793238462643
+#define PI      3.141592653589793238462643
 #define K       1024
 #define PAGE    4096
+#define M       1048576
+#define M_2     2097152
+/*
+ * For reasons unknown and unknowable, free() doesn't null the pointer
+ * it frees (possibly because it is called by value!)  Nor does it return
+ * a success value.  In fact, it is just a leak or memory corruption waiting
+ * to happen.  Sigh.
+ *
+ * nullfree frees and sets the pointer it freed back to NULL.  This let's
+ * one e.g. if(a) nullfree(a) to safely free a IFF it is actually a pointer,
+ * and let's one test on a in other ways to avoid leaking memory.
+ */
+#define nullfree(a) {free(a);a = 0;}
 
  typedef enum {
    D_QUIET,

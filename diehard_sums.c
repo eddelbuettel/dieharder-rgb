@@ -26,101 +26,72 @@
 
 
 #include "dieharder.h"
+/*
+ * Test specific data
+ */
+#include "diehard_sums.h"
 
 double diehard_sums()
 {
 
- double *pvalue,pks;
- uint tempsamples;
+ double pks;
+ uint ps_save,ts_save;
 
  /*
-  * This is the merest shell to set any test-specific variables, call
-  * the main test routine (which fills one or more slots in ks_pvalue[]
-  * and increments kspi accordingly), and run a Kuiper Kolmogorov-Smirnov
-  * test on the vector of pvalues produced and turn it into a single,
-  * cumulative p-value (pks) for the entire test.  If the test parameters
-  * are set properly, this will USUALLY yield an unambiguous signal of
-  * failure.
+  * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0
+  *
+  * MUST use tsamples = 100 diehard standard value, no choice.
   */
-
- /*
-  * If this test is run by itself, we can ignore tsamples.  If it is
-  * part of a "standard run", we have to use specific values.  Either
-  * way, we have to adjust the sizes of e.g. the list of integers to
-  * be generated and sampled, and (re)allocate memory accordingly.
-  * Then at the bottom, we have to put it all back.
-  */
+ ts_save = tsamples;
+ tsamples = dtest->tsamples_std;  /* 
  if(all == YES){
-   tempsamples = tsamples;
-   tsamples = 100;          /* do 100 separate sums */
+   ps_save = psamples;
+   psamples = dtest->psamples_std;
+ }
+ if(psamples == 0){
+   psamples = dtest->psamples_std;
  }
 
  /*
-  * Allocate space for ks_pvalue.  Free it below
+  * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
+  * any missed prior allocations are freed.
   */
- ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
+ if(ks_pvalue) nullfree(ks_pvalue);
+ ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
- if(!quiet){
-   help_diehard_sums();
-   printf("#                        Run Details\n");
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
-   } else {
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   }
-   printf("# Samples per test = %u.  Diehard default is 100\n",tsamples);
-   printf("# Test run %u times to cumulate p-values for final KS test.\n",psamples);
-   printf("# Note that diehard only used 10 p-values in its final KS test.\n");
- }
- if(tsamples != 100){
-   printf("#==================================================================\n");
-   printf("# WARNING WARNING WARNING!  This test pretty much requires\n");
-   printf("#   that tsamples be 100 to work, although I'm leaving in\n");
-   printf("#   the ability to change it.  Consider restarting.\n");
-   printf("#==================================================================\n");
+ test_header(dtest);
+ /*
+  * Any custom test header output lines go here.  They should be
+  * used VERY sparingly.
+  */
+ printf("# Number of rands required is around 2^21 per psample.\n");
+ if(overlap){
+   printf("# Using overlapping samples (diehard).\n");
+ } else {
+   printf("# Using non-overlapping samples (default).\n");
  }
 
+ /*
+  * This is the standard test call.
+  */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_sums_test);
 
  /*
-  * Display histogram of ks p-values (optional)
+  * Test Results, standard form.
   */
- if(hist_flag){
-   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
- }
- if(!quiet){
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
-     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
-   }
- }
- printf("#                          Results\n");
- printf("# p = %8.6f for diehard_sums test (mean) from\n",pks);
- printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",kspi);
- /* Work through some ranges here */
- if(pks < 0.0001){
-   printf("# Generator %s FAILED at < 0.01%% for diehard_sums.\n",gsl_rng_name(rng));
- } else if(pks < 0.01){
-   printf("# Generator %s POOR at < 1%% for diehard_sums.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else if(pks < 0.05){
-   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_sums.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else {
-   printf("# Generator %s PASSED at > 5%% for diehard_sums.\n",gsl_rng_name(rng));
- }
- printf("#==================================================================\n");
+ test_footer(dtest,pks,ks_pvalue,"Diehard Sums Test");
 
  /*
-  * Put back tsamples, free ks_pvalue.
+  * Put back tsamples
   */
  if(all == YES){
-   tsamples = tempsamples;
+   tsamples = ts_save;
+   psamples = ps_save;
  }
- 
- free(ks_pvalue);
+
+ if(ks_pvalue) nullfree(ks_pvalue);
 
  return(pks);
 
@@ -316,22 +287,7 @@ void diehard_sums_test()
 void help_diehard_sums()
 {
 
- printf("\n\
-#==================================================================\n\
-#                Diehard \"sums\" test (modified).\n\
-# Integers are floated to get a sequence U(1),U(2),... of uni-  \n\
-# form [0,1) variables.  Then overlapping sums,                 \n\
-#   S(1)=U(1)+...+U(100), S2=U(2)+...+U(101),... are formed.    \n\
-# The S's are virtually normal with a certain covariance mat-   \n\
-# rix.  A linear transformation of the S's converts them to a   \n\
-# sequence of independent standard normals, which are converted \n\
-# to uniform variables for a KSTEST. The  p-values from ten     \n\
-# KSTESTs are given still another KSTEST.                       \n\
-#\n\
-# Note well:  -O causes the old diehard version to be run (more or\n\
-# less).  Omitting it causes non-overlapping sums to be used and \n\
-# directly tests the overall balance of uniform rands.\n\
-#==================================================================\n");
+ printf("%s",dtest->description);
 
 }
 

@@ -18,46 +18,67 @@
  */
 
 #include "dieharder.h"
+/*
+ * Test specific data
+ */
+#include "sts_monobit.h"
 
 double sts_monobit()
 {
 
- int i,j,k;
  double pks;
+ uint ps_save,ts_save;
 
  /*
-  * Allocate space for ks_pvalue.  Free it below
+  * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0
   */
+ if(all == YES){
+   ts_save = tsamples;
+   tsamples = dtest->tsamples_std;
+   ps_save = psamples;
+   psamples = dtest->psamples_std;
+ }
+ if(tsamples == 0){
+   tsamples = dtest->tsamples_std;
+ }
+ if(psamples == 0){
+   psamples = dtest->psamples_std;
+ }
+ 
+ /*
+  * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
+  * any missed prior allocations are freed.
+  */
+ if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
- if(!quiet){
-   help_sts_monobit();
-   printf("# random number generator: %s\n",gsl_rng_name(rng));
-   printf("# p-samples = %u   number of sampled ints/test = %u\n",psamples,tsamples);
- }
+ test_header(dtest);
+ /*
+  * Any custom test header output lines go here.  They should be
+  * used VERY sparingly.
+  */
 
  /*
-  * This part should ALMOST be standardized enough to make a
-  * single unified call.  For the moment we'll do one per test, as each
-  * test has a few quirks that would otherwise have to go in e.g. work(),
-  * making it complicated.
+  * This is the standard test call.
   */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)sts_monobit_test);
 
  /*
-  * Display histogram of ks p-values (optional)
+  * Test Results, standard form.
   */
- if(hist_flag){
-   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
- }
- printf("# p = %6.3f for sts_monobit test from Kuiper Kolmogorov-Smirnov.\n",pks);
- printf("#     test on %u pvalues.\n",kspi);
- if(pks < 0.0001){
-   printf("# Generator %s FAILS at 0.01%% for sts_monobit.\n",gsl_rng_name(rng));
+ test_footer(dtest,pks,ks_pvalue,"STS Monobit Test");
+
+ /*
+  * Put back tsamples
+  */
+ if(all == YES){
+   tsamples = ts_save;
+   psamples = ps_save;
  }
 
- free(ks_pvalue);
+ if(ks_pvalue) nullfree(ks_pvalue);
 
  return(pks);
 
@@ -136,12 +157,6 @@ void sts_monobit_test()
 void help_sts_monobit()
 {
 
- printf("#==================================================================\n");
- printf("#                 sts_monobit Test Description\n");
- printf("# Very simple.  Counts the 1 bits in a long string of random uints.\n");
- printf("# Compares to expected number, generates a p-value directly from\n");
- printf("# erfc().  Very effective at revealing overtly weak generators;\n");
- printf("# Not so good at determining where stronger ones eventually fail.\n");
- printf("#==================================================================\n");
+ printf("%s",dtest->description);
 
 }

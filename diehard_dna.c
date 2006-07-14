@@ -27,94 +27,72 @@
 
 
 #include "dieharder.h"
+/*
+ * Test specific data
+ */
+#include "diehard_dna.h"
 
 double diehard_dna()
 {
 
- double *pvalue,pks;
- uint tempsamples;
+ double pks;
+ uint ps_save,ts_save;
 
  /*
-  * This is the merest shell to set any test-specific variables, call
-  * the main test routine (which fills one or more slots in ks_pvalue[]
-  * and increments kspi accordingly), and run a Kuiper Kolmogorov-Smirnov
-  * test on the vector of pvalues produced and turn it into a single,
-  * cumulative p-value (pks) for the entire test.  If the test parameters
-  * are set properly, this will USUALLY yield an unambiguous signal of
-  * failure.
+  * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0
+  *
+  * MUST use 2^21 = 2097152 diehard standard value, no choice.
   */
-
- /*
-  * This test requires a fixed number of tsamples, alas.  Deviation
-  * not permitted, whether or not we are running a single test and
-  * trying to set -t whatever.
-  */
- tempsamples = tsamples;
- tsamples = 2097152;  /* Standard value from diehard */
-
- /*
-  * Allocate space for ks_pvalue.  Free it below
-  */
- ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
-
- if(!quiet){
-   help_diehard_dna();
-   printf("#                        Run Details\n");
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
-   } else {
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   }
-   printf("# Samples per test FIXED at %u.\n",tsamples);
-   printf("# Test run %u times to cumulate p-values for KS test.\n",psamples);
-   printf("# Number of rands required is around 2^28 for 100 samples.\n");
-   if(overlap){
-     printf("# Using overlapping samples (diehard).\n");
-   } else {
-     printf("# Using non-overlapping samples (default).\n");
-   }
+ ts_save = tsamples;
+ tsamples = dtest->tsamples_std;  /* 
+ if(all == YES){
+   ps_save = psamples;
+   psamples = dtest->psamples_std;
+ }
+ if(psamples == 0){
+   psamples = dtest->psamples_std;
  }
 
- kspi = 0;  /* Always zero first */
- pks = sample((void *)diehard_dna_test);
-
  /*
-  * Display histogram of ks p-values (optional)
+  * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
+  * any missed prior allocations are freed.
   */
- if(hist_flag){
-   histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
- }
- if(!quiet){
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
-     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
-   }
- }
- printf("#                          Results\n");
- printf("# p = %8.6f for diehard_dna test from\n",pks);
- printf("#     Kuiper Kolmogorov-Smirnov test on %u pvalues.\n",kspi);
- /* Work through some ranges here */
- if(pks < 0.0001){
-   printf("# Generator %s FAILED at < 0.01%% for diehard_dna.\n",gsl_rng_name(rng));
- } else if(pks < 0.01){
-   printf("# Generator %s POOR at < 1%% for diehard_dna.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else if(pks < 0.05){
-   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_dna.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
+ if(ks_pvalue) nullfree(ks_pvalue);
+ ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
+
+ test_header(dtest);
+ /*
+  * Any custom test header output lines go here.  They should be
+  * used VERY sparingly.
+  */
+ printf("# Number of rands required is around 2^21 per psample.\n");
+ if(overlap){
+   printf("# Using overlapping samples (diehard).\n");
  } else {
-   printf("# Generator %s PASSED at > 5%% for diehard_dna.\n",gsl_rng_name(rng));
+   printf("# Using non-overlapping samples (default).\n");
  }
- printf("#==================================================================\n");
 
  /*
-  * Put back tsamples, free ks_pvalue.
+  * This is the standard test call.
+  */
+ kspi = 0;  /* Always zero first */
+ pks = sample((void *)diehard_opso_test);
+
+ /*
+  * Test Results, standard form.
+  */
+ test_footer(dtest,pks,ks_pvalue,"Diehard DNA Test");
+
+ /*
+  * Put back tsamples
   */
  if(all == YES){
-   tsamples = tempsamples;
+   tsamples = ts_save;
+   psamples = ps_save;
  }
- free(ks_pvalue);
+
+ if(ks_pvalue) nullfree(ks_pvalue);
 
  return(pks);
 
@@ -339,23 +317,6 @@ void diehard_dna_test()
 void help_diehard_dna()
 {
 
- printf("\n\
-#==================================================================\n\
-#                  Diehard \"DNA\" test.\n\
-# \n\
-#   The DNA test considers an alphabet of 4 letters::  C,G,A,T,\n\
-# determined by two designated bits in the sequence of random   \n\
-# integers being tested.  It considers 10-letter words, so that \n\
-# as in OPSO and OQSO, there are 2^20 possible words, and the   \n\
-# mean number of missing words from a string of 2^21  (over-    \n\
-# lapping)  10-letter  words (2^21+9 \"keystrokes\") is 141909.   \n\
-# The standard deviation sigma=339 was determined as for OQSO   \n\
-# by simulation.  (Sigma for OPSO, 290, is the true value (to   \n\
-# three places), not determined by simulation.                  \n\
-# \n\
-# Note 2^21 = 2097152\n\
-# Note also that we don't bother with overlapping keystrokes \n\
-# (and sample more rands -- rands are now cheap). \n\
-#==================================================================\n");
+ printf("%s",dtest->description);
 
 }

@@ -51,42 +51,58 @@
  */
 
 #include "dieharder.h"
+/*
+ * Test specific data
+ */
+#include "rgb_bitdist.h"
 
 double rgb_bitdist()
 {
 
  int ntuple_max,n,p,pcnt;
- double *pvalue,pks;
+ double pks;
+ uint ps_save,ts_save;
 
  /*
-  * Allocate space for ks_pvalue.  Free it below
+  * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0
   */
+ if(all == YES){
+   ts_save = tsamples;
+   tsamples = dtest->tsamples_std;
+   ps_save = psamples;
+   psamples = dtest->psamples_std;
+ }
+ if(tsamples == 0){
+   tsamples = dtest->tsamples_std;
+ }
+ if(psamples == 0){
+   psamples = dtest->psamples_std;
+ }
+ 
+ /*
+  * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
+  * any missed prior allocations are freed.
+  */
+ if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
- if(!quiet){
-   help_rgb_bitdist();
-   printf("# random number generator: %s\n",gsl_rng_name(rng));
-   if(strncmp(gsl_rng_name(rng),"file_input_raw",14) == 0){
-     printf("#      file %s contains %u binary integers\n",filename,filecount);
-   }
-   printf("# p-samples = %u   bitstring samples = %u  bits sampled = %u\n",
-     psamples,tsamples,bits);
- }
+ test_header(dtest);
 
  /*
   * 0 and 1 (only check 1)
   */
- printf("ntuple = %u\n",ntuple);
  if(ntuple == 0 || all == YES){
    for(n=1;n<=8;n++){
      ntuple = n;
-     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
-       printf("# rgb_bitdist(): Testing ntuple = %u\n",ntuple);
-     }
+     printf("# Testing ntuple = %u\n",ntuple);
      kspi = 0;  /* Always zero first */
      pks = sample((void *)rgb_bitdist_test);
-     printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov\n",pks,ntuple);
-     printf("#     test on %u pvalues.\n",kspi);
+
+     /*
+      * Test Results, standard form.
+      */
+     test_footer(dtest,pks,ks_pvalue,"RGB Bit Distribution Test");
      if(pks < 0.0001){
        printf("# Generator %s FAILS at 0.01%% for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),ntuple);
        return(pks);
@@ -97,20 +113,21 @@ double rgb_bitdist()
    pks = sample((void *)rgb_bitdist_test);
 
    /*
-    * Display histogram of ks p-values (optional)
+    * Test Results, standard form.
     */
-   if(hist_flag){
-     histogram(ks_pvalue,psamples,0.0,1.0,10,"p-values");
-   }
-   printf("p = %6.3f for %1d-tuplet test from Kuiper Kolmogorov-Smirnov\n",pks,ntuple);
-   printf("#     test on %u pvalues.\n",kspi);
-   if(pks < 0.0001){
-     printf("# Generator %s FAILS at 0.01%% for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),ntuple);
-     return(pks);
-   }
+   test_footer(dtest,pks,ks_pvalue,"RGB Bit Distribution Test");
+
  }
 
- free(ks_pvalue);
+ /*
+  * Put back tsamples
+  */
+ if(all == YES){
+   tsamples = ts_save;
+   psamples = ps_save;
+ }
+
+ if(ks_pvalue) nullfree(ks_pvalue);
 
  return(pks);
 
@@ -347,15 +364,7 @@ void rgb_bitdist_test()
 void help_rgb_bitdist()
 {
 
- printf("#==================================================================\n");
- printf("#                 rgb_bitdist Test Description\n");
- printf("# Accumulates the frequencies of all n-tuples of bits in a list\n");
- printf("# of random integers and compares the distribution thus generated\n");
- printf("# with the theoretical (binomial) histogram, forming chisq and the\n");
- printf("# associated p-value.  In this test n-tuples are selected without\n");
- printf("# WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples\n");
- printf("# are independent.  Every other sample is offset modulus of the\n");
- printf("# sample index and ntuple_max.\n");
- printf("#==================================================================\n");
-
+ printf("%s",dtest->description);
+ 
 }
+

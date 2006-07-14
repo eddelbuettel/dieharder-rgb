@@ -63,9 +63,9 @@ double diehard_craps()
   * Allocate memory for THIS test's ks_pvalues.  Make sure that
   * any missed prior allocation is freed.
   */
- if(ks_pvalue) free(ks_pvalue);
+ if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
- if(ks_pvalue2) free(ks_pvalue2);
+ if(ks_pvalue2) nullfree(ks_pvalue2);
  ks_pvalue2  = (double *)malloc((size_t) psamples*sizeof(double));
 
  test_header(dtest);
@@ -102,8 +102,8 @@ double diehard_craps()
    psamples = ps_save;
  }
 
- if(ks_pvalue) free(ks_pvalue);
- if(ks_pvalue2) free(ks_pvalue2);
+ if(ks_pvalue) nullfree(ks_pvalue);
+ if(ks_pvalue2) nullfree(ks_pvalue2);
 
  return(pks);
 
