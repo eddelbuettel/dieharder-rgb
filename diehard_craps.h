@@ -22,3 +22,6 @@ Dtest craps = {
   100,     /* Default psamples */
   200000   /* Default tsamples */
 };
+
+/* Give it a standard, local name */
+static Dtest *dtest = &craps;

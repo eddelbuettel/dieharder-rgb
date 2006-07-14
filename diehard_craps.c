@@ -26,11 +26,11 @@
 
 
 #include "dieharder.h"
+
 /*
- * Test specific stuff
+ * Test specific data, defaults
  */
 #include "diehard_craps.h"
-static Dtest *dtest = &craps;
 
 double diehard_craps()
 {
@@ -88,7 +88,8 @@ double diehard_craps()
  test_footer(dtest,pks,ks_pvalue,"Craps Test (mean)");
 
  /*
-  * This is an extra for craps only.  Results of the freqency test.
+  * Craps generates two statistics, not one, so we need an extra
+  * KS test on the second vector of p-values.
   */
  pks = kstest_kuiper(ks_pvalue2,kspi);
  test_footer(dtest,pks,ks_pvalue2,"Craps Test (freq)");

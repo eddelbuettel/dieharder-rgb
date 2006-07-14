@@ -54,130 +54,87 @@
  * (and before that Knuth's The Art of Programming v. 2).
  */
 
-#define RUN_MAX 6
-
 /*
- * a_ij
+ * Test specific data, defaults
  */
-static double a[6][6] = {
- { 4529.4,   9044.9,  13568.0,   18091.0,   22615.0,   27892.0},
- { 9044.9,  18097.0,  27139.0,   36187.0,   45234.0,   55789.0},
- {13568.0,  27139.0,  40721.0,   54281.0,   67852.0,   83685.0},
- {18091.0,  36187.0,  54281.0,   72414.0,   90470.0,  111580.0},
- {22615.0,  45234.0,  67852.0,   90470.0,  113262.0,  139476.0},
- {27892.0,  55789.0,  83685.0,  111580.0,  139476.0,  172860.0}
-};
-
-/*
- * b_i
- */
-static double b[6];
+#include "diehard_runs.h"
 
 double diehard_runs()
 {
 
- double *pvalue,pks;
+ double pks;
+ uint ps_save,ts_save;
+
  uint tempsamples,temppsamples;
 
  /*
-  * This is the merest shell to set any test-specific variables, call
-  * the main test routine (which fills one or more slots in ks_pvalue[]
-  * and increments kspi accordingly), and run a Kuiper Kolmogorov-Smirnov
-  * test on the vector of pvalues produced and turn it into a single,
-  * cumulative p-value (pks) for the entire test.  If the test parameters
-  * are set properly, this will USUALLY yield an unambiguous signal of
-  * failure.
-  */
-
- /*
-  * Initialize b explicitly.  Might as well do it here.
-  */
- b[0] = 1.0/6.0;
- b[1] = 5.0/24.0;
- b[2] = 11.0/120.0;
- b[3] = 19.0/720.0;
- b[4] = 29.0/5040.0;
- b[5] = 1.0/840.0;
-
-
- /*
-  * If this is part of a sweep of tests, reset tsamples and
-  * resize rand_int.
+  * Do a standard test if -a(ll) is selected.
   */
  if(all == YES){
-   tempsamples = tsamples;
-   tsamples = 10000 ;  /* all => diehard default values */
+   ts_save = tsamples;
+   tsamples = dtest->tsamples_std;
+   ps_save = psamples;
+   psamples = dtest->psamples_std;
  }
 
  /*
-  * Allocate space for ks_pvalue.  Free it below.
+  * ALSO use standard values if tsamples or psamples are 0
   */
- ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
+ if(tsamples == 0){
+   tsamples = dtest->tsamples_std;
+ }
+ if(psamples == 0){
+   psamples = dtest->psamples_std;
+ }
+ 
  /*
-  * We generate TWO samples per test run, so we have to halve psamples
-  * itself and put it back right at the end.
+  * Allocate space for ks_pvalue and rand_int, checking to prevent
+  * leaks from previous tests.  Free them below.
+  *
+  * Note that this test generates two samples per call.  Unlike
+  * regular diehard, we accumulate the pvalues for up and down runs
+  * SEPARATELY and test them SEPARATELY as either one could fail,
+  * right?  And failures could easily partially compensate...
   */
- temppsamples = psamples;
- psamples = psamples/2;
- free(rand_int);
+ if(ks_pvalue) free(ks_pvalue);
+ ks_pvalue = (double *)malloc((size_t) psamples*sizeof(double));
+ if(ks_pvalue2) free(ks_pvalue);
+ ks_pvalue2 = (double *)malloc((size_t) psamples*sizeof(double));
+ if(rand_int) free(rand_int);
  rand_int = (uint *)malloc(tsamples*sizeof(uint));
 
- if(!quiet){
-   help_diehard_runs();
-   printf("#                        Run Details\n");
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-     printf("# File %s contains %u rands of %c type.\n",filename,filecount,filetype);
-   } else {
-     printf("# Random number generator tested: %s\n",gsl_rng_name(rng));
-   }
-   printf("# Samples per test run = %u.\n",tsamples);
-   printf("# Test run %u times to cumulate p-values for KS test.\n",psamples);
- }
 
+ test_header(dtest);
+
+ /*
+  * This is now the standard test call.
+  */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)diehard_runs_test);
 
  /*
-  * Display histogram of ks p-values (optional)
+  * Results:
   */
- if(hist_flag){
-   histogram(ks_pvalue,2*psamples,0.0,1.0,10,"p-values");
- }
- if(!quiet){
-   if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
-     printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
-     printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
-   }
-   printf("#==================================================================\n");
- }
- printf("#                          Results\n");
- printf("# p = %8.6f for diehard_runs test from Kuiper Kolmogorov-Smirnov\n",pks);
- printf("#     test on %u pvalues (up runs + down runs).\n",kspi);
- /* Work through some ranges here */
- if(pks < 0.0001){
-   printf("# Generator %s FAILED at < 0.01%% for diehard_runs.\n",gsl_rng_name(rng));
- } else if(pks < 0.01){
-   printf("# Generator %s POOR at < 1%% for diehard_runs.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else if(pks < 0.05){
-   printf("# Generator %s POSSIBLY WEAK at < 5%% for diehard_runs.\n",gsl_rng_name(rng));
-   printf("# Recommendation:  Repeat test to verify failure.\n");
- } else {
-   printf("# Generator %s PASSED at > 5%% for diehard_runs.\n",gsl_rng_name(rng));
- }
- printf("#==================================================================\n");
+ test_footer(dtest,pks,ks_pvalue,"Runs (up)");
 
  /*
-  * Put back tsamples, psamples, free rand_int, free ks_pvalue.
+  * Runs generates two statistics, not one, so we need an extra
+  * KS test on the second vector of p-values.
+  */
+ pks = kstest_kuiper(ks_pvalue2,kspi);
+ test_footer(dtest,pks,ks_pvalue2,"Runs (down)");
+
+ /*
+  * Put back tsamples
   */
  if(all == YES){
-   tsamples = tempsamples;
+   tsamples = ts_save;
+   psamples = ps_save;
  }
- psamples = temppsamples;
- free(rand_int);
- rand_int = (uint *)malloc(tsamples*sizeof(uint));
- free(ks_pvalue);
+
+ if(ks_pvalue) free(ks_pvalue);
+ if(ks_pvalue2) free(ks_pvalue2);
+ if(rand_int) free(rand_int);
 
  return(pks);
 
@@ -279,9 +236,11 @@ void diehard_runs_test()
  if(verbose){
    printf("uv = %f   dv = %f\n",uv,dv);
  }
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
- ks_pvalue[kspi++] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
+ ks_pvalue[kspi] = gsl_sf_gamma_inc_Q(3.0,uv/2.0);
+ ks_pvalue2[kspi] = gsl_sf_gamma_inc_Q(3.0,dv/2.0);
  /* printf("%12.6f\t%12.6f\n",ks_pvalue[kspi-2],ks_pvalue[kspi-1]); */
+
+ kspi++;
 
 }
 
