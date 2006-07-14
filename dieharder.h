@@ -68,6 +68,7 @@
    D_STS_MONOBIT,
    D_STS_RUNS,
    D_STS_BLOCK,
+   D_USER_TEMPLATE,
    D_SEED,
    D_STARTUP,
    D_BITS,
@@ -130,13 +131,14 @@
  } Sts_Tests;
 
  /*
-  * Add your own test types here!  Start by replacing dummy here and
-  * in the subroutine prototypes below.
+  * Add your own test types here!  Use/rename/copy template here and in
+  * the subroutine prototypes below.  Note also the D_USER_TEMPLATE in
+  * the Debug enum, in case you want to add controllable I/O to help
+  * you debug with the -v flag.
   */
  typedef enum {
    USER_NONE,
-   USER_DUMMY,
-   USER_DC2,
+   USER_TEMPLATE,
    N_USER_TESTS
  } User_Tests;
 
@@ -262,7 +264,6 @@
  /* 17: diehard "craps" test */
  double diehard_craps();
  void diehard_craps_test();
- void help_diehard_craps();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();
@@ -289,9 +290,9 @@
  void help_sts_block(); */
 
 
- /* User "dummy" test.  Replace with your own test(s) */
- double dc2();
- void dc2_test();
+ /* User/template test.  Replace/copy/rename with your own test(s) */
+ double template();
+ void template_test();
 
  /* User "dummy" test.  Replace with your own test(s) */
  double user_dummy();
@@ -484,3 +485,4 @@ typedef struct
 
  void test_header(Dtest *dtest);
  void test_footer(Dtest *dtest, double pvalue, double *pvalues, char *desc);
+

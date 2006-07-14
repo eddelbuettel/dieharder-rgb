@@ -45,18 +45,6 @@
 
 
 #include "dieharder.h"
-
-
-/*
- * The following are the definitions and parameters for runs, based on
- * Journal of Applied Statistics v30, Algorithm AS 157, 1981:
- *    The Runs-Up and Runs-Down Tests, by R. G. T. Grafton.
- * (and before that Knuth's The Art of Programming v. 2).
- */
-
-/*
- * Test specific data, defaults
- */
 #include "diehard_runs.h"
 
 double diehard_runs()
@@ -69,6 +57,9 @@ double diehard_runs()
 
  /*
   * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0.
+  * Eventually we'll MAKE them 0 by default unless overridden on
+  * the command line.
   */
  if(all == YES){
    ts_save = tsamples;
@@ -76,10 +67,6 @@ double diehard_runs()
    ps_save = psamples;
    psamples = dtest->psamples_std;
  }
-
- /*
-  * ALSO use standard values if tsamples or psamples are 0
-  */
  if(tsamples == 0){
    tsamples = dtest->tsamples_std;
  }
@@ -87,6 +74,7 @@ double diehard_runs()
    psamples = dtest->psamples_std;
  }
  
+
  /*
   * Allocate space for ks_pvalue and rand_int, checking to prevent
   * leaks from previous tests.  Free them below.
@@ -102,7 +90,6 @@ double diehard_runs()
  ks_pvalue2 = (double *)malloc((size_t) psamples*sizeof(double));
  if(rand_int) free(rand_int);
  rand_int = (uint *)malloc(tsamples*sizeof(uint));
-
 
  test_header(dtest);
 
@@ -247,15 +234,6 @@ void diehard_runs_test()
 void help_diehard_runs()
 {
 
- printf("\n\
-#==================================================================\n\
-#                Diehard \"runs\" test (modified).\n\
-# This tests the distribution of increasing and decreasing runs\n\
-# of integers.  If called with reasonable parameters e.g. -s 100\n\
-# or greater and -n 100000 or greater, it will compute a vector\n\
-# of p-values for up and down and verify that the proportion\n\
-# of these values less than 0.01 is consistent with a uniform\n\
-# distribution.\n\
-#==================================================================\n");
+ printf("%s",dtest->description);
 
 }

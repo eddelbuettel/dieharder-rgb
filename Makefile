@@ -93,12 +93,12 @@ SOURCES = $(SOURCE)\
     diehard_sums.c \
     diehard_runs.c \
     diehard_craps.c \
-    dc2.c \
     rgb_bitdist.c \
     rgb_persist.c \
     rgb_timing.c \
     sts_monobit.c \
     sts_runs.c \
+    template.c \
 
 
 INCLUDE = $(PROGRAM:=.h)

@@ -157,8 +157,8 @@ void work()
  switch(user){
    default:
      break;
-   case USER_DC2:
-     dc2();
+   case USER_TEMPLATE:
+     template();
      exit(0);
      break;
  }

@@ -76,9 +76,9 @@ int histogram(double *input,int inum,double min,double max,int nbins,char *label
   */
  for(i=20;i>0;i--){
    if(i%2 == 0){
-     printf("#  %3d|",i*vscale);
+     printf("#    %3d|",i*vscale);
    } else {
-     printf("#     |");
+     printf("#       |");
    }
    for(j=0;j<nbins;j++){
      if(bin[j] >= i*vscale ){
@@ -89,8 +89,8 @@ int histogram(double *input,int inum,double min,double max,int nbins,char *label
    }
    printf("\n");
  }
- printf("#     |--------------------------------------------------\n");
- printf("#     |");
+ printf("#       |--------------------------------------------------\n");
+ printf("#       |");
  for(i=0;i<nbins;i++) printf("%4.1f|",(i+1)*binscale);
  printf("\n");
  printf("#==================================================================\n");
