@@ -101,8 +101,8 @@ double template()
  }
  
  /*
-  * Allocate memory for THIS test's ks_pvalues.  Make sure that
-  * any missed prior allocation is freed.
+  * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
+  * any missed prior allocations are freed.
   */
  if(ks_pvalue) free(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
@@ -119,7 +119,6 @@ double template()
   */
  kspi = 0;  /* Always zero first */
  pks = sample((void *)template_test);
-
 
  /*
   * Results of the mean test

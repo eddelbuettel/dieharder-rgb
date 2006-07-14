@@ -1,43 +1,11 @@
-
 #==================================================================
-#                Diehard "runs" test (modified).
-# This tests the distribution of increasing and decreasing runs
-# of integers.  If called with reasonable parameters e.g. -s 100
-# or greater and -n 100000 or greater, it will compute a vector
-# of p-values for up and down and verify that the proportion
-# of these values less than 0.01 is consistent with a uniform
-# distribution.
+#                        rgb_timing
+# This test times the selected random number generator, only.
 #==================================================================
-# Random number generator tested: mt19937_1999
-# size of vector tested = 100000 (100000 or more suggested)
 #==================================================================
-#                Histogram of p-values
-# Counting histogram bins, binscale = 0.100000
-#   20|    |    |    |****|****|    |    |    |    |    |
-#     |    |****|    |****|****|    |    |    |    |    |
-#   18|    |****|    |****|****|    |    |    |    |    |
-#     |    |****|****|****|****|    |    |    |    |    |
-#   16|    |****|****|****|****|    |    |    |    |    |
-#     |****|****|****|****|****|    |    |    |    |    |
-#   14|****|****|****|****|****|    |    |    |    |    |
-#     |****|****|****|****|****|    |    |    |    |    |
-#   12|****|****|****|****|****|    |    |    |    |    |
-#     |****|****|****|****|****|    |    |    |    |    |
-#   10|****|****|****|****|****|    |    |    |    |    |
-#     |****|****|****|****|****|    |    |    |    |    |
-#    8|****|****|****|****|****|    |    |    |    |    |
-#     |****|****|****|****|****|    |    |    |    |    |
-#    6|****|****|****|****|****|****|    |    |    |    |
-#     |****|****|****|****|****|****|    |    |    |    |
-#    4|****|****|****|****|****|****|    |    |    |    |
-#     |****|****|****|****|****|****|    |    |    |    |
-#    2|****|****|****|****|****|****|    |    |    |    |
-#     |****|****|****|****|****|****|    |    |    |    |
-#     |--------------------------------------------------
-#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
-#==================================================================
-# p = 0.120567 for diehard_runs test from Kuiper Kolmogorov-Smirnov
-#     test on 200 pvalues (up runs + down runs).
+# rgb_timing() test using the mt19937_1999 generator 
+# Average time per rand = 3.683800e+01 nsec.
+# Rands per second = 2.714588e+07.
 
 #==================================================================
 #                Diehard "Birthdays" test (modified).
@@ -64,111 +32,97 @@
 # It is recommended that you run this at or near the original
 # 100 test samples per p-value with -t 100.
 #==================================================================
+#                        Run Details
 # Random number generator tested: mt19937_1999
+# Samples per test run = 100.
+# Test run 100 times to cumulate p-values for KS test.
 # 512 samples drawn from 24-bit integers masked out of a
 # 32 bit random integer.  lambda = 2.000000, kmax = 6, tsamples = 100
 #==================================================================
 #                Histogram of p-values
 # Counting histogram bins, binscale = 0.100000
-#   20|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   18|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |****|    |    |    |    |    |
-#   16|    |    |    |    |****|    |    |    |    |    |
-#     |    |    |    |    |****|    |    |    |    |    |
-#   14|    |    |    |    |****|    |****|    |    |    |
-#     |    |    |    |    |****|    |****|    |    |    |
-#   12|    |    |    |    |****|****|****|    |    |    |
-#     |****|    |    |    |****|****|****|    |    |    |
-#   10|****|    |    |    |****|****|****|    |    |    |
-#     |****|****|    |    |****|****|****|    |    |    |
-#    8|****|****|****|    |****|****|****|    |****|****|
-#     |****|****|****|    |****|****|****|****|****|****|
-#    6|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    4|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    2|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#     |--------------------------------------------------
-#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |****|    |    |    |    |
+#     16|    |    |    |    |    |****|    |    |    |    |
+#       |****|    |    |    |    |****|    |    |    |    |
+#     14|****|    |    |    |    |****|    |    |    |    |
+#       |****|    |    |    |    |****|    |    |    |    |
+#     12|****|    |    |    |    |****|    |    |    |****|
+#       |****|    |    |****|    |****|    |    |    |****|
+#     10|****|****|    |****|    |****|    |    |****|****|
+#       |****|****|    |****|    |****|    |    |****|****|
+#      8|****|****|    |****|    |****|    |    |****|****|
+#       |****|****|****|****|****|****|    |    |****|****|
+#      6|****|****|****|****|****|****|    |****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
 #==================================================================
-# p = 0.337950 for diehard_birthdays test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
 #==================================================================
-#         Diehard "Minimum Distance" test (modified).
-# Generate 8000 points in a 10000^2 square.  Determine the
-# the shortest nearest neighbor distance R.  This should generate
-# p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a
-# KS test to see if p is uniform.
+#                          Results
+# p = 0.667201 for diehard_birthdays test from Kuiper 
+#     Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_birthdays.
 #==================================================================
+
+#==================================================================
+#                Diehard "OPERM5" test.
+# This is the OPERM5 test.  It looks at a sequence of one mill- 
+# ion 32-bit random integers.  Each set of five consecutive     
+# integers can be in one of 120 states, for the 5! possible or- 
+# derings of five numbers.  Thus the 5th, 6th, 7th,...numbers   
+# each provide a state. As many thousands of state transitions  
+# are observed,  cumulative counts are made of the number of    
+# occurences of each state.  Then the quadratic form in the     
+# weak inverse of the 120x120 covariance matrix yields a test   
+# equivalent to the likelihood ratio test that the 120 cell     
+# counts came from the specified (asymptotically) normal dis-   
+# tribution with the specified 120x120 covariance matrix (with  
+# rank 99).  This version uses 1,000,000 integers, twice.       
+#==================================================================
+#                        Run Details
 # Random number generator tested: mt19937_1999
-# Number of points tested = 8000
+# Samples per test run = 1000000.  diehard value is 1000000.
+# Test run 100 times to cumulate p-values for KS test.
+# Number of rands required is around 2^28 for 100 samples.
 #==================================================================
 #                Histogram of p-values
 # Counting histogram bins, binscale = 0.100000
-#   20|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   18|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   16|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   14|    |    |    |    |    |    |    |****|    |    |
-#     |    |    |    |    |****|    |    |****|    |    |
-#   12|    |    |    |    |****|****|    |****|    |    |
-#     |    |****|****|    |****|****|    |****|    |    |
-#   10|    |****|****|    |****|****|    |****|    |    |
-#     |****|****|****|****|****|****|    |****|    |    |
-#    8|****|****|****|****|****|****|    |****|****|****|
-#     |****|****|****|****|****|****|    |****|****|****|
-#    6|****|****|****|****|****|****|    |****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    4|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    2|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#     |--------------------------------------------------
-#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#     40|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     36|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     32|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     28|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     24|****|    |    |    |    |    |    |    |    |****|
+#       |****|    |    |    |    |    |    |    |    |****|
+#     20|****|    |    |    |    |    |    |    |    |****|
+#       |****|    |    |    |    |    |    |    |    |****|
+#     16|****|    |    |    |    |    |    |    |    |****|
+#       |****|    |    |    |    |    |    |    |    |****|
+#     12|****|    |    |    |    |    |    |    |    |****|
+#       |****|****|    |    |    |    |    |    |    |****|
+#      8|****|****|    |    |    |****|    |    |    |****|
+#       |****|****|    |    |    |****|    |****|    |****|
+#      4|****|****|    |****|****|****|    |****|****|****|
+#       |****|****|    |****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
 #==================================================================
-# p = 0.982483 for diehard_2dsphere test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
 #==================================================================
-#              Diehard "3d Sphere" test (modified).
-# Generate 4000 points in a 1000^3 integer cube.  Determine the
-# the shortest nearest neighbor distance R.  This should generate
-# p = 1.0 - exp(-R^3/30).  Repeat for lots of samples, apply a
-# KS test to see if p is uniform.
+#                          Results
+# p = 0.000000 for diehard_operm5 test from Kuiper 
+#     Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 FAILED at < 0.01% for diehard_operm5.
 #==================================================================
-# Random number generator tested: mt19937_1999
-# Number of points tested = 4000
-#==================================================================
-#                Histogram of p-values
-# Counting histogram bins, binscale = 0.100000
-#   20|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   18|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   16|    |    |    |    |    |    |    |    |    |****|
-#     |    |    |    |    |    |    |    |    |    |****|
-#   14|    |    |    |    |    |    |    |    |    |****|
-#     |    |    |    |    |    |    |****|    |    |****|
-#   12|    |    |    |    |    |    |****|    |    |****|
-#     |****|    |    |    |    |    |****|    |****|****|
-#   10|****|    |    |    |    |    |****|****|****|****|
-#     |****|    |    |    |    |****|****|****|****|****|
-#    8|****|    |    |****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    6|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    4|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    2|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#     |--------------------------------------------------
-#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
-#==================================================================
-# p = 0.227985 for diehard_2dsphere test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
 
 #==================================================================
 #              Diehard 32x32 "Binary Rank" test
@@ -185,35 +139,42 @@
 # resulting p-values to verify that they are approximately uniform.
 #==================================================================
 # Random number generator tested: mt19937_1999
-# Number of 32x32 random matrices tested = 10000
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# 32x32 samples per test run = 40000.  diehard value is 40000.
+# Test run 100 times to cumulate p-values for KS test.
 #==================================================================
 #                Histogram of p-values
 # Counting histogram bins, binscale = 0.100000
-#   20|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   18|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |****|    |    |    |
-#   16|    |    |    |    |    |    |****|    |    |    |
-#     |    |    |    |    |    |    |****|    |    |    |
-#   14|    |    |****|    |    |    |****|    |    |    |
-#     |    |    |****|    |****|    |****|    |    |    |
-#   12|    |    |****|    |****|    |****|    |    |    |
-#     |    |****|****|    |****|    |****|    |    |    |
-#   10|    |****|****|    |****|    |****|    |    |    |
-#     |    |****|****|****|****|    |****|    |****|    |
-#    8|****|****|****|****|****|    |****|    |****|    |
-#     |****|****|****|****|****|    |****|    |****|****|
-#    6|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    4|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    2|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#     |--------------------------------------------------
-#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |****|    |    |    |    |    |    |    |    |
+#     16|    |****|    |    |    |    |    |    |    |    |
+#       |    |****|    |    |    |    |    |    |    |    |
+#     14|    |****|    |    |    |    |    |****|    |    |
+#       |    |****|****|    |    |    |    |****|    |    |
+#     12|    |****|****|    |    |    |    |****|****|****|
+#       |    |****|****|    |    |    |    |****|****|****|
+#     10|****|****|****|    |    |    |    |****|****|****|
+#       |****|****|****|    |    |    |    |****|****|****|
+#      8|****|****|****|    |    |****|    |****|****|****|
+#       |****|****|****|    |    |****|    |****|****|****|
+#      6|****|****|****|    |****|****|    |****|****|****|
+#       |****|****|****|****|****|****|    |****|****|****|
+#      4|****|****|****|****|****|****|    |****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
 #==================================================================
-# p = 0.363758 for diehard 32x32 binary rank test from 
+#==================================================================
+#                          Results
+# p = 0.036287 for diehard 32x32 binary rank test from 
 #     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 POSSIBLY WEAK at < 5% for diehard_rank_32x32.
+# Recommendation:  Repeat test to verify failure.
 
 #==================================================================
 #             Diehard 6x8 "Binary Rank" test
@@ -230,161 +191,174 @@
 # resulting p-values to verify that they are approximately uniform.
 #==================================================================
 # Random number generator tested: mt19937_1999
-# Number of random 6x8 bitwise matrices tested = 10000
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# 6x8 samples per test run = 100000.  diehard value is 100000.
+# Test run 100 times to cumulate p-values for KS test.
 #==================================================================
 #                Histogram of p-values
 # Counting histogram bins, binscale = 0.100000
-#   20|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   18|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   16|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   14|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |****|    |    |    |
-#   12|****|    |****|    |    |    |****|****|    |    |
-#     |****|    |****|    |    |    |****|****|    |    |
-#   10|****|****|****|****|****|    |****|****|    |    |
-#     |****|****|****|****|****|    |****|****|    |    |
-#    8|****|****|****|****|****|****|****|****|    |    |
-#     |****|****|****|****|****|****|****|****|****|    |
-#    6|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    4|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    2|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#     |--------------------------------------------------
-#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |****|    |    |    |    |    |    |    |    |    |
+#     14|****|    |    |    |    |    |    |    |****|    |
+#       |****|****|****|    |    |    |    |    |****|    |
+#     12|****|****|****|    |    |    |    |    |****|    |
+#       |****|****|****|    |****|    |    |    |****|    |
+#     10|****|****|****|****|****|    |****|    |****|    |
+#       |****|****|****|****|****|    |****|    |****|    |
+#      8|****|****|****|****|****|    |****|    |****|    |
+#       |****|****|****|****|****|****|****|    |****|    |
+#      6|****|****|****|****|****|****|****|    |****|    |
+#       |****|****|****|****|****|****|****|    |****|    |
+#      4|****|****|****|****|****|****|****|    |****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
 #==================================================================
-# p = 0.996454 for diehard 6x8 binary rank test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
 #==================================================================
-#                        rgb_persist
-# This test generates 256 sequential samples of an random unsigned
-# integer from the given rng.  Successive integers are logically
-# processed to extract a mask with 1's whereever bits do not
-# change.  Since bits will NOT change when filling e.g. unsigned
-# ints with 16 bit ints, this mask logically &'d with the maximum
-# random number returned by the rng.  All the remaining 1's in the
-# resulting mask are therefore significant -- they represent bits
-# that never change over the length of the test.  These bits are
-# very likely the reason that certain rng's fail the monobit
-# test -- extra persistent e.g. 1's or 0's inevitably bias the
-# total bitcount.  In many cases the particular bits repeated
-# appear to depend on the seed.  If the -i flag is given, the
-# entire test is repeated with the rng reseeded to generate a mask
-# and the extracted mask cumulated to show all the possible bit
-# positions that might be repeated for different seeds.
+#                          Results
+# p = 0.493415 for diehard 6x8 binary rank test from
+#      Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_rank_6x8.
+
 #==================================================================
-# Results for mt19937_1999 rng, using its 32 valid bits:
-# (Cumulated mask of zero is good.)
-# cumulated_mask =          0 = 00000000000000000000000000000000
-# randm_mask     = 4294967295 = 11111111111111111111111111111111
-# random_max     = 4294967295 = 11111111111111111111111111111111
-# rgb_persist test PASSED (no bits repeat)
+#                Diehard "BITSTREAM" test.
+# The file under test is viewed as a stream of bits. Call them  
+# b1,b2,... .  Consider an alphabet with two "letters", 0 and 1 
+# and think of the stream of bits as a succession of 20-letter  
+# "words", overlapping.  Thus the first word is b1b2...b20, the 
+# second is b2b3...b21, and so on.  The bitstream test counts   
+# the number of missing 20-letter (20-bit) words in a string of 
+# 2^21 overlapping 20-letter words.  There are 2^20 possible 20 
+# letter words.  For a truly random string of 2^21+19 bits, the 
+# number of missing words j should be (very close to) normally  
+# distributed with mean 141,909 and sigma 428.  Thus            
+#  (j-141909)/428 should be a standard normal variate (z score) 
+# that leads to a uniform [0,1) p value.  The test is repeated  
+# twenty times.                                                 
+# 
+# Note that of course we do not "restart file", when using gsl 
+# generators, we just crank out the next random number. 
+# We also do not bother to overlap the words.  rands are cheap. 
+# Finally, we repeat the test (usually) more than twenty time.
 #==================================================================
-#                 rgb_bitdist Test Description
-# Accumulates the frequencies of all n-tuples of bits in a list
-# of random integers and compares the distribution thus generated
-# with the theoretical (binomial) histogram, forming chisq and the
-# associated p-value.  In this test n-tuples are selected without
-# WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
-# are independent.  Every other sample is offset modulus of the
-# sample index and ntuple_max.
-#==================================================================
-# random number generator: mt19937_1999
-# p-samples = 100   bitstring samples = 10000  bits sampled = 128
-ntuple = 0
-p =  0.012 for 1-tuplet test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
-p =  0.974 for 2-tuplet test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
-p =  0.164 for 3-tuplet test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
-p =  0.289 for 4-tuplet test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
-p =  0.775 for 5-tuplet test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
-p =  0.000 for 6-tuplet test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
-# Generator mt19937_1999 FAILS at 0.01% for 6-tuplets.  rgb_bitdist terminating.
-#==================================================================
-#                 sts_monobit Test Description
-# Very simple.  Counts the 1 bits in a long string of random uints.
-# Compares to expected number, generates a p-value directly from
-# erfc().  Very effective at revealing overtly weak generators;
-# Not so good at determining where stronger ones eventually fail.
-#==================================================================
-# random number generator: mt19937_1999
-# p-samples = 100   number of sampled ints/test = 10000
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test FIXED at 2097152.
+# Test run 100 times to cumulate p-values for KS test.
+# Number of rands required is around 2^28 for 100 samples.
+# Using non-overlapping samples (default).
 #==================================================================
 #                Histogram of p-values
 # Counting histogram bins, binscale = 0.100000
-#   20|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   18|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   16|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   14|****|    |    |    |    |    |    |    |    |    |
-#     |****|    |    |    |****|    |    |    |****|    |
-#   12|****|****|    |    |****|    |    |    |****|    |
-#     |****|****|    |    |****|    |    |    |****|    |
-#   10|****|****|****|    |****|    |****|    |****|    |
-#     |****|****|****|    |****|****|****|    |****|    |
-#    8|****|****|****|    |****|****|****|    |****|    |
-#     |****|****|****|    |****|****|****|****|****|****|
-#    6|****|****|****|    |****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    4|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    2|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#     |--------------------------------------------------
-#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#     40|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     36|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     32|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     28|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     24|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     20|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     16|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     12|    |    |    |    |    |****|****|    |****|****|
+#       |    |    |    |****|****|****|****|****|****|****|
+#      8|    |    |****|****|****|****|****|****|****|****|
+#       |    |    |****|****|****|****|****|****|****|****|
+#      4|    |    |****|****|****|****|****|****|****|****|
+#       |    |****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
 #==================================================================
-# p =  0.843 for sts_monobit test from Kuiper Kolmogorov-Smirnov.
-#     test on 100 pvalues.
+#                          Results
+# p = 0.000931 for diehard_bitstream test from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 POOR at < 1% for diehard_bitstream.
+# Recommendation:  Repeat test to verify failure.
 #==================================================================
-#                    sts_runs Test Description
-# Counts the total number of 0 runs + total number of 1 runs across
-# a sample of bits.  Note that a 0 run must begin with 10 and end
-# with 01.  Note that a 1 run must begin with 01 and end with a 10.
-# This test, run on a bitstring with cyclic boundary conditions, is
-# absolutely equivalent to just counting the 01 + 10 bit pairs.
-# It is therefore totally redundant with but not as good as the
-# rgb_bitdist() test for 2-tuples, which looks beyond the means to the
-# moments, testing an entire histogram  of 00, 01, 10, and 11 counts
-# to see if it is binomially distributed with p = 0.25.
+
 #==================================================================
-# random number generator: mt19937_1999
-# p-samples = 100   number of sampled ints/test = 10000
+#                    Diehard "OPSO" test.
+# The OPSO test considers 2-letter words from an alphabet of    
+# 1024 letters.  Each letter is determined by a specified ten   
+# bits from a 32-bit integer in the sequence to be tested. OPSO 
+# generates  2^21 (overlapping) 2-letter words  (from 2^21+1    
+# "keystrokes")  and counts the number of missing words---that  
+# is 2-letter words which do not appear in the entire sequence. 
+# That count should be very close to normally distributed with  
+# mean 141,909, sigma 290. Thus (missingwrds-141909)/290 should 
+# be a standard normal variable. The OPSO test takes 32 bits at 
+# a time from the test file and uses a designated set of ten    
+# consecutive bits. It then restarts the file for the next de-  
+# signated 10 bits, and so on.                                  
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test FIXED at 2097153.
+# Test run 100 times to cumulate p-values for KS test.
+# Number of rands required is around 2^28 for 100 samples.
+# Using non-overlapping samples (default).
 #==================================================================
 #                Histogram of p-values
 # Counting histogram bins, binscale = 0.100000
-#   20|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   18|    |    |    |    |    |    |    |    |    |    |
-#     |    |    |    |    |    |    |    |    |    |    |
-#   16|    |    |    |    |    |    |    |    |    |    |
-#     |****|    |    |    |    |    |    |    |    |    |
-#   14|****|****|    |    |    |    |    |    |****|    |
-#     |****|****|    |    |    |    |    |    |****|    |
-#   12|****|****|    |    |    |    |    |****|****|    |
-#     |****|****|    |    |    |    |    |****|****|    |
-#   10|****|****|    |    |    |****|    |****|****|    |
-#     |****|****|    |    |    |****|****|****|****|    |
-#    8|****|****|****|    |    |****|****|****|****|    |
-#     |****|****|****|    |****|****|****|****|****|****|
-#    6|****|****|****|    |****|****|****|****|****|****|
-#     |****|****|****|    |****|****|****|****|****|****|
-#    4|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#    2|****|****|****|****|****|****|****|****|****|****|
-#     |****|****|****|****|****|****|****|****|****|****|
-#     |--------------------------------------------------
-#     | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     12|****|    |    |    |****|****|    |    |    |****|
+#       |****|    |    |    |****|****|****|    |    |****|
+#     10|****|    |    |****|****|****|****|    |    |****|
+#       |****|    |    |****|****|****|****|    |    |****|
+#      8|****|****|****|****|****|****|****|****|    |****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
 #==================================================================
-# p =  0.287 for sts_runs test from Kuiper Kolmogorov-Smirnov
-#     test on 100 pvalues.
+#                          Results
+# p = 0.997289 for diehard_opso test from
+#     Kuiper Kolmogorov-Smirnov test on 100 pvalues.
+# Generator mt19937_1999 PASSED at > 5% for diehard_opso.
+#==================================================================
+
+#==================================================================
+#                Diehard "OQSO" test.
+#  OQSO means Overlapping-Quadruples-Sparse-Occupancy.        
+#  The test OQSO is similar, except that it considers 4-letter 
+#  words from an alphabet of 32 letters, each letter determined  
+#  by a designated string of 5 consecutive bits from the test    
+#  file, elements of which are assumed 32-bit random integers.   
+#  The mean number of missing words in a sequence of 2^21 four-  
+#  letter words,  (2^21+3 "keystrokes"), is again 141909, with   
+#  sigma = 295.  The mean is based on theory; sigma comes from   
+#  extensive simulation.                                         
+# 
+#  Note 2^21 = 2097152
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test FIXED at 2097152.
+# Test run 100 times to cumulate p-values for KS test.
+# Number of rands required is around 2^28 for 100 samples.
+# Using non-overlapping samples (default).
+#==================================================================
+#                Histogram of p-

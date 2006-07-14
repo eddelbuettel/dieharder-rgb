@@ -66,7 +66,7 @@ reasonable amount of time).\n\
    -s 2 STS Runs test\n\
 \n\
             User Tests\n\
-No user-developed test are installed at this time.\n\
+   -u 1 User Template (Lagged Sum Test)\n\
 \n");
 
    exit(0);
