@@ -1,9 +1,7 @@
 /*
- * $Id$
+ * $id: rgb_timing.c 142 2005-03-11 02:56:31Z rgb $
  *
  * See copyright in copyright.h and the accompanying file COPYING
- * See also accompanying file STS.COPYING
- *
  */
 
 /*
@@ -13,6 +11,10 @@
  */
 
 #include "dieharder.h"
+/*
+ * Test specific data
+ */
+#include "rgb_timing.h"
 
 double rgb_timing()
 {
@@ -51,11 +53,6 @@ double rgb_timing()
 void help_rgb_timing()
 {
 
- if(!quiet){
-   printf("#==================================================================\n");
-   printf("#                        rgb_timing\n");
-   printf("# This test times the selected random number generator, only.\n");
-   printf("#==================================================================\n");
- }
+ printf("%s",dtest->description);
 
 }

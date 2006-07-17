@@ -62,7 +62,6 @@ double rgb_persist()
   * to see it in our lifetime unless we run this test continuously for
   * months at a time (yes, a dumb idea).
   */
- printf("rand_int = %0x\n",rand_int);
  if(rand_int) nullfree(rand_int);
  rand_int = (unsigned int*)malloc(256 * sizeof(unsigned int));
 
