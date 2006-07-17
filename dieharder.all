@@ -296,4 +296,969 @@ rand_int = 839a9e0
 #       |****|****|****|****|****|****|****|****|****|****|
 #       |--------------------------------------------------
 #       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
-#================================================
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.056099 for Diehard Birthdays Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#          Diehard Overlapping 5-Permutations Test.
+# This is the OPERM5 test.  It looks at a sequence of one mill- 
+# ion 32-bit random integers.  Each set of five consecutive     
+# integers can be in one of 120 states, for the 5! possible or- 
+# derings of five numbers.  Thus the 5th, 6th, 7th,...numbers   
+# each provide a state. As many thousands of state transitions  
+# are observed,  cumulative counts are made of the number of    
+# occurences of each state.  Then the quadratic form in the     
+# weak inverse of the 120x120 covariance matrix yields a test   
+# equivalent to the likelihood ratio test that the 120 cell     
+# counts came from the specified (asymptotically) normal dis-   
+# tribution with the specified 120x120 covariance matrix (with  
+# rank 99).  This version uses 1,000,000 integers, twice.       
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 100000 (test default is 100000)
+# P-values in final KS test = 100 (test default is 100)
+# Number of rands required is around 2^28 for 100 samples.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     40|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     36|    |    |    |    |    |    |    |    |    |    |
+#       |****|    |    |    |    |    |    |    |    |    |
+#     32|****|    |    |    |    |    |    |    |    |    |
+#       |****|    |    |    |    |    |    |    |    |    |
+#     28|****|    |    |    |    |    |    |    |    |    |
+#       |****|    |    |    |    |    |    |    |    |    |
+#     24|****|    |    |    |    |    |    |    |    |    |
+#       |****|    |    |    |    |    |    |    |    |    |
+#     20|****|    |    |    |    |    |    |    |    |****|
+#       |****|    |    |    |    |    |    |    |    |****|
+#     16|****|    |    |    |    |    |    |    |    |****|
+#       |****|    |    |    |    |    |    |    |    |****|
+#     12|****|    |    |    |    |    |    |    |    |****|
+#       |****|    |    |    |    |    |    |    |    |****|
+#      8|****|    |    |    |    |    |    |****|    |****|
+#       |****|****|****|    |    |    |    |****|****|****|
+#      4|****|****|****|****|****|    |****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.000000 for Diehard Overlapping 5-permutations Test
+# Assessment:
+# FAILED at < 0.01%.
+
+#==================================================================
+#                Diehard 32x32 Binary Rank Test
+# This is the BINARY RANK TEST for 31x31 matrices. The leftmost 
+# 31 bits of 31 random integers from the test sequence are used 
+# to form a 31x31 binary matrix over the field {0,1}. The rank  
+# is determined. That rank can be from 0 to 31, but ranks< 28   
+# are rare, and their counts are pooled with those for rank 28. 
+# Ranks are found for (default) 40,000 such random matrices and
+# a chisquare test is performed on counts for ranks 31,30,29 and
+# <=28.
+#
+# As always, the test is repeated and a KS test applied to the
+# resulting p-values to verify that they are approximately uniform.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 40000 (test default is 40000)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     12|    |    |    |    |    |    |    |    |    |    |
+#       |****|****|****|    |    |    |****|    |****|    |
+#     10|****|****|****|    |    |****|****|****|****|    |
+#       |****|****|****|    |    |****|****|****|****|****|
+#      8|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.929434 for Diehard 32x32 Rank Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#              Diehard 6x8 Binary Rank Test
+# This is the BINARY RANK TEST for 6x8 matrices.  From each of
+# six random 32-bit integers from the generator under test, a
+# specified byte is chosen, and the resulting six bytes form a
+# 6x8 binary matrix whose rank is determined.  That rank can be
+# from 0 to 6, but ranks 0,1,2,3 are rare; their counts are
+# pooled with those for rank 4. Ranks are found for 100,000
+# random matrices, and a chi-square test is performed on
+# counts for ranks 6,5 and <=4.
+#
+# As always, the test is repeated and a KS test applied to the
+# resulting p-values to verify that they are approximately uniform.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 100000 (test default is 100000)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |    |****|    |    |    |    |    |    |
+#       |    |    |    |****|****|    |    |    |    |    |
+#     12|    |****|    |****|****|****|    |    |    |    |
+#       |    |****|    |****|****|****|****|****|    |    |
+#     10|    |****|    |****|****|****|****|****|    |    |
+#       |    |****|    |****|****|****|****|****|    |    |
+#      8|    |****|****|****|****|****|****|****|    |    |
+#       |****|****|****|****|****|****|****|****|****|    |
+#      6|****|****|****|****|****|****|****|****|****|    |
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.364548 for Diehard 6x8 Binary Rank Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#                  Diehard Bitstream Test.
+# The file under test is viewed as a stream of bits. Call them  
+# b1,b2,... .  Consider an alphabet with two "letters", 0 and 1 
+# and think of the stream of bits as a succession of 20-letter  
+# "words", overlapping.  Thus the first word is b1b2...b20, the 
+# second is b2b3...b21, and so on.  The bitstream test counts   
+# the number of missing 20-letter (20-bit) words in a string of 
+# 2^21 overlapping 20-letter words.  There are 2^20 possible 20 
+# letter words.  For a truly random string of 2^21+19 bits, the 
+# number of missing words j should be (very close to) normally  
+# distributed with mean 141,909 and sigma 428.  Thus            
+#  (j-141909)/428 should be a standard normal variate (z score) 
+# that leads to a uniform [0,1) p value.  The test is repeated  
+# twenty times.                                                 
+# 
+# Note that of course we do not "restart file", when using gsl 
+# generators, we just crank out the next random number. 
+# We also do not bother to overlap the words.  rands are cheap. 
+# Finally, we repeat the test (usually) more than twenty time.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 2097152 (test default is 2097152)
+# P-values in final KS test = 100 (test default is 100)
+# Number of rands required is around 2^21 per psample.
+# Using non-overlapping samples (default).
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     40|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     36|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     32|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     28|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     24|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |****|    |    |
+#     20|    |    |    |    |    |    |    |****|    |    |
+#       |    |    |    |    |    |    |    |****|    |    |
+#     16|    |    |    |    |    |    |    |****|    |    |
+#       |    |    |    |    |    |    |****|****|    |****|
+#     12|    |    |    |    |    |****|****|****|    |****|
+#       |    |    |    |    |    |****|****|****|    |****|
+#      8|    |    |****|    |****|****|****|****|    |****|
+#       |    |****|****|****|****|****|****|****|****|****|
+#      4|    |****|****|****|****|****|****|****|****|****|
+#       |    |****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.004456 for Diehard Bitstream Test
+# Assessment:
+# POOR at < 1%.
+# Recommendation:  Repeat test to verify failure.
+
+#==================================================================
+#        Diehard Overlapping Pairs Sparse Occupance (OPSO)
+# The OPSO test considers 2-letter words from an alphabet of    
+# 1024 letters.  Each letter is determined by a specified ten   
+# bits from a 32-bit integer in the sequence to be tested. OPSO 
+# generates  2^21 (overlapping) 2-letter words  (from 2^21+1    
+# "keystrokes")  and counts the number of missing words---that  
+# is 2-letter words which do not appear in the entire sequence. 
+# That count should be very close to normally distributed with  
+# mean 141,909, sigma 290. Thus (missingwrds-141909)/290 should 
+# be a standard normal variable. The OPSO test takes 32 bits at 
+# a time from the test file and uses a designated set of ten    
+# consecutive bits. It then restarts the file for the next de-  
+# signated 10 bits, and so on.                                  
+# 
+#  Note 2^21 = 2097152, tsamples cannot be varied.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 2097152 (test default is 2097152)
+# P-values in final KS test = 100 (test default is 100)
+# Number of rands required is around 2^21 per psample.
+# Using non-overlapping samples (default).
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |****|    |    |    |
+#     14|    |    |    |    |    |****|****|    |    |    |
+#       |    |    |    |    |****|****|****|    |    |    |
+#     12|    |    |    |    |****|****|****|    |    |    |
+#       |    |    |****|    |****|****|****|    |****|    |
+#     10|    |    |****|    |****|****|****|    |****|    |
+#       |    |    |****|    |****|****|****|    |****|    |
+#      8|****|    |****|    |****|****|****|    |****|    |
+#       |****|****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.378389 for Diehard OPSO Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#   Diehard Overlapping Quadruples Sparce Occupancy (OQSO) Test
+#
+#  Similar, to OPSO except that it considers 4-letter 
+#  words from an alphabet of 32 letters, each letter determined  
+#  by a designated string of 5 consecutive bits from the test    
+#  file, elements of which are assumed 32-bit random integers.   
+#  The mean number of missing words in a sequence of 2^21 four-  
+#  letter words,  (2^21+3 "keystrokes"), is again 141909, with   
+#  sigma = 295.  The mean is based on theory; sigma comes from   
+#  extensive simulation.                                         
+# 
+#  Note 2^21 = 2097152, tsamples cannot be varied.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 2097152 (test default is 2097152)
+# P-values in final KS test = 100 (test default is 100)
+# Number of rands required is around 2^21 per psample.
+# Using non-overlapping samples (default).
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |****|    |    |    |    |    |
+#       |    |    |    |    |****|    |    |    |    |    |
+#     14|    |    |    |    |****|    |    |    |    |    |
+#       |    |    |    |    |****|    |****|    |    |    |
+#     12|    |    |    |    |****|    |****|    |    |    |
+#       |    |****|    |    |****|    |****|    |****|    |
+#     10|    |****|    |    |****|    |****|    |****|    |
+#       |    |****|    |****|****|****|****|    |****|    |
+#      8|****|****|****|****|****|****|****|****|****|    |
+#       |****|****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.393770 for Diehard OQSO Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#                    Diehard DNA Test.
+# 
+#   The DNA test considers an alphabet of 4 letters::  C,G,A,T,
+# determined by two designated bits in the sequence of random   
+# integers being tested.  It considers 10-letter words, so that 
+# as in OPSO and OQSO, there are 2^20 possible words, and the   
+# mean number of missing words from a string of 2^21  (over-    
+# lapping)  10-letter  words (2^21+9 "keystrokes") is 141909.   
+# The standard deviation sigma=339 was determined as for OQSO   
+# by simulation.  (Sigma for OPSO, 290, is the true value (to   
+# three places), not determined by simulation.                  
+# 
+# Note 2^21 = 2097152
+# Note also that we don't bother with overlapping keystrokes 
+# (and sample more rands -- rands are now cheap). 
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 2097152 (test default is 2097152)
+# P-values in final KS test = 100 (test default is 100)
+# Number of rands required is around 2^21 per psample.
+# Using non-overlapping samples (default).
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |****|    |    |    |    |    |
+#     16|    |    |    |    |****|    |    |    |    |    |
+#       |    |    |    |    |****|    |    |    |    |    |
+#     14|    |    |    |    |****|    |    |    |    |    |
+#       |    |    |    |    |****|    |    |    |    |    |
+#     12|    |    |    |    |****|    |    |    |    |    |
+#       |****|    |    |    |****|    |    |    |    |    |
+#     10|****|    |    |****|****|****|    |    |    |****|
+#       |****|****|****|****|****|****|****|    |****|****|
+#      8|****|****|****|****|****|****|****|    |****|****|
+#       |****|****|****|****|****|****|****|    |****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.696510 for Diehard DNA Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#          Diehard Count the 1s (stream) (modified) Test.
+# Consider the file under test as a stream of bytes (four per   
+# 32 bit integer).  Each byte can contain from 0 to 8 1's,      
+# with probabilities 1,8,28,56,70,56,28,8,1 over 256.  Now let  
+# the stream of bytes provide a string of overlapping  5-letter 
+# words, each "letter" taking values A,B,C,D,E. The letters are 
+# determined by the number of 1's in a byte::  0,1,or 2 yield A,
+# 3 yields B, 4 yields C, 5 yields D and 6,7 or 8 yield E. Thus 
+# we have a monkey at a typewriter hitting five keys with vari- 
+# ous probabilities (37,56,70,56,37 over 256).  There are 5^5   
+# possible 5-letter words, and from a string of 256,000 (over-  
+# lapping) 5-letter words, counts are made on the frequencies   
+# for each word.   The quadratic form in the weak inverse of    
+# the covariance matrix of the cell counts provides a chisquare 
+# test::  Q5-Q4, the difference of the naive Pearson sums of    
+# (OBS-EXP)^2/EXP on counts for 5- and 4-letter cell counts.    
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 256000 (test default is 256000)
+# P-values in final KS test = 100 (test default is 100)
+# Using non-overlapping samples (default).
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     12|    |    |    |    |****|    |****|****|    |    |
+#       |    |****|****|    |****|    |****|****|****|****|
+#     10|    |****|****|****|****|    |****|****|****|****|
+#       |    |****|****|****|****|    |****|****|****|****|
+#      8|    |****|****|****|****|    |****|****|****|****|
+#       |    |****|****|****|****|    |****|****|****|****|
+#      6|****|****|****|****|****|    |****|****|****|****|
+#       |****|****|****|****|****|    |****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.985250 for Diehard Count the 1s (stream)
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#         Diehard Count the 1s Test (byte) (modified).
+#     This is the COUNT-THE-1's TEST for specific bytes.        
+# Consider the file under test as a stream of 32-bit integers.  
+# From each integer, a specific byte is chosen , say the left-  
+# most::  bits 1 to 8. Each byte can contain from 0 to 8 1's,   
+# with probabilitie 1,8,28,56,70,56,28,8,1 over 256.  Now let   
+# the specified bytes from successive integers provide a string 
+# of (overlapping) 5-letter words, each "letter" taking values  
+# A,B,C,D,E. The letters are determined  by the number of 1's,  
+# in that byte::  0,1,or 2 ---> A, 3 ---> B, 4 ---> C, 5 ---> D,
+# and  6,7 or 8 ---> E.  Thus we have a monkey at a typewriter  
+# hitting five keys with with various probabilities::  37,56,70,
+# 56,37 over 256. There are 5^5 possible 5-letter words, and    
+# from a string of 256,000 (overlapping) 5-letter words, counts 
+# are made on the frequencies for each word. The quadratic form 
+# in the weak inverse of the covariance matrix of the cell      
+# counts provides a chisquare test::  Q5-Q4, the difference of  
+# the naive Pearson  sums of (OBS-EXP)^2/EXP on counts for 5-   
+# and 4-letter cell counts.                                     
+# 
+# Note: We actually cycle samples over all 0-31 bit offsets, so 
+# that if there is a problem with any particular offset it has 
+# a chance of being observed.  One can imagine problems with odd 
+# offsets but not even, for example, or only with the offset 7.
+# tsamples and psamples can be freely varied, but you'll likely 
+# need tsamples >> 100,000 to have enough to get a reliable kstest 
+# result. 
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 256000 (test default is 256000)
+# P-values in final KS test = 100 (test default is 100)
+# Using non-overlapping samples (default).
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |****|    |    |    |
+#     14|    |    |    |    |    |    |****|    |    |    |
+#       |    |    |    |****|    |    |****|    |    |    |
+#     12|    |    |    |****|    |    |****|    |    |    |
+#       |    |    |    |****|    |    |****|****|    |    |
+#     10|    |****|    |****|    |****|****|****|    |    |
+#       |    |****|****|****|****|****|****|****|    |****|
+#      8|    |****|****|****|****|****|****|****|****|****|
+#       |    |****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.748440 for Diehard Count the 1s (byte)
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#             Diehard Parking Lot Test (modified).
+# This tests the distribution of attempts to randomly park a
+# square car of length 1 on a 100x100 parking lot without
+# crashing.  We plot n (number of attempts) versus k (number of
+# attempts that didn't "crash" because the car squares 
+# overlapped and compare to the expected result from a perfectly
+# random set of parking coordinates.  This is, alas, not really
+# known on theoretical grounds so instead we compare to n=12,000
+# where k should average 3523 with sigma 21.9 and is very close
+# to normally distributed.  Thus (k-3523)/21.9 is a standard
+# normal variable, which converted to a uniform p-value, provides
+# input to a KS test with a default 100 samples.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 0 (test default is 0)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |****|    |    |    |    |    |
+#     12|****|    |****|    |****|    |    |    |    |    |
+#       |****|****|****|    |****|****|    |****|    |    |
+#     10|****|****|****|    |****|****|    |****|    |****|
+#       |****|****|****|    |****|****|****|****|    |****|
+#      8|****|****|****|    |****|****|****|****|    |****|
+#       |****|****|****|****|****|****|****|****|    |****|
+#      6|****|****|****|****|****|****|****|****|    |****|
+#       |****|****|****|****|****|****|****|****|    |****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.379171 for Diehard Parking Lot Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#         Diehard Minimum Distance (2d Circle) Test 
+# Generate 8000 points in a 10000^2 square.  Determine the
+# the shortest nearest neighbor distance R.  This should generate
+# p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a
+# KS test to see if p is uniform.
+#
+# The number of samples is fixed -- tsamples is ignored.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 100000 (test default is 100000)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |****|    |    |****|    |    |    |    |    |    |
+#     14|****|    |    |****|****|    |    |    |    |    |
+#       |****|    |    |****|****|    |    |    |    |    |
+#     12|****|    |    |****|****|    |    |    |****|    |
+#       |****|    |    |****|****|    |    |    |****|    |
+#     10|****|    |    |****|****|    |    |****|****|    |
+#       |****|    |    |****|****|    |    |****|****|    |
+#      8|****|    |****|****|****|    |    |****|****|    |
+#       |****|****|****|****|****|    |****|****|****|    |
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.774383 for Diehard Minimum Distance (2d Circle) Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#         Diehard Minimum Distance (2d Circle) Test 
+# Generate 8000 points in a 10000^2 square.  Determine the
+# the shortest nearest neighbor distance R.  This should generate
+# p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a
+# KS test to see if p is uniform.
+#
+# The number of samples is fixed -- tsamples is ignored.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 100000 (test default is 100000)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|****|****|    |    |    |    |    |    |    |    |
+#       |****|****|    |    |    |    |    |    |    |    |
+#     16|****|****|    |****|    |    |    |    |    |    |
+#       |****|****|    |****|    |    |    |    |    |    |
+#     14|****|****|    |****|    |    |    |    |    |    |
+#       |****|****|****|****|    |    |    |    |    |    |
+#     12|****|****|****|****|    |    |    |    |    |    |
+#       |****|****|****|****|    |    |    |    |    |    |
+#     10|****|****|****|****|****|    |    |    |    |    |
+#       |****|****|****|****|****|    |    |    |    |    |
+#      8|****|****|****|****|****|    |    |    |    |    |
+#       |****|****|****|****|****|****|****|    |    |    |
+#      6|****|****|****|****|****|****|****|****|    |    |
+#       |****|****|****|****|****|****|****|****|    |    |
+#      4|****|****|****|****|****|****|****|****|****|    |
+#       |****|****|****|****|****|****|****|****|****|    |
+#      2|****|****|****|****|****|****|****|****|****|    |
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.000073 for Diehard 3d Sphere (Minimum Distance) Test
+# Assessment:
+# FAILED at < 0.01%.
+
+#==================================================================
+#                  Diehard Squeeze Test.
+#  Random integers are floated to get uniforms on [0,1). Start- 
+#  ing with k=2^31=2147483647, the test finds j, the number of  
+#  iterations necessary to reduce k to 1, using the reduction   
+#  k=ceiling(k*U), with U provided by floating integers from    
+#  the file being tested.  Such j's are found 100,000 times,    
+#  then counts for the number of times j was <=6,7,...,47,>=48  
+#  are used to provide a chi-square test for cell frequencies.  
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 100000 (test default is 100000)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |****|    |    |
+#     14|    |    |    |    |    |    |    |****|    |****|
+#       |    |    |    |    |    |    |    |****|    |****|
+#     12|    |    |    |****|    |    |    |****|    |****|
+#       |    |    |    |****|    |    |    |****|    |****|
+#     10|****|****|****|****|    |    |    |****|    |****|
+#       |****|****|****|****|    |    |    |****|****|****|
+#      8|****|****|****|****|    |    |****|****|****|****|
+#       |****|****|****|****|    |****|****|****|****|****|
+#      6|****|****|****|****|    |****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.807374 for Diehard Squeeze Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#                  Diehard Sums Test
+# Integers are floated to get a sequence U(1),U(2),... of uni-  
+# form [0,1) variables.  Then overlapping sums,                 
+#   S(1)=U(1)+...+U(100), S2=U(2)+...+U(101),... are formed.    
+# The S's are virtually normal with a certain covariance mat-   
+# rix.  A linear transformation of the S's converts them to a   
+# sequence of independent standard normals, which are converted 
+# to uniform variables for a KSTEST. The  p-values from ten     
+# KSTESTs are given still another KSTEST.                       
+#
+# Note well:  -O causes the old diehard version to be run (more or
+# less).  Omitting it causes non-overlapping sums to be used and 
+# directly tests the overall balance of uniform rands.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 100 (test default is 100)
+# P-values in final KS test = 100 (test default is 100)
+# Number of rands required is around 2^21 per psample.
+# Using non-overlapping samples (default).
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     16|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     14|    |    |    |    |    |    |    |    |    |****|
+#       |    |    |    |    |    |    |    |    |    |****|
+#     12|    |    |    |    |    |    |    |    |    |****|
+#       |    |****|    |    |    |    |****|    |    |****|
+#     10|    |****|    |****|    |    |****|    |    |****|
+#       |****|****|    |****|    |****|****|****|    |****|
+#      8|****|****|****|****|    |****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.557686 for Diehard Sums Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#                Diehard "runs" test (modified).
+# This tests the distribution of increasing and decreasing runs
+# of integers.  If called with reasonable parameters e.g. -s 100
+# or greater and -n 100000 or greater, it will compute a vector
+# of p-values for up and down and verify that the proportion
+# of these values less than 0.01 is consistent with a uniform
+# distribution.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 100000 (test default is 100000)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |****|    |    |    |    |    |    |    |    |
+#       |    |****|    |    |    |****|    |    |****|    |
+#     12|    |****|    |    |    |****|****|    |****|    |
+#       |    |****|    |    |    |****|****|    |****|****|
+#     10|    |****|    |    |    |****|****|****|****|****|
+#       |    |****|    |    |    |****|****|****|****|****|
+#      8|****|****|    |****|    |****|****|****|****|****|
+#       |****|****|****|****|    |****|****|****|****|****|
+#      6|****|****|****|****|    |****|****|****|****|****|
+#       |****|****|****|****|    |****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.472238 for Runs (up)
+# Assessment:
+# PASSED at > 5%.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |****|    |    |    |
+#       |    |    |    |    |    |    |****|    |    |    |
+#     14|    |    |    |    |    |    |****|    |    |    |
+#       |    |    |    |    |    |    |****|    |    |    |
+#     12|    |    |    |    |    |    |****|    |    |****|
+#       |****|****|    |    |    |    |****|****|    |****|
+#     10|****|****|    |    |    |****|****|****|    |****|
+#       |****|****|    |    |    |****|****|****|    |****|
+#      8|****|****|****|****|    |****|****|****|    |****|
+#       |****|****|****|****|    |****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.682452 for Runs (down)
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#                   Diehard Craps Test
+#  This is the CRAPS TEST. It plays 200,000 games of craps, finds  
+#  the number of wins and the number of throws necessary to end    
+#  each game.  The number of wins should be (very close to) a      
+#  normal with mean 200000p and variance 200000p(1-p), with        
+#  p=244/495.  Throws necessary to complete the game can vary      
+#  from 1 to infinity, but counts for all>21 are lumped with 21.   
+#  A chi-square test is made on the no.-of-throws cell counts.     
+#  Each 32-bit integer from the test file provides the value for   
+#  the throw of a die, by floating to [0,1), multiplying by 6      
+#  and taking 1 plus the integer part of the result.               
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 200000 (test default is 200000)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |    |    |    |****|****|    |    |    |
+#       |    |    |    |    |    |****|****|    |    |****|
+#     12|    |    |    |    |    |****|****|    |    |****|
+#       |    |    |    |****|    |****|****|    |    |****|
+#     10|    |    |****|****|    |****|****|    |    |****|
+#       |    |    |****|****|    |****|****|    |****|****|
+#      8|    |****|****|****|    |****|****|****|****|****|
+#       |    |****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.872210 for Craps Test (mean)
+# Assessment:
+# PASSED at > 5%.
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|****|    |    |    |    |    |    |    |    |    |
+#       |****|    |    |    |    |    |    |    |    |    |
+#     14|****|    |    |    |    |    |    |    |    |    |
+#       |****|    |    |****|    |    |    |    |    |    |
+#     12|****|    |    |****|****|    |    |    |    |    |
+#       |****|    |****|****|****|    |    |    |****|    |
+#     10|****|    |****|****|****|    |    |****|****|    |
+#       |****|    |****|****|****|    |    |****|****|    |
+#      8|****|    |****|****|****|    |****|****|****|    |
+#       |****|    |****|****|****|****|****|****|****|    |
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.945661 for Craps Test (freq)
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#                     STS Monobit Test
+# Very simple.  Counts the 1 bits in a long string of random uints.
+# Compares to expected number, generates a p-value directly from
+# erfc().  Very effective at revealing overtly weak generators;
+# Not so good at determining where stronger ones eventually fail.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 100000 (test default is 100000)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |****|    |    |    |    |    |
+#     14|****|    |    |    |****|    |    |    |    |    |
+#       |****|    |    |    |****|    |    |    |    |    |
+#     12|****|****|****|    |****|    |    |****|    |    |
+#       |****|****|****|    |****|    |    |****|    |    |
+#     10|****|****|****|    |****|    |    |****|****|    |
+#       |****|****|****|    |****|    |    |****|****|    |
+#      8|****|****|****|    |****|    |    |****|****|    |
+#       |****|****|****|****|****|    |    |****|****|****|
+#      6|****|****|****|****|****|    |****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.286818 for STS Monobit Test
+# Assessment:
+# PASSED at > 5%.
+
+#==================================================================
+#                       STS Runs Test
+# Counts the total number of 0 runs + total number of 1 runs across
+# a sample of bits.  Note that a 0 run must begin with 10 and end
+# with 01.  Note that a 1 run must begin with 01 and end with a 10.
+# This test, run on a bitstring with cyclic boundary conditions, is
+# absolutely equivalent to just counting the 01 + 10 bit pairs.
+# It is therefore totally redundant with but not as good as the
+# rgb_bitdist() test for 2-tuples, which looks beyond the means to the
+# moments, testing an entire histogram  of 00, 01, 10, and 11 counts
+# to see if it is binomially distributed with p = 0.25.
+#==================================================================
+#                        Run Details
+# Random number generator tested: mt19937_1999
+# Samples per test pvalue = 100000 (test default is 100000)
+# P-values in final KS test = 100 (test default is 100)
+#==================================================================
+#                Histogram of p-values
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |    |****|    |    |    |    |    |****|
+#       |    |    |    |****|****|    |    |    |    |****|
+#     12|    |    |    |****|****|    |    |    |    |****|
+#       |    |    |****|****|****|    |    |    |    |****|
+#     10|****|****|****|****|****|    |****|    |    |****|
+#       |****|****|****|****|****|    |****|    |    |****|
+#      8|****|****|****|****|****|****|****|    |    |****|
+#       |****|****|****|****|****|****|****|****|    |****|
+#      6|****|****|****|****|****|****|****|****|    |****|
+#       |****|****|****|****|****|****|****|****|    |****|
+#      4|****|****|****|****|****|****|****|****|    |****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+#                          Results
+# Kuiper KS: p = 0.337260 for STS Runs Test
+# Assessment:
+# PASSED at > 5%.
