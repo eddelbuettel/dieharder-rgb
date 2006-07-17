@@ -50,23 +50,26 @@ number is reset to 0 when the major is bumped to flag a debugging/beta
 release.
 
 <li> Third number (second minor).  This number indicates the number of
-tests currently supported e.g. 16 diehard + 3 rgb + 2 sts = 21.
+tests currently supported e.g. 17 diehard + 3 rgb + 2 sts + 1 user = 23.
 
 </ul>
 
 <p> All dieharder source (.tgz and .src.rpm) files can be downloaded
 from this directory.  In addition, i386 binary rpm's built on top of
-Fedora Core 5 are present (that require that the GSL rpm's be
-installed) as well.</p>
+Fedora Core 5 are present. They have the GSL rpm's as dependencies, be
+warned; the GSL is a build dependency for the tarball as well.</p>
 
-<p> This project is under very active development.  Some effort will be
-expended from here on so that the suite will "run out of the box".  A
-brief synopsis of command options to get you started as presented below.
-In general, though, documentation (including this page and built in
-documentation) may lag the bleeding edge snapshot by a few days or
-more.</p>
+<p> This project is under very active development.  Considerable effort
+is being expended so that the suite will "run out of the box" to produce
+a reasonably understandable report for any given random number generator
+it supports via the "-a" flag, in addition to the ability to
+considerably vary most specific tests as applied to the generator.  A
+brief synopsis of command options to get you started is presented below.
+In general, though, documentation (including this page, the man page,
+and built-in documentation) may lag the bleeding edge snapshot by a few
+days or more.</p>
 
-<p>From Court Shrock:</p>
+<p>An rpm installation note from Court Shrock:</p>
 <pre>
 I was reading about your work on dieharder.  First, some info
 about getting dieharder working in Gentoo:
@@ -78,38 +81,83 @@ http://www.phy.duke.edu/~rgb/General/dieharder/dieharder-0.6.11-1.i386.rpm
 rpm -i --nodeps dieharder-0.6.11-1.i386.rpm
 </pre>
 
+<p>Rebuilding from tarball source should always work as well, and if you
+are planning to play a lot with the tool may be a desireable way to
+proceed as there are some documentation goodies in the ./doc
+subdirectory of the source tarball (such as the original diehard test
+descriptions and the STS white paper).
+
 <p>Also, George Marsaglia retired from FSU in 1996, and diehard appears
 to have finally disappeared from FSU webspace.  However, the diehard
 CDROM is still mirrored <a
 href="http://www.csis.hku.hk/~diehard/cdrom/">here</a> in what appears
-to be an authorized copy.  The source code of diehard itself is of
-course copyright George Marsaglia but Marsaglia did not incorporate an
-explicit license into his code which muddles the issue.  Existing
-diehard sources are not directly incorporated into dieharder in any way
-in source form for that reason, to keep authorship and GPL licensing
-issues clear.</p>
+to be an authorized copy although it is impossible to tell.  The source
+code of diehard itself is (of course) Copyright George Marsaglia but
+Marsaglia did not incorporate an explicit <i>license</i> into his code
+which muddles the issue of how and when it can be distributed, freely or
+otherwise.  Existing diehard sources are <i>not directly incorporated
+into dieharder in source form</i> for that reason, to keep authorship
+and GPL licensing issues clear.</p>
 
 <p>Note that the same is not true about data.  Several of the diehard
-tests require that one use precomputed numbers as e.g. targets for some
-statistic.  Obviously in these cases we use the same numbers as diehard
-so we get the same, or comparable, results.</p>
+tests require that one use precomputed numbers as e.g. target mean,
+sigma for some test statistic.  Obviously in these cases we use the same
+numbers as diehard so we get the same, or comparable, results.  These
+numbers have all been published in the literature, though, and should
+therefore be in the public domain as far as use in a program is
+concerned.</p>
 
-<p>Note also that a number of the tests are modified, usually in a way
-that should improve them.  For example, diehard relies heavily on
-overlapping -- testing random sequences that differ only in the number
-on the end -- to conserve rands that were "precious" when diehard was
-originally written in terms of disk space and other resources consumed.
-dieharder, on the other hand, has an indefinitely large source of rands
-in the many GSL routines built in and usually uses truly independent
-samples without any bytewise overlap, although some effort is being
-expended to allow the "overlap" flag -O to force the use of diehard-like
-overlapping samples for direct comparison.</p>  
+<p>Note also that most of the diehard tests are <i>modified</i> in
+dieharder, usually in a way that should improve them.  There are three
+improvements that were basically always made if possible.
+<ul>
+ <li> The number of test sample p-value that contribute to the final
+Kolmogorov-Smirnov test for the uniformity of the distribution of
+p-values of the test statistic is a variable with default 100, which is
+<i>much</i> larger than most diehard default values.  This change alone
+causes many generators that are asserted to "pass diehard" to in fact
+fail -- any given test run generates a p-value that is acceptable, but
+the <i>distribution</i> of p-values is not uniform.
+ <li> The number of actual samples <i>within</i> a test that contribute
+to the single-run test statistic was made a variable when possible.
+This was generally possible when the target was an easily computable
+function of the number of samples, but a number of the tests have
+pre-computed targets for specific numbers of samples and that number
+cannot be varied because no general function is known relating the
+target value to the number of samples.
+ <li> Many of diehard's tests investigated overlapping bit sequences as
+being "independent identically distributed (iid) samples.  This was
+generally done because it used file-based input of random numbers and
+the size of files that could reasonably be generated and tested by in
+the mid-90's contained on the order of a million random deviates.  The
+restriction of testing to small, overlapping samples is neither
+necessary nor desireable in modern testing -- numerical simulation can
+easily consume ten to the eighteenth or more uniform deviates and the
+integration of the test with the built-in generators in the GSL permits
+"most" generators to be tested with essentially no limits on the number
+that can be generated for testing purposes.  Indeed, some tests are
+likely to reveal the short period or limited number of returns by some
+generators <i>because</i> they can consume far more numbers than are
+available within the period, which was not so easy with diehard.
+dieharder therefore permits overlapping sequences to be a
+<i>non</i>-default option selected by the user wherever possible.
+</ul>
 
-<p>Even aside from this sort of major difference, though, the algorithms
-were independently written and may do things in a slightly different
-(but equally valid) order and hence produce slightly different (but
-equally valid) results even when run on the same data with the same
-basic parameters.  Then, there may be bugs.  Be warned.</p>
+<p>In a few cases other variations are possible for specific tests.
+This should be noted in the built-in test documentation for that test
+where appropriate.</p>
+
+<p>Aside from these major differences, note that the algorithms were
+independently written more or less from the test descriptions alone
+(sometimes illuminated by a look at the code implementations, but only
+to clear up just what was meant by the description).  They may well do
+things in a different (but equally valid) order or using different (but
+ultimately equivalent) algorithms altogether and hence produce slightly
+different (but equally valid) results even when run on the <i>same data
+with the same basic parameters</i>.  Then, there may be bugs in the
+code, which might have the same general effect.  Finally, it is always
+possible that <i>diehard</i> implementations have bugs and can be in
+error.  Your Mileage May Vary.  Be Warned.</p>
 
 <hr>
 
@@ -117,15 +165,16 @@ basic parameters.  Then, there may be bugs.  Be warned.</p>
 
 <p>The primary point of DieHarder (like Diehard before it) is to make it
 easy to time and test (pseudo)random number generators, both software
-and hardware for a variety of purposes in research and cryptography.
+and hardware, for a variety of purposes in research and cryptography.
 The tool is built entirely on top of the GSL's random number generator
 interface and uses a variety of other GSL tools (e.g.  sort, erfc,
-incomplete gamma, distribution generators) in its operation.  Three
+incomplete gamma, distribution generators) in its operation.  Five
 examples are provided of wrapping a random number generator (including
-the entropy-based /dev/random and /dev/urandom available on many linux
-systems) and inserting it so that it is can be called via the GSL
-interface, and it is strongly suggested that any random number generator
-to be tested by provided with such an interface.</p>
+both file I/O and the entropy-based /dev/random and /dev/urandom
+available on many linux systems) and inserting it so that it is can be
+called via the GSL interface. It is <i>strongly suggested</i> that any
+software random number generator to be tested by provided with such an
+GSL-compatible interface.</p>
 
 <p>A file interface (still consistent with the GSL to the extent
 possible) has been added that allows random numbers in either binary
@@ -133,7 +182,9 @@ unsigned integer or a variety of ascii encoded formats to be read in
 from a file.  This permits dieharder to be used with "any" generator
 (directly wrappable or not) that can generate a table of random numbers,
 but this will place severe limits on some of the tests, which can
-require very large numbers of random numbers.</p>  
+require very large numbers of random numbers.  For this reason software
+generators should be implemented directly if at all possible and not via
+the file interface.</p>
 
 <p>In this respect, DieHarder differs significantly from Diehard, which
 used file based sources of random numbers exclusively and would "work"

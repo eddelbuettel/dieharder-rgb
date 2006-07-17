@@ -40,6 +40,7 @@ double diehard_craps()
 
  /*
   * Do a standard test if -a(ll) is selected.
+  * ALSO use standard values if tsamples or psamples are 0
   */
  if(all == YES){
    ts_save = tsamples;
@@ -47,10 +48,6 @@ double diehard_craps()
    ps_save = psamples;
    psamples = dtest->psamples_std;
  }
-
- /*
-  * ALSO use standard values if tsamples or psamples are 0
-  */
  if(tsamples == 0){
    tsamples = dtest->tsamples_std;
  }
@@ -241,20 +238,7 @@ void diehard_craps_test()
 void help_diehard_craps()
 {
 
- printf("\n\
-#==================================================================\n\
-#                Diehard \"craps\" test (modified).\n\
-#  This is the CRAPS TEST. It plays 200,000 games of craps, finds  \n\
-#  the number of wins and the number of throws necessary to end    \n\
-#  each game.  The number of wins should be (very close to) a      \n\
-#  normal with mean 200000p and variance 200000p(1-p), with        \n\
-#  p=244/495.  Throws necessary to complete the game can vary      \n\
-#  from 1 to infinity, but counts for all>21 are lumped with 21.   \n\
-#  A chi-square test is made on the no.-of-throws cell counts.     \n\
-#  Each 32-bit integer from the test file provides the value for   \n\
-#  the throw of a die, by floating to [0,1), multiplying by 6      \n\
-#  and taking 1 plus the integer part of the result.               \n\
-#==================================================================\n");
+ printf("%s",dtest->description);
 
 }
 

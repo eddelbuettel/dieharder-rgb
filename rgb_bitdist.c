@@ -82,10 +82,14 @@ double rgb_bitdist()
  
  /*
   * Allocate memory for THIS test's ks_pvalues, etc.  Make sure that
-  * any missed prior allocations are freed.
+  * any missed prior allocations are freed.  Note that 256 is MORE than
+  * enough room in rand_int for the time being...
   */
  if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
+ if(rand_int) nullfree(rand_int);
+ rand_int = (uint *)malloc((size_t) 256*sizeof(uint));
+
 
  test_header(dtest);
 
@@ -128,6 +132,7 @@ double rgb_bitdist()
  }
 
  if(ks_pvalue) nullfree(ks_pvalue);
+ if(rand_int) nullfree(rand_int);
 
  return(pks);
 
@@ -300,6 +305,7 @@ void rgb_bitdist_test()
    }
    boffset = t%ntuple_max;
    for(b=0;b<bsamples;b++){
+
      /*
       * This gets the integer value of the ntuple at index position
       * n in the current bitstring, from a window with cyclic wraparound.
@@ -356,8 +362,8 @@ void rgb_bitdist_test()
    Btest_destroy(&btest[n]);
  }
 
- free(btest);
- free(count);
+ if(btest) nullfree(btest);
+ if(count) nullfree(count);
 
 }
 

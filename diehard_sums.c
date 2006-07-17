@@ -44,7 +44,7 @@ double diehard_sums()
   * MUST use tsamples = 100 diehard standard value, no choice.
   */
  ts_save = tsamples;
- tsamples = dtest->tsamples_std;  /* 
+ tsamples = dtest->tsamples_std;
  if(all == YES){
    ps_save = psamples;
    psamples = dtest->psamples_std;
@@ -278,9 +278,10 @@ void diehard_sums_test()
  }
  kspi++;
 
- free(rand_dbl);
- free(x);
- free(&y[-1]);
+ if(rand_dbl) nullfree(rand_dbl);
+ if(x) nullfree(x);
+ /* Can't use nullfree with an offset */
+ if(y) {free(&y[-1]);y=0;}
 
 }
 

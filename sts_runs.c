@@ -51,6 +51,8 @@ double sts_runs()
   */
  if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
+ if(rand_int) nullfree(rand_int);
+ rand_int  = (uint *)malloc((size_t) tsamples*sizeof(uint));
 
  test_header(dtest);
  /*
@@ -78,6 +80,7 @@ double sts_runs()
  }
 
  if(ks_pvalue) nullfree(ks_pvalue);
+ if(rand_int) nullfree(rand_int);
 
  return(pks);
 
@@ -102,8 +105,6 @@ void sts_runs_test()
   */
  bits = rmax_bits*tsamples;
  mtest.x = 0.0;
- strncpy(mtest.testname,"sts_runs",128);
- strncpy(mtest.rngname,gsl_rng_name(rng),128);
 
  /*
   * Create entire bitstring to be tested

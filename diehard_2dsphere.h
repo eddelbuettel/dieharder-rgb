@@ -3,10 +3,10 @@
  */
 
 static Dtest temp = {
-  "Diehard Minimum Distance Test",
+  "Diehard Minimum Distance (2d Circle) Test",
   "\n\
 #==================================================================\n\
-#         Diehard Minimum Distance Test (modified).\n\
+#         Diehard Minimum Distance (2d Circle) Test \n\
 # Generate 8000 points in a 10000^2 square.  Determine the\n\
 # the shortest nearest neighbor distance R.  This should generate\n\
 # p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a\n\

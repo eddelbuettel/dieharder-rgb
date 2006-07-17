@@ -16,7 +16,7 @@ static Dtest temp = {
 # sample index and ntuple_max.\n\
 #==================================================================\n",
   100,
-  10000
+  100000
 };
 
 static Dtest *dtest = &temp;

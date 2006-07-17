@@ -27,6 +27,8 @@ void work()
 
  if(all == YES){
    rgb_timing();
+   rgb_persist();
+   rgb_bitdist();
    diehard_birthdays();
    diehard_operm5();
    diehard_rank_32x32();
@@ -44,8 +46,6 @@ void work()
    diehard_sums();
    diehard_runs();
    diehard_craps();
-   rgb_persist();
-   rgb_bitdist();
    sts_monobit();
    sts_runs();
    exit(0);

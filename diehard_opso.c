@@ -58,7 +58,7 @@ double diehard_opso()
   * MUST use 2^21 = 2097152 diehard standard value, no choice.
   */
  ts_save = tsamples;
- tsamples = dtest->tsamples_std;  /* 
+ tsamples = dtest->tsamples_std;
  if(all == YES){
    ps_save = psamples;
    psamples = dtest->psamples_std;

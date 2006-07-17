@@ -102,7 +102,6 @@ double diehard_parking_lot()
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
  test_header(dtest);
- printf("# Number of rands required is 2,400,000 for 100 samples.\n");
 
  /*
   * This is the standard test call.

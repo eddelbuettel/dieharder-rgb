@@ -75,9 +75,9 @@
    D_DIEHARD_SUMS,
    D_DIEHARD_RUNS,
    D_DIEHARD_CRAPS,
+   D_RGB_TIMING,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
-   D_RGB_TIMING,
    D_STS_MONOBIT,
    D_STS_RUNS,
    D_STS_BLOCK,
@@ -129,9 +129,9 @@
  /* RGB Tests (by number) */
  typedef enum {
    RGB_NONE,
+   RGB_TIMING,
    RGB_PERSIST,
    RGB_BITDIST,
-   RGB_TIMING,
    N_RGB_TESTS
  } Rgb_Tests;
 

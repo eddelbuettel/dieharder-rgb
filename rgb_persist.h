@@ -23,7 +23,7 @@ static Dtest rgb_persist_data = {
 # and the extracted mask cumulated to show all the possible bit\n\
 # positions that might be repeated for different seeds.\n\
 #==================================================================\n",
-  100,
+  1,
   256
 };
 

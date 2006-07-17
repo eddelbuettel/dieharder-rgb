@@ -6,7 +6,7 @@ static Dtest temp = {
   "Diehard Count the 1s Test (byte)",
   "\n\
 #==================================================================\n\
-#         Diehard Count th 1s Test (byte) (modified).\n\
+#         Diehard Count the 1s Test (byte) (modified).\n\
 #     This is the COUNT-THE-1's TEST for specific bytes.        \n\
 # Consider the file under test as a stream of 32-bit integers.  \n\
 # From each integer, a specific byte is chosen , say the left-  \n\

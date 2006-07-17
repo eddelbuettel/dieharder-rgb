@@ -4,185 +4,59 @@
 #==================================================================
 #==================================================================
 # rgb_timing() test using the mt19937_1999 generator 
-# Average time per rand = 3.505250e+01 nsec.
-# Rands per second = 2.852864e+07.
+# Average time per rand = 3.530530e+01 nsec.
+# Rands per second = 2.832436e+07.
+rand_int = 839a9e0
 
 #==================================================================
-#                Diehard "Birthdays" test (modified).
-# Each test determines the number of matching intervals from 512
-# "birthdays" (by default) drawn on a 24-bit "year" (by
-# default).  This is repeated 100 times (by default) and the
-# results cumulated in a histogram.  Repeated intervals should be
-# distributed in a Poisson distribution if the underlying generator
-# is random enough, and a a chisq and p-value for the test are
-# evaluated relative to this null hypothesis.
-#
-# It is recommended that you run this at or near the original
-# 100 test samples per p-value with -t 100.
-#
-# Two additional parameters have been added. In diehard, nms=512
-# but this CAN be varied and all Marsaglia's formulae still work.  It
-# can be reset to different values with -x nmsvalue.
-# Similarly, nbits "should" 24, but we can really make it anything
-# we want that's less than or equal to rmax_bits = 32.  It can be
-# reset to a new value with -y nbits.  Both default to diehard's
-# values if no -x or -y options are used.
+#                   RGB Bit Persistence Test
+# This test generates 256 sequential samples of an random unsigned
+# integer from the given rng.  Successive integers are logically
+# processed to extract a mask with 1's whereever bits do not
+# change.  Since bits will NOT change when filling e.g. unsigned
+# ints with 16 bit ints, this mask logically &'d with the maximum
+# random number returned by the rng.  All the remaining 1's in the
+# resulting mask are therefore significant -- they represent bits
+# that never change over the length of the test.  These bits are
+# very likely the reason that certain rng's fail the monobit
+# test -- extra persistent e.g. 1's or 0's inevitably bias the
+# total bitcount.  In many cases the particular bits repeated
+# appear to depend on the seed.  If the -i flag is given, the
+# entire test is repeated with the rng reseeded to generate a mask
+# and the extracted mask cumulated to show all the possible bit
+# positions that might be repeated for different seeds.
 #==================================================================
 #                        Run Details
 # Random number generator tested: mt19937_1999
-# Samples per test pvalue = 100 (test default is 100)
-# P-values in final KS test = 100 (test default is 100)
-# 512 samples drawn from 24-bit integers masked out of a
-# 32 bit random integer.  lambda = 2.000000, kmax = 6, tsamples = 100
-#==================================================================
-#                Histogram of p-values
-# Counting histogram bins, binscale = 0.100000
-#     20|    |    |    |    |    |    |    |    |    |    |
-#       |    |    |    |    |    |    |    |    |    |    |
-#     18|    |    |    |    |    |    |    |    |    |    |
-#       |    |    |    |    |    |    |    |    |    |    |
-#     16|    |    |    |    |    |    |    |****|    |    |
-#       |    |    |    |    |    |    |    |****|    |    |
-#     14|    |    |****|    |    |    |    |****|    |    |
-#       |****|    |****|****|    |    |    |****|    |    |
-#     12|****|    |****|****|    |    |    |****|    |    |
-#       |****|    |****|****|    |    |    |****|    |    |
-#     10|****|    |****|****|****|    |    |****|****|    |
-#       |****|****|****|****|****|    |    |****|****|    |
-#      8|****|****|****|****|****|    |    |****|****|    |
-#       |****|****|****|****|****|    |    |****|****|****|
-#      6|****|****|****|****|****|    |    |****|****|****|
-#       |****|****|****|****|****|****|    |****|****|****|
-#      4|****|****|****|****|****|****|    |****|****|****|
-#       |****|****|****|****|****|****|****|****|****|****|
-#      2|****|****|****|****|****|****|****|****|****|****|
-#       |****|****|****|****|****|****|****|****|****|****|
-#       |--------------------------------------------------
-#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+# Samples per test pvalue = 256 (test default is 256)
+# P-values in final KS test = 1 (test default is 1)
+# Samples per test run = 256, tsamples ignored
+# Test run 1 times to cumulate unchanged bit mask
 #==================================================================
 #                          Results
-# Kuiper KS: p = 0.198168 for Diehard Birthdays Test
-# Assessment:
-# PASSED at > 5%.
+# Results for mt19937_1999 rng, using its 32 valid bits:
+# (Cumulated mask of zero is good.)
+# cumulated_mask =          0 = 00000000000000000000000000000000
+# randm_mask     = 4294967295 = 11111111111111111111111111111111
+# random_max     = 4294967295 = 11111111111111111111111111111111
+# rgb_persist test PASSED (no bits repeat)
+#==================================================================
 
 #==================================================================
-#          Diehard Overlapping 5-Permutations Test.
-# This is the OPERM5 test.  It looks at a sequence of one mill- 
-# ion 32-bit random integers.  Each set of five consecutive     
-# integers can be in one of 120 states, for the 5! possible or- 
-# derings of five numbers.  Thus the 5th, 6th, 7th,...numbers   
-# each provide a state. As many thousands of state transitions  
-# are observed,  cumulative counts are made of the number of    
-# occurences of each state.  Then the quadratic form in the     
-# weak inverse of the 120x120 covariance matrix yields a test   
-# equivalent to the likelihood ratio test that the 120 cell     
-# counts came from the specified (asymptotically) normal dis-   
-# tribution with the specified 120x120 covariance matrix (with  
-# rank 99).  This version uses 1,000,000 integers, twice.       
+#                 RGB Bit Distribution Test
+# Accumulates the frequencies of all n-tuples of bits in a list
+# of random integers and compares the distribution thus generated
+# with the theoretical (binomial) histogram, forming chisq and the
+# associated p-value.  In this test n-tuples are selected without
+# WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+# are independent.  Every other sample is offset modulus of the
+# sample index and ntuple_max.
 #==================================================================
 #                        Run Details
 # Random number generator tested: mt19937_1999
 # Samples per test pvalue = 100000 (test default is 100000)
 # P-values in final KS test = 100 (test default is 100)
-# Number of rands required is around 2^28 for 100 samples.
-#==================================================================
-#                Histogram of p-values
-# Counting histogram bins, binscale = 0.100000
-#     40|    |    |    |    |    |    |    |    |    |    |
-#       |    |    |    |    |    |    |    |    |    |    |
-#     36|    |    |    |    |    |    |    |    |    |    |
-#       |    |    |    |    |    |    |    |    |    |    |
-#     32|    |    |    |    |    |    |    |    |    |    |
-#       |****|    |    |    |    |    |    |    |    |    |
-#     28|****|    |    |    |    |    |    |    |    |****|
-#       |****|    |    |    |    |    |    |    |    |****|
-#     24|****|    |    |    |    |    |    |    |    |****|
-#       |****|    |    |    |    |    |    |    |    |****|
-#     20|****|    |    |    |    |    |    |    |    |****|
-#       |****|    |    |    |    |    |    |    |    |****|
-#     16|****|    |    |    |    |    |    |    |    |****|
-#       |****|    |    |    |    |    |    |    |    |****|
-#     12|****|    |    |    |    |    |    |    |    |****|
-#       |****|    |    |    |    |    |    |    |    |****|
-#      8|****|    |    |    |    |    |    |    |    |****|
-#       |****|    |    |    |    |****|    |    |****|****|
-#      4|****|****|****|****|****|****|****|****|****|****|
-#       |****|****|****|****|****|****|****|****|****|****|
-#       |--------------------------------------------------
-#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
-#==================================================================
-#                          Results
-# Kuiper KS: p = 0.000000 for Diehard Overlapping 5-permutations Test
-# Assessment:
-# FAILED at < 0.01%.
-
-#==================================================================
-#                Diehard 32x32 Binary Rank Test
-# This is the BINARY RANK TEST for 31x31 matrices. The leftmost 
-# 31 bits of 31 random integers from the test sequence are used 
-# to form a 31x31 binary matrix over the field {0,1}. The rank  
-# is determined. That rank can be from 0 to 31, but ranks< 28   
-# are rare, and their counts are pooled with those for rank 28. 
-# Ranks are found for (default) 40,000 such random matrices and
-# a chisquare test is performed on counts for ranks 31,30,29 and
-# <=28.
-#
-# As always, the test is repeated and a KS test applied to the
-# resulting p-values to verify that they are approximately uniform.
-#==================================================================
-#                        Run Details
-# Random number generator tested: mt19937_1999
-# Samples per test pvalue = 40000 (test default is 40000)
-# P-values in final KS test = 100 (test default is 100)
-#==================================================================
-#                Histogram of p-values
-# Counting histogram bins, binscale = 0.100000
-#     20|    |    |    |    |    |    |    |    |    |    |
-#       |    |    |    |    |    |    |    |    |    |    |
-#     18|    |    |    |    |    |    |    |    |****|    |
-#       |    |    |    |    |    |    |    |    |****|    |
-#     16|    |    |    |    |    |    |    |    |****|    |
-#       |    |    |    |    |    |    |    |    |****|    |
-#     14|    |****|    |    |    |    |****|    |****|    |
-#       |    |****|    |    |    |    |****|    |****|    |
-#     12|    |****|    |    |    |    |****|    |****|    |
-#       |    |****|    |****|    |****|****|    |****|    |
-#     10|    |****|    |****|    |****|****|    |****|    |
-#       |    |****|    |****|    |****|****|    |****|    |
-#      8|    |****|    |****|****|****|****|    |****|****|
-#       |****|****|    |****|****|****|****|    |****|****|
-#      6|****|****|    |****|****|****|****|****|****|****|
-#       |****|****|    |****|****|****|****|****|****|****|
-#      4|****|****|    |****|****|****|****|****|****|****|
-#       |****|****|****|****|****|****|****|****|****|****|
-#      2|****|****|****|****|****|****|****|****|****|****|
-#       |****|****|****|****|****|****|****|****|****|****|
-#       |--------------------------------------------------
-#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
-#==================================================================
-#                          Results
-# Kuiper KS: p = 0.300627 for Diehard 32x32 Rank Test
-# Assessment:
-# PASSED at > 5%.
-
-#==================================================================
-#              Diehard 6x8 Binary Rank Test
-# This is the BINARY RANK TEST for 6x8 matrices.  From each of
-# six random 32-bit integers from the generator under test, a
-# specified byte is chosen, and the resulting six bytes form a
-# 6x8 binary matrix whose rank is determined.  That rank can be
-# from 0 to 6, but ranks 0,1,2,3 are rare; their counts are
-# pooled with those for rank 4. Ranks are found for 100,000
-# random matrices, and a chi-square test is performed on
-# counts for ranks 6,5 and <=4.
-#
-# As always, the test is repeated and a KS test applied to the
-# resulting p-values to verify that they are approximately uniform.
-#==================================================================
-#                        Run Details
-# Random number generator tested: mt19937_1999
-# Samples per test pvalue = 100000 (test default is 100000)
-# P-values in final KS test = 100 (test default is 100)
+# Testing ntuple = 1
 #==================================================================
 #                Histogram of p-values
 # Counting histogram bins, binscale = 0.100000
@@ -191,35 +65,11 @@
 #     18|    |    |    |    |    |    |    |    |    |    |
 #       |    |    |    |    |    |    |    |    |    |    |
 #     16|    |    |    |    |    |    |    |    |    |    |
-#       |    |    |    |****|    |    |    |    |    |    |
-#     14|****|    |    |****|    |    |    |    |    |    |
-#       |****|    |    |****|    |    |    |****|    |    |
-#     12|****|    |    |****|    |****|    |****|    |    |
-#       |****|    |    |****|    |****|    |****|    |    |
-#     10|****|****|    |****|    |****|    |****|    |****|
-#       |****|****|****|****|    |****|    |****|    |****|
-#      8|****|****|****|****|****|****|    |****|    |****|
-#       |****|****|****|****|****|****|****|****|    |****|
-#      6|****|****|****|****|****|****|****|****|    |****|
-#       |****|****|****|****|****|****|****|****|    |****|
-#      4|****|****|****|****|****|****|****|****|    |****|
-#       |****|****|****|****|****|****|****|****|    |****|
-#      2|****|****|****|****|****|****|****|****|****|****|
-#       |****|****|****|****|****|****|****|****|****|****|
-#       |--------------------------------------------------
-#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
-#==================================================================
-#                          Results
-# Kuiper KS: p = 0.616107 for Diehard 6x8 Binary Rank Test
-# Assessment:
-# PASSED at > 5%.
-
-#==================================================================
-#                  Diehard Bitstream Test.
-# The file under test is viewed as a stream of bits. Call them  
-# b1,b2,... .  Consider an alphabet with two "letters", 0 and 1 
-# and think of the stream of bits as a succession of 20-letter  
-# "words", overlapping.  Thus the first word is b1b2...b20, the 
-# second is b2b3...b21, and so on.  The bitstream test counts   
-# the number of missing 20-letter (20-bit) words in a string of 
-# 2^21 overlapping 
+#       |    |    |    |    |****|    |    |****|    |    |
+#     14|    |    |    |    |****|    |    |****|    |    |
+#       |    |    |    |    |****|    |****|****|    |    |
+#     12|    |    |    |    |****|    |****|****|    |    |
+#       |    |    |****|    |****|    |****|****|    |****|
+#     10|    |    |****|    |****|    |****|****|    |****|
+#       |****|    |****|****|****|    |****|****|    |****|
+#      8|****|*

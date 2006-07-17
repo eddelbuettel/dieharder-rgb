@@ -32,7 +32,6 @@ double rgb_persist()
  uint ps_save,ts_save;
 
  int i,j,nbits,csamples;
- unsigned int *rand_uint;
  static unsigned and_mask,cumulative_mask,last_rand;
 
  /*
@@ -63,8 +62,9 @@ double rgb_persist()
   * to see it in our lifetime unless we run this test continuously for
   * months at a time (yes, a dumb idea).
   */
- if(rand_uint) free(rand_uint);
- rand_uint = (unsigned int*)malloc(256 * sizeof(unsigned int));
+ printf("rand_int = %0x\n",rand_int);
+ if(rand_int) nullfree(rand_int);
+ rand_int = (unsigned int*)malloc(256 * sizeof(unsigned int));
 
  test_header(dtest);
  printf("# Samples per test run = %u, tsamples ignored\n",256);
@@ -93,19 +93,19 @@ double rgb_persist()
    /*
     * Fill rand_int with a string of random numbers
     */
-   for(i=0;i<256;i++) rand_uint[i] = gsl_rng_get(rng);
-   last_rand = rand_uint[0];  /* to start it */
-   and_mask = ~(last_rand ^ rand_uint[0]);
+   for(i=0;i<256;i++) rand_int[i] = gsl_rng_get(rng);
+   last_rand = rand_int[0];  /* to start it */
+   and_mask = ~(last_rand ^ rand_int[0]);
    for(i=0;i<256;i++){
      if(verbose){
-       printf("rand_uint[%d] = %u = ",i,rand_uint[i]);
-       dumpbits(&rand_uint[i],nbits);
+       printf("rand_int[%d] = %u = ",i,rand_int[i]);
+       dumpbits(&rand_int[i],nbits);
      }
 
      /*
       * Now we make a mask of bits that coincide. Logic 41, where are you?
       */
-     and_mask = and_mask & (~(last_rand ^ rand_uint[i]));
+     and_mask = and_mask & (~(last_rand ^ rand_int[i]));
      if(verbose){
        printf("and_mask = %u = ",and_mask);
        dumpbits(&and_mask,nbits);
@@ -138,7 +138,7 @@ double rgb_persist()
  }
  printf("#==================================================================\n");
 
- if(rand_uint) free(rand_uint);
+ if(rand_int) nullfree(rand_int);
  if(cumulative_mask) {
    return(0.0);
  } else {
