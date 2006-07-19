@@ -60,7 +60,7 @@ rm -rf %{builddir}
 %attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
 # The xmlsysd docs
-%doc README COPYING NOTES
+%doc README COPYING NOTES dieharder_wp.pdf
 
 %changelog
 * Tue Nov  11 2004 Robert G. Brown <rgb@duke.edu>
