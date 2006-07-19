@@ -113,6 +113,14 @@ double diehard_birthdays()
  intervals = (unsigned int *)malloc(nms*sizeof(unsigned int));
 
  /*
+  * Reseed FILE random number generators once per individual test.
+  * This correctly resets the rewind counter per test.
+  */
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   gsl_rng_set(rng,1);
+ }
+
+ /*
   * This should be more than twice as many slots as we really
   * need for the Poissonian tail.  We're going to sample tsamples
   * times, and we only want to keep the histogram out to where

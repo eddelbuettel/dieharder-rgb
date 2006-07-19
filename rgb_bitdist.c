@@ -91,6 +91,14 @@ double rgb_bitdist()
  rand_int = (uint *)malloc((size_t) 256*sizeof(uint));
 
 
+ /*
+  * Reseed FILE random number generators once per individual test.
+  * This correctly resets the rewind counter per test.
+  */
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   gsl_rng_set(rng,1);
+ }
+
  test_header(dtest);
 
  /*
@@ -98,6 +106,15 @@ double rgb_bitdist()
   */
  if(ntuple == 0 || all == YES){
    for(n=1;n<=8;n++){
+     /*
+      * Do not reset the total count of rands or rewind file input
+      * files -- let them auto-rewind as needed.  Otherwise try
+      * different seeds for different samples, unless Seed is specified.
+      */
+     if(strncmp("file_input",gsl_rng_name(rng),10) && Seed == 0){
+       seed = random_seed();
+       gsl_rng_set(rng,seed);
+     }
      ntuple = n;
      printf("# Testing ntuple = %u\n",ntuple);
      kspi = 0;  /* Always zero first */

@@ -53,6 +53,14 @@ double sts_monobit()
  if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
+ /*
+  * Reseed FILE random number generators once per individual test.
+  * This correctly resets the rewind counter per test.
+  */
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   gsl_rng_set(rng,1);
+ }
+
  test_header(dtest);
  /*
   * Any custom test header output lines go here.  They should be
@@ -114,8 +122,6 @@ void sts_monobit_test()
  mtest.y = 0.0;
  mtest.sigma = sqrt((double)nbits);
  mtest.npts = nbits;
- strncpy(mtest.testname,"sts_monobit",128);
- strncpy(mtest.rngname,gsl_rng_name(rng),128);
 
  /*
   * NOTE WELL:  This can also be done by reading in a file!  Note

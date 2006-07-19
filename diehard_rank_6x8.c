@@ -68,6 +68,14 @@ double diehard_rank_6x8()
  rand_mtx = (uint **)malloc(6*sizeof(uint *));
  for(i=0;i<6;i++) rand_mtx[i] = (uint *)malloc(8*sizeof(uint));
 
+ /*
+  * Reseed FILE random number generators once per individual test.
+  * This correctly resets the rewind counter per test.
+  */
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   gsl_rng_set(rng,1);
+ }
+
  test_header(dtest);
 
  /*

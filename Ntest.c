@@ -44,8 +44,6 @@ void Ntest_create(Ntest *ntest, unsigned int npts,
  ntest->npts = npts;
  ntest->chisq = 0.0;
  ntest->pvalue = 0.0;
- strncpy(ntest->testname,testname,128);
- strncpy(ntest->rngname,rngname,128);
  if(verbose > 10){
    printf("Ntest_create(): Created test structure for %d points.\n",ntest->npts);
  }
@@ -125,33 +123,6 @@ void Ntest_eval(Ntest *ntest)
  }
 
  free(pvalue);
-
-}
-
-void Ntest_conclusion(Ntest *ntest)
-{
- /*
-  * The following decision tree states our conclusion(s).  Disagree
-  * with them all you like -- they are at best approximate.
-  */
- if(!quiet){
-   printf("#==================================================================\n");
-   printf("# %s test using the %s generator \n",ntest->testname,ntest->rngname);
-   printf("# Results: %12s %10s %12s\n","npoints","chisq","p-value");
-   printf("#        %12d   %11.2f %11.5f\n",ntest->npts,ntest->chisq,ntest->pvalue);
-   if((ntest->pvalue<=0.05) && (ntest->pvalue>0.01)){
-     printf("# Conclusion: Generator %s may be weak. (5%% level)  Run again.\n",ntest->rngname);
-   } else if((ntest->pvalue<=0.01) && (ntest->pvalue > 0.0001)){
-     printf("# Conclusion: Generator %s likely to be weak! (1%% level)  Run again.\n",ntest->rngname);
-   } else if(ntest->pvalue<=0.0001){
-     printf("# Conclusion: %s Generator Fails Test! (0.01%% level or less)\n",ntest->rngname);
-   } else if(ntest->pvalue>0.9999){
-     printf("# Conclusion: %s Generator succeeded! (0.01%% level or more)\n",ntest->rngname);
-   } else {
-     printf("# Conclusion: No obvious reason to worry about generator %s.\n",ntest->rngname);
-   }
-   printf("#==================================================================\n");
- }
 
 }
 

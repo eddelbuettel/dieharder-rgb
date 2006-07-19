@@ -446,8 +446,6 @@ typedef struct
    double *sigma;
    double chisq;
    double pvalue;
-   char testname[128];
-   char rngname[128];
  } Ntest;
 
  typedef struct {
@@ -458,8 +456,6 @@ typedef struct
    double *sigma;
    double chisq;
    double pvalue;
-   char testname[128];
-   char rngname[128];
  } Btest;
 
  typedef struct {
@@ -469,8 +465,6 @@ typedef struct
    double y;
    double sigma;
    double pvalue;
-   char testname[128];
-   char rngname[128];
  } Xtest;
 
  /*

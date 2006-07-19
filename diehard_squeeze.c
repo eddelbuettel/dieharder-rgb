@@ -76,6 +76,14 @@ double diehard_squeeze()
  if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
+ /*
+  * Reseed FILE random number generators once per individual test.
+  * This correctly resets the rewind counter per test.
+  */
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   gsl_rng_set(rng,1);
+ }
+
  test_header(dtest);
  /*
   * Any custom test header output lines go here.  They should be

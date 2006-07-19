@@ -41,8 +41,7 @@
 
 #include "dieharder.h"
 
-void Btest_create(Btest *btest, unsigned int bins,
-                    char *testname, char *rngname)
+void Btest_create(Btest *btest, unsigned int bins)
 {
 
  int i;
@@ -61,8 +60,6 @@ void Btest_create(Btest *btest, unsigned int bins,
  btest->bins = bins;
  btest->chisq = 0.0;
  btest->pvalue = 0.0;
- strncpy(btest->testname,testname,128);
- strncpy(btest->rngname,rngname,128);
  if(verbose == D_BTEST || verbose == D_ALL){
    printf("Btest_create(): Created test structure for %d points.\n",btest->bins);
  }
@@ -149,33 +146,6 @@ void Btest_eval(Btest *btest)
  btest->pvalue = gsl_sf_gamma_inc_Q((double)(ndof)/2.0,chisq/2.0);
  if(verbose == D_BTEST || verbose == D_ALL){
    printf("Evaluted pvalue = %6.4f in Btest_eval().\n",btest->pvalue);
- }
-
-}
-
-void Btest_conclusion(Btest *btest)
-{
- /*
-  * The following decision tree states our conclusion(s).  Disagree
-  * with them all you like -- they are at best approximate.
-  */
- if(!quiet){
-   printf("#==================================================================\n");
-   printf("# %s test using the %s generator \n",btest->testname,btest->rngname);
-   printf("# Results: %12s %10s %12s\n","npoints","chisq","p-value");
-   printf("#        %12d   %11.2f %11.5f\n",btest->bins,btest->chisq,btest->pvalue);
-   if((btest->pvalue<=0.05) && (btest->pvalue>0.01)){
-     printf("# Conclusion: Generator %s may be weak. (5%% level)  Run again.\n",btest->rngname);
-   } else if((btest->pvalue<=0.01) && (btest->pvalue > 0.0001)){
-     printf("# Conclusion: Generator %s likely to be weak! (1%% level)  Run again.\n",btest->rngname);
-   } else if(btest->pvalue<=0.0001){
-     printf("# Conclusion: %s Generator Fails Test! (0.01%% level or less)\n",btest->rngname);
-   } else if(btest->pvalue>0.9999){
-     printf("# Conclusion: %s Generator succeeded! (0.01%% level or more)\n",btest->rngname);
-   } else {
-     printf("# Conclusion: No obvious reason to worry about generator %s.\n",btest->rngname);
-   }
-   printf("#==================================================================\n");
  }
 
 }

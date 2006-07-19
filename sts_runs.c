@@ -54,6 +54,14 @@ double sts_runs()
  if(rand_int) nullfree(rand_int);
  rand_int  = (uint *)malloc((size_t) tsamples*sizeof(uint));
 
+ /*
+  * Reseed FILE random number generators once per individual test.
+  * This correctly resets the rewind counter per test.
+  */
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   gsl_rng_set(rng,1);
+ }
+
  test_header(dtest);
  /*
   * Any custom test header output lines go here.  They should be
@@ -163,8 +171,8 @@ void sts_runs_test()
  mtest.sigma = 2.0*sqrt(bits)*pones*(1.0-pones);
  Xtest_eval(&mtest);
  ks_pvalue[kspi] = mtest.pvalue;
- if(verbose == D_STS_MONOBIT || verbose == D_ALL){
-   printf("# sts_monobit(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
+ if(verbose == D_STS_RUNS || verbose == D_ALL){
+   printf("# sts_runs(): ks_pvalue[%u] = %10.5f\n",kspi,ks_pvalue[kspi]);
  }
  kspi++;
  

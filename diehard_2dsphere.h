@@ -4,18 +4,25 @@
 
 static Dtest temp = {
   "Diehard Minimum Distance (2d Circle) Test",
-  "\n\
-#==================================================================\n\
+  "#==================================================================\n\
 #         Diehard Minimum Distance (2d Circle) Test \n\
-# Generate 8000 points in a 10000^2 square.  Determine the\n\
-# the shortest nearest neighbor distance R.  This should generate\n\
-# p = 1.0 - exp(-R^2/0.995).  Repeat for lots of samples, apply a\n\
-# KS test to see if p is uniform.\n\
+# It does this 100 times::   choose n=8000 random points in a   \n\
+# square of side 10000.  Find d, the minimum distance between   \n\
+# the (n^2-n)/2 pairs of points.  If the points are truly inde- \n\
+# pendent uniform, then d^2, the square of the minimum distance \n\
+# should be (very close to) exponentially distributed with mean \n\
+# .995 .  Thus 1-exp(-d^2/.995) should be uniform on [0,1) and  \n\
+# a KSTEST on the resulting 100 values serves as a test of uni- \n\
+# formity for random points in the square. Test numbers=0 mod 5 \n\
+# are printed but the KSTEST is based on the full set of 100    \n\
+# random choices of 8000 points in the 10000x10000 square.      \n\
 #\n\
-# The number of samples is fixed -- tsamples is ignored.\n\
+# This test uses a fixed number of samples -- tsamples is ignored.\n\
+# It also uses the default value of 100 psamples in the final\n\
+# KS test, for once agreeing precisely with Diehard.\n\
 #==================================================================\n",
   100,
-  100000
+  8000,
 };
 
 static Dtest *dtest = &temp;

@@ -65,6 +65,14 @@ double diehard_craps()
  if(ks_pvalue2) nullfree(ks_pvalue2);
  ks_pvalue2  = (double *)malloc((size_t) psamples*sizeof(double));
 
+ /*
+  * Reseed FILE random number generators once per individual test.
+  * This correctly resets the rewind counter per test.
+  */
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   gsl_rng_set(rng,1);
+ }
+
  test_header(dtest);
 
  /*

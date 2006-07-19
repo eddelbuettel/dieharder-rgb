@@ -107,6 +107,14 @@ double template()
  if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
 
+ /*
+  * Reseed FILE random number generators once per individual test.
+  * This correctly resets the rewind counter per test.
+  */
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   gsl_rng_set(rng,1);
+ }
+
  test_header(dtest);
  /*
   * Any custom test header output lines go here.  They should be
@@ -158,7 +166,11 @@ void template_test()
   * We have to get the (float) value from the user input and set
   * a uint 
   */
- lag = x_user;
+ if(x_user){
+   lag = x_user;
+ } else {
+   lag = 2; /* Why not?  Anything but 0, really... */
+ }
 
  if(verbose == D_USER_TEMPLATE || verbose == D_ALL){
    printf("# user_template(): Doing a test on lag %u\n",lag);

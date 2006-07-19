@@ -20,9 +20,12 @@ static Dtest diehard_operm5_data = {
 # counts came from the specified (asymptotically) normal dis-   \n\
 # tribution with the specified 120x120 covariance matrix (with  \n\
 # rank 99).  This version uses 1,000,000 integers, twice.       \n\
+#\n\
+# Note that Dieharder runs the test 100 times, not twice, by\n\
+# default.\n\
 #==================================================================\n",
   100,
-  100000
+  1000000
 };
 
 static Dtest *dtest = &diehard_operm5_data;

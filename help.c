@@ -18,16 +18,26 @@ void help()
   * "#" so it is easy to filter out of standard test results output.
   */
  if(all==YES){
-   help_diehard_birthdays();
-   help_diehard_operm5();
-   help_diehard_2dsphere();
-   help_diehard_3dsphere();
-   help_diehard_rank_32x32();
-   help_diehard_rank_6x8();
-   help_diehard_runs();
-   help_diehard_craps();
+   help_rgb_timing();
    help_rgb_persist();
    help_rgb_bitdist();
+   help_diehard_birthdays();
+   help_diehard_operm5();
+   help_diehard_rank_32x32();
+   help_diehard_rank_6x8();
+   help_diehard_bitstream();
+   help_diehard_opso();
+   help_diehard_oqso();
+   help_diehard_dna();
+   help_diehard_count_1s_stream();
+   help_diehard_count_1s_byte();
+   help_diehard_parking_lot();
+   help_diehard_2dsphere();
+   help_diehard_3dsphere();
+   help_diehard_squeeze();
+   help_diehard_sums();
+   help_diehard_runs();
+   help_diehard_craps();
    help_sts_monobit();
    help_sts_runs();
    help_template();
@@ -46,20 +56,44 @@ void help()
    case DIEHARD_OPERM5:
      help_diehard_operm5();
      break;
-   case DIEHARD_2DSPHERE:
-     help_diehard_2dsphere();
-     break;
-   case DIEHARD_3DSPHERE:
-     help_diehard_3dsphere();
-     break;
    case DIEHARD_RANK_32x32:
      help_diehard_rank_32x32();
      break;
    case DIEHARD_RANK_6x8:
      help_diehard_rank_6x8();
      break;
+   case DIEHARD_BITSTREAM:
+     help_diehard_bitstream();
+     break;
+   case DIEHARD_OPSO:
+     help_diehard_opso();
+     break;
+   case DIEHARD_OQSO:
+     help_diehard_oqso();
+     break;
+   case DIEHARD_DNA:
+     help_diehard_dna();
+     break;
+   case DIEHARD_COUNT_1S_STREAM:
+     help_diehard_count_1s_stream();
+     break;
+   case DIEHARD_COUNT_1S_BYTE:
+     help_diehard_count_1s_byte();
+     break;
    case DIEHARD_PARKING_LOT:
      help_diehard_parking_lot();
+     break;
+   case DIEHARD_2DSPHERE:
+     help_diehard_2dsphere();
+     break;
+   case DIEHARD_3DSPHERE:
+     help_diehard_3dsphere();
+     break;
+   case DIEHARD_SQUEEZE:
+     help_diehard_squeeze();
+     break;
+   case DIEHARD_SUMS:
+     help_diehard_sums();
      break;
    case DIEHARD_RUNS:
      help_diehard_runs();

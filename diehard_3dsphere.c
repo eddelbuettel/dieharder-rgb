@@ -24,7 +24,7 @@
 /*
  * Test specific data
  */
-#include "diehard_2dsphere.h"
+#include "diehard_3dsphere.h"
 
 double diehard_3dsphere()
 {
@@ -35,16 +35,14 @@ double diehard_3dsphere()
 
  /*
   * Do a standard test if -a(ll) is selected.
-  * ALSO use standard values if tsamples or psamples are 0
+  * Note that this test ignores tsamples, so we always save it
+  * and restore it at the end.
   */
+ ts_save = tsamples;
+ tsamples = dtest->tsamples_std;
  if(all == YES){
-   ts_save = tsamples;
-   tsamples = dtest->tsamples_std;
    ps_save = psamples;
    psamples = dtest->psamples_std;
- }
- if(tsamples == 0){
-   tsamples = dtest->tsamples_std;
  }
  if(psamples == 0){
    psamples = dtest->psamples_std;
@@ -56,6 +54,14 @@ double diehard_3dsphere()
   */
  if(ks_pvalue) nullfree(ks_pvalue);
  ks_pvalue  = (double *)malloc((size_t) psamples*sizeof(double));
+
+ /*
+  * Reseed FILE random number generators once per individual test.
+  * This correctly resets the rewind counter per test.
+  */
+ if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
+   gsl_rng_set(rng,1);
+ }
 
  test_header(dtest);
  /*
