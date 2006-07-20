@@ -321,6 +321,7 @@
   *========================================================================
   */
  int all;               /* Flag to do all tests on selected generator */
+ int binary;            /* Flag to output rands in binary (with -o -f) */
  int bits;              /* bitstring size (in bits) */
  int diehard;           /* Diehard test number */
  int generator;         /* GSL generator id number to be tested */

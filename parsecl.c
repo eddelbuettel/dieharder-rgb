@@ -18,6 +18,7 @@ void parsecl(int argc, char **argv)
   * by a flag with the same first letter.  In order:
   */
  all = NO;              /* Default is to NOT do all the tests */
+ binary = NO;           /* Do output a random stream in binary (with -o) */
  bits = 128;            /* Maximum size bitstring is default */
  diehard = 0;           /* Diehard test number */
  filename[0] = (char)0; /* No input file */
@@ -43,10 +44,13 @@ void parsecl(int argc, char **argv)
  y_user = 0.0;          /* and can be used by any test without having to */
  z_user = 0.0;          /* rewrite parsecl() or add global variables */
 
- while ((c = getopt(argc,argv,"ab:d:f:g:H:hi:ln:Oop:qr:S:s:t:u:v:x:y:z:")) != EOF){
+ while ((c = getopt(argc,argv,"aBb:d:f:g:H:hi:ln:Oop:qr:S:s:t:u:v:x:y:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
+       break;
+     case 'B':
+       binary = 1;
        break;
      case 'b':
        bits = strtol(optarg,(char **) NULL,10);
