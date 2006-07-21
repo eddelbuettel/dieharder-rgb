@@ -76,6 +76,7 @@
    D_DIEHARD_RUNS,
    D_DIEHARD_CRAPS,
    D_MARSAGLIA_TSANG_GCD,
+   D_MARSAGLIA_TSANG_GORILLA,
    D_RGB_TIMING,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
@@ -125,6 +126,7 @@
    DIEHARD_RUNS,
    DIEHARD_CRAPS,
    MARSAGLIA_TSANG_GCD,
+   MARSAGLIA_TSANG_GORILLA,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -284,7 +286,12 @@
  /* 18: Marsaglia and Tsang GCD test */
  double marsaglia_tsang_gcd();
  void marsaglia_tsang_gcd_test();
- void help_marsaglia_tsang();
+ void help_marsaglia_tsang_gcd();
+
+ /* 19: Marsaglia and Tsang Gorilla test */
+ double marsaglia_tsang_gorilla();
+ void marsaglia_tsang_gorilla_test();
+ void help_marsaglia_tsang_gorilla();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();

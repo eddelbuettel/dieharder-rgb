@@ -34,7 +34,7 @@ SVNTIME = $(DIR:=.svn.time)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=1
-VERSION_MINOR=2.23
+VERSION_MINOR=2.24
 RELEASE=Pre
 
 #========================================================================
@@ -43,7 +43,7 @@ RELEASE=Pre
 # and other modules.
 #========================================================================
 SOURCE = $(PROGRAM:=.c)
-SOURCES = $(SOURCE)\
+SOURCES = $(SOURCE) $(TSOURCES) \
     add_my_types.c \
     dev_random.c \
     dev_urandom.c \
@@ -76,6 +76,8 @@ SOURCES = $(SOURCE)\
     test.c \
     work.c \
     bits.c \
+
+TSOURCES = \
     diehard_birthdays.c \
     diehard_operm5.c \
     diehard_2dsphere.c \
@@ -94,6 +96,7 @@ SOURCES = $(SOURCE)\
     diehard_runs.c \
     diehard_craps.c \
     marsaglia_tsang_gcd.c \
+    marsaglia_tsang_gorilla.c \
     rgb_bitdist.c \
     rgb_persist.c \
     rgb_timing.c \
@@ -101,9 +104,10 @@ SOURCES = $(SOURCE)\
     sts_runs.c \
     user_template.c \
 
+TINCLUDES = $(TSOURCES:.c=.h)
 
 INCLUDE = $(PROGRAM:=.h)
-INCLUDES = $(INCLUDE)
+INCLUDES = $(INCLUDE) $(TINCLUDES)
 
 
 DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \

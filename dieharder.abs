@@ -465,6 +465,7 @@ reasonable amount of time).
    -d 15 Diehard Sums test
    -d 16 Diehard Runs test
    -d 17 Diehard Craps test
+   -d 18 Marsaglia and Tsang GCD test
 
              RGB Tests
    -r 1 Bit Persist test
@@ -476,7 +477,8 @@ reasonable amount of time).
    -s 2 STS Runs test
 
             User Tests
-No user-developed test are installed at this time.
+   -u 1 User Template (Lagged Sum Test)
+
 </pre>
 
 <p>Note that the design goal of completely encapsulating diehard is

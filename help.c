@@ -39,6 +39,7 @@ void help()
    help_diehard_runs();
    help_diehard_craps();
    help_marsaglia_tsang_gcd();
+   help_marsaglia_tsang_gorilla();
    help_sts_monobit();
    help_sts_runs();
    help_user_template();
@@ -102,6 +103,9 @@ void help()
      break;
    case MARSAGLIA_TSANG_GCD:
      help_marsaglia_tsang_gcd();
+     break;
+   case MARSAGLIA_TSANG_GORILLA:
+     help_marsaglia_tsang_gorilla();
      break;
    default:
      break;

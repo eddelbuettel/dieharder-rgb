@@ -47,6 +47,7 @@ void work()
    diehard_runs();
    diehard_craps();
    marsaglia_tsang_gcd();
+   marsaglia_tsang_gorilla();
    sts_monobit();
    sts_runs();
    user_template();
@@ -124,6 +125,10 @@ void work()
      break;
    case MARSAGLIA_TSANG_GCD:
      marsaglia_tsang_gcd();
+     exit(0);
+     break;
+   case MARSAGLIA_TSANG_GORILLA:
+     marsaglia_tsang_gorilla();
      exit(0);
      break;
    default:

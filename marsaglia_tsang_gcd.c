@@ -13,23 +13,21 @@
  * statistics are generated: their greatest common divisor (GCD) (w)
  * and the number of steps of Euclid's Method required to find it
  * (k).  Two tables of frequencies are thus generated -- one for the
- * number of times each value for k in the range 3 to 35 (with counts
- * greater than or less than this range lumped in with the endpoints).
+ * number of times each value for k in the range 0 to 41 (with counts
+ * greater than this range lumped in with the endpoints).
  * The other table is the frequency of occurrence of each GCD w.
- * k should be distributed (approximately) binomially -- a chisq test
- * is performed on a scaled table provided by Marsaglia and Tsang that
- * is a slight improvement on this.  w is distributed like
- * (6/pi^2) 1/w^2 (no table is needed) and a chisq test converts
- * this as well to a p-value.  In the dieharder implementation p_k and
- * p_w are accumulated separately psamples (100) times and a final
- * KS test is performed to generate overall p-values for both aspects
- * of the test.
- *
- * Actually, at the moment I don't have the table so I'll use the
- * binomial distribution P(k) = (50 k).376^k .624^{50-k) as the target
- * of the chisq until I can do better.  I suspect there is a prime factor
- * theorem that would give the exact distribution but need time to verify
- * this (or to solicit MT's table or to make my own empirical table)
+ * k is be distributed approximately binomially, but this is useless for
+ * the purposes of performing a stringent test.  Instead four "good"
+ * RNGs (gfsr4,mt19937_1999,rndlxs2,taus2) were used to construct a
+ * simulated table of high precision probabilities for k (a process that
+ * obviously begs the question as to whether or not THESE generators
+ * are "good" wrt the test.  At any rate, they produce very similar tables
+ * and pass the test with each other's tables (and are otherwise very
+ * different RNGs).  The table of probabilities for the gcd distribution is
+ * generated dynamically per test (it is easy to compute).  Chisq tests
+ * on both of these binned distributions yield two p-values per test,
+ * and 100 (default) p-values of each are accumulated and subjected to
+ * final KS tests and displayed in a histogram.
  *========================================================================
  */
 
