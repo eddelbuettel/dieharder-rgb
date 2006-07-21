@@ -125,7 +125,7 @@ double user_template()
   * This is the standard test call.
   */
  kspi = 0;  /* Always zero first */
- pks = sample((void *)template_test);
+ pks = sample((void *)user_template_test);
 
  /*
   * Test Results, standard form.

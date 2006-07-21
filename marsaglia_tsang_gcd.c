@@ -127,16 +127,39 @@ double marsaglia_tsang_gcd()
 void marsaglia_tsang_gcd_test()
 {
 
- uint t,i,k,u,v,w;
- uint gcd[101],ktbl[36];
+ unsigned long long int t,ktbl[41];
+ uint i,k,u,v,w;
+ uint gcd[101];
  Btest btest_k,btest_w;
 
+ /* Make data tables for one-time entry -- do not delete.
+ uint nbin = 50;
+ double pbin = 0.376;
+ printf("double kprob[41] = {\n");
+ for(i=0;i<41;i++){
+   printf(" %10.8f,",gsl_ran_binomial_pdf(i,pbin,nbin));
+   if((i+1)%6 == 0) printf("\n");
+ }
+ printf("};\n");
+ */
+
+ /*
+  * Zero both tables
+  */
+ memset(ktbl,0,41*sizeof(uint));
+ memset(gcd,0,101*sizeof(uint));
+
+ Btest_create(&btest_k,41);
+ Btest_create(&btest_w,101);
+
+ /* exit(0); */
 
  if(verbose == D_MARSAGLIA_TSANG_GCD || verbose == D_ALL){
    printf("# user_marsaglia_tsang_gcd(): Beginning gcd test\n");
  }
 
- for(t=0;t<tsamples;t++){
+/*  for(t=0;t<tsamples;t++){ */
+ for(t=0;t<1000000000;t++){
    /* Initialize counter for this sample */
    k = 0;
    /* Get nonzero u,v */
@@ -156,22 +179,58 @@ void marsaglia_tsang_gcd_test()
    /* lump gcd's greater than 100 in with 100, increment table */
    w = (w>100)?100:w;
    gcd[w]++;
-   /* Lump k<3 in with k, k>35 in with 35, increment table */
-   k = (k<3)?3:k;
-   k = (k>35)?35:k;
+   /* Lump k>40 in with 40, increment table */
+   k = (k>40)?40:k;
    ktbl[k]++;
 
  }
 
  /*
+  * This is where I formulate my own probability table, using
+  * a mix of the best RNGs I have available.  Of course this ultimately
+  * begs many questions...
+  */
+ printf("double kprob[41] = {\n");
+ for(i=0;i<41;i++){
+   printf(" %10.8f,",(double)ktbl[i]/1000000000.0);
+   if((i+1)%6 == 0) printf("\n");
+ }
+ printf("};\n");
+
+ exit(0);
+
+ /*
+  * Put tabular results into btest_k, normalizing by the number
+  * of samples as usual.  Note kprob is preloaded table of
+  * target probabilities generated in commented fragement above.
+  */
+ if(verbose == D_MARSAGLIA_TSANG_GCD || verbose == D_ALL){
+   printf(" Binomial probability table for k distribution.\n");
+   printf("  i\t  mean\n");
+ }
+ for(i=0;i<41;i++){
+   btest_k.x[i] = (double)ktbl[i];
+   btest_k.y[i] = tsamples*kprob[i];
+   btest_k.sigma[i] = 0.0;
+   if(verbose == D_MARSAGLIA_TSANG_GCD || verbose == D_ALL){
+     printf(" %2u\t%f\t%f\t%f\n",i,btest_k.x[i],btest_k.y[i],btest_k.x[i]-btest_k.y[i]);
+   }
+ }
+ /*
   * Evaluate test statistics for this run
   */
 
- Btest_eval(btest_k);
+ Btest_eval(&btest_k);
  ks_pvalue[kspi] = btest_k.pvalue;
+ printf("Got k test pvalue = %f\n",btest_k.pvalue);
 
- Btest_eval(btest_w);
+/*
+ Btest_eval(&btest_w);
  ks_pvalue2[kspi] = btest_w.pvalue;
+ */
+
+ Btest_destroy(&btest_k);
+ Btest_destroy(&btest_w);
 
  if(verbose == D_USER_TEMPLATE || verbose == D_ALL){
    printf("# user_marsaglia_tsang_gcd(): ks_pvalue_k[%u] = %10.5f  ks_pvalue_w[%u] = %10.5f\n",kspi,ks_pvalue[kspi],ks_pvalue2[kspi]);

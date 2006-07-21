@@ -31,13 +31,13 @@ void parsecl(int argc, char **argv)
  iterations = -1;	/* For timing loop, set iterations to be timed */
  list = NO;             /* List all generators */
  ntuple = 0;            /* n-tuple size for n-tuple tests (0 means all) */
- psamples = 100;        /* Number of test runs in final KS test */
+ psamples = 0;          /* This value precipitates use of test defaults */
  quiet = 0;		/* Default is to be not be quiet -- full report. */
  rgb = 0;               /* rgb test number */
  sts = 0;               /* sts test number */
  seed = 0;              /* saves the current (possibly randomly selected) seed */
  Seed = 0;              /* user selected seed.  != 0 surpresses reseeding per sample.*/
- tsamples = 10000;	/* Generally should be "a lot". */
+ tsamples = 0;          /* This value precipitates use of test defaults */
  user = 0;              /* user defined test number */
  verbose = 0;		/* Default is not to be verbose. */
  x_user = 0.0;          /* x,y,z_user are for "arbitrary" input controls */

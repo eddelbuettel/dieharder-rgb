@@ -49,6 +49,7 @@ void work()
    marsaglia_tsang_gcd();
    sts_monobit();
    sts_runs();
+   user_template();
    exit(0);
  }
 
@@ -161,7 +162,7 @@ void work()
 
  switch(user){
    case USER_TEMPLATE:
-     template();
+     user_template();
      exit(0);
      break;
    default:

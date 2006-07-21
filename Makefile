@@ -99,7 +99,7 @@ SOURCES = $(SOURCE)\
     rgb_timing.c \
     sts_monobit.c \
     sts_runs.c \
-    template.c \
+    user_template.c \
 
 
 INCLUDE = $(PROGRAM:=.h)

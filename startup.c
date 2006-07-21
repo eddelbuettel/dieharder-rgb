@@ -55,6 +55,7 @@ reasonable amount of time).\n\
    -d 15 Diehard Sums test\n\
    -d 16 Diehard Runs test\n\
    -d 17 Diehard Craps test\n\
+   -d 18 Marsaglia and Tsang GCD test\n\
 \n\
              RGB Tests\n\
    -r 1 Bit Persist test\n\
