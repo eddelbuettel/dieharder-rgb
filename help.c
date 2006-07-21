@@ -38,9 +38,10 @@ void help()
    help_diehard_sums();
    help_diehard_runs();
    help_diehard_craps();
+   help_marsaglia_tsang_gcd();
    help_sts_monobit();
    help_sts_runs();
-   help_template();
+   help_user_template();
    exit(0);
  }
 
@@ -48,8 +49,6 @@ void help()
   * Switches to do each test by number
   */
  switch(diehard){
-   default:
-     break;
    case DIEHARD_BDAY:
      help_diehard_birthdays();
      break;
@@ -101,25 +100,30 @@ void help()
    case DIEHARD_CRAPS:
      help_diehard_craps();
      break;
- }
- switch(rgb){
+   case MARSAGLIA_TSANG_GCD:
+     help_marsaglia_tsang_gcd();
+     break;
    default:
      break;
+ }
+ switch(rgb){
    case RGB_PERSIST:
      help_rgb_persist();
      break;
    case RGB_BITDIST:
      help_rgb_bitdist();
      break;
- }
- switch(sts){
    default:
      break;
+ }
+ switch(sts){
    case STS_MONOBIT:
      help_sts_monobit();
      break;
    case STS_RUNS:
      help_sts_runs();
+     break;
+   default:
      break;
  }
  /*
@@ -129,6 +133,9 @@ void help()
   * implemented.
   */
  switch(user){
+   case USER_TEMPLATE:
+     help_user_template();
+     break;
    default:
      break;
  }

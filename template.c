@@ -75,9 +75,9 @@
 /*
  * Test specific data
  */
-#include "template.h"
+#include "user_template.h"
 
-double template()
+double user_template()
 {
 
  double pks;
@@ -146,7 +146,7 @@ double template()
 
 }
 
-void template_test()
+void user_template_test()
 {
 
  uint t,i,lag;
@@ -201,7 +201,7 @@ void template_test()
 
 }
 
-void help_template()
+void help_user_template()
 {
 
   printf("%s",dtest->description);

@@ -276,7 +276,7 @@ void diehard_bitstream_test()
   * Don't forget to free or we'll leak.  Hate to have to wear
   * depends...
   */
- free(w);
+ nullfree(w);
 
 }
 

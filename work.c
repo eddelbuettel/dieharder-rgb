@@ -46,14 +46,13 @@ void work()
    diehard_sums();
    diehard_runs();
    diehard_craps();
+   marsaglia_tsang_gcd();
    sts_monobit();
    sts_runs();
    exit(0);
  }
 
  switch(diehard){
-   default:
-     break;
    case DIEHARD_BDAY:
      diehard_birthdays();
      exit(0);
@@ -122,11 +121,15 @@ void work()
      diehard_craps();
      exit(0);
      break;
+   case MARSAGLIA_TSANG_GCD:
+     marsaglia_tsang_gcd();
+     exit(0);
+     break;
+   default:
+     break;
  }
 
  switch(rgb){
-   default:
-     break;
    case RGB_TIMING:
      rgb_timing();
      exit(0);
@@ -139,11 +142,11 @@ void work()
      rgb_bitdist();
      exit(0);
      break;
+   default:
+     break;
  }
 
  switch(sts){
-   default:
-     break;
    case STS_MONOBIT:
      sts_monobit();
      exit(0);
@@ -152,14 +155,16 @@ void work()
      sts_runs();
      exit(0);
      break;
+   default:
+     break;
  }
 
  switch(user){
-   default:
-     break;
    case USER_TEMPLATE:
      template();
      exit(0);
+     break;
+   default:
      break;
  }
 

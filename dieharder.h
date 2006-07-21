@@ -75,6 +75,7 @@
    D_DIEHARD_SUMS,
    D_DIEHARD_RUNS,
    D_DIEHARD_CRAPS,
+   D_MARSAGLIA_TSANG_GCD,
    D_RGB_TIMING,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
@@ -123,6 +124,7 @@
    DIEHARD_SUMS,
    DIEHARD_RUNS,
    DIEHARD_CRAPS,
+   MARSAGLIA_TSANG_GCD,
    N_DIEHARD_TESTS
  } Diehard_Tests;
 
@@ -277,6 +279,12 @@
  /* 17: diehard "craps" test */
  double diehard_craps();
  void diehard_craps_test();
+ void help_diehard_craps();
+
+ /* 18: Marsaglia and Tsang GCD test */
+ double marsaglia_tsang_gcd();
+ void marsaglia_tsang_gcd_test();
+ void help_marsaglia_tsang();
 
  /* rgb "bit persistence test" is an exception! */
  double rgb_persist();
@@ -304,9 +312,9 @@
 
 
  /* User/template test.  Replace/copy/rename with your own test(s) */
- double template();
- void template_test();
- void help_template();
+ double user_template();
+ void user_template_test();
+ void help_user_template();
 
  /* User "dummy" test.  Replace with your own test(s) */
  double user_dummy();

@@ -93,6 +93,7 @@ SOURCES = $(SOURCE)\
     diehard_sums.c \
     diehard_runs.c \
     diehard_craps.c \
+    marsaglia_tsang_gcd.c \
     rgb_bitdist.c \
     rgb_persist.c \
     rgb_timing.c \
