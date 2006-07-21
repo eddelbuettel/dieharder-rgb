@@ -97,7 +97,7 @@ void Btest_eval(Btest *btest)
   * We'll have to see how this handles sigma[i] = 0.0.  Probably badly
   * but smoothly.
   */
- verbose=1;
+ /* verbose=1; */
  if(verbose == D_BTEST || verbose == D_ALL){
    printf("Evaluating chisq and pvalue for %d points\n",btest->bins);
  }
@@ -147,7 +147,7 @@ void Btest_eval(Btest *btest)
  if(verbose == D_BTEST || verbose == D_ALL){
    printf("Evaluted pvalue = %6.4f in Btest_eval().\n",btest->pvalue);
  }
- verbose=0;
+ /* verbose=0; */
 
 }
 

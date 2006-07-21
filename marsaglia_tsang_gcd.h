@@ -22,19 +22,31 @@ static Dtest temp = {
 # p_w are accumulated separately psamples (100) times and a final\n\
 # KS test is performed to generate overall p-values for both aspects\n\
 # of the test.\n\
-#==================================================================",
+#==================================================================\n",
   100,
   10000000
 };
 
 static Dtest *dtest = &temp;
 
+/*
+ * This table is the result of "extensive simulation" with RNGs believed
+ * to be "the best of show" -- good ones according to the GSL and the
+ * other dieharder tests.  Eventually it will be based on roughly
+ * 10^12 samples each from mt19937_1999, rndlx2, gsfr4, and taus2
+ * (presuming that all of them produce mean probabilities that
+ * are both normally distributed and overlapping for each number).
+ *
+ * This SHOULD result in all four of these generators passing
+ * easily for the more common 10^7 steps per run and 100 runs
+ * (10^9 total samples) which begs the question, maybe, dunno.
+ */
 double kprob[41] = {
- 0.00000000, 0.00000000, 0.00000003, 0.00000025, 0.00000174, 0.00000967,
- 0.00004369, 0.00016548, 0.00053596, 0.00150710, 0.00372331, 0.00815829,
- 0.01597666, 0.02814035, 0.04481325, 0.06480685, 0.08542249, 0.10294506,
- 0.11372349, 0.11541169, 0.10779156, 0.09278761, 0.07370018, 0.05406323,
- 0.03664863, 0.02296648, 0.01330651, 0.00712714, 0.00352767, 0.00161256,
- 0.00068017, 0.00026442, 0.00009460, 0.00003109, 0.00000937, 0.00000258,
- 0.00000065, 0.00000015, 0.00000003, 0.00000001, 0.00000000};
+ 0.00000000, 0.00000000, 0.00000006, 0.00000053, 0.00000303, 0.00001449,
+ 0.00005897, 0.00020648, 0.00062801, 0.00167934, 0.00400101, 0.00851778,
+ 0.01634962, 0.02843971, 0.04493003, 0.06475867, 0.08533291, 0.10300242,
+ 0.11405233, 0.11604088, 0.10854099, 0.09338050, 0.07390149, 0.05379036,
+ 0.03603043, 0.02215252, 0.01251099, 0.00648336, 0.00306850, 0.00132797,
+ 0.00052381, 0.00018806, 0.00006098, 0.00001774, 0.00000462, 0.00000113,
+ 0.00000022, 0.00000005, 0.00000000, 0.00000000, 0.00000000,};
        

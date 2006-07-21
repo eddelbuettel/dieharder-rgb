@@ -100,7 +100,7 @@ double marsaglia_tsang_gcd()
  /*
   * Test Results, standard form.
   */
- test_footer(dtest,pks,ks_pvalue,"Lagged Sum Test");
+ test_footer(dtest,pks,ks_pvalue,"Marsaglia and Tsang GCD Test");
 
  /*
   * the GCD test generates two statistics, not one, so we need an extra
@@ -124,33 +124,56 @@ double marsaglia_tsang_gcd()
 
 }
 
+/*
+ * This determines the number of samples that go into building the kprob[]
+ * table.
+ */
+#define KCNT 10000000000
+#define KTBLSIZE 41
+
 void marsaglia_tsang_gcd_test()
 {
 
- unsigned long long int t,ktbl[41];
- uint i,k,u,v,w;
- uint gcd[101];
- Btest btest_k,btest_w;
+ unsigned long long int t,ktbl[KTBLSIZE];
+ uint i,j,k,u,v,w;
+ static uint *gcd = 0;
+ static double gnorm = 6.0/(PI*PI);
+ static uint gtblsize = 0;
+ Btest btest_k,btest_u;
 
  /* Make data tables for one-time entry -- do not delete.
  uint nbin = 50;
  double pbin = 0.376;
- printf("double kprob[41] = {\n");
- for(i=0;i<41;i++){
-   printf(" %10.8f,",gsl_ran_binomial_pdf(i,pbin,nbin));
-   if((i+1)%6 == 0) printf("\n");
+ printf("double kprob[%u] = {\n",KTBLSIZE);
+ printf(" %10.8f",gsl_ran_binomial_pdf(0,pbin,nbin));
+ for(i=1;i<KTBLSIZE;i++){
+   if(i%6 == 0) {
+     if((i)%6 == 0) printf(", \n");
+     printf(" %10.8f",gsl_ran_binomial_pdf(i,pbin,nbin));
+   } else {
+     printf(", %10.8f",gsl_ran_binomial_pdf(i,pbin,nbin));
+   }
  }
  printf("};\n");
+ exit(0);
  */
 
  /*
-  * Zero both tables
+  * Zero both tables, set gtblsize so that the expectation of gcd[] > 10
+  * (arbitrary cutoff).  We don't free this on exit, but then, we only
+  * allocate it once so it should be OK.
   */
- memset(ktbl,0,41*sizeof(uint));
- memset(gcd,0,101*sizeof(uint));
+ if(gtblsize == 0) {
+   gtblsize = sqrt((double)tsamples*gnorm/100.0);
+   /* printf("gtblsize = %u\n",gtblsize); */
+ }
+ if(gcd == 0) gcd = (uint *)malloc(gtblsize*sizeof(uint));
+ memset(gcd,0,gtblsize*sizeof(uint));
+ memset(ktbl,0,KTBLSIZE*sizeof(unsigned long long int));
 
- Btest_create(&btest_k,41);
- Btest_create(&btest_w,101);
+
+ Btest_create(&btest_k,KTBLSIZE);
+ Btest_create(&btest_u,gtblsize);
 
  /* exit(0); */
 
@@ -158,8 +181,8 @@ void marsaglia_tsang_gcd_test()
    printf("# user_marsaglia_tsang_gcd(): Beginning gcd test\n");
  }
 
-/*  for(t=0;t<tsamples;t++){ */
- for(t=0;t<1000000000;t++){
+ /* for(t=0;t<KCNT;t++){ */
+ for(t=0;t<tsamples;t++){
    /* Initialize counter for this sample */
    k = 0;
    /* Get nonzero u,v */
@@ -176,11 +199,24 @@ void marsaglia_tsang_gcd_test()
      v = w;
      k++;
    } while(v>0);
-   /* lump gcd's greater than 100 in with 100, increment table */
-   w = (w>100)?100:w;
-   gcd[w]++;
-   /* Lump k>40 in with 40, increment table */
-   k = (k>40)?40:k;
+
+   /*
+    * We just need tsamples*c/u^2 to be greater than about 10, the
+    * cutoff built into Btest_eval()  For tsamples = 10^7, turns out that
+    * gtblsize < sqrt((double)tsamples*gnorm/10.0) (about 780) should be just
+    * about right.  We lump all counts larger than that into "the tail",
+    * which MUST be included in the chisq targets down below.
+    */
+   if(u>=gtblsize) u = gtblsize-1;
+   if(u<gtblsize) {
+     gcd[u]++;
+   }
+
+   /*
+    * lump the k's > KTBLSIZE only because that's what we did generating
+    * the table...
+    */
+   k = (k>KTBLSIZE-1)?KTBLSIZE-1:k;
    ktbl[k]++;
 
  }
@@ -189,15 +225,15 @@ void marsaglia_tsang_gcd_test()
   * This is where I formulate my own probability table, using
   * a mix of the best RNGs I have available.  Of course this ultimately
   * begs many questions...
-  */
- printf("double kprob[41] = {\n");
- for(i=0;i<41;i++){
-   printf(" %10.8f,",(double)ktbl[i]/1000000000.0);
+ printf("double kprob[KTBLSIZE] = {\n");
+ for(i=0;i<KTBLSIZE;i++){
+   printf(" %10.8f,",(double)ktbl[i]/KCNT);
    if((i+1)%6 == 0) printf("\n");
  }
  printf("};\n");
 
- exit(0);
+ return;
+  */
 
  /*
   * Put tabular results into btest_k, normalizing by the number
@@ -208,7 +244,7 @@ void marsaglia_tsang_gcd_test()
    printf(" Binomial probability table for k distribution.\n");
    printf("  i\t  mean\n");
  }
- for(i=0;i<41;i++){
+ for(i=0;i<KTBLSIZE;i++){
    btest_k.x[i] = (double)ktbl[i];
    btest_k.y[i] = tsamples*kprob[i];
    btest_k.sigma[i] = 0.0;
@@ -217,20 +253,45 @@ void marsaglia_tsang_gcd_test()
    }
  }
  /*
+  * We will probably turn this into a table, but it isn't that expensive in the
+  * short run as is.
+  */
+ for(i=0;i<gtblsize;i++){
+   if(i>1){
+     btest_u.x[i] = (double)gcd[i];
+     if(i == gtblsize-1){
+       /* This should be close enough to convergence */
+       for(j=i;j<100000;j++){
+         btest_u.y[i] += tsamples*gnorm/(1.0*j*j);
+       }
+       /* printf(" %2u\t%f\t%f\t%f\n",i,btest_u.x[i],btest_u.y[i],btest_u.x[i]-btest_u.y[i]); */
+     } else {
+       btest_u.y[i] = tsamples*gnorm/(i*i);
+     }
+     btest_u.sigma[i] = 0.0;
+   } else {
+     btest_u.x[i] = 0.0;
+     btest_u.y[i] = 0.0;
+     btest_u.sigma[i] = 0.0;
+   }
+   if(verbose == D_MARSAGLIA_TSANG_GCD || verbose == D_ALL){
+     printf(" %2u\t%f\t%f\t%f\n",i,btest_u.x[i],btest_u.y[i],btest_u.x[i]-btest_u.y[i]);
+   }
+ }
+
+ /*
   * Evaluate test statistics for this run
   */
 
  Btest_eval(&btest_k);
  ks_pvalue[kspi] = btest_k.pvalue;
- printf("Got k test pvalue = %f\n",btest_k.pvalue);
 
-/*
- Btest_eval(&btest_w);
- ks_pvalue2[kspi] = btest_w.pvalue;
- */
+ Btest_eval(&btest_u);
+ ks_pvalue2[kspi] = btest_u.pvalue;
+
 
  Btest_destroy(&btest_k);
- Btest_destroy(&btest_w);
+ Btest_destroy(&btest_u);
 
  if(verbose == D_USER_TEMPLATE || verbose == D_ALL){
    printf("# user_marsaglia_tsang_gcd(): ks_pvalue_k[%u] = %10.5f  ks_pvalue_w[%u] = %10.5f\n",kspi,ks_pvalue[kspi],ks_pvalue2[kspi]);
