@@ -34,7 +34,7 @@ SVNTIME = $(DIR:=.svn.time)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=1
-VERSION_MINOR=2.24
+VERSION_MINOR=3.24
 RELEASE=Pre
 
 #========================================================================
@@ -68,7 +68,6 @@ SOURCES = $(SOURCE) $(TSOURCES) \
     sample.c \
     rank.c \
     histogram.c \
-    confidence.c \
     chisq.c \
     kstest.c \
     random_seed.c \
@@ -242,6 +241,7 @@ tgz:	$(SOURCES) $(SCSOURCES)
             --exclude=*rpm \
             --exclude=*dat.long \
             --exclude=*.raw \
+            --exclude=Restricted \
             ./$(DIR)
 	gzip $(TAR)
 	mv $(TAR).gz $(TGZ)

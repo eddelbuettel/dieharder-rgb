@@ -8,45 +8,23 @@
 
 /*
  *========================================================================
- * Btest.c contains a set of routines for creating, destroying, and
- * evaluating binned statistical results obtained in a vector.  It
- * is assumed that each bin contains an integer count of some event, and
- * that the expected value for this count (of "events") is known.
- *
- * The appropriate test for this sort of data is the chisq test, which
- * yields the probability that a given set of binned data could have
- * been drawn randomly from the expected distribution.  The number of
- * degrees of freedom in the chisq distribution is tricky if the expected
- * distribution has long "tails" -- bins where the expected value is
- * approximately zero.  The binned data only approaches the chisq
- * distribution for bins that are have an expected value greater than (say)
- * 10.  The probability is then the incomplete gamma function for
- * the observed chisq and number of degrees of freedom - 1 (there is a
- * constraint used to normalize the expected value to the total number of
- * observed events).
- *
- * We do have one final choice -- to use an input sigma to make chisq
- * or to use Pearson's chisq, which only requires the expected value.
- * We'll leave a sigma vector in the struct for the time being but use
- * Pearson as more general and a bit simpler (they're empirically nearly
- * the same for binomials, as they should be).
- *
- * There is an associated "object" struct containing the various
- * histograms, the name of the test they support, and so forth.  We
- * therefore have creator and destructor routines as well as fairly
- * standardized routines for taking the histogram contents and converting
- * them into a p-value.
+ * Vtest.c contains a set of routines for evaluating a p-value, the
+ * probability that a given test result was obtained IF the underlying
+ * random number generator was a "good" one (the null hypothesis), given a
+ * vector x of observed results and a vector y of expected results.  It
+ * determines the p-value using Pearson's chisq, which does not require
+ * the independent input of the expected sigma for each "bin" (vector
+ * position).
  *========================================================================
  */
-
 #include "dieharder.h"
 
-void Btest_create(Btest *btest, unsigned int bins)
+void Vtest_create(Vtest *btest, unsigned int bins)
 {
 
  int i;
  if(verbose == D_BTEST || verbose == D_ALL){
-   printf("Btest_create(): Creating test struct for %u bins.\n",bins);
+   printf("Vtest_create(): Creating test struct for %u bins.\n",bins);
  }
  btest->x = (double *) malloc(sizeof(double)*bins);       /* sample results */
  btest->y = (double *) malloc(sizeof(double)*bins);       /* expected sample results */
@@ -61,13 +39,13 @@ void Btest_create(Btest *btest, unsigned int bins)
  btest->chisq = 0.0;
  btest->pvalue = 0.0;
  if(verbose == D_BTEST || verbose == D_ALL){
-   printf("Btest_create(): Created test structure for %d points.\n",btest->bins);
+   printf("Vtest_create(): Created test structure for %d points.\n",btest->bins);
  }
 
 
 }
 
-void Btest_destroy(Btest *btest)
+void Vtest_destroy(Vtest *btest)
 {
 
  free(btest->x);
@@ -76,7 +54,7 @@ void Btest_destroy(Btest *btest)
 
 }
 
-void Btest_eval(Btest *btest)
+void Vtest_eval(Vtest *btest)
 {
 
  uint i,ndof;
@@ -145,7 +123,7 @@ void Btest_eval(Btest *btest)
  ndof--;
  btest->pvalue = gsl_sf_gamma_inc_Q((double)(ndof)/2.0,chisq/2.0);
  if(verbose == D_BTEST || verbose == D_ALL){
-   printf("Evaluted pvalue = %6.4f in Btest_eval().\n",btest->pvalue);
+   printf("Evaluted pvalue = %6.4f in Vtest_eval().\n",btest->pvalue);
  }
  /* verbose=0; */
 

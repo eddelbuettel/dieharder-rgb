@@ -5,7 +5,7 @@
 Summary: dieharder is a random number generator tester and timer
 
 Name: dieharder
-Version: 1.2.24
+Version: 1.3.24
 Release: Pre
 Group: Development/Tools
 License: Open Source (GPL v2b)

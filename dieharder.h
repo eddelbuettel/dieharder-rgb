@@ -26,6 +26,8 @@
 #include <gsl/gsl_matrix.h>
 #include "parse.h"
 #include "tensor.h"
+#include "Vtest.h"
+#include "Xtest.h"
 
 /*
  *========================================================================

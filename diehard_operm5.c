@@ -169,35 +169,12 @@ uint kperm(uint v[],uint voffset)
    
 }
 
-#include "d_raw.h"
-
 void diehard_operm5_test()
 {
 
  uint i,j,k,kp,t,vind,v[5];
  double count[120];
  double av,norm,x[60],y[60],chisq,ndof,pvalue;
-
- /*
-  * Just read in the raw r half-matrix and s half-matrix from d_raw = perm.txt
- k = 0;
- for(i=0;i<60;i++){
-   for(j=i;j<60;j++){
-     r[i][j] = d_raw[k++];
-   }
- }
- for(i=0;i<60;i++){
-   for(j=i;j<60;j++){
-     s[i][j] = d_raw[k++];
-   }
- }
- for(i=0;i<59;i++){
-   for(j=i+1;j<60;j++){
-     r[j][i] = r[i][j];
-     s[j][i] = s[i][j];
-   }
- }
-  */
 
  if(verbose == D_DIEHARD_OPERM5 || verbose == D_ALL){
    printf("int r[][] = {\n");
