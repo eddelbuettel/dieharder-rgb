@@ -476,15 +476,6 @@ typedef struct
    double pvalue;
  } Btest;
 
- typedef struct {
-   unsigned int npts;
-   double p;
-   double x;
-   double y;
-   double sigma;
-   double pvalue;
- } Xtest;
-
  /*
   * OK, I've got a TON of boilerplate code that would be greatly
   * simplified if I could create a generic test struct and make e.g.
