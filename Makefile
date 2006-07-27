@@ -34,8 +34,8 @@ SVNTIME = $(DIR:=.svn.time)
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
 VERSION_MAJOR=1
-VERSION_MINOR=3.24
-RELEASE=Pre
+VERSION_MINOR=4.24
+RELEASE=1
 
 #========================================================================
 # Define all sources.  We ALWAYS have $(SOURCE) derived from $(PROGRAM)
@@ -241,6 +241,7 @@ tgz:	$(SOURCES) $(SCSOURCES)
             --exclude=*rpm \
             --exclude=*dat.long \
             --exclude=*.raw \
+            --exclude=*.bin \
             --exclude=Restricted \
             ./$(DIR)
 	gzip $(TAR)
