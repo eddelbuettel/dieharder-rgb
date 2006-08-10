@@ -21,6 +21,7 @@ void help()
    help_rgb_timing();
    help_rgb_persist();
    help_rgb_bitdist();
+   help_rgb_lmn();
    help_diehard_birthdays();
    help_diehard_operm5();
    help_diehard_rank_32x32();
@@ -111,11 +112,17 @@ void help()
      break;
  }
  switch(rgb){
+   case RGB_TIMING:
+     help_rgb_timing();
+     break;
    case RGB_PERSIST:
      help_rgb_persist();
      break;
    case RGB_BITDIST:
      help_rgb_bitdist();
+     break;
+   case RGB_LMN:
+     help_rgb_lmn();
      break;
    default:
      break;
@@ -168,8 +175,15 @@ Usage:\n\
   -b bits - sets the number of bits to be used in tests that act on a bit\n\
      string of variable length, e.g. the rgb bitdist test.\n\
   -d test number -  selects specific diehard test.\n\
-  -f filename will EVENTUALLY permit random strings to be tested to be\n\
-     read in from a file, but this is not yet implemented!\n\
+  -f filename - two generators permit either formatted ASCII numbers\n\
+     or raw binary numbers to be read in from a file for testing.\n\
+     Note well that some (default) tests require 10,000,000 or more rands!\n\
+     To see a sample of the (required) header for ASCII formatted input, run\n\
+\n\
+         dieharder -o -f example.input -t 10\n\
+\n\
+     and then examine the contents of example.input.\n\
+     Raw binary input reads 32 bit increments of the specified data stream.\n\
   -g generator number - selects a specific generator for testing.  Using\n\
      -1 causes all known generators to be printed out to the display.\n\
   -h prints context-sensitive help -- usually Usage (this message) or a\n\

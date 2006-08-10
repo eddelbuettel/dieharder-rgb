@@ -59,9 +59,10 @@ reasonable amount of time).\n\
    -d 19 Marsaglia and Tsang Gorilla test\n\
 \n\
              RGB Tests\n\
-   -r 1 Bit Persist test\n\
-   -r 2 Bit Ntuple Distribution test suite (-n ntuple for 1-8)\n\
-   -r 3 Timing test (times rng)\n\
+   -r 1 Timing test (times the rng)\n\
+   -r 2 Bit Persist test\n\
+   -r 3 Bit Ntuple Distribution test suite (-n ntuple for 1-8)\n\
+   -r 4 L-M-Ntuple Distribution test suite (quite long)\n\
 \n\
       Statistical Test Suite (STS)\n\
    -s 1 STS Monobit test\n\

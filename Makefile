@@ -96,9 +96,10 @@ TSOURCES = \
     diehard_craps.c \
     marsaglia_tsang_gcd.c \
     marsaglia_tsang_gorilla.c \
-    rgb_bitdist.c \
-    rgb_persist.c \
     rgb_timing.c \
+    rgb_persist.c \
+    rgb_bitdist.c \
+    rgb_lmn.c \
     sts_monobit.c \
     sts_runs.c \
     user_template.c \

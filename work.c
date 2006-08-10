@@ -148,6 +148,10 @@ void work()
      rgb_bitdist();
      exit(0);
      break;
+   case RGB_LMN:
+     rgb_lmn();
+     exit(0);
+     break;
    default:
      break;
  }

@@ -82,6 +82,7 @@
    D_RGB_TIMING,
    D_RGB_PERSIST,
    D_RGB_BITDIST,
+   D_RGB_LMN,
    D_STS_MONOBIT,
    D_STS_RUNS,
    D_STS_BLOCK,
@@ -138,6 +139,7 @@
    RGB_TIMING,
    RGB_PERSIST,
    RGB_BITDIST,
+   RGB_LMN,
    N_RGB_TESTS
  } Rgb_Tests;
 
@@ -295,16 +297,20 @@
  void marsaglia_tsang_gorilla_test();
  void help_marsaglia_tsang_gorilla();
 
- /* rgb "bit persistence test" is an exception! */
- double rgb_persist();
- void help_rgb_persist();
- /* rgb "timing test"  is ALSO an exception! */
+ /* rgb "timing test"  is an exception!  No psamples.*/
  double rgb_timing();
  void help_rgb_timing();
+ /* rgb "bit persistence test" is an exception!  Also no psamples. */
+ double rgb_persist();
+ void help_rgb_persist();
  /* rgb "bit distribution" master test */
  double rgb_bitdist();
  void rgb_bitdist_test();
  void help_rgb_bitdist();
+ /* rgb "lmn" master master test */
+ double rgb_lmn();
+ void rgb_lmn_test();
+ void help_rgb_lmn();
 
  /* STS "monobit" test */
  double sts_monobit();
