@@ -199,10 +199,12 @@ tgz:	$(SOURCES) $(SCSOURCES)
             --exclude=*.tar \
             --exclude=*.tgz \
             --exclude=*rpm \
-            --exclude=*dat.long \
-            --exclude=*.raw \
-            --exclude=*.bin \
+            --exclude=mt19937_1999.* \
             --exclude=Restricted \
+            --exclude=libdieharder \
+            --exclude=lib \
+            --exclude=include \
+            --exclude=doc \
             ./$(DIR)
 	gzip $(TAR)
 	mv $(TAR).gz $(TGZ)
