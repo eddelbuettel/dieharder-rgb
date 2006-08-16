@@ -45,70 +45,20 @@ RELEASE=1
 SOURCE = $(PROGRAM:=.c)
 SOURCES = $(SOURCE) $(TSOURCES) \
     add_my_types.c \
-    dev_random.c \
-    dev_urandom.c \
     empty_random.c \
-    file_input.c \
-    file_input_raw.c \
     list_rand.c \
     list_rngs.c \
-    measure_rate.c \
     output_rnds.c \
-    parse.c \
     parsecl.c \
     help.c \
-    prob.c \
-    timing.c \
-    tensor.c \
-    matrix.c \
-    block.c \
-    Btest.c \
-    Ntest.c \
-    Xtest.c \
-    sample.c \
-    rank.c \
     histogram.c \
-    chisq.c \
-    kstest.c \
-    random_seed.c \
     startup.c \
     test.c \
     work.c \
-    bits.c \
-
-TSOURCES = \
-    diehard_birthdays.c \
-    diehard_operm5.c \
-    diehard_2dsphere.c \
-    diehard_3dsphere.c \
-    diehard_rank_32x32.c \
-    diehard_rank_6x8.c \
-    diehard_parking_lot.c \
-    diehard_bitstream.c \
-    diehard_opso.c \
-    diehard_oqso.c \
-    diehard_dna.c \
-    diehard_count_1s_stream.c \
-    diehard_count_1s_byte.c \
-    diehard_squeeze.c \
-    diehard_sums.c \
-    diehard_runs.c \
-    diehard_craps.c \
-    marsaglia_tsang_gcd.c \
-    marsaglia_tsang_gorilla.c \
-    rgb_timing.c \
-    rgb_persist.c \
-    rgb_bitdist.c \
-    rgb_lmn.c \
-    sts_monobit.c \
-    sts_runs.c \
     user_template.c \
-
-TINCLUDES = $(TSOURCES:.c=.h)
 
 INCLUDE = $(PROGRAM:=.h)
 INCLUDES = $(INCLUDE) $(TINCLUDES)
-
 
 DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
           -DRELEASE=$(RELEASE)
@@ -160,13 +110,13 @@ RPM_TOPDIR=$(HOME)/Src/rpm_tree
 # C Compiler
 CC = gcc
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 $(DEFINES)
+CFLAGS = -O3 $(DEFINES) -I include/dieharder
 # Or use the following for profiling as well as debugging.
 # CFLAGS = -O3 -ansi -g -p $(DEFINES)
 # Linker flags
-LDFLAGS =
+LDFLAGS = -L lib/dieharder
 # Libraries (I always include math library)
-LIBS = -lgsl -lgslcblas -lm
+LIBS = lib/dieharder/libdieharder.a -lgsl -lgslcblas -lm
 
 #========================================================================
 # Define standard sources and targets.
@@ -194,11 +144,20 @@ $(RPM): tgz rpm
 $(TGZ): tgz
 
 $(PROGRAM): $(OBJECTS) $(INCLUDES)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(LIBS) $(OBJECTS)
+	make library
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
 
 #========================================================================
 # Build targets (from commands)
 #========================================================================
+library:
+	(cd libdieharder; \
+	make -f Makefile; \
+	cp libdieharder.a ../lib/dieharder; \
+	cp libdieharder.so.* ../lib/dieharder; \
+	cp *.h ../include/dieharder; \
+	cd ..)
+
 tar:	$(SOURCES) $(SCSOURCES)
 	rm -f core $(PROGRAM) $(PROGRAM2) $(OBJECTS) $(OBJECTS2) \
            $(PROGRAM).1.gz
