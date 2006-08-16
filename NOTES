@@ -596,3 +596,99 @@ that this does does NOT fail for many of those rng's where rgb_bitdist
 does...
 
    rgb
+
+==================================================================
+08/16/06
+
+OK, lots has happened.  First of all, I've discovered what I believe to
+be at least one, maybe two diehard data errors -- rngs consistently fail
+operm5 and bitstream that I (and everybody else) believe to be "good"
+ones insofar as such a thing exists.  Not surprising -- the data being
+used to compute the test statistics was simulated between 10 and 20
+years ago and this test routinely uses more random numbers from better
+generators in any given test than were likely used to simulate them in
+the first place.
+
+Second, dieharder is already in the process of developing quite a user
+base.  People have ported it to Windows, for example, and Dirk
+Eddelbuettel is interested in adding a native R interface to the tests
+(to be able to take advantage of several of the other facilities that R
+provides, a la octave/matlab/maple/mathematica as a programming UI).
+
+To facilitate both this latter project and the eventual creation of a
+true GTK-based GUI for dieharder, I've begun the fairly monumental task
+of splitting off all the tests, the add-on rng's that are intended to be
+part of the basic package, and all the intrinsic support functions into
+a standalone link library and associated set of include files.  I know
+from experience writing libwulf to support wulfware apps that this is a
+bit tricky, and I expect there to be deep bugs and places where the API
+and separation are not clean for quite some time now.  However, when I'm
+DONE it should be REALLY EASY to replace the front end UI.  In fact, if
+I clean up the UI itself while I'm at it to make it even more modular
+than it is, I should be able to add a GTK basic interface in a very
+short period of time.
+
+I'm also stripping down the actual source part of dieharder (the tty
+interface version) and putting most of the documentation and so on in
+with the LIBRARY, since that is where it will be needed.  Eventually I
+should need something like man pages and/or a manual for the
+libdieharder library, in addition to a much smaller set of toplevel
+dieharder documentation.  The application (in any UI version) should
+REALLY be fairly self-documenting as a design goal.
+
+To mark the advent of a version that appears to build on top of
+completely separated libdieharder.a, largely decrufted on both sides,
+I'm bumping the major number of dieharder even though this wasn't an
+original design goal.  It clearly merits a major version bump anyway.
+The minor.minor numbers will retain their original meaning (bugfix
+advances and number of tests supported) except that now I should
+probably reset bugfix to 0 in both libdieharder and dieharder.  I don't
+know what I'll do about synchronicity between the two -- really I should
+extract numbers from libdieharder to set dieharder version numbers, but
+parsing out all the screen-scraping macros gives me a headache so I'll
+await inspiration or need before messing with it.
+
+Note finally that doing this has put adding more e.g. marsaglia_tsang
+tests on hold.  I do have an extensive agenda here -- fixing up a
+"super" version of sts_serial, adding sts_serial itself (which should be
+more or less equivalent to rgb_bitdist, only the latter doesn't compute
+the correct statistic for a chisq, alas), figuring out what the RIGHT
+data is for diehard_operm5 and diehard_bitstream, completing the
+installation of 10^11 to 10^12 sample-based target data of my OWN for
+marsaglia_tsang_gcd, and so on.  However, clearly this needs to wait
+until the development environment is stable again, which could be days
+yet, or even longer depending on what else I have to do for Duke etc.
+
+I also haven't even looked at the WinXX patches -- I'll have to figure
+them out all over again after splitting off the library, I expect.
+
+Still, progress is being made.  I think that the application is
+definitely out there to where a) it could be announced more publically
+on e.g. the stats lists -- maybe when the libdieharder split has been in
+"alpha" for at least a while...;-) and b) it is time to look for grant
+support for this project to accomplish certain specific goals --
+supporting testing on a cluster (by the time we're done the
+sts_series/rgb_bitdist/rgb_lmn tests are going to be BIG CPU
+consumers:-), finishing off all the desired/required tests,
+re-simulating key target data for the brave new world of unlimited rands
+to test, and "getting the word out" via publication, travelling to
+learned meetings and presenting, and so on.  I'd guess that this will
+require a fairly serious grant for at least 3-5 years to do all that
+needs to be done that I know of already, and may need even more if (as I
+suspect) things are discovered that require significant new work to be
+done on testing algorithms themselves, e.g. "moment expansion" type
+tests, a connection between high-dimensional test failure and bit
+distribution tests.  
+
+I have high hopes for the lmn test, although it may prove only the first
+step in lmnop, lmnopqr, lmnopqrst, etc... -- sampling lagged correlation
+between l-bit number, m-bit gap, n-bit number, o-bit gap, p-bit
+number...etc.  MANY tests seem to be fancy ways of doing just this and
+nothing more, interestingly enough -- in some cases ways of examining
+only a projective subspace of the failures one might occur from a truly
+systematic test of this sort.  For example, a Knuth test that reveals
+hyperplanar clustering of rand triplets viewed as spatial coordinates is
+effectively observing non-uniformity of the random integers represented
+by the conjunction of the three bitstrings... but without attempting to
+validate true randomness on 96-bit integers!
+

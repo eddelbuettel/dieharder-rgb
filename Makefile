@@ -33,7 +33,7 @@ SVNTIME = $(DIR:=.svn.time)
 # used to set variables in an accompanying spec file (see template in
 # this directory) and/or in defines passed to the application so that
 # it knows its own version information.
-VERSION_MAJOR=1
+VERSION_MAJOR=2
 VERSION_MINOR=4.24
 RELEASE=1
 
@@ -110,7 +110,7 @@ RPM_TOPDIR=$(HOME)/Src/rpm_tree
 # C Compiler
 CC = gcc
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 $(DEFINES) -I include/dieharder
+CFLAGS = -O3 $(DEFINES) -I ./include
 # Or use the following for profiling as well as debugging.
 # CFLAGS = -O3 -ansi -g -p $(DEFINES)
 # Linker flags

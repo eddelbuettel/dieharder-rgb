@@ -24,9 +24,9 @@
 #include <gsl/gsl_sort.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
-#include "parse.h"
-#include "Vtest.h"
-#include "Xtest.h"
+#include <dieharder/parse.h>
+#include <dieharder/Vtest.h>
+#include <dieharder/Xtest.h>
 
 /*
  *========================================================================
