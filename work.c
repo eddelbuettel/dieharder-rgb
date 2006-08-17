@@ -27,8 +27,8 @@ void work()
 
  if(all == YES){
    run_rgb_timing();
-   rgb_persist();
-   rgb_bitdist();
+   run_rgb_persist();
+   run_rgb_bitdist();
    diehard_birthdays();
    diehard_operm5();
    diehard_rank_32x32();
@@ -141,11 +141,11 @@ void work()
      exit(0);
      break;
    case RGB_PERSIST:
-     rgb_persist();
+     run_rgb_persist();
      exit(0);
      break;
    case RGB_BITDIST:
-     rgb_bitdist();
+     run_rgb_bitdist();
      exit(0);
      break;
    case RGB_LMN:

@@ -19,8 +19,8 @@ void help()
   */
  if(all==YES){
    printf("%s",rgb_test_data.description);
-   help_rgb_persist();
-   help_rgb_bitdist();
+   printf("%s",rgb_persist_data.description);
+   printf("%s",rgb_bitdist_data.description);
    help_rgb_lmn();
    help_diehard_birthdays();
    help_diehard_operm5();
@@ -116,10 +116,10 @@ void help()
      printf("%s",rgb_test_data.description);
      break;
    case RGB_PERSIST:
-     help_rgb_persist();
+     printf("%s",rgb_persist_data.description);
      break;
    case RGB_BITDIST:
-     help_rgb_bitdist();
+     printf("%s",rgb_bitdist_data.description);
      break;
    case RGB_LMN:
      help_rgb_lmn();

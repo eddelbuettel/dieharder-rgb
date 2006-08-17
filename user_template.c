@@ -130,7 +130,7 @@ double user_template()
  /*
   * Test Results, standard form.
   */
- test_footer(dtest,pks,ks_pvalue,"Lagged Sum Test");
+ test_footer(dtest,pks,ks_pvalue);
 
  /*
   * Put back tsamples

@@ -54,6 +54,8 @@ SOURCE = $(PROGRAM:=.c)
 #========================================================================
 TESTS = \
     run_rgb_timing.c \
+    run_rgb_persist.c \
+    run_rgb_bitdist.c \
 
 
 SOURCES = \

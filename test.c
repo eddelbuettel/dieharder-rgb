@@ -49,7 +49,7 @@ void test_header(Dtest *dtest)
  * Write a standard test footer.  Arguments include the test
  * variables, the test pvalue, the ks_pvalues, and a test description.
  */
-void test_footer(Dtest *dtest,double pvalue,double *pvalues,char *desc)
+void test_footer(Dtest *dtest,double pvalue,double *pvalues)
 {
 
  /*
@@ -65,7 +65,7 @@ void test_footer(Dtest *dtest,double pvalue,double *pvalues,char *desc)
  }
 
  printf("#                          Results\n");
- printf("# Kuiper KS: p = %8.6f for %s\n",pvalue,desc);
+ printf("# Kuiper KS: p = %8.6f for %s\n",pvalue,dtest->name);
  printf("# Assessment:\n");
  /* Work through some ranges here */
  if(pvalue < 0.0001){

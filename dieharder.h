@@ -176,5 +176,5 @@
  int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
  
  void test_header(Dtest *dtest);
- void test_footer(Dtest *dtest, double pvalue, double *pvalues, char *desc);
+ void test_footer(Dtest *dtest, double pvalue, double *pvalues);
 
