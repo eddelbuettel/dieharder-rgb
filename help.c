@@ -18,7 +18,7 @@ void help()
   * "#" so it is easy to filter out of standard test results output.
   */
  if(all==YES){
-   help_rgb_timing();
+   printf("%s",rgb_test_data.description);
    help_rgb_persist();
    help_rgb_bitdist();
    help_rgb_lmn();
@@ -113,7 +113,7 @@ void help()
  }
  switch(rgb){
    case RGB_TIMING:
-     help_rgb_timing();
+     printf("%s",rgb_test_data.description);
      break;
    case RGB_PERSIST:
      help_rgb_persist();

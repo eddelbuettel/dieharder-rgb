@@ -43,7 +43,21 @@ RELEASE=1
 # and other modules.
 #========================================================================
 SOURCE = $(PROGRAM:=.c)
-SOURCES = $(SOURCE) $(TSOURCES) \
+
+
+#========================================================================
+# Test encapsulations for display.  Separating the tests themselves into
+# library calls requires that each test be encapsulated in a call that
+# runs the test from the library and then recovers and displays the
+# results.  This encapsulation will likely continue (with suitable
+# callbacks) even in GUI versions of dieharder.
+#========================================================================
+TESTS = \
+    run_rgb_timing.c \
+
+
+SOURCES = \
+    $(SOURCE) \
     add_my_types.c \
     empty_random.c \
     list_rand.c \
@@ -56,6 +70,7 @@ SOURCES = $(SOURCE) $(TSOURCES) \
     test.c \
     work.c \
     user_template.c \
+    $(TESTS) \
 
 INCLUDE = $(PROGRAM:=.h)
 INCLUDES = $(INCLUDE) $(TINCLUDES)
@@ -110,18 +125,20 @@ RPM_TOPDIR=$(HOME)/Src/rpm_tree
 # C Compiler
 CC = gcc
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 $(DEFINES) -I ./include
+CFLAGS = -O3 $(DEFINES) -I libdieharder/include
 # Or use the following for profiling as well as debugging.
 # CFLAGS = -O3 -ansi -g -p $(DEFINES)
 # Linker flags
-LDFLAGS = -L lib/dieharder
+LDFLAGS = -L libdieharder
 # Libraries (I always include math library)
-LIBS = lib/dieharder/libdieharder.a -lgsl -lgslcblas -lm
+LIBS = -ldieharder -lgsl -lgslcblas -lm
 
 #========================================================================
 # Define standard sources and targets.
 #========================================================================
-OBJECTS = $(SOURCES:.c=.o)
+OBJECTS = \
+  $(SOURCES:.c=.o)\
+
 # OBJECTS2 = $(SOURCES2:.c=.o)
 TAR = $(DIR).tar
 ABS = $(DIR).abs
@@ -143,7 +160,7 @@ all: $(PROGRAM)
 $(RPM): tgz rpm
 $(TGZ): tgz
 
-$(PROGRAM): $(OBJECTS) $(INCLUDES)
+$(PROGRAM): $(OBJECTS) $(INCLUDES) libdieharder/libdieharder.a
 	make library
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
 
@@ -153,9 +170,6 @@ $(PROGRAM): $(OBJECTS) $(INCLUDES)
 library:
 	(cd libdieharder; \
 	make -f Makefile; \
-	cp libdieharder.a ../lib/dieharder; \
-	cp libdieharder.so.* ../lib/dieharder; \
-	cp *.h ../include/dieharder; \
 	cd ..)
 
 tar:	$(SOURCES) $(SCSOURCES)

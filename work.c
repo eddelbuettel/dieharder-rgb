@@ -26,7 +26,7 @@ void work()
  */
 
  if(all == YES){
-   rgb_timing();
+   run_rgb_timing();
    rgb_persist();
    rgb_bitdist();
    diehard_birthdays();
@@ -137,7 +137,7 @@ void work()
 
  switch(rgb){
    case RGB_TIMING:
-     rgb_timing();
+     run_rgb_timing();
      exit(0);
      break;
    case RGB_PERSIST:
