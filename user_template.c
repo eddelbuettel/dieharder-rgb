@@ -129,6 +129,6 @@ void user_template(Test **test,int irun)
 void help_user_template()
 {
 
-  printf("%s",user_template_data.description);
+  printf("%s",user_template_dtest.description);
 
 }
