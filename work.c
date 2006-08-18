@@ -50,7 +50,7 @@ void work()
    marsaglia_tsang_gorilla();
    sts_monobit();
    sts_runs();
-   user_template();
+   run_user_template();
    exit(0);
  }
 
@@ -171,7 +171,7 @@ void work()
 
  switch(user){
    case USER_TEMPLATE:
-     user_template();
+     run_user_template();
      exit(0);
      break;
    default:

@@ -20,14 +20,15 @@ void run_rgb_bitdist()
  /*
   * Declare the results struct.
   */
- Rgb_Bitdist bitdist;
+ Test bitdist_test;
+ double pks;
 
  test_header(&rgb_bitdist_data);
 
  /*
   * Call the actual test that fills in the results struct.
   */
- rgb_bitdist(&bitdist);
+ rgb_bitdist(&bitdist_test);
 
  if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
    printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
@@ -37,10 +38,10 @@ void run_rgb_bitdist()
  /*
   * Test Results, standard form.
   */
- test_footer(&rgb_bitdist_data,pks,ks_pvalue,"RGB Bit Distribution Test");
+ test_footer(&rgb_bitdist_data,bitdist_test.ks_pvalue,bitdist_test.pvalues);
  if(pks < 0.0001){
    printf("# Generator %s FAILS at 0.01%% for %1d-tuplets.  rgb_bitdist terminating.\n",gsl_rng_name(rng),ntuple);
-   return(pks);
+   /* return(pks); */
  }
  printf("#========================================================================\n");
 

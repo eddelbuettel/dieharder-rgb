@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -25,6 +26,10 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <dieharder/libdieharder.h>
+/*
+ * user_template sources are here, not in library
+ */
+#include "user_template.h"
 
 /*
  *========================================================================
@@ -175,6 +180,8 @@
  unsigned int rmax_mask;        /* Mask for valid section of uint */
  int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
  
+ void show_test_header(Dtest *dtest,Test **test);
  void test_header(Dtest *dtest);
+ void show_test_results(Dtest *dtest,Test **test);
  void test_footer(Dtest *dtest, double pvalue, double *pvalues);
 
