@@ -28,7 +28,7 @@ void help()
    help_diehard_rank_6x8();
    help_diehard_bitstream();
    help_diehard_opso();
-   help_diehard_oqso();
+   printf("%s",diehard_oqso_dtest.description);
    printf("%s",diehard_dna_dtest.description);
    help_diehard_count_1s_stream();
    help_diehard_count_1s_byte();
@@ -70,7 +70,7 @@ void help()
      help_diehard_opso();
      break;
    case DIEHARD_OQSO:
-     help_diehard_oqso();
+     printf("%s",diehard_oqso_dtest.description);
      break;
    case DIEHARD_DNA:
      printf("%s",diehard_dna_dtest.description);

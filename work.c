@@ -35,7 +35,7 @@ void work()
    diehard_rank_6x8();
    diehard_bitstream();
    diehard_opso();
-   diehard_oqso();
+   run_diehard_oqso();
    run_diehard_dna();
    diehard_count_1s_stream();
    diehard_count_1s_byte();
@@ -80,7 +80,7 @@ void work()
      exit(0);
      break;
    case DIEHARD_OQSO:
-     diehard_oqso();
+     run_diehard_oqso();
      exit(0);
      break;
    case DIEHARD_DNA:
