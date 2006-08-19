@@ -29,7 +29,7 @@ void work()
    run_rgb_timing();
    run_rgb_persist();
    run_rgb_bitdist();
-   diehard_birthdays();
+   run_diehard_birthdays();
    diehard_operm5();
    diehard_rank_32x32();
    diehard_rank_6x8();
@@ -56,7 +56,7 @@ void work()
 
  switch(diehard){
    case DIEHARD_BDAY:
-     diehard_birthdays();
+     run_diehard_birthdays();
      exit(0);
      break;
    case DIEHARD_OPERM5:

@@ -161,25 +161,8 @@
   * rng global vectors and variables for setup and tests.
   */
  const gsl_rng_type **types;    /* where all the rng types go */
- gsl_rng *rng;               /* global gsl random number generator */
- unsigned int *rand_int;        /* vector of "random" uints */
- unsigned int **rand_mtx;       /* matrix of "random" uints */
- double *rand_dbl;              /* vector of "random" uniform deviates */
+ gsl_rng *rng;                  /* global gsl random number generator */
 
- /*
-  * All required for GSL Singular Value Decomposition (to obtain
-  * the rank of the random matrix for diehard rank tests).
-  */
- gsl_matrix *A,*V;
- gsl_vector *S,*svdwork;
-
- unsigned int seed;             /* rng seed of run (?) */
- unsigned int random_max;       /* maximum rng returned by generator */
- unsigned int rmax;             /* scratch space for random_max manipulation */
- unsigned int rmax_bits;        /* Number of valid bits in rng */
- unsigned int rmax_mask;        /* Mask for valid section of uint */
- int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
- 
  void show_test_header(Dtest *dtest,Test **test);
  void test_header(Dtest *dtest);
  void show_test_results(Dtest *dtest,Test **test);

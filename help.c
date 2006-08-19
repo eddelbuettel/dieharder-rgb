@@ -22,7 +22,7 @@ void help()
    printf("%s",rgb_persist_data.description);
    printf("%s",rgb_bitdist_data.description);
    help_rgb_lmn();
-   help_diehard_birthdays();
+   printf("%s",diehard_birthdays_dtest.description);
    help_diehard_operm5();
    help_diehard_rank_32x32();
    help_diehard_rank_6x8();
@@ -52,7 +52,7 @@ void help()
   */
  switch(diehard){
    case DIEHARD_BDAY:
-     help_diehard_birthdays();
+     printf("%s",diehard_birthdays_dtest.description);
      break;
    case DIEHARD_OPERM5:
      help_diehard_operm5();
