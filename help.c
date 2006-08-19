@@ -29,7 +29,7 @@ void help()
    help_diehard_bitstream();
    help_diehard_opso();
    help_diehard_oqso();
-   help_diehard_dna();
+   printf("%s",diehard_dna_dtest.description);
    help_diehard_count_1s_stream();
    help_diehard_count_1s_byte();
    help_diehard_parking_lot();
@@ -73,7 +73,7 @@ void help()
      help_diehard_oqso();
      break;
    case DIEHARD_DNA:
-     help_diehard_dna();
+     printf("%s",diehard_dna_dtest.description);
      break;
    case DIEHARD_COUNT_1S_STREAM:
      help_diehard_count_1s_stream();
@@ -145,7 +145,7 @@ void help()
   */
  switch(user){
    case USER_TEMPLATE:
-     help_user_template();
+     printf("%s",user_template_dtest.description);
      break;
    default:
      break;

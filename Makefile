@@ -56,6 +56,7 @@ TESTS = \
     run_rgb_timing.c \
     run_rgb_persist.c \
     run_rgb_bitdist.c \
+    run_diehard_dna.c \
     run_user_template.c \
 
 SOURCES = \

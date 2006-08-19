@@ -36,7 +36,7 @@ void work()
    diehard_bitstream();
    diehard_opso();
    diehard_oqso();
-   diehard_dna();
+   run_diehard_dna();
    diehard_count_1s_stream();
    diehard_count_1s_byte();
    diehard_parking_lot();
@@ -84,7 +84,7 @@ void work()
      exit(0);
      break;
    case DIEHARD_DNA:
-     diehard_dna();
+     run_diehard_dna();
      exit(0);
      break;
    case DIEHARD_COUNT_1S_STREAM:
