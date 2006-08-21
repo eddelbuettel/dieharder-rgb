@@ -23,7 +23,7 @@ void help()
    printf("%s",rgb_bitdist_data.description);
    help_rgb_lmn();
    printf("%s",diehard_birthdays_dtest.description);
-   help_diehard_operm5();
+   printf("%s",diehard_operm5_dtest.description);
    help_diehard_rank_32x32();
    help_diehard_rank_6x8();
    help_diehard_bitstream();
@@ -55,7 +55,7 @@ void help()
      printf("%s",diehard_birthdays_dtest.description);
      break;
    case DIEHARD_OPERM5:
-     help_diehard_operm5();
+     printf("%s",diehard_operm5_dtest.description);
      break;
    case DIEHARD_RANK_32x32:
      help_diehard_rank_32x32();
@@ -231,12 +231,12 @@ Usage:\n\
 
 }
 
-/*
+/* Cruft
  * This is a standard way of putting out a test description
- */
 void help_test(Dtest *dtest)
 {
 
  printf("%s",dtest->description);
  
 }
+ */

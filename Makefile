@@ -57,6 +57,8 @@ TESTS = \
     run_rgb_persist.c \
     run_rgb_bitdist.c \
     run_diehard_birthdays.c \
+    run_diehard_operm5.c \
+    run_diehard_rank_32x32.c \
     run_diehard_oqso.c \
     run_diehard_dna.c \
     run_user_template.c \

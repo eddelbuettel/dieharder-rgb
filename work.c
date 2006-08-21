@@ -30,8 +30,8 @@ void work()
    run_rgb_persist();
    run_rgb_bitdist();
    run_diehard_birthdays();
-   diehard_operm5();
-   diehard_rank_32x32();
+   run_diehard_operm5();
+   run_diehard_rank_32x32();
    diehard_rank_6x8();
    diehard_bitstream();
    diehard_opso();
@@ -60,11 +60,11 @@ void work()
      exit(0);
      break;
    case DIEHARD_OPERM5:
-     diehard_operm5();
+     run_diehard_operm5();
      exit(0);
      break;
    case DIEHARD_RANK_32x32:
-     diehard_rank_32x32();
+     run_diehard_rank_32x32();
      exit(0);
      break;
    case DIEHARD_RANK_6x8:
