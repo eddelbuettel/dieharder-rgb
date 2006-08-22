@@ -60,8 +60,19 @@ TESTS = \
     run_diehard_operm5.c \
     run_diehard_rank_32x32.c \
     run_diehard_rank_6x8.c \
+    run_diehard_bitstream.c \
+    run_diehard_opso.c \
     run_diehard_oqso.c \
     run_diehard_dna.c \
+    run_diehard_count_1s_stream.c \
+    run_diehard_count_1s_byte.c \
+    run_diehard_parking_lot.c \
+    run_diehard_2dsphere.c \
+    run_diehard_3dsphere.c \
+    run_diehard_squeeze.c \
+    run_diehard_sums.c \
+    run_diehard_runs.c \
+    run_diehard_craps.c \
     run_user_template.c \
 
 SOURCES = \

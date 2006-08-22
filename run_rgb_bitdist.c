@@ -8,7 +8,7 @@
 
 /*
  *========================================================================
- *  run_rgb_timing()
+ *  run_rgb_bitdist()
  *========================================================================
  */
 
@@ -24,6 +24,10 @@ void run_rgb_bitdist()
  double pks;
 
  test_header(&rgb_bitdist_data);
+ printf("\n\
+# rgb_bitdist is on hold pending the completion of the rest\n\
+# of the library port.  Exiting.\n");
+ return;
 
  /*
   * Call the actual test that fills in the results struct.

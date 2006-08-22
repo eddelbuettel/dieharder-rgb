@@ -33,19 +33,19 @@ void work()
    run_diehard_operm5();
    run_diehard_rank_32x32();
    run_diehard_rank_6x8();
-   diehard_bitstream();
-   diehard_opso();
+   run_diehard_bitstream();
+   run_diehard_opso();
    run_diehard_oqso();
    run_diehard_dna();
-   diehard_count_1s_stream();
-   diehard_count_1s_byte();
-   diehard_parking_lot();
-   diehard_2dsphere();
-   diehard_3dsphere();
-   diehard_squeeze();
-   diehard_sums();
-   diehard_runs();
-   diehard_craps();
+   run_diehard_count_1s_stream();
+   run_diehard_count_1s_byte();
+   run_diehard_parking_lot();
+   run_diehard_2dsphere();
+   run_diehard_3dsphere();
+   run_diehard_squeeze();
+   run_diehard_sums();
+   run_diehard_runs();
+   run_diehard_craps();
    marsaglia_tsang_gcd();
    marsaglia_tsang_gorilla();
    sts_monobit();
@@ -72,11 +72,11 @@ void work()
      exit(0);
      break;
    case DIEHARD_BITSTREAM:
-     diehard_bitstream();
+     run_diehard_bitstream();
      exit(0);
      break;
    case DIEHARD_OPSO:
-     diehard_opso();
+     run_diehard_opso();
      exit(0);
      break;
    case DIEHARD_OQSO:
@@ -88,39 +88,39 @@ void work()
      exit(0);
      break;
    case DIEHARD_COUNT_1S_STREAM:
-     diehard_count_1s_stream();
+     run_diehard_count_1s_stream();
      exit(0);
      break;
    case DIEHARD_COUNT_1S_BYTE:
-     diehard_count_1s_byte();
+     run_diehard_count_1s_byte();
      exit(0);
      break;
    case DIEHARD_PARKING_LOT:
-     diehard_parking_lot();
+     run_diehard_parking_lot();
      exit(0);
      break;
    case DIEHARD_2DSPHERE:
-     diehard_2dsphere();
+     run_diehard_2dsphere();
      exit(0);
      break;
    case DIEHARD_3DSPHERE:
-     diehard_3dsphere();
+     run_diehard_3dsphere();
      exit(0);
      break;
    case DIEHARD_SQUEEZE:
-     diehard_squeeze();
+     run_diehard_squeeze();
      exit(0);
      break;
    case DIEHARD_SUMS:
-     diehard_sums();
+     run_diehard_sums();
      exit(0);
      break;
    case DIEHARD_RUNS:
-     diehard_runs();
+     run_diehard_runs();
      exit(0);
      break;
    case DIEHARD_CRAPS:
-     diehard_craps();
+     run_diehard_craps();
      exit(0);
      break;
    case MARSAGLIA_TSANG_GCD:

@@ -26,19 +26,12 @@ void help()
    printf("%s",diehard_operm5_dtest.description);
    printf("%s",diehard_rank_32x32_dtest.description);
    printf("%s",diehard_rank_6x8_dtest.description);
-   help_diehard_bitstream();
-   help_diehard_opso();
+   printf("%s",diehard_bitstream_dtest.description);
+   printf("%s",diehard_opso_dtest.description);
    printf("%s",diehard_oqso_dtest.description);
    printf("%s",diehard_dna_dtest.description);
-   help_diehard_count_1s_stream();
-   help_diehard_count_1s_byte();
-   help_diehard_parking_lot();
-   help_diehard_2dsphere();
-   help_diehard_3dsphere();
-   help_diehard_squeeze();
-   help_diehard_sums();
-   help_diehard_runs();
-   help_diehard_craps();
+   printf("%s",diehard_count_1s_stream_dtest.description);
+   printf("%s",diehard_count_1s_byte_dtest.description);
    help_marsaglia_tsang_gcd();
    help_marsaglia_tsang_gorilla();
    help_sts_monobit();
@@ -64,10 +57,10 @@ void help()
      printf("%s",diehard_rank_6x8_dtest.description);
      break;
    case DIEHARD_BITSTREAM:
-     help_diehard_bitstream();
+     printf("%s",diehard_bitstream_dtest.description);
      break;
    case DIEHARD_OPSO:
-     help_diehard_opso();
+     printf("%s",diehard_opso_dtest.description);
      break;
    case DIEHARD_OQSO:
      printf("%s",diehard_oqso_dtest.description);
@@ -76,31 +69,31 @@ void help()
      printf("%s",diehard_dna_dtest.description);
      break;
    case DIEHARD_COUNT_1S_STREAM:
-     help_diehard_count_1s_stream();
+     printf("%s",diehard_count_1s_stream_dtest.description);
      break;
    case DIEHARD_COUNT_1S_BYTE:
-     help_diehard_count_1s_byte();
+     printf("%s",diehard_count_1s_byte_dtest.description);
      break;
    case DIEHARD_PARKING_LOT:
-     help_diehard_parking_lot();
+     printf("%s",diehard_parking_lot_dtest.description);
      break;
    case DIEHARD_2DSPHERE:
-     help_diehard_2dsphere();
+     printf("%s",diehard_2dsphere_dtest.description);
      break;
    case DIEHARD_3DSPHERE:
-     help_diehard_3dsphere();
+     printf("%s",diehard_3dsphere_dtest.description);
      break;
    case DIEHARD_SQUEEZE:
-     help_diehard_squeeze();
+     printf("%s",diehard_squeeze_dtest.description);
      break;
    case DIEHARD_SUMS:
-     help_diehard_sums();
+     printf("%s",diehard_sums_dtest.description);
      break;
    case DIEHARD_RUNS:
-     help_diehard_runs();
+     printf("%s",diehard_runs_dtest.description);
      break;
    case DIEHARD_CRAPS:
-     help_diehard_craps();
+     printf("%s",diehard_craps_dtest.description);
      break;
    case MARSAGLIA_TSANG_GCD:
      help_marsaglia_tsang_gcd();
