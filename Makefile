@@ -73,6 +73,7 @@ TESTS = \
     run_diehard_sums.c \
     run_diehard_runs.c \
     run_diehard_craps.c \
+    run_marsaglia_tsang_gcd.c \
     run_user_template.c \
 
 SOURCES = \

@@ -18,7 +18,7 @@ void help()
   * "#" so it is easy to filter out of standard test results output.
   */
  if(all==YES){
-   printf("%s",rgb_test_data.description);
+   printf("%s",rgb_timing_dtest.description);
    printf("%s",rgb_persist_data.description);
    printf("%s",rgb_bitdist_data.description);
    help_rgb_lmn();
@@ -32,7 +32,14 @@ void help()
    printf("%s",diehard_dna_dtest.description);
    printf("%s",diehard_count_1s_stream_dtest.description);
    printf("%s",diehard_count_1s_byte_dtest.description);
-   help_marsaglia_tsang_gcd();
+   printf("%s",diehard_parking_lot_dtest.description);
+   printf("%s",diehard_2dsphere_dtest.description);
+   printf("%s",diehard_3dsphere_dtest.description);
+   printf("%s",diehard_squeeze_dtest.description);
+   printf("%s",diehard_sums_dtest.description);
+   printf("%s",diehard_runs_dtest.description);
+   printf("%s",diehard_craps_dtest.description);
+   printf("%s",marsaglia_tsang_gcd_dtest.description);
    help_marsaglia_tsang_gorilla();
    help_sts_monobit();
    help_sts_runs();
@@ -96,7 +103,7 @@ void help()
      printf("%s",diehard_craps_dtest.description);
      break;
    case MARSAGLIA_TSANG_GCD:
-     help_marsaglia_tsang_gcd();
+     printf("%s",marsaglia_tsang_gcd_dtest.description);
      break;
    case MARSAGLIA_TSANG_GORILLA:
      help_marsaglia_tsang_gorilla();
@@ -106,7 +113,7 @@ void help()
  }
  switch(rgb){
    case RGB_TIMING:
-     printf("%s",rgb_test_data.description);
+     printf("%s",rgb_timing_dtest.description);
      break;
    case RGB_PERSIST:
      printf("%s",rgb_persist_data.description);

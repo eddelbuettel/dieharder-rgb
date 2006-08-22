@@ -22,7 +22,7 @@ void run_rgb_timing()
   */
  Rgb_Timing timing;
 
- printf("%s",rgb_test_data.description);
+ printf("%s",rgb_timing_dtest.description);
 
  /*
   * Call the actual test that fills in the results struct.

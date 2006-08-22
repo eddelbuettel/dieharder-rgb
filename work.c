@@ -46,7 +46,7 @@ void work()
    run_diehard_sums();
    run_diehard_runs();
    run_diehard_craps();
-   marsaglia_tsang_gcd();
+   run_marsaglia_tsang_gcd();
    marsaglia_tsang_gorilla();
    sts_monobit();
    sts_runs();
@@ -124,7 +124,7 @@ void work()
      exit(0);
      break;
    case MARSAGLIA_TSANG_GCD:
-     marsaglia_tsang_gcd();
+     run_marsaglia_tsang_gcd();
      exit(0);
      break;
    case MARSAGLIA_TSANG_GORILLA:
