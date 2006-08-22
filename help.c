@@ -24,8 +24,8 @@ void help()
    help_rgb_lmn();
    printf("%s",diehard_birthdays_dtest.description);
    printf("%s",diehard_operm5_dtest.description);
-   help_diehard_rank_32x32();
-   help_diehard_rank_6x8();
+   printf("%s",diehard_rank_32x32_dtest.description);
+   printf("%s",diehard_rank_6x8_dtest.description);
    help_diehard_bitstream();
    help_diehard_opso();
    printf("%s",diehard_oqso_dtest.description);
@@ -58,10 +58,10 @@ void help()
      printf("%s",diehard_operm5_dtest.description);
      break;
    case DIEHARD_RANK_32x32:
-     help_diehard_rank_32x32();
+     printf("%s",diehard_rank_32x32_dtest.description);
      break;
    case DIEHARD_RANK_6x8:
-     help_diehard_rank_6x8();
+     printf("%s",diehard_rank_6x8_dtest.description);
      break;
    case DIEHARD_BITSTREAM:
      help_diehard_bitstream();

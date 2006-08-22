@@ -32,7 +32,7 @@ void work()
    run_diehard_birthdays();
    run_diehard_operm5();
    run_diehard_rank_32x32();
-   diehard_rank_6x8();
+   run_diehard_rank_6x8();
    diehard_bitstream();
    diehard_opso();
    run_diehard_oqso();
@@ -68,7 +68,7 @@ void work()
      exit(0);
      break;
    case DIEHARD_RANK_6x8:
-     diehard_rank_6x8();
+     run_diehard_rank_6x8();
      exit(0);
      break;
    case DIEHARD_BITSTREAM:

@@ -59,6 +59,7 @@ TESTS = \
     run_diehard_birthdays.c \
     run_diehard_operm5.c \
     run_diehard_rank_32x32.c \
+    run_diehard_rank_6x8.c \
     run_diehard_oqso.c \
     run_diehard_dna.c \
     run_user_template.c \
