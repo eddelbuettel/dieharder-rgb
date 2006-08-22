@@ -164,7 +164,9 @@
  gsl_rng *rng;                  /* global gsl random number generator */
 
  void show_test_header(Dtest *dtest,Test **test);
+ void show_test_header_debug(Dtest *dtest,Test **test);
  void test_header(Dtest *dtest);
  void show_test_results(Dtest *dtest,Test **test);
+ void show_test_results_debut(Dtest *dtest,Test **test);
  void test_footer(Dtest *dtest, double pvalue, double *pvalues);
 
