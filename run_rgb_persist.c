@@ -21,15 +21,35 @@ void run_rgb_persist()
   * Declare the results struct.
   */
  Rgb_Persist persist;
+ Test **rgb_persist_test;
 
- test_header(&rgb_persist_data);
- printf("# Samples per test run = %u, tsamples ignored\n",256);
- printf("# Test run %u times to cumulate unchanged bit mask\n",psamples);
+ /*
+  * First we create the test (to set some values displayed in test header
+  * correctly).
+  */
+ rgb_persist_test = create_test(&rgb_persist_dtest,tsamples,psamples,&rgb_persist);
+
+ /*
+  * Set any GLOBAL data used by the test.
+  *
+  * We arbitrarily choose 256 successive random numbers as enough.
+  * This should be plenty -- the probability of any bit slot not
+  * changing by CHANCE in 256 tries is 2^-256 or almost 10^-26,
+  * so even with 32 bit slots, repeatedly, we aren't horribly likely
+  * to see it in our lifetime unless we run this test continuously for
+  * months at a time (yes, a dumb idea).
+  */
+ rgb_persist_rand_uint = (unsigned int*)malloc(256 * sizeof(unsigned int));
+
+ /*
+  * Show the standard test header for this test.
+  */
+ show_test_header(&rgb_persist_dtest,rgb_persist_test);
 
  /*
   * Call the actual test that fills in the results struct.
   */
- rgb_persist(&persist);
+ rgb_persist(rgb_persist_test,&persist);
 
  if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
    printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
@@ -51,5 +71,7 @@ void run_rgb_persist()
    printf("# rgb_persist test PASSED (no bits repeat)\n");
  }
  printf("#==================================================================\n");
+
+ free(rgb_persist_rand_uint);
 
 }

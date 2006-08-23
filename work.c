@@ -47,9 +47,9 @@ void work()
    run_diehard_runs();
    run_diehard_craps();
    run_marsaglia_tsang_gcd();
-   marsaglia_tsang_gorilla();
-   sts_monobit();
-   sts_runs();
+   /* marsaglia_tsang_gorilla(); */
+   run_sts_monobit();
+   run_sts_runs();
    run_user_template();
    exit(0);
  }
@@ -128,7 +128,7 @@ void work()
      exit(0);
      break;
    case MARSAGLIA_TSANG_GORILLA:
-     marsaglia_tsang_gorilla();
+     /* marsaglia_tsang_gorilla(); */
      exit(0);
      break;
    default:
@@ -148,21 +148,21 @@ void work()
      run_rgb_bitdist();
      exit(0);
      break;
-   case RGB_LMN:
+/*   case RGB_LMN:
      rgb_lmn();
      exit(0);
-     break;
+     break; */
    default:
      break;
  }
 
  switch(sts){
    case STS_MONOBIT:
-     sts_monobit();
+     run_sts_monobit();
      exit(0);
      break;
    case STS_RUNS:
-     sts_runs();
+     run_sts_runs();
      exit(0);
      break;
    default:

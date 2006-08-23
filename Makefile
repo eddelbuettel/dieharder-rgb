@@ -74,6 +74,8 @@ TESTS = \
     run_diehard_runs.c \
     run_diehard_craps.c \
     run_marsaglia_tsang_gcd.c \
+    run_sts_monobit.c \
+    run_sts_runs.c \
     run_user_template.c \
 
 SOURCES = \

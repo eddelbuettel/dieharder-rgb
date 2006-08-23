@@ -19,9 +19,8 @@ void help()
   */
  if(all==YES){
    printf("%s",rgb_timing_dtest.description);
-   printf("%s",rgb_persist_data.description);
+   printf("%s",rgb_persist_dtest.description);
    printf("%s",rgb_bitdist_data.description);
-   help_rgb_lmn();
    printf("%s",diehard_birthdays_dtest.description);
    printf("%s",diehard_operm5_dtest.description);
    printf("%s",diehard_rank_32x32_dtest.description);
@@ -40,9 +39,8 @@ void help()
    printf("%s",diehard_runs_dtest.description);
    printf("%s",diehard_craps_dtest.description);
    printf("%s",marsaglia_tsang_gcd_dtest.description);
-   help_marsaglia_tsang_gorilla();
-   help_sts_monobit();
-   help_sts_runs();
+   printf("%s",sts_monobit_dtest.description);
+   printf("%s",sts_runs_dtest.description);
    help_user_template();
    exit(0);
  }
@@ -106,7 +104,6 @@ void help()
      printf("%s",marsaglia_tsang_gcd_dtest.description);
      break;
    case MARSAGLIA_TSANG_GORILLA:
-     help_marsaglia_tsang_gorilla();
      break;
    default:
      break;
@@ -116,23 +113,22 @@ void help()
      printf("%s",rgb_timing_dtest.description);
      break;
    case RGB_PERSIST:
-     printf("%s",rgb_persist_data.description);
+     printf("%s",rgb_persist_dtest.description);
      break;
    case RGB_BITDIST:
      printf("%s",rgb_bitdist_data.description);
      break;
    case RGB_LMN:
-     help_rgb_lmn();
      break;
    default:
      break;
  }
  switch(sts){
    case STS_MONOBIT:
-     help_sts_monobit();
+     printf("%s",sts_monobit_dtest.description);
      break;
    case STS_RUNS:
-     help_sts_runs();
+     printf("%s",sts_runs_dtest.description);
      break;
    default:
      break;
