@@ -1,0 +1,76 @@
+From ckarney@sarnoff.com Wed Sep 20 17:21:49 2006
+Date: Wed, 20 Sep 2006 17:21:44 -0400
+From: Charles Karney <ckarney@sarnoff.com>
+To: rgb@phy.duke.edu
+Subject: Comments on dieharder concerning minimum and maximum gaps
+
+(1) Comments about Minimum Spacings and 3D-spheres tests in Dieharder
+
+I was playing around with the minimum spacing problems in d dimensions.
+When placing N points in a d-dimensional unit torus, the probability
+that the minimum distance is less than x is
+
+   1 - exp(-V[d] x^d N^2/2)
+
+where V[d] is the volume factor for a d-dimensional sphere
+
+   V[d] = pi^(d/2)/Gamma(d/2+1)
+
+(thus V[3] = 4 pi/3).
+
+This result holds for
+
+   x^d N << 1 (so that N spheres of radius x are "dilute")
+   N >> 1     (to pass into the asymptotic limit)
+
+The proof of this is relatively straightforward (and I'm happy to
+forward it to you), but I haven't seen the result quoted in this form
+before.  Are you familiar with this result?
+
+This allows the magic constants that appear in Marsaglia's description
+of these tests to be replaced by analytic expressions.  In particular
+the constant 0.995 for the minimum distance test becomes
+
+    25/(8 pi) = 0.9947...
+
+Likewise, the 120 pi/3 = 125.66, he gives in the description of the
+3d-spheres test becomes 125 (and similarly the 30 becomes 375/(4 pi) =
+29.84)
+
+This would also let you generalize these tests to vary the dimensions or
+the number of points.  (Of course my results are asymptotic, and its
+possible that Marsaglia's constants are a better approximation for the
+particular N values that he uses.  However, for N = 4000 in the
+3d-spheres test, my result should be closer than his.)
+
+Incidentally, the result for d = 1 can be given exactly (arbitrary N on
+a circle of circumference 1)
+
+   1 - (1 - N x)^(N-1) for x <= 1/N
+
+This can be derived from the problem of covering a circle by arcs.  See
+
+   http://mathworld.wolfram.com/CircleCoveringbyArcs.html
+
+(2) Suggest adding a "maximum gap" test
+
+The circle covering problem also yields an exact result for the maximum
+gap when N points are randomly placed on a circle.  Perhaps this would
+be a good test to add to dieharder.  This has been implemented by Joel
+Heinrich of the Univ. of Pennsylvania.  See:
+
+   http://www-cdf.fnal.gov/publications/cdf6850_badrand.pdf
+
+(3) Regards to Henry Greenside.
+
+Next time you see Henry, please give him and Noel my regards.  We were
+colleagues together at PPPL.
+
+Thanks for your attention...
+-- 
+Charles Karney <ckarney@sarnoff.com>
+Sarnoff Corporation, Princeton, NJ 08543-5300
+
+URL: http://charles.karney.info
+Tel: +1 609 734 2312
+Fax: +1 609 734 2662
