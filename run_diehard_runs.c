@@ -31,7 +31,7 @@ void run_diehard_runs()
  /*
   * Set any GLOBAL data used by the test.
   */
- diehard_runs_rand_int = (uint *)malloc(diehard_runs_test[0]->tsamples*sizeof(uint));
+ diehard_runs_rand_uint = (uint *)malloc(diehard_runs_test[0]->tsamples*sizeof(uint));
    
 
  /*
@@ -67,6 +67,6 @@ void run_diehard_runs()
  /*
   * Free any GLOBAL data used by the test.
   */
- free(diehard_runs_rand_int);
+ free(diehard_runs_rand_uint);
 
 }

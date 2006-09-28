@@ -20,7 +20,7 @@ void help()
  if(all==YES){
    printf("%s",rgb_timing_dtest.description);
    printf("%s",rgb_persist_dtest.description);
-   printf("%s",rgb_bitdist_data.description);
+   printf("%s",rgb_bitdist_dtest.description);
    printf("%s",diehard_birthdays_dtest.description);
    printf("%s",diehard_operm5_dtest.description);
    printf("%s",diehard_rank_32x32_dtest.description);
@@ -116,7 +116,7 @@ void help()
      printf("%s",rgb_persist_dtest.description);
      break;
    case RGB_BITDIST:
-     printf("%s",rgb_bitdist_data.description);
+     printf("%s",rgb_bitdist_dtest.description);
      break;
    case RGB_LMN:
      break;
