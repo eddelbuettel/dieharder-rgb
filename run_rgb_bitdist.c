@@ -23,19 +23,25 @@ void run_rgb_bitdist()
  Test **rgb_bitdist_test;
 
  /*
-  * First we create the test (to set some values displayed in test header
-  * correctly).
-  */
- rgb_bitdist_test = create_test(&rgb_bitdist_dtest,tsamples,psamples,&rgb_bitdist);
-
- /*
   * Set any GLOBAL data used by the test.  rgb_ntuple is the value
   * assigned by -n ntuple (max) on the command line, or default 0 which
   * means -- do all ntuples in range 1 to 8.  rgb_bitdist_dtest.nkps is
   * the number of pvalues to be returned, which is just ntuple.
+  *
+  * Note that we have to do this BEFORE creating the test because
+  * dtest.nkps depends on the value of ntuple!
   */
- rgb_ntuple = ntuple;
- if(ntuple) rgb_bitdist_dtest.nkps = ntuple;
+ if(ntuple){
+   rgb_bitdist_ntuple = ntuple;
+ } else {
+  /* Eventually wrap the whole sequence below in a loop for the default */
+ }
+
+ /*
+  * First we create the test (to set some values displayed in test header
+  * correctly).
+  */
+ rgb_bitdist_test = create_test(&rgb_bitdist_dtest,tsamples,psamples,&rgb_bitdist);
 
  /*
   * Show the standard test header for this test.
