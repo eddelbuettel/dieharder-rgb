@@ -275,8 +275,8 @@ svn:
 sync:
 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
 	svn commit .		# Do the commit
-	rsync -avz --delete $(SVNPATH) login.phy.duke.edu:/home/einstein/prof/rgb/Src/svn-tree
 	rsync -avz --delete $(SVNPATH) 209.42.212.5:$(SVNTREE)
+	rsync -avz --delete $(SVNPATH) login.phy.duke.edu:/home/einstein/prof/rgb/Src/svn-tree
 	cat $(SVNTIME) | \
 	sed -e '/^New Checkin/d' >> $(SVNTIME).tmp
 	mv $(SVNTIME).tmp $(SVNTIME)
