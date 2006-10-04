@@ -1,0 +1,348 @@
+#!/usr/bin/perl
+#========================================================================
+#
+# $Id: project.pl,v 1.1.1.1 2001/02/15 14:26:26 rgb Exp $
+#
+# See accompanying copyright and accompanying file COPYING
+#
+#========================================================================
+
+
+
+ use FileHandle;
+ use Getopt::Std;	# Single character options are plenty.
+
+#========================================================================
+# We parse the CL with getopt standard (single character)
+#========================================================================
+# Option list
+ getopts('hv:');
+ $verbose = 0;
+# Assignments
+ if($opt_h) {Usage();exit;}
+ if($opt_v) {$verbose = $opt_v;}
+
+# If leftovers, punt with Usage()
+ $ARGC = @ARGV;
+ if($ARGC) {
+   Usage("Incorrect number or type of arguments");
+   exit;
+ }
+
+ if($verbose){
+   print "Running pofk\n";
+ }
+
+#   
+ open(P1,"pofk.gfsr4.tbl") || die "Sorry, couldn't open pofk.gfsr4.tbl";
+ open(P2,"pofk.mt19937_1999.tbl") || die "Sorry, couldn't open pofk.mt19937_1999.tbl";
+ open(P3,"pofk.ranldx2.tbl") || die "Sorry, couldn't open pofk.ranldx2.tbl";
+ open(P4,"pofk.taus2.tbl") || die "Sorry, couldn't open pofk.taus2.tbl";
+ open(OUT,">pofk.tbl") || die "Sorry, I couldn't open pofk.tbl\n";
+
+ $cnt = 0;
+ for($i=0;$i<41;$i++){
+   $kprob[$i] = 0;
+   $kprob2[$i] = 0;
+ }
+ printf OUT "double kprob[41] = {\n";
+ $cntp1 = 0;
+ while(<P1>){
+   chop;
+   if(!/^#/){
+     if(/^double/){
+       $cnt++;
+       $cntp1++;
+       # Line 1 of kprob[]
+       $_ = <P1>;   # read the NEXT line
+       chop;        # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i] += $field[$i];
+         $kprob2[$i] += $field[$i]*$field[$i];
+       }
+       # Line 2 of kprob[]
+       $_ = <P1>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+6] += $field[$i];
+         $kprob2[$i+6] += $field[$i]*$field[$i];
+       }
+       # Line 3 of kprob[]
+       $_ = <P1>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+12] += $field[$i];
+         $kprob2[$i+12] += $field[$i]*$field[$i];
+       }
+       # Line 4 of kprob[]
+       $_ = <P1>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+18] += $field[$i];
+         $kprob2[$i+18] += $field[$i]*$field[$i];
+       }
+       # Line 5 of kprob[]
+       $_ = <P1>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+24] += $field[$i];
+         $kprob2[$i+24] += $field[$i]*$field[$i];
+       }
+       # Line 6 of kprob[]
+       $_ = <P1>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+30] += $field[$i];
+         $kprob2[$i+30] += $field[$i]*$field[$i];
+       }
+       # Line 7 of kprob[]
+       $_ = <P1>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<5;$i++){
+         $kprob[$i+36] += $field[$i];
+         $kprob2[$i+36] += $field[$i]*$field[$i];
+       }
+     }
+   }
+ }
+ open(OP1,">pofk.gfsr4.avg.tbl") || die "Sorry, I couldn't open pofk.tbl\n";
+ printf OP1 ("Results for %d samples\n",$cnt);
+ for($i=0;$i<40;$i++){
+    $kprob_p1[$i] = $kprob[$i]/$cntp1;
+    $kprob2_p1[$i] = $kprob2[$i]/$cntp1;
+    $sigmak_p1[$i] = sqrt(($kprob2_p1[$i] - $kprob_p1[$i]*$kprob_p1[$i])/($cntp1-1));
+    printf OP1 ("%2d: %14.8e  %14.8e\n",$i,$kprob_p1[$i],$sigmak_p1[$i]);
+ }
+ $kprob_p1[40] = $kprob[40]/$cnt;
+ $kprob2_p1[40] = $kprob2[40]/$cnt;
+ $sigmak_p1[40] = sqrt(($kprob2_p1[40] - $kprob_p1[40]*$kprob_p1[40])/($cntp1-1));
+ printf OP1 ("%2d: %14.8e  %14.8e\n",$i,$kprob_p1[40],$sigmak_p1[40]);
+ close(OP1);
+
+ while(<P2>){
+   chop;
+   if(!/^#/){
+     if(/^double/){
+       $cnt++;
+       # Line 1 of kprob[]
+       $_ = <P2>;   # read the NEXT line
+       chop;        # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i] += $field[$i];
+         $kprob2[$i] += $field[$i]*$field[$i];
+       }
+       # Line 2 of kprob[]
+       $_ = <P2>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+6] += $field[$i];
+         $kprob2[$i+6] += $field[$i]*$field[$i];
+       }
+       # Line 3 of kprob[]
+       $_ = <P2>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+12] += $field[$i];
+         $kprob2[$i+12] += $field[$i]*$field[$i];
+       }
+       # Line 4 of kprob[]
+       $_ = <P2>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+18] += $field[$i];
+         $kprob2[$i+18] += $field[$i]*$field[$i];
+       }
+       # Line 5 of kprob[]
+       $_ = <P2>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+24] += $field[$i];
+         $kprob2[$i+24] += $field[$i]*$field[$i];
+       }
+       # Line 6 of kprob[]
+       $_ = <P2>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+30] += $field[$i];
+         $kprob2[$i+30] += $field[$i]*$field[$i];
+       }
+       # Line 7 of kprob[]
+       $_ = <P2>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<5;$i++){
+         $kprob[$i+36] += $field[$i];
+         $kprob2[$i+36] += $field[$i]*$field[$i];
+       }
+     }
+   }
+ }
+ while(<P3>){
+   chop;
+   if(!/^#/){
+     if(/^double/){
+       $cnt++;
+       # Line 1 of kprob[]
+       $_ = <P3>;   # read the NEXT line
+       chop;        # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i] += $field[$i];
+         $kprob2[$i] += $field[$i]*$field[$i];
+       }
+       # Line 2 of kprob[]
+       $_ = <P3>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+6] += $field[$i];
+         $kprob2[$i+6] += $field[$i]*$field[$i];
+       }
+       # Line 3 of kprob[]
+       $_ = <P3>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+12] += $field[$i];
+         $kprob2[$i+12] += $field[$i]*$field[$i];
+       }
+       # Line 4 of kprob[]
+       $_ = <P3>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+18] += $field[$i];
+         $kprob2[$i+18] += $field[$i]*$field[$i];
+       }
+       # Line 5 of kprob[]
+       $_ = <P3>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+24] += $field[$i];
+         $kprob2[$i+24] += $field[$i]*$field[$i];
+       }
+       # Line 6 of kprob[]
+       $_ = <P3>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+30] += $field[$i];
+         $kprob2[$i+30] += $field[$i]*$field[$i];
+       }
+       # Line 7 of kprob[]
+       $_ = <P3>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<5;$i++){
+         $kprob[$i+36] += $field[$i];
+         $kprob2[$i+36] += $field[$i]*$field[$i];
+       }
+     }
+   }
+ }
+ while(<P4>){
+   chop;
+   if(!/^#/){
+     if(/^double/){
+       $cnt++;
+       # Line 1 of kprob[]
+       $_ = <P4>;   # read the NEXT line
+       chop;        # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i] += $field[$i];
+         $kprob2[$i] += $field[$i]*$field[$i];
+       }
+       # Line 2 of kprob[]
+       $_ = <P4>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+6] += $field[$i];
+         $kprob2[$i+6] += $field[$i]*$field[$i];
+       }
+       # Line 3 of kprob[]
+       $_ = <P4>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+12] += $field[$i];
+         $kprob2[$i+12] += $field[$i]*$field[$i];
+       }
+       # Line 4 of kprob[]
+       $_ = <P4>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+18] += $field[$i];
+         $kprob2[$i+18] += $field[$i]*$field[$i];
+       }
+       # Line 5 of kprob[]
+       $_ = <P4>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+24] += $field[$i];
+         $kprob2[$i+24] += $field[$i]*$field[$i];
+       }
+       # Line 6 of kprob[]
+       $_ = <P4>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<6;$i++){
+         $kprob[$i+30] += $field[$i];
+         $kprob2[$i+30] += $field[$i]*$field[$i];
+       }
+       # Line 7 of kprob[]
+       $_ = <P4>;   # read the NEXT line
+       chop;   # chop the lf
+       @field = split(/,/,$_);  #split it
+       for($i=0;$i<5;$i++){
+         $kprob[$i+36] += $field[$i];
+         $kprob2[$i+36] += $field[$i]*$field[$i];
+       }
+     }
+   }
+ }
+ printf("Results for %d samples\n",$cnt);
+ for($i=0;$i<40;$i++){
+    $kprob[$i] = $kprob[$i]/$cnt;
+    $kprob2[$i] = $kprob2[$i]/$cnt;
+    $sigmak[$i] = sqrt(($kprob2[$i] - $kprob[$i]*$kprob[$i])/($cnt-1));
+    printf("%2d: %14.8e  %14.8e\n",$i,$kprob[$i],$sigmak[$i]);
+    printf OUT ("%14.8e, ",$kprob[$i]);
+    if((($i+1)%6)==0){ printf OUT ("\n");}
+ }
+ $kprob[40] = $kprob[40]/$cnt;
+ $kprob2[40] = $kprob2[40]/$cnt;
+ $sigmak[40] = sqrt(($kprob2[40] - $kprob[40]*$kprob[40])/($cnt-1));
+ printf("%2d: %14.8e  %14.8e\n",$i,$kprob[40],$sigmak[40]);
+ printf OUT ("%14.8e }\n",$kprob[40]);
+
+ exit;
+
+sub Usage {
+
+ my $message = shift;
+ if($message) {print STDERR "Error: $message\n";}
+ print STDERR "Usage:\n";
+ print STDERR "  template.pl [-h] [-v level]\n";
+ print STDERR "    -v level sets verbosity or selects debug targets\n";
+ print STDERR "    -h shows Usage/help (this message).\n";
+ exit;
+}
+

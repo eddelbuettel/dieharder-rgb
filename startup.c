@@ -61,7 +61,7 @@ reasonable amount of time).\n\
              RGB Tests\n\
    -r 1 Timing test (times the rng)\n\
    -r 2 Bit Persist test\n\
-   -r 3 Bit Ntuple Distribution test suite (-n ntuple for 1-8)\n\
+   -r 3 Bit Ntuple Distribution test suite (-n ntuple)\n\
    -r 4 L-M-Ntuple Distribution test suite (quite long)\n\
 \n\
       Statistical Test Suite (STS)\n\
