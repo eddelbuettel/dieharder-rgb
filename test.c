@@ -78,19 +78,19 @@ void show_test_results(Dtest *dtest,Test **test)
    }
 
    printf("#                          Results\n");
-   printf("# Kuiper KS: p = %8.6f for %s\n",test[i]->ks_pvalue,dtest->name);
-   printf("# Assessment:\n");
+   printf("# Kuiper KS: p = %8.6f\n",test[i]->ks_pvalue);
+   printf("# Assessment: ");
    /* Work through some ranges here */
    if(test[i]->ks_pvalue < 0.0001){
-     printf("# FAILED at < 0.01%%.\n");
+     printf("FAILED at < 0.01% for %s\n",dtest->name);
    } else if(test[i]->ks_pvalue < 0.01){
-     printf("# POOR at < 1%%.\n");
-     printf("# Recommendation:  Repeat test to verify failure.\n");
+     printf("POOR at < 1%% for %s\n",dtest->name);
+     printf("Recommendation:  Repeat test to verify failure.\n");
    } else if(test[i]->ks_pvalue < 0.05){
-     printf("# POSSIBLY WEAK at < 5%%.\n");
+     printf("# POSSIBLY WEAK at < 5%% for %s\n",dtest->name);
      printf("# Recommendation:  Repeat test to verify failure.\n");
    } else {
-     printf("# PASSED at > 5%%.\n");
+     printf("# PASSED at > 5%% for %s\n",dtest->name);
    }
  }
 
