@@ -20,7 +20,11 @@ void startup()
 {
 
  int i,imax,j,k;
+ uint mask;
  struct stat sbuf;
+
+ testbits();
+ exit(0);
 
  /*
   * The very first thing we do is see if any simple help options

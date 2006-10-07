@@ -82,7 +82,7 @@ void show_test_results(Dtest *dtest,Test **test)
    printf("# Assessment: ");
    /* Work through some ranges here */
    if(test[i]->ks_pvalue < 0.0001){
-     printf("FAILED at < 0.01% for %s\n",dtest->name);
+     printf("FAILED at < 0.01%% for %s\n",dtest->name);
    } else if(test[i]->ks_pvalue < 0.01){
      printf("POOR at < 1%% for %s\n",dtest->name);
      printf("Recommendation:  Repeat test to verify failure.\n");

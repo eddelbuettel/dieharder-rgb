@@ -43,7 +43,8 @@ RELEASE=1
 # and other modules.
 #========================================================================
 SOURCE = $(PROGRAM:=.c)
-
+LIBSOURCE = $(shell ls libdieharder/*.c  2>&1 | sed -e "/\/bin\/ls:/d")
+LIBINCLUDE = $(shell ls libdieharder/include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
 
 #========================================================================
 # Test encapsulations for display.  Separating the tests themselves into
@@ -92,6 +93,7 @@ SOURCES = \
     test.c \
     work.c \
     user_template.c \
+    testbits.c \
     $(TESTS) \
 
 INCLUDE = $(PROGRAM:=.h)
@@ -182,17 +184,15 @@ all: $(PROGRAM)
 $(RPM): tgz rpm
 $(TGZ): tgz
 
-$(PROGRAM): $(OBJECTS) $(INCLUDES) libdieharder/libdieharder.a
-	make library
+$(PROGRAM): $(OBJECTS) $(INCLUDES) library
+	- (cd libdieharder ; $(MAKE))
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
 
 #========================================================================
 # Build targets (from commands)
 #========================================================================
-library:
-	(cd libdieharder; \
-	make -f Makefile; \
-	cd ..)
+library: $(LIBSOURCE) $(LIBINCLUDE)
+	- (cd libdieharder ; $(MAKE))
 
 tar:	$(SOURCES) $(SCSOURCES)
 	rm -f core $(PROGRAM) $(PROGRAM2) $(OBJECTS) $(OBJECTS2) \
@@ -293,8 +293,9 @@ printout:
 #========================================================================
 #  A standard cleanup target
 #========================================================================
-clean:
-	rm -f core $(PROGRAM) $(OBJECTS) $(PROGRAM).1.gz
+clean : 
+	- rm -f core $(PROGRAM) *.o $(PROGRAM).1.gz
+	- (cd libdieharder ; $(MAKE) clean )
 
 #========================================================================
 # Generic Rule to install.  Note that I presume that ALL applications
