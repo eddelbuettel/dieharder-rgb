@@ -23,8 +23,6 @@ void startup()
  uint mask;
  struct stat sbuf;
 
- testbits();
- exit(0);
 
  /*
   * The very first thing we do is see if any simple help options
@@ -181,6 +179,13 @@ reasonable amount of time).\n\
    rmax_mask++;
    rmax_bits++;
  }
+
+ /*
+  * We cannot test this until AFTER rng is set up...
+  * and we really should make rng an argument.
+  */
+ testbits();
+ exit(0);
 
  /*
   * Allocate the global vector that will hold random integers

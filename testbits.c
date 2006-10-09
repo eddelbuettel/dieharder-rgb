@@ -21,39 +21,54 @@ void testbits()
 
  uint input[4],output[4];
  uint tuple,off;
- input[0] = 0x88888888;
- dumpbits(&input[0],32);
- input[1] = 0xaaaaaaaa;
- dumpbits(&input[1],32);
- input[2] = 0xcccccccc;
- dumpbits(&input[2],32);
- input[3] = 0xffffffff;
- dumpbits(&input[3],32);
- memset(output,0,16);
+
+ /*
+  * test get_uint_rand(rng)
+  */
+ printf("Testing get_uint_rand(rng)\n");
+ printf("==============================================================================\n");
+ input[0] = get_uint_rand(rng);
+ printf("get_uint_rand(rng) = %10u = ",input[0]);
+ dumpuintbits(&input[0],1);printf("\n");
+ input[1] = get_uint_rand(rng);
+ printf("get_uint_rand(rng) = %10u = ",input[1]);
+ dumpuintbits(&input[1],1);printf("\n");
+ input[2] = get_uint_rand(rng);
+ printf("get_uint_rand(rng) = %10u = ",input[2]);
+ dumpuintbits(&input[2],1);printf("\n");
+ input[3] = get_uint_rand(rng);
+ printf("get_uint_rand(rng) = %10u = ",input[3]);
+ dumpuintbits(&input[3],1);printf("\n");
+ printf("==============================================================================\n\n");
 
  /*
   * The following are different tests we need to run to validate
   * get_ntuple_cyclic (which is a bitch to code).
   */
+ printf("\nTesting get_ntuple_cyclic with random data.\n");
  /* Get exactly one line.  Terminates rule 2a */ 
  tuple = 32;
  off = 0;
- printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("Getting a %d-tuple from offset = %d\n|",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
  /* Terminates rule 1a */ 
  tuple = 24;
  off = 0;
  printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
  /*
   * The following are different tests we need to run to validate
@@ -63,11 +78,13 @@ void testbits()
  tuple = 24;
  off = 8;
  printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
  /*
   * The following are different tests we need to run to validate
@@ -77,71 +94,154 @@ void testbits()
  tuple = 16;
  off = 8;
  printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
  /* Terminates rule 2c -- one fill from rule R, then 2c */
  tuple = 24;
  off = 24;
  printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
  /* Terminates rule 1 -- alternate R-L R-L R-L 1 */
  tuple = 120;
  off = 0;
  printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
  /* Terminates rule 2b -- R R R 2b */
  tuple = 120;
  off = 8;
  printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
  /* Terminates rule 2c, cycli -- one fill from rule R, then 2c */
  tuple = 24;
  off = 120;
  printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
  /* Terminates rule 1, but wraps cyclic -- R L R L R L 1 */
  tuple = 120;
  off = 32;
  printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
- exit(0);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
  /* Terminates rule 2b, cyclic -- R R R 2b */
  tuple = 120;
  off = 40;
  printf("Getting a %d-tuple from offset = %d\n",tuple,off);
+ printf("==================================================================\n");
+ dumpuintbits(&input[0],2);printf("\n");
+ dumpuintbits(&input[2],2);printf("\n");
  get_ntuple_cyclic(input,4,output,4,tuple,off);
- dumpbits(&output[0],32);
- dumpbits(&output[1],32);
- dumpbits(&output[2],32);
- dumpbits(&output[3],32);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
+
+ /*
+  * test get_rand_bits()
+  */
+ printf("Testing get_rand_bits()\n");
+ tuple = 32;
+ printf("Getting a %d-tuple from circulating buffer\n",tuple);
+ printf("==============================================================================\n");
+ get_rand_bits((void *)output,4*sizeof(uint),tuple,rng);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
+
+ printf("Testing get_rand_bits()\n");
+ tuple = 32;
+ printf("Getting a %d-tuple from circulating buffer\n",tuple);
+ printf("==============================================================================\n");
+ get_rand_bits((void *)output,4*sizeof(uint),tuple,rng);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
+
+ printf("Testing get_rand_bits()\n");
+ tuple = 64;
+ printf("Getting a %d-tuple from circulating buffer\n",tuple);
+ printf("==============================================================================\n");
+ get_rand_bits((void *)output,4*sizeof(uint),tuple,rng);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
+
+ tuple = 16;
+ printf("Getting a %d-tuple from circulating buffer\n",tuple);
+ printf("==============================================================================\n");
+ get_rand_bits((void *)output,4*sizeof(uint),tuple,rng);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
+
+ tuple = 16;
+ printf("Getting a %d-tuple from circulating buffer\n",tuple);
+ printf("==============================================================================\n");
+ get_rand_bits((void *)output,4*sizeof(uint),tuple,rng);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
+
+ tuple = 16;
+ printf("Getting a %d-tuple from circulating buffer\n",tuple);
+ printf("==============================================================================\n");
+ get_rand_bits((void *)output,4*sizeof(uint),tuple,rng);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
+
+ tuple = 32;
+ printf("Getting a %d-tuple from circulating buffer\n",tuple);
+ printf("==============================================================================\n");
+ get_rand_bits((void *)output,4*sizeof(uint),tuple,rng);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
+
+ tuple = 24;
+ printf("Getting a %d-tuple from circulating buffer\n",tuple);
+ printf("==============================================================================\n");
+ get_rand_bits((void *)output,4*sizeof(uint),tuple,rng);
+ dumpuintbits(&output[0],2);printf("\n");
+ dumpuintbits(&output[2],2);printf("\n");
+ printf("==================================================================\n\n");
 
 }
