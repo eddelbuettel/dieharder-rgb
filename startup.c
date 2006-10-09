@@ -181,11 +181,13 @@ reasonable amount of time).\n\
  }
 
  /*
-  * We cannot test this until AFTER rng is set up...
-  * and we really should make rng an argument.
+  * TESTING PLAYGROUND.  bits.c code MUST be carefully validated as it is
+  * quite complex and crucial to happy testing.  We cannot test this until
+  * AFTER rng is set up.
+  *
+  * testbits();
+  * exit(0);
   */
- testbits();
- exit(0);
 
  /*
   * Allocate the global vector that will hold random integers

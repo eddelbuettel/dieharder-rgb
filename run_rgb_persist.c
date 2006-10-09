@@ -61,14 +61,14 @@ void run_rgb_persist()
  printf("# (Cumulated mask of zero is good.)\n");
  printf("# cumulated_mask = %10u = ",persist.cumulative_mask);
  dumpbits(&persist.cumulative_mask,persist.nbits);
- printf("# randm_mask     = %10u = ",rmax_mask);
+ printf("\n# randm_mask     = %10u = ",rmax_mask);
  dumpbits(&rmax_mask,persist.nbits);
- printf("# random_max     = %10u = ",random_max);
+ printf("\n# random_max     = %10u = ",random_max);
  dumpbits(&random_max,persist.nbits);
  if(persist.cumulative_mask){
-   printf("# rgb_persist test FAILED (bits repeat)\n");
+   printf("\n# rgb_persist test FAILED (bits repeat)\n");
  } else {
-   printf("# rgb_persist test PASSED (no bits repeat)\n");
+   printf("\n# rgb_persist test PASSED (no bits repeat)\n");
  }
  printf("#==================================================================\n");
 
