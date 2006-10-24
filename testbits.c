@@ -21,6 +21,32 @@ void testbits()
 
  uint input[4],output[4];
  uint tuple,off;
+ int pattern[10];
+
+ off = get_uint_rand(rng);
+ dumpuintbits(&off,1);
+ printf("\n");
+ printf(" off = ");
+ dumpbitwin(&off,4,0,32);
+ printf("\n");
+ mybitadd(&tuple,0,&off,4,16);
+ printf(" Result = ");
+ dumpuintbits(&tuple,1);
+ printf("\n");
+ exit(0);
+ /*
+  * Let's test some patterns
+  */
+ pattern[0] = 4;  /* grab 4 bits */
+ pattern[1] = -8; /* skip 8 bits */
+ pattern[2] = 4;  /* grab 4 more */
+ pattern[3] = -12;/* skip 12 */
+ pattern[4] = 3;  /* grab 3 more */
+ pattern[5] = 0;
+ 
+
+
+
 
  /*
   * test get_uint_rand(rng)
@@ -41,6 +67,8 @@ void testbits()
  dumpuintbits(&input[3],1);printf("\n");
  printf("==============================================================================\n\n");
 
+
+ 
  /*
   * The following are different tests we need to run to validate
   * get_ntuple_cyclic (which is a bitch to code).
@@ -245,3 +273,4 @@ void testbits()
  printf("==================================================================\n\n");
 
 }
+

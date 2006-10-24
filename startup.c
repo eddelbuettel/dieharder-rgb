@@ -184,9 +184,9 @@ reasonable amount of time).\n\
   * TESTING PLAYGROUND.  bits.c code MUST be carefully validated as it is
   * quite complex and crucial to happy testing.  We cannot test this until
   * AFTER rng is set up.
+  testbits();
+  exit(0);
   *
-  * testbits();
-  * exit(0);
   */
 
  /*
