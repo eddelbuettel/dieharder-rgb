@@ -6,12 +6,11 @@
 #
 # make          alone should build the application.
 #
-# make tar      makes $(TAR) from >>all<< the sources
-# make tgz      makes $(TGZ) from >>all<< the sources
-# make rpm      makes $(RPM). This is experimental!  See below.
-# make svn      does a svn commit and creates the timestamp $(SVN)
-# make sync     does a svn commit and runs syncsvn to list of
-#               SVNROOT hosts
+# make tar      makes $(TAR)
+# make tgz      makes $(TGZ)
+# make rpm      makes $(RPM)
+# make svn      does a svn commit and creates the timestamp $(SVNTIME)
+# make sync     does a svn commit and syncs to list of svn-tree hosts
 # make clean    deletes the application and all object files
 # make install  strips and installs application and a man page
 # make printout prints out all source and include files
@@ -173,7 +172,6 @@ SRPM = $(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
 WRPM = $(DIR).i386.rpm
 WSRPM = $(DIR).src.rpm
 SPEC = $(DIR:=.spec)
-SVN = $(DIR:=.svn.time)
 
 #========================================================================
 # List of variants one can make.  all is the default.  We always
@@ -211,7 +209,7 @@ tar:	$(SOURCES) $(SCSOURCES)
 # move the spec to SPEC, move the source tgz to SOURCE and do an
 # rpm -ba blah.spec.
 #========================================================================
-tgz:	$(SOURCES) $(SCSOURCES)
+tgz:	$(SOURCES) $(SPEC) $(SCSOURCES)
 	rm -f core $(PROGRAM) $(PROGRAM2) $(OBJECTS) $(OBJECTS2) \
            $(TGZ) $(TAR) $(PROGRAM).1.gz
 	rm -f .$(DIR)

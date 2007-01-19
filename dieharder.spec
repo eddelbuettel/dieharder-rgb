@@ -59,7 +59,7 @@ rm -rf %{builddir}
 # The dieharder man page
 %attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
-# The xmlsysd docs
+# The dieharder docs
 %doc README COPYING NOTES doc/dieharder.pdf
 
 %changelog
