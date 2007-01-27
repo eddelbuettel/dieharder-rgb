@@ -1,0 +1,80 @@
+From gaeblmar@TU-Cottbus.De Thu Jul 27 11:51:43 2006
+Date: Thu, 27 Jul 2006 15:51:27 -0000
+From: gaeblmar@TU-Cottbus.De
+To: Robert G. Brown <rgb@phy.duke.edu>
+Cc: accardi@volterra.mat.uniroma2.it
+Subject: DieHarder: First results and comments from Centro Vito Volterra
+
+Dear Dr. Brown,
+
+we successfully installed Dieharder with our RNG plugged in and got our
+first results. They are, in fact, quite similar to the ones of the
+MT19937_1999 as reported in your White Paper.
+
+Now some comments:
+
+
+1. Bit Distribution Test:
+-------------------------
+
+To us it seems a bit odd that this test flunks the "presumably good"
+generators gfsr4, MT19937_1999, taus2 as well as our RNG, every one of
+them on the 6-bit version with virtually all p-values falling into the
+leftmost bin.
+
+
+2. Bit Stream Test:
+-------------------
+
+Our RNG did as poor as gfsr4, MT19937_1999 and taus2.
+
+Possible explanation: Overlapping (as in the original DieHard) means that
+the resulting words are not independent. So, in general, the distribution
+will be different in the non-overlapping (independent) case. Has this been
+considered in your version of the test?
+
+But, strange enough, rerunning the test with the overlapping option didn't
+change the results. So I don't know what's happening here.
+
+
+3. Birthday Spacings Test:
+--------------------------
+
+You were wondering why this test is failed as soon as sample size exceedes
+around 300. As n -> infinity, the number of duplicate birthday spacings is
+APPROXIMATELY Poisson with mean lambda = m^3 / (4n), where m is the number
+of birthdays and n is the length of the year. Now if n isn't large enough
+there will be a deviation from the limit distribution even with a perfect
+RNG. But a goodness-of-fit test based on 100 values may not detect this
+while one with 300 does. If the sample size is increased, so must be n.
+
+As described in the Marsaglia/Tsang (2002) paper they are using sample
+size 5000, m=2^12, n=2^32 and therefore lambda = 4 for the new version of
+the bday test.
+
+
+4. Overlapping 5-Permutation Test:
+----------------------------------
+
+Our RNG fails with the same kind of bath-tub-shaped p-value histogramm as
+gfsr4, MT19937_1999 and taus2. Why? I don't know, yet.
+
+
+5. Question:
+------------
+
+Is the generator ever reseeded during a test run? Or just once on
+creation?
+
+
+So much for our first report. We hope that this will also be of help to
+your project. We've also noticed that you've been adding new tests to the
+package.
+So we have also updated our version.
+
+How come the new source code versions include a huge (some 40 MB) binary
+mt19937_1999 file?
+
+
+Best regards,
+Markus Gäbler
