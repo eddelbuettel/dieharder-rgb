@@ -62,11 +62,7 @@ DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
           -DRELEASE=$(RELEASE)
 
 #========================================================================
-# Define parameters and directives needed in compile/link steps.  We
-# presume Gnu, optimized, ANSI C and the math link library.  -g -p is
-# always set as we strip before installing below.  We always
-# pass a definition of VERSION and RELEASE in the event that it is 
-# needed in the program.  Adjust as needed.
+# Define parameters and directives needed in compile/link steps.
 #========================================================================
 # C Compiler
 CC = gcc
@@ -97,7 +93,7 @@ $(PROGRAM): $(OBJECTS) $(PROGLIB_SONAME)
 # the library first!
 #========================================================================
 $(PROGLIB_SONAME):
-	- (cd ../libdieharder ; $(MAKE))
+	- (cd ../libdieharder ; $(MAKE) install)
 
 #========================================================================
 # The only safe place to do commits is in the toplevel directory
@@ -115,7 +111,7 @@ sync:
 LPR = enscript -2r
 # LPR = lpr
 printout:
-	$(LPR) $(SOURCES) $(INCLUDES)
+	$(LPR) $(SRCSOURCES) $(SRCINCLUDES)
 
 #========================================================================
 #  A standard cleanup target
