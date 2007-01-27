@@ -45,6 +45,7 @@ ABS = $(PROJECT).abs
 PHP = $(PROJECT).php
 
 # RPM/tarball target objects.  We need rules for all of these.
+TGZ = $(PROJECT).tar
 TGZ = $(PROJECT).tgz
 SPEC = $(PROJECT).spec
 # These are the three rpms automagically built by the spec
@@ -96,32 +97,47 @@ $(ABS): Makefile
 
 #========================================================================
 # This is a required target for both its own sake and to support the
-# rpm build.  It has to run unconditionally when called.
+# rpm build.  It has to run unconditionally when called.  Note that we
+# make PRECISELY what we need in terms of the source directories,
+# excluding all restricted material and irrelevant data.
 #========================================================================
-tgz: $(SPEC)
-	rm -f $(PROGRAM) $(TGZ) $(RPM) $(SRPM)
-	rm -f .$(PROJECT)
-	mkdir -p .$(DIR)
-	cp -a * .$(DIR)
-	mv .$(DIR) $(DIR)
-	# Exclude any cruft/development directories and SVN stuff.  Add
-	# lines as needed.
-	tar -cvpf $(TAR) \
-            --exclude=SVN --exclude=CRUFT \
+tgz: $(SPEC) $(ABS)
+	(rm -rf $(TGZ) $(PROJECT); \
+	mkdir -p $(PROJECT); \
+	cd $(PROGSRC); \
+	make clean; \
+	cd ../$(LIBRARY); \
+	make clean; \
+	cd ..; \
+	rm -f lib/*; \
+	cp -r $(PROGSRC) $(PROJECT); \
+	cp -r $(LIBRARY) $(PROJECT); \
+	cp -r include $(PROJECT); \
+	cp -r lib $(PROJECT); \
+	cp -r share $(PROJECT); \
+	cp -r manual $(PROJECT); \
+	cp $(SPEC) $(PROJECT); \
+	cp $(ABS) $(PROJECT); \
+	cp $(PHP) $(PROJECT); \
+	cp Makefile $(PROJECT); \
+	cp Copyright $(PROJECT); \
+	cp COPYING $(PROJECT); \
+	cp README $(PROJECT); \
+	cp NOTES $(PROJECT); \
+	tar -cvpf $(PROJECT).tar \
+            --exclude=.svn \
+	    --exclude=Cruft \
+	    --exclude=Data \
+	    --exclude=Exclude \
+            --exclude=Results \
             --exclude=*.tar \
             --exclude=*.tgz \
-            --exclude=*rpm \
-            --exclude=mt19937_1999.* \
-            --exclude=Restricted \
-            --exclude=libdieharder \
-            --exclude=lib \
-            --exclude=include \
+            --exclude=*.rpm \
             --exclude=doc \
-            --exclude=125\* \
-            ./$(PROJECT)
-	gzip $(TAR)
-	mv $(TAR).gz $(TGZ)
-	rm -rf $(PROJECT)
+            ./$(PROJECT); \
+	gzip $(PROJECT).tar; \
+	mv $(PROJECT).tar.gz $(TGZ); \
+	rm -rf $(PROJECT))
 
 #========================================================================
 # rpm target special stuff
