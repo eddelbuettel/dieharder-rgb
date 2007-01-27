@@ -42,8 +42,8 @@ RELEASE=1
 # and other modules.
 #========================================================================
 SOURCE = $(PROGRAM:=.c)
-LIBSOURCE = $(shell ls libdieharder/*.c  2>&1 | sed -e "/\/bin\/ls:/d")
-LIBINCLUDE = $(shell ls libdieharder/include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
+# LIBSOURCE = $(shell ls libdieharder/*.c  2>&1 | sed -e "/\/bin\/ls:/d")
+# LIBINCLUDE = $(shell ls libdieharder/include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
 
 #========================================================================
 # Test encapsulations for display.  Separating the tests themselves into
@@ -169,8 +169,6 @@ PHP = $(DIR).php
 TGZ = $(DIR).tgz
 RPM = $(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).i386.rpm
 SRPM = $(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
-WRPM = $(DIR).i386.rpm
-WSRPM = $(DIR).src.rpm
 SPEC = $(DIR:=.spec)
 
 #========================================================================
@@ -182,15 +180,18 @@ all: $(PROGRAM)
 $(RPM): tgz rpm
 $(TGZ): tgz
 
-$(PROGRAM): $(OBJECTS) $(INCLUDES) library
-	- (cd libdieharder ; $(MAKE))
+$(PROGRAM): $(OBJECTS) $(INCLUDES)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
+
+# $(PROGRAM): $(OBJECTS) $(INCLUDES) library
+# 	- (cd libdieharder ; $(MAKE))
+#	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
 
 #========================================================================
 # Build targets (from commands)
 #========================================================================
-library: $(LIBSOURCE) $(LIBINCLUDE)
-	- (cd libdieharder ; $(MAKE))
+# library:
+# 	- (cd libdieharder ; $(MAKE))
 
 tar:	$(SOURCES) $(SCSOURCES)
 	rm -f core $(PROGRAM) $(PROGRAM2) $(OBJECTS) $(OBJECTS2) \
@@ -239,6 +240,7 @@ tgz:	$(SOURCES) $(SPEC) $(SCSOURCES)
             --exclude=lib \
             --exclude=include \
             --exclude=doc \
+            --exclude=125\* \
             ./$(DIR)
 	gzip $(TAR)
 	mv $(TAR).gz $(TGZ)
@@ -259,9 +261,7 @@ rpm:	Makefile $(SPEC) $(SOURCES) $(SOURCES2) $(TGZ)
 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
 	rpmbuild -ba  $(RPM_TOPDIR)/SPECS/$(SPEC)
 	cp $(RPM_TOPDIR)/RPMS/i386/$(RPM) .
-	cp $(RPM_TOPDIR)/RPMS/i386/$(RPM) $(WRPM)
 	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) .
-	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) $(WSRPM)
 
 svn:
 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
@@ -293,7 +293,8 @@ printout:
 #========================================================================
 clean : 
 	- rm -f core $(PROGRAM) *.o $(PROGRAM).1.gz
-	- (cd libdieharder ; $(MAKE) clean )
+
+#	- (cd libdieharder ; $(MAKE) clean )
 
 #========================================================================
 # Generic Rule to install.  Note that I presume that ALL applications
@@ -302,8 +303,11 @@ clean :
 install : $(PROGRAM)
 	(strip $(PROGRAM);\
 	install -d $(PREFIX)/bin; \
-	install -d $(PREFIX)/share/man/man1; \
 	install -m 755 $(PROGRAM) $(PREFIX)/bin; \
+	install -d $(PREFIX)/share/man/man1; \
+	install -d $(PREFIX)/share/doc; \
+	install -d $(PREFIX)/share/doc/$(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR); \
+	cp -rp manual $(PREFIX)/share/doc/$(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR); \
 	gzip -c $(PROGRAM).1 > $(PROGRAM).1.gz; \
 	install -m 644 $(PROGRAM).1.gz $(PREFIX)/share/man/man1)
 

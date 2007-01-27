@@ -2,10 +2,10 @@
 # Makefile accompanying this program (and the .tgz defined in Source
 # below.
 
-Summary: dieharder is a random number generator tester and timer
 
 Name: dieharder
 Version: 2.4.24
+Summary: dieharder is a random number generator tester and timer.
 Release: 1
 Group: Development/Tools
 License: Open Source (GPL v2b)
@@ -38,6 +38,33 @@ able to find -- George Marsaglia's "diehard" battery of tests, STS
 or /usr/share documentation for a complete list of the tests and
 references where possible.
 
+# This application consists of two parts, a UI and the library.
+# To facilitate development of multiple UIs and interfaces, we
+# split off the actual testing code into a library with an API.
+# This goes into the package libdieharder.
+%package -n libdieharder
+Version: 2.4.24
+Summary: A library of random number generator tests and timing routines.
+Group: Development/Tools
+%description -n libdieharder
+
+libdieharder is the core library of dieharder and friends, designed to
+be "the last suite of random number testers you'll ever wear".  It can
+test any of its many prebuilt and library linked generators (basically
+all of those in the Gnu Scientific Library plus a number of others from
+various sources) or a potentially random dataset in either an
+ascii-formatted or raw (presumed 32 bit uint) binary file.  It is fairly
+straightforward to wrap new software generators for testing, or to add
+hardware generators that have a software interface for testing, and the
+file input method permits pretty much any software or hardware RNG to be
+tested using libdieharder calls.
+
+libdieharder has as a design goal the full encapsulation in an
+extensible shell of basically all the random number tests I have been
+able to find -- George Marsaglia's "diehard" battery of tests, STS
+(v1.6) from NIST FIPS, Knuth's tests, and more.  Check in the man
+page(s) or /usr/share/libdieharder* for documentation.
+
 %prep
 %setup -q -n %{name}
 
@@ -60,7 +87,7 @@ rm -rf %{builddir}
 %attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
 # The dieharder docs
-%doc README COPYING NOTES doc/dieharder.pdf
+%doc README COPYING NOTES manual/dieharder.pdf
 
 %changelog
 * Tue Nov  11 2004 Robert G. Brown <rgb@duke.edu>
