@@ -37,7 +37,7 @@ SVNTIME = $(DIR:=.svn.time)
 # hand.
 VERSION_MAJOR=2
 VERSION_MINOR=4.24
-RELEASE=1
+RELEASE=3
 
 #========================================================================
 # Define all sources.  Note that we choose to depend on ALL the includes

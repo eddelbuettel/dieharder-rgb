@@ -1,175 +1,56 @@
-# 
-# $Id$
-#
 #========================================================================
-# THIS IS A "GENERIC" MAKEFILE FOR C PROGRAMS
+# This is the toplevel Makefile for the dieharder project.  It has
+# some very specialized targets:
 #
-# make          alone should build the application.
+# make          alone should build the entire application
+# make install  should build and install the entire application
 #
-# make tar      makes $(TAR)
-# make tgz      makes $(TGZ)
-# make rpm      makes $(RPM)
+# make tgz      makes $(TGZ) of entire tree for standalone or rpm build
+# make rpm      makes $(RPM) packages built by dieharder.spec
 # make svn      does a svn commit and creates the timestamp $(SVNTIME)
 # make sync     does a svn commit and syncs to list of svn-tree hosts
-# make clean    deletes the application and all object files
-# make install  strips and installs application and a man page
-# make printout prints out all source and include files
-# 
+#
+# make clean    cleans the source directories
 #========================================================================
-# 
-# This should be the name of the binary produced by this package.
+PROJECT = dieharder
 PROGRAM = dieharder
-DIR = $(PROGRAM)
+LIBRARY = libdieharder
+PROGSRC = dieharder_src
+
+#========================================================================
+# This is essential.  The rpmbuild overrides it, but we have to make
+# build "work" when executed only in the source tree directory itself.
+# This isn't easy, since the dependences are more than a bit scattered.
+# We therefore point to the directory one level up, where we should
+# find a ./lib, ./include, ./share and ./bin directory tree from which
+# the various dieharder files will actually be assembled into an rpm
+# with PREFIX=/usr (for example).
+#========================================================================
+PREFIX=..
 
 SVNTREE = $(HOME)/Src/svn-tree
-SVNPATH = $(SVNTREE)/$(DIR)
-SVNTIME = $(DIR:=.svn.time)
+SVNPATH = $(SVNTREE)/$(PROJECT)
+SVNTIME = $(PROJECT:=.svn.time)
 
-# Secondary/test binary programs next
-# PROGRAM2 = project2
-
-# This is revision information that MUST be set here.  It is minimally
-# used to set variables in an accompanying spec file (see template in
-# this directory) and/or in defines passed to the application so that
-# it knows its own version information.
+#========================================================================
+# This is revision information that MUST be set here and ONLY here.  
+# It will automagically set the related information in $(SPEC) and the
+# subsidiary Makefiles in the source subdirectories.
+#========================================================================
 VERSION_MAJOR=2
 VERSION_MINOR=4.24
-RELEASE=1
+RELEASE=3
 
-#========================================================================
-# Define all sources.  We ALWAYS have $(SOURCE) derived from $(PROGRAM)
-# and $(INCLUDE) derived from $(PROGRAM) and will usually have parsecl.c
-# and other modules.
-#========================================================================
-SOURCE = $(PROGRAM:=.c)
-# LIBSOURCE = $(shell ls libdieharder/*.c  2>&1 | sed -e "/\/bin\/ls:/d")
-# LIBINCLUDE = $(shell ls libdieharder/include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
+ABS = $(PROJECT).abs
+PHP = $(PROJECT).php
 
-#========================================================================
-# Test encapsulations for display.  Separating the tests themselves into
-# library calls requires that each test be encapsulated in a call that
-# runs the test from the library and then recovers and displays the
-# results.  This encapsulation will likely continue (with suitable
-# callbacks) even in GUI versions of dieharder.
-#========================================================================
-TESTS = \
-    run_rgb_timing.c \
-    run_rgb_persist.c \
-    run_rgb_bitdist.c \
-    run_diehard_birthdays.c \
-    run_diehard_operm5.c \
-    run_diehard_rank_32x32.c \
-    run_diehard_rank_6x8.c \
-    run_diehard_bitstream.c \
-    run_diehard_opso.c \
-    run_diehard_oqso.c \
-    run_diehard_dna.c \
-    run_diehard_count_1s_stream.c \
-    run_diehard_count_1s_byte.c \
-    run_diehard_parking_lot.c \
-    run_diehard_2dsphere.c \
-    run_diehard_3dsphere.c \
-    run_diehard_squeeze.c \
-    run_diehard_sums.c \
-    run_diehard_runs.c \
-    run_diehard_craps.c \
-    run_marsaglia_tsang_gcd.c \
-    run_sts_monobit.c \
-    run_sts_runs.c \
-    run_user_template.c \
-
-SOURCES = \
-    $(SOURCE) \
-    add_my_types.c \
-    empty_random.c \
-    list_rand.c \
-    list_rngs.c \
-    output_rnds.c \
-    parsecl.c \
-    help.c \
-    histogram.c \
-    startup.c \
-    test.c \
-    work.c \
-    user_template.c \
-    testbits.c \
-    $(TESTS) \
-
-INCLUDE = $(PROGRAM:=.h)
-INCLUDES = $(INCLUDE) $(TINCLUDES)
-
-DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
-          -DRELEASE=$(RELEASE)
-
-#========================================================================
-# Tree point to install (Choose one or set your own)
-#========================================================================
-# RPM's into /usr, please!  (Red Hat standard rule)
-PREFIX=/usr
-# Alternatives for public tarball build or private copy
-# PREFIX=/usr/local
-# PREFIX=$(HOME)
-
-#========================================================================
-# AMAZING!  INCREDIBLE!  BUILT IN "make rpm" SUPPORT!
-# So much to break, but so much mindless work saved.  Oh, well.  Be
-# patient and make it work; it is worth it.  For this to work one
-# OBVIOUSLY needs write permission to RPM_TOPDIR and it needs to either
-# be the default /usr/src/redhat or whatever is defined by the following
-# macro in your ~/.rpmmacros (without the "#", obviously).  All the
-# standard subdirectories [BUILD,SOURCES,SRPMS,RPMS,SPEC...etc] need to
-# exist in RPM_TOPDIR as well.
-#
-# This defines your local architecture, also the place the RPM is left
-# after a build in RPM_TOPDIR/RPMS.  Probably should set this from
-# whereever rpm sets it.  Who knows why/when it builds for i386 (as opposed
-# to e.g. i586 or i686) anyway?  Then there are alpha and noarch etc....
-ARCH=i386
-#
-# For a root build/install, use
-# RPM_TOPDIR=/usr/src/redhat
-#
-# Add the following:
-# %_topdir	/home/rgb/Src/redhat
-# to your personal $(HOME)/.rpmmacros after building
-# yourself a private copy of the /usr/src/redhat directory structure.
-# Change the "rgb" to your OWN home directory and "Src" to your source
-# directory, of course.
-RPM_TOPDIR=$(HOME)/Src/rpm_tree
-#========================================================================
-
-#========================================================================
-# Define parameters and directives needed in compile/link steps.  We
-# presume Gnu, optimized, ANSI C and the math link library.  -g -p is
-# always set as we strip before installing below.  We always
-# pass a definition of VERSION and RELEASE in the event that it is 
-# needed in the program.  Adjust as needed.
-#========================================================================
-# C Compiler
-CC = gcc
-# Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 $(DEFINES) -I libdieharder/include
-# Or use the following for profiling as well as debugging.
-# CFLAGS = -O3 -ansi -g -p $(DEFINES)
-# Linker flags
-LDFLAGS = -L libdieharder
-# Libraries (I always include math library)
-LIBS = -ldieharder -lgsl -lgslcblas -lm
-
-#========================================================================
-# Define standard sources and targets.
-#========================================================================
-OBJECTS = \
-  $(SOURCES:.c=.o)\
-
-# OBJECTS2 = $(SOURCES2:.c=.o)
-TAR = $(DIR).tar
-ABS = $(DIR).abs
-PHP = $(DIR).php
-TGZ = $(DIR).tgz
-RPM = $(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).i386.rpm
-SRPM = $(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
-SPEC = $(DIR:=.spec)
+# RPM/tarball target objects.  We need rules for all of these.
+TGZ = $(PROJECT).tgz
+SPEC = $(PROJECT).spec
+# These are the three rpms automagically built by the spec
+SRPM = $(PROJECT)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
+PRPM = $(PROGRAM)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).i386.rpm
+LRPM = $(LIBRARY)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).i386.rpm
 
 #========================================================================
 # List of variants one can make.  all is the default.  We always
@@ -177,50 +58,44 @@ SPEC = $(DIR:=.spec)
 # for example.
 #========================================================================
 all: $(PROGRAM)
+
+# This is not, actually, a particularly useful toplevel target.  To
+# work correctly it alsoo would require a full parsing of all
+# lower level dependencies.  I'm leaving it in for the moment just
+# to have a default target at the toplevel that CAN be used to test.
+$(PROGRAM):
+	(cd $(PROGSRC); \
+	make; \
+	cp $(PROGRAM) ..)
+
 $(RPM): tgz rpm
 $(TGZ): tgz
 
-$(PROGRAM): $(OBJECTS) $(INCLUDES)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
-
-# $(PROGRAM): $(OBJECTS) $(INCLUDES) library
-# 	- (cd libdieharder ; $(MAKE))
-#	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
-
-#========================================================================
-# Build targets (from commands)
-#========================================================================
-# library:
-# 	- (cd libdieharder ; $(MAKE))
-
-tar:	$(SOURCES) $(SCSOURCES)
-	rm -f core $(PROGRAM) $(PROGRAM2) $(OBJECTS) $(OBJECTS2) \
-           $(PROGRAM).1.gz
-	tar -cvpf $(TAR) \
-           --exclude=$(DIR)/$(TAR) \
-           --exclude=$(DIR)/$(TGZ) \
-           --exclude=$(DIR)/$(RPM) \
-           -C .. $(DIR)
-
-#========================================================================
-# This is a complicated target, but VERY USEFUL.  It makes a .tgz tarball
-# of the exact form preferred for an RPM.  Eventually I'll add a sed script
-# that automatically fixes the accompanying rpm spec file to correspond
-# right before building the tgz to really automate this, so that I can just
-# move the spec to SPEC, move the source tgz to SOURCE and do an
-# rpm -ba blah.spec.
-#========================================================================
-tgz:	$(SOURCES) $(SPEC) $(SCSOURCES)
-	rm -f core $(PROGRAM) $(PROGRAM2) $(OBJECTS) $(OBJECTS2) \
-           $(TGZ) $(TAR) $(PROGRAM).1.gz
-	rm -f .$(DIR)
-	# Update the specfile here, because we want the packed one to be 
-	# in sync with the VERSION/RELEASE defined ABOVE (only)!
-	# Might need another line or two here, e.g. %Source:
+$(SPEC): Makefile
+	# Version information is set ONLY in the toplevel Makefile.
 	cat $(SPEC) | \
 	sed -e 's/^\(Version:\) \(.*\)/\1 $(VERSION_MAJOR).$(VERSION_MINOR)/' \
-	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' >> $(SPEC).$$
-	mv $(SPEC).$$ $(SPEC)
+	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' > /tmp/$(SPEC).$$
+	mv /tmp/$(SPEC).$$ $(SPEC)
+	# While we're at it, update program and library Makefiles
+	cat $(LIBRARY)/Makefile | \
+	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
+	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
+	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
+	mv /tmp/Makefile.$$ $(LIBRARY)/Makefile
+	cat $(PROGSRC)/Makefile | \
+	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
+	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
+	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
+	mv /tmp/Makefile.$$ $(PROGSRC)/Makefile
+
+#========================================================================
+# This is a required target for both its own sake and to support the
+# rpm build.  It has to run unconditionally when called.
+#========================================================================
+tgz: $(SPEC)
+	rm -f $(PROGRAM) $(TGZ) $(RPM) $(SRPM)
+	rm -f .$(PROJECT)
 	cat $(ABS) | \
 	sed -e 's/^<H2>\(.*\)<\/H2>/<H2>dieharder Version $(VERSION_MAJOR).$(VERSION_MINOR)<\/H2>/' >> $(ABS).$$
 	mv $(ABS).$$ $(ABS)
@@ -241,10 +116,30 @@ tgz:	$(SOURCES) $(SPEC) $(SCSOURCES)
             --exclude=include \
             --exclude=doc \
             --exclude=125\* \
-            ./$(DIR)
+            ./$(PROJECT)
 	gzip $(TAR)
 	mv $(TAR).gz $(TGZ)
-	rm -rf $(DIR)
+	rm -rf $(PROJECT)
+
+#========================================================================
+# rpm target special stuff
+#
+# For a root build/install, use
+# RPM_TOPDIR=/usr/src/redhat
+# (or nothing at all)
+#
+# To work in userspace, add the following:
+# %_topdir	/home/rgb/Src/redhat
+# to your personal $(HOME)/.rpmmacros after building
+# yourself a private copy of the /usr/src/redhat directory structure.
+# Change the "rgb" to your OWN home directory and "Src" to your source
+# directory, of course.
+RPM_TOPDIR=$(HOME)/Src/rpm_tree
+#
+# This is needed to get the right library and binary rpm.
+BINARCH=`uname -i`
+# ARCH=i386
+#========================================================================
 
 #========================================================================
 # This is an EVEN MORE USEFUL target, but take a moment to understand it.  
@@ -273,28 +168,20 @@ svn:
 sync:
 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
 	svn commit .		# Do the commit
-	rsync -avz --delete $(SVNPATH) 209.42.212.5:$(SVNTREE)
 	rsync -avz --delete $(SVNPATH) login.phy.duke.edu:/home/einstein/prof/rgb/Src/svn-tree
+	rsync -avz --delete $(SVNPATH) 209.42.212.5:$(SVNTREE)
 	cat $(SVNTIME) | \
 	sed -e '/^New Checkin/d' >> $(SVNTIME).tmp
 	mv $(SVNTIME).tmp $(SVNTIME)
 
 #========================================================================
-# printout makes an enscript -2r printout of SOURCES and
-# and INCLUDES.  Use lpr if you don't have enscript
-#========================================================================
-LPR = enscript -2r
-# LPR = lpr
-printout:
-	$(LPR) $(SOURCES) $(INCLUDES) $(SOURCES2) $(INCLUDES2)
-
-#========================================================================
 #  A standard cleanup target
 #========================================================================
 clean : 
-	- rm -f core $(PROGRAM) *.o $(PROGRAM).1.gz
-
-#	- (cd libdieharder ; $(MAKE) clean )
+	- (cd dieharder_src; \
+	$(MAKE) clean; \
+	cd ../libdieharder; \
+	$(MAKE) clean;)
 
 #========================================================================
 # Generic Rule to install.  Note that I presume that ALL applications

@@ -36,7 +36,7 @@ SVNTIME = $(DIR:=.svn.time)
 # hand.
 VERSION_MAJOR=2
 VERSION_MINOR=4.24
-RELEASE=1
+RELEASE=3
 
 
 #========================================================================
@@ -52,6 +52,7 @@ DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
 
 # These are targets, and also dependencies for applications.
 PROGLIB = libdieharder.a
+PROGMAN = libdieharder.3
 PROGLIB_NAME = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
 PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
 
@@ -106,7 +107,7 @@ printout:
 #  A standard cleanup target
 #========================================================================
 clean:
-	rm -f core $(PROGLIB) $(LIBOBJECTS) $(PROGLIB).1.gz
+	rm -f core $(PROGLIB) $(PROGLIB_NAME) $(LIBOBJECTS) $(PROGMAN).gz
 
 #========================================================================
 # This is critical.  For the toplevel rpm build to succeed,
@@ -115,13 +116,13 @@ clean:
 # This target has to install precisely the files required by the
 # specfile for the dieharder package, in precisely the right locations.
 #========================================================================
-install: $(PROGLIB) $(PROGLIB_NAME)
+install: $(PROGLIB) $(PROGLIB_NAME) $(PROGMAN)
 	(install -d $(LIBDIR); \
 	install -m 755 $(PROGLIB) $(LIBDIR); \
 	install -m 755 $(PROGLIB_NAME) $(LIBDIR); \
 	ln -sf $(LIBDIR)/$(PROGLIB_NAME) $(LIBDIR)/$(PROGLIB_SONAME); \
 	install -d $(PREFIX)/share/man/man3; \
-	gzip -c $(DIR).3 > $(DIR).3.gz; \
+	gzip -c $(PROGMAN) > $(PROGMAN).gz; \
 	install -m 644 $(DIR).3.gz $(PREFIX)/share/man/man3 )
 
 #========================================================================
