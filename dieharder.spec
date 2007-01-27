@@ -43,7 +43,6 @@ references where possible.
 # split off the actual testing code into a library with an API.
 # This goes into the package libdieharder.
 %package -n libdieharder
-Version: 2.4.24
 Summary: A library of random number generator tests and timing routines.
 Group: Development/Tools
 %description -n libdieharder
@@ -63,7 +62,7 @@ libdieharder has as a design goal the full encapsulation in an
 extensible shell of basically all the random number tests I have been
 able to find -- George Marsaglia's "diehard" battery of tests, STS
 (v1.6) from NIST FIPS, Knuth's tests, and more.  Check in the man
-page(s) or /usr/share/libdieharder* for documentation.
+page(s) or /usr/share/dieharder*/dieharder.pdf for documentation.
 
 %prep
 %setup -q -n %{name}
@@ -81,13 +80,52 @@ rm -rf %{builddir}
 
 %files 
 %defattr(-,root,root)
+
 # The dieharder binary
 %attr(755,root,root) /usr/bin/dieharder
+
+# The libdieharder include files (these can be in both
+# the libdieharder package and the dieharder package).
+/usr/include/dieharder/*.h
+
 # The dieharder man page
 %attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
-# The dieharder docs
-%doc README COPYING NOTES manual/dieharder.pdf
+# The dieharder docs.  Again these can be in both
+# packages.  We'll actually probably repackage the manual
+# separately momentarily
+%doc copyright.h README COPYING NOTES manual/dieharder.pdf
+
+%files -n libdieharder
+
+%defattr(-,root,root)
+
+# The libdieharder library
+/usr/lib/libdieharder.a
+/usr/lib/libdieharder.so.%{version}
+
+# The libdieharder include files (these can be in both
+# the libdieharder package and the dieharder package.
+/usr/include/dieharder/*.h
+
+# The libdieharder man page
+%attr(644,root,root) /usr/share/man/man3/libdieharder.3.gz
+
+# The dieharder docs.  Again these can be in both
+# packages.  We'll actually probably repackage the manual
+# separately momentarily
+%doc copyright.h README COPYING NOTES manual/dieharder.pdf
+
+%post -n libdieharder
+
+cd /usr/lib
+ln -sf libdieharder.so.%{version} libdieharder.so 
+ldconfig -n .
+
+%postun -n libdieharder
+
+rm -f /usr/lib/libdieharder.so
+ldconfig
 
 %changelog
 * Tue Nov  11 2004 Robert G. Brown <rgb@duke.edu>
