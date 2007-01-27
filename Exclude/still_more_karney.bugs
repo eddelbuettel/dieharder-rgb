@@ -1,0 +1,46 @@
+From ckarney@sarnoff.com Wed Sep 27 15:45:39 2006
+Date: Wed, 27 Sep 2006 15:45:34 -0400
+From: Charles Karney <ckarney@sarnoff.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Dieharder: Birthday spacing bug
+
+I have discovered a bug in your birthday spacing test.
+
+     bitstring = gsl_rng_get(rng);
+     /* more or less random offset in the range of the bitstring */
+     offset = bitstring%rmax_bits;
+     rand_int[m] = get_bit_ntuple(&bitstring,1,nbits,offset);
+
+(in diehard_birthdays.c) does NOT result in rand_int[m] being filled
+with random bits.  For rmax_bits = 32, the low 5 bits are zero with
+probability 89/1024 = 2.72/32 instead of 1/32.  (Why?  Because if the
+low 5 bits are zero, the offset is zero, and they are left there.  If
+they are not zero, then maybe the bit rotation will bring zero bits into
+the low positions.)  This makes birthday collisions significantly more
+likely.
+
+To fix make the shift amount independent of the quantity shifted, either
+     bitstring = gsl_rng_get(rng);
+     offset = m%rmax_bits;
+     rand_int[m] = get_bit_ntuple(&bitstring,1,nbits,offset);
+or
+     bitstring = gsl_rng_get(rng);
+     offset = bitstring%rmax_bits;
+     bitstring = gsl_rng_get(rng);
+     rand_int[m] = get_bit_ntuple(&bitstring,1,nbits,offset);
+
+With either of these fixes the test
+
+    ./dieharder -g 12 -t 1000 -d 1
+
+consistently PASSED, whereas before it FAILED.
+
+Be suspicious of any other tests where you used a similar technique.
+
+-- 
+Charles Karney <ckarney@sarnoff.com>
+Sarnoff Corporation, Princeton, NJ 08543-5300
+
+URL: http://charles.karney.info
+Tel: +1 609 734 2312
+Fax: +1 609 734 2662
