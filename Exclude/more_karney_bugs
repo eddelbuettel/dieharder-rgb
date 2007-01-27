@@ -1,0 +1,25 @@
+From ckarney@sarnoff.com Thu Sep 28 17:53:30 2006
+Date: Thu, 28 Sep 2006 17:53:25 -0400
+From: Charles Karney <ckarney@sarnoff.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Dieharder: missing code in diehard_sums_test
+
+I see that the Diehard Sums Test is fairly consistently reporting
+failures on mt19937 (with -p 1000)
+
+I took a look at Marsaglia's fortran (cdosum).  After he transforms his
+x[i] with erfc, he then transforms it again through a linear
+interpolation given by the array f.  This is a nearly straight line and
+I conjecture that it accounts for the fact that the sum of a 100 uniform
+deviates isn't exactly normal.
+
+I don't see you doing the f-correction in diehard_sums.c.  And this
+might lead to false positives.
+
+-- 
+Charles Karney <ckarney@sarnoff.com>
+Sarnoff Corporation, Princeton, NJ 08543-5300
+
+URL: http://charles.karney.info
+Tel: +1 609 734 2312
+Fax: +1 609 734 2662
