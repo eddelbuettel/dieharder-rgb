@@ -1,62 +1,59 @@
-# 
-# $Id: Makefile 243 2006-10-05 13:05:47Z rgb $
-#
 #========================================================================
-# THIS IS A "GENERIC" MAKEFILE FOR C PROGRAMS
+# This is a Makefile for the libdieharder library, part of the
+# overall dieharder package.  It has a very abbreviated set of targets.
 #
 # make          alone should build the application.
 #
-# make tar      makes $(TAR) from >>all<< the sources
-# make tgz      makes $(TGZ) from >>all<< the sources
-# make rpm      makes $(RPM). This is experimental!  See below.
-# make svn      does a svn commit and creates the timestamp $(SVN)
-# make sync     does a svn commit and runs syncsvn to list of
-#               SVNROOT hosts
 # make clean    deletes the application and all object files
 # make install  strips and installs application and a man page
 # make printout prints out all source and include files
 # 
+# These two commands execute in the toplevel project directory only.
+# make svn      does a svn commit and creates the timestamp $(SVN)
+# make sync     does a svn commit and rsyncs to list of hosts
 #========================================================================
-# 
-# This should be the name of the binary produced by this package.
+PROJECT = dieharder
 DIR = libdieharder
 
+#========================================================================
+# This is essential.  The rpmbuild overrides it, but we have to make
+# build "work" when executed only in the source tree directory itself.
+# This isn't easy, since the dependences are more than a bit scattered.
+# We therefore point to the directory one level up, where we should
+# find a ./lib, ./include, ./share and ./bin directory tree from which
+# the various dieharder files will actually be assembled into an rpm
+# with PREFIX=/usr (for example).
+#========================================================================
+PREFIX=..
+LIBDIR=$(PREFIX)/lib
+INCDIR=$(PREFIX)/include
+
 SVNTREE = $(HOME)/Src/svn-tree
-SVNPATH = $(SVNTREE)/$(DIR)
+SVNPATH = $(SVNTREE)/$(PROJECT)
 SVNTIME = $(DIR:=.svn.time)
 
-# This is the rsync target (web) yum repository in two pieces (both
-# needed).
-YUMPATH = $(HOME)/Src/yumrepo
-SSHHOST = login.phy.duke.edu
-WDIR = public_html/Beowulf
-YDIR = wulfware
-
-# This is the library from which both wulfstat and wulflogger (and maybe
-# other stuff in the future) is built.
-PROGLIB = libdieharder.a
-PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
-PROGLIB_NAME = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
-PROGLIB_DOC = doc/dieharder.pdf
-
-# This is revision information that MUST be set here.  It is minimally
-# used to set variables in an accompanying spec file (see template in
-# this directory) and/or in defines passed to the application so that
-# it knows its own version information.
-VERSION_MAJOR=1
+# This is automagically set in the toplevel build.  Do not edit by
+# hand.
+VERSION_MAJOR=2
 VERSION_MINOR=4.24
 RELEASE=1
 
+
 #========================================================================
-# Define all sources.  We ALWAYS have $(SOURCE) derived from $(PROGRAM)
-# and $(INCLUDE) derived from $(PROGRAM) and will usually have parsecl.c
-# and other modules.
+# Define all sources.  Note that we choose to depend on ALL the includes
+# in the include directory, which cannot be empty or this will barf.
 #========================================================================
 LIBSOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
-LIBINCLUDES = $(LIBSOURCES.c=.h)
+LIBINCLUDES = $(shell ls ../include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
 LIBOBJECTS = $(LIBSOURCES:.c=.o)
+
 DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
           -DRELEASE=$(RELEASE)
+
+# These are targets, and also dependencies for applications.
+PROGLIB = libdieharder.a
+PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
+PROGLIB_NAME = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
 
 #========================================================================
 # Tree point to install (Choose one or set your own)
