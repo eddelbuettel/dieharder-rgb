@@ -89,6 +89,11 @@ $(SPEC): Makefile
 	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
 	mv /tmp/Makefile.$$ $(PROGSRC)/Makefile
 
+$(ABS): Makefile
+	cat $(ABS) | \
+	sed -e 's/^\(<center><H2>Version \)\(.*\)/\1$(VERSION_MAJOR).$(VERSION_MINOR)<\/H2><\/center>/' > /tmp/$(ABS).$$
+	mv /tmp/$(ABS).$$ $(ABS)
+
 #========================================================================
 # This is a required target for both its own sake and to support the
 # rpm build.  It has to run unconditionally when called.
@@ -96,9 +101,6 @@ $(SPEC): Makefile
 tgz: $(SPEC)
 	rm -f $(PROGRAM) $(TGZ) $(RPM) $(SRPM)
 	rm -f .$(PROJECT)
-	cat $(ABS) | \
-	sed -e 's/^<H2>\(.*\)<\/H2>/<H2>dieharder Version $(VERSION_MAJOR).$(VERSION_MINOR)<\/H2>/' >> $(ABS).$$
-	mv $(ABS).$$ $(ABS)
 	mkdir -p .$(DIR)
 	cp -a * .$(DIR)
 	mv .$(DIR) $(DIR)

@@ -1,8 +1,8 @@
 <center><H1>DieHarder: A Random Number Test Suite</H1></center>
+<center><H2>Version 2.4.24</H2></center>
 
-<center><H3>by Robert G. Brown (rgb)</H3></center>
+<center><H3>Robert G. Brown (rgb)</H3></center>
 
-<center><H2>Current: dieharder Version 1.0.21</H2></center>
 
 <p>At the suggestion of Linas Vepstas on the Gnu Scientific Library
 (GSL) list this GPL'd suite of random number tests will be named
