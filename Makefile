@@ -109,12 +109,11 @@ tgz: $(SPEC) $(ABS)
 	cd ../$(LIBRARY); \
 	make clean; \
 	cd ..; \
-	rm -f lib/*; \
 	cp -r $(PROGSRC) $(PROJECT); \
 	cp -r $(LIBRARY) $(PROJECT); \
 	cp -r include $(PROJECT); \
+	rm -f lib/*; \
 	cp -r lib $(PROJECT); \
-	cp -r share $(PROJECT); \
 	cp -r manual $(PROJECT); \
 	cp $(SPEC) $(PROJECT); \
 	cp $(ABS) $(PROJECT); \
@@ -142,39 +141,26 @@ tgz: $(SPEC) $(ABS)
 #========================================================================
 # rpm target special stuff
 #
-# For a root build/install, use
-# RPM_TOPDIR=/usr/src/redhat
-# (or nothing at all)
-#
 # To work in userspace, add the following:
 # %_topdir	/home/rgb/Src/redhat
 # to your personal $(HOME)/.rpmmacros after building
 # yourself a private copy of the /usr/src/redhat directory structure.
-# Change the "rgb" to your OWN home directory and "Src" to your source
-# directory, of course.
-RPM_TOPDIR=$(HOME)/Src/rpm_tree
 #
+# RPM_TOPDIR=/usr/src/redhat
+RPM_TOPDIR=$(HOME)/Src/rpm_tree
+
 # This is needed to get the right library and binary rpm.
 BINARCH=`uname -i`
 # ARCH=i386
 #========================================================================
-
-#========================================================================
-# This is an EVEN MORE USEFUL target, but take a moment to understand it.  
-# We take the .tgz script above, fix the revision information in the 
-# (presumed existing) $(PROGRAM).spec file, copy them both to (note 
-# CAREFULLY!) a presumed environmentally defined $(RPM_TOPDIR)/[SOURCE,SPEC], 
-# do a build, and (Inshallah!) retrieve the results from 
-# $(RPM_TOPDIR)/RPMS/i386.  Works for me...  Note well you should have
-# set RPM_TOPDIR and ARCH according to the instructions above.
-# 
-#========================================================================
-rpm:	Makefile $(SPEC) $(SOURCES) $(SOURCES2) $(TGZ)
+# One stop shop.  Basically we build this every time, we hope.
+rpm:	Makefile $(TGZ)
 	cp $(TGZ) $(RPM_TOPDIR)/SOURCES
 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
 	rpmbuild -ba  $(RPM_TOPDIR)/SPECS/$(SPEC)
-	cp $(RPM_TOPDIR)/RPMS/i386/$(RPM) .
 	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) .
+	cp $(RPM_TOPDIR)/RPMS/i386/$(BRPM) .
+	cp $(RPM_TOPDIR)/RPMS/i386/$(LRPM) .
 
 svn:
 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
@@ -202,19 +188,15 @@ clean :
 	$(MAKE) clean;)
 
 #========================================================================
-# Generic Rule to install.  Note that I presume that ALL applications
-# have a man page for documentation!  They'd better!
+# We need two toplevel targets that have to be mirrored in $(SPEC).
 #========================================================================
-install : $(PROGRAM)
-	(strip $(PROGRAM);\
-	install -d $(PREFIX)/bin; \
-	install -m 755 $(PROGRAM) $(PREFIX)/bin; \
-	install -d $(PREFIX)/share/man/man1; \
-	install -d $(PREFIX)/share/doc; \
-	install -d $(PREFIX)/share/doc/$(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR); \
-	cp -rp manual $(PREFIX)/share/doc/$(DIR)-$(VERSION_MAJOR).$(VERSION_MINOR); \
-	gzip -c $(PROGRAM).1 > $(PROGRAM).1.gz; \
-	install -m 644 $(PROGRAM).1.gz $(PREFIX)/share/man/man1)
+installlib:
+	(cd $(LIBRARY);\
+	make PREFIX=$(PREFIX) install)
+
+installprog:
+	(cd $(PROGSRC);\
+	make PREFIX=$(PREFIX) install)
 
 installweb : $(TGZ) $(RPM) $(SRPM)
 	(mkdir $(DIR);\

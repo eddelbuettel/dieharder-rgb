@@ -69,10 +69,11 @@ page(s) or /usr/share/dieharder*/dieharder.pdf for documentation.
 
 %build
 make clean
-make
 
+# We MUST build the library FIRST
 %install
-make PREFIX=%{buildroot}/usr install
+make PREFIX=%{buildroot}/usr installlib
+make PREFIX=%{buildroot}/usr installprog
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -94,7 +95,6 @@ rm -rf %{builddir}
 # The dieharder docs.  Again these can be in both
 # packages.  We'll actually probably repackage the manual
 # separately momentarily
-%doc copyright.h README COPYING NOTES manual/dieharder.pdf
 
 %files -n libdieharder
 
@@ -114,7 +114,7 @@ rm -rf %{builddir}
 # The dieharder docs.  Again these can be in both
 # packages.  We'll actually probably repackage the manual
 # separately momentarily
-%doc copyright.h README COPYING NOTES manual/dieharder.pdf
+%doc Copyright README COPYING NOTES manual/dieharder.pdf
 
 %post -n libdieharder
 

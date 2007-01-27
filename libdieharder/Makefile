@@ -63,7 +63,7 @@ PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
 CC = gcc
 
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 $(DEFINES) -I ./$(INCDIR)
+CFLAGS = -O3 $(DEFINES) -I ../include
 
 # Linker flags
 LDFLAGS = --shared -Wl,-soname,$(PROGLIB_SONAME)
@@ -121,6 +121,8 @@ install: $(PROGLIB) $(PROGLIB_NAME) $(PROGMAN)
 	install -m 755 $(PROGLIB) $(LIBDIR); \
 	install -m 755 $(PROGLIB_NAME) $(LIBDIR); \
 	ln -sf $(LIBDIR)/$(PROGLIB_NAME) $(LIBDIR)/$(PROGLIB_SONAME); \
+	install -d $(INCDIR)/dieharder; \
+	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
 	install -d $(PREFIX)/share/man/man3; \
 	gzip -c $(PROGMAN) > $(PROGMAN).gz; \
 	install -m 644 $(DIR).3.gz $(PREFIX)/share/man/man3 )
@@ -133,27 +135,27 @@ install: $(PROGLIB) $(PROGLIB_NAME) $(PROGMAN)
 	$(CC) -c $(CFLAGS) $<
 
 # dependencies.  There has to be a better way?
-rgb_timing.o: $(INCDIR)/dieharder/rgb_timing.h
-rgb_persist.o: $(INCDIR)/dieharder/rgb_persist.h
-rgb_bitdist.o: $(INCDIR)/dieharder/rgb_bitdist.h
-diehard_birthdays.o: $(INCDIR)/dieharder/diehard_birthdays.h
-diehard_operm5.o: $(INCDIR)/dieharder/diehard_operm5.h
-diehard_.o: $(INCDIR)/dieharder/diehard_operm5.h
-diehard_rank_32x32.o: $(INCDIR)/dieharder/diehard_rank_32x32.h
-diehard_rank_6x8.o: $(INCDIR)/dieharder/diehard_rank_6x8.h
-diehard_bitstream.o: $(INCDIR)/dieharder/diehard_bitstream.h
-diehard_opso.o: $(INCDIR)/dieharder/diehard_opso.h
-diehard_oqso.o: $(INCDIR)/dieharder/diehard_oqso.h
-diehard_dna.o: $(INCDIR)/dieharder/diehard_dna.h
-diehard_count_1s_stream.o: $(INCDIR)/dieharder/diehard_count_1s_stream.h
-diehard_count_1s_byte.o: $(INCDIR)/dieharder/diehard_count_1s_byte.h
-diehard_parking_lot.o: $(INCDIR)/dieharder/diehard_parking_lot.h
-diehard_2dsphere.o: $(INCDIR)/dieharder/diehard_2dsphere.h
-diehard_3dsphere.o: $(INCDIR)/dieharder/diehard_3dsphere.h
-diehard_squeeze.o: $(INCDIR)/dieharder/diehard_squeeze.h
-diehard_sums.o: $(INCDIR)/dieharder/diehard_sums.h
-diehard_runs.o: $(INCDIR)/dieharder/diehard_runs.h
-diehard_craps.o: $(INCDIR)/dieharder/diehard_craps.h
-marsaglia_tsang_gcd.o: $(INCDIR)/dieharder/marsaglia_tsang_gcd.h
-sts_monobit.o: $(INCDIR)/dieharder/sts_monobit.h
-sts_runs.o: $(INCDIR)/dieharder/sts_runs.h
+rgb_timing.o: ../include/dieharder/rgb_timing.h
+rgb_persist.o: ../include/dieharder/rgb_persist.h
+rgb_bitdist.o: ../include/dieharder/rgb_bitdist.h
+diehard_birthdays.o: ../include/dieharder/diehard_birthdays.h
+diehard_operm5.o: ../include/dieharder/diehard_operm5.h
+diehard_.o: ../include/dieharder/diehard_operm5.h
+diehard_rank_32x32.o: ../include/dieharder/diehard_rank_32x32.h
+diehard_rank_6x8.o: ../include/dieharder/diehard_rank_6x8.h
+diehard_bitstream.o: ../include/dieharder/diehard_bitstream.h
+diehard_opso.o: ../include/dieharder/diehard_opso.h
+diehard_oqso.o: ../include/dieharder/diehard_oqso.h
+diehard_dna.o: ../include/dieharder/diehard_dna.h
+diehard_count_1s_stream.o: ../include/dieharder/diehard_count_1s_stream.h
+diehard_count_1s_byte.o: ../include/dieharder/diehard_count_1s_byte.h
+diehard_parking_lot.o: ../include/dieharder/diehard_parking_lot.h
+diehard_2dsphere.o: ../include/dieharder/diehard_2dsphere.h
+diehard_3dsphere.o: ../include/dieharder/diehard_3dsphere.h
+diehard_squeeze.o: ../include/dieharder/diehard_squeeze.h
+diehard_sums.o: ../include/dieharder/diehard_sums.h
+diehard_runs.o: ../include/dieharder/diehard_runs.h
+diehard_craps.o: ../include/dieharder/diehard_craps.h
+marsaglia_tsang_gcd.o: ../include/dieharder/marsaglia_tsang_gcd.h
+sts_monobit.o: ../include/dieharder/sts_monobit.h
+sts_runs.o: ../include/dieharder/sts_runs.h
