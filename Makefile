@@ -4,6 +4,8 @@
 #
 # make          alone should build the entire application
 # make install  should build and install the entire application
+# make installweb installs to website for download
+# make installrepo installs to yum repo
 #
 # make tgz      makes $(TGZ) of entire tree for standalone or rpm build
 # make rpm      makes $(RPM) packages built by dieharder.spec
@@ -27,6 +29,13 @@ PROGSRC = dieharder_src
 # with PREFIX=/usr (for example).
 #========================================================================
 PREFIX=..
+
+# The destination on a remote webserver, used as:
+#    $(HOME)/public_html/$(WDIR)
+# on that server, and the name of an ssh-accessible login server
+# that contains the public_html path.
+WLOGIN = login.phy.duke.edu
+WDIR = General
 
 SVNTREE = $(HOME)/Src/svn-tree
 SVNPATH = $(SVNTREE)/$(PROJECT)
@@ -64,9 +73,6 @@ $(PROGRAM):
 	(cd $(PROGSRC); \
 	make; \
 	cp $(PROGRAM) ..)
-
-$(RPM): tgz rpm
-$(TGZ): tgz
 
 $(SPEC): Makefile
 	# Version information is set ONLY in the toplevel Makefile.
@@ -152,6 +158,11 @@ ARCH=`uname -i`
 SRPM = $(PROJECT)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
 PRPM = $(PROGRAM)-ui-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
 LRPM = $(LIBRARY)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
+$(PRPM): tgz rpm
+$(LRPM): tgz rpm
+$(SRPM): tgz rpm
+$(TGZ): tgz
+
 #========================================================================
 # One stop shop.  Basically we build this every time, we hope.
 rpm:	Makefile $(TGZ)
@@ -207,6 +218,15 @@ installweb : $(TGZ) $(RPM) $(SRPM)
 	rsync -avz $(ABS) login.phy.duke.edu:public_html/General/$(DIR)/; \
 	rsync -avz $(PHP) login.phy.duke.edu:public_html/General/; \
 	rmdir $(DIR))
+
+REPOSERVER = uriel
+REPOPATH = /var/www/html/fc/6/local/
+installrepo : $(TGZ) $(PRPM) $(LRPM) $(SRPM)
+	rsync -avz $(TGZ) root@$(REPOSERVER):$(REPOPATH)
+	rsync -avz $(SRPM) root@$(REPOSERVER):$(REPOPATH)/SRPM
+	rsync -avz $(PRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH)
+	rsync -avz $(LRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH)
+	ssh root@$(REPOSERVER) "cd $(REPOPATH)/$(ARCH);createrepo ."
 
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
