@@ -9,10 +9,20 @@ Summary: dieharder is a random number generator tester and timer.
 Release: 3
 Group: Development/Tools
 License: Open Source (GPL v2b)
-Source: %{name}.tgz
+Source: dieharder.tgz
 Buildroot: /var/tmp/%{name}-%{version}-%{release}-root
 
 %description 
+
+# This application consists of two parts, a UI and the library.
+# To facilitate development of multiple UIs and interfaces, we
+# split off the actual testing code into a library with an API.
+
+# This is the UI package
+%package -n dieharder-ui
+Summary: dieharder is a random number generator tester and timer.
+Group: Development/Tools
+%description -n dieharder-ui
 
 dieharder is a fairly involved random number/uniform deviate generator
 tester.  It can either test any of its many prebuilt and linked
@@ -38,9 +48,6 @@ able to find -- George Marsaglia's "diehard" battery of tests, STS
 or /usr/share documentation for a complete list of the tests and
 references where possible.
 
-# This application consists of two parts, a UI and the library.
-# To facilitate development of multiple UIs and interfaces, we
-# split off the actual testing code into a library with an API.
 # This goes into the package libdieharder.
 %package -n libdieharder
 Summary: A library of random number generator tests and timing routines.
@@ -79,23 +86,6 @@ make PREFIX=%{buildroot}/usr installprog
 rm -rf $RPM_BUILD_ROOT
 rm -rf %{builddir}
 
-%files 
-%defattr(-,root,root)
-
-# The dieharder binary
-%attr(755,root,root) /usr/bin/dieharder
-
-# The libdieharder include files (these can be in both
-# the libdieharder package and the dieharder package).
-/usr/include/dieharder/*.h
-
-# The dieharder man page
-%attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
-
-# The dieharder docs.  Again these can be in both
-# packages.  We'll actually probably repackage the manual
-# separately momentarily
-
 %files -n libdieharder
 
 %defattr(-,root,root)
@@ -104,17 +94,23 @@ rm -rf %{builddir}
 /usr/lib/libdieharder.a
 /usr/lib/libdieharder.so.%{version}
 
-# The libdieharder include files (these can be in both
-# the libdieharder package and the dieharder package.
-/usr/include/dieharder/*.h
+# The libdieharder include files are under here
+%attr(644,root,root) /usr/include/dieharder
 
 # The libdieharder man page
 %attr(644,root,root) /usr/share/man/man3/libdieharder.3.gz
 
-# The dieharder docs.  Again these can be in both
-# packages.  We'll actually probably repackage the manual
-# separately momentarily
+# The dieharder docs.
 %doc Copyright README COPYING NOTES manual/dieharder.pdf
+
+%files -n dieharder-ui
+%defattr(-,root,root)
+
+# The dieharder binary
+%attr(755,root,root) /usr/bin/dieharder
+
+# The dieharder man page
+%attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
 %post -n libdieharder
 

@@ -120,7 +120,6 @@ install: $(PROGLIB) $(PROGLIB_NAME) $(PROGMAN)
 	(install -d $(LIBDIR); \
 	install -m 755 $(PROGLIB) $(LIBDIR); \
 	install -m 755 $(PROGLIB_NAME) $(LIBDIR); \
-	ln -sf $(LIBDIR)/$(PROGLIB_NAME) $(LIBDIR)/$(PROGLIB_SONAME); \
 	install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
 	install -d $(PREFIX)/share/man/man3; \

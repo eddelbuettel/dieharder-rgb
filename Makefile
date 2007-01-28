@@ -48,10 +48,6 @@ PHP = $(PROJECT).php
 TGZ = $(PROJECT).tar
 TGZ = $(PROJECT).tgz
 SPEC = $(PROJECT).spec
-# These are the three rpms automagically built by the spec
-SRPM = $(PROJECT)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
-PRPM = $(PROGRAM)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).i386.rpm
-LRPM = $(LIBRARY)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).i386.rpm
 
 #========================================================================
 # List of variants one can make.  all is the default.  We always
@@ -150,17 +146,21 @@ tgz: $(SPEC) $(ABS)
 RPM_TOPDIR=$(HOME)/Src/rpm_tree
 
 # This is needed to get the right library and binary rpm.
-BINARCH=`uname -i`
+ARCH=`uname -i`
 # ARCH=i386
+# These are the three rpms automagically built by the spec
+SRPM = $(PROJECT)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
+PRPM = $(PROGRAM)-ui-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
+LRPM = $(LIBRARY)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
 #========================================================================
 # One stop shop.  Basically we build this every time, we hope.
 rpm:	Makefile $(TGZ)
 	cp $(TGZ) $(RPM_TOPDIR)/SOURCES
 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
-	rpmbuild -ba  $(RPM_TOPDIR)/SPECS/$(SPEC)
+	rpmbuild -ba --target=$(ARCH) $(RPM_TOPDIR)/SPECS/$(SPEC)
 	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) .
-	cp $(RPM_TOPDIR)/RPMS/i386/$(BRPM) .
-	cp $(RPM_TOPDIR)/RPMS/i386/$(LRPM) .
+	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(PRPM) .
+	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(LRPM) .
 
 svn:
 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
