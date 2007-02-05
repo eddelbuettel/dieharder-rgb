@@ -904,6 +904,52 @@ If that bit is random with probability 0.5, then we should be able to
 use Bayes theorem to generate very simple proofs that everything stated
 above is correct.
 
+==================================================================
+01/29/07
 
+OK, just finished repackaging dieharder to use subpackages and a single
+source tree to build both libraries and the dieharder ui.  This will
+TREMENDOUSLY simplify both the semiseparate maintenance of the R UI as
+an RPM and the soon-come GUI built with Gtk/glade or the like.  In fact,
+any number of UI's can be added to this source tree, including ones
+under separate subversion trees.  I rather expect that even if I
+maintain a separate svn tree and a standalone RPM build/specfile for
+gdieharder, I'll probably keep the gdieharder development node here for
+convenience if nothing else.  It's either that or develop only on
+platforms where libdieharder is stable and installed.
 
-  
+I've added a directory point for R, there is already a separate
+directory point for the manual (which will eventually get its own RPM).
+
+I'm wondering if I need to create a mailman list for dieharder.
+Probably really close.  Anyway, on to future plans, which is one thing
+the NOTES are for.  I still have several new RNGs to add, several tests
+to debug or re-engineer (they consistently fail "good" generators,
+suggesting "bad" tests).  I need to create a "standard dataset" and run
+the old fortran diehard against it to create a test reference, then see
+if I can reproduce the reference test values (within spitting distance)
+using the dieharder replacements.  That would help me resolve this
+question -- if I get the same numbers on a reference dataset then the
+new code is "good", so if that same code fails "good" rngs, the old code
+is probably bad.  Or something like that.
+
+I also need to add a still further improved reporting facility,
+especially for e.g the bitlevel tests.  One doesn't ONLY want to know if
+the rgb_bitdist 1's test fails, one wants to know if the sample had an
+excess of 0's or 1's, and by how many sigma, per run, in a table.
+Ditto the per run distribution of 00 01 10 11 in the 2's test, 000 001
+010... for the 3's test, at least out to maybe 8 bits (a table with 256
+entries is BARELY displayable, at least on a pixelized panel of lights
+display in a GUI).  Improved visualization is also important, for
+example to see hyperplane development for certain generators.
+
+I still need to work on the bits.c routines and at the very least get to
+where I can pack uints with arbitrary blocks of bits and holes.  This
+will permit me to work on fourier and lagged sample tests, ones that
+look for bitlevel correlations in samples pulled with (say) 23-bit holes
+between the end of one uint bitset and the next in an imagined
+continuous stream of random bits.
+
+I need to upload the new 2.x release to the website, and probably clean
+up the website.  Sigh.  LOTS to do, and so little time and
+competition...

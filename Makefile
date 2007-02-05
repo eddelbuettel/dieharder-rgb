@@ -15,9 +15,12 @@
 # make clean    cleans the source directories
 #========================================================================
 PROJECT = dieharder
-PROGRAM = dieharder
 LIBRARY = libdieharder
-PROGSRC = dieharder_src
+LIBTIME = libwulf.time
+PROGRAM = dieharder
+PROGTIME = dieharder.time
+MANUAL = manual
+MANTIME = manual.time
 
 #========================================================================
 # This is essential.  The rpmbuild overrides it, but we have to make
@@ -28,7 +31,8 @@ PROGSRC = dieharder_src
 # the various dieharder files will actually be assembled into an rpm
 # with PREFIX=/usr (for example).
 #========================================================================
-PREFIX=..
+BUILDROOT=../buildroot
+PREFIX=$(BUILDROOT)/usr
 
 # The destination on a remote webserver, used as:
 #    $(HOME)/public_html/$(WDIR)
@@ -48,14 +52,15 @@ SVNTIME = $(PROJECT:=.svn.time)
 #========================================================================
 VERSION_MAJOR=2
 VERSION_MINOR=4.24
-RELEASE=3
+RELEASE=4
 
 ABS = $(PROJECT).abs
 PHP = $(PROJECT).php
 
 # RPM/tarball target objects.  We need rules for all of these.
-TGZ = $(PROJECT).tar
-TGZ = $(PROJECT).tgz
+PROJECTDIR = $(PROJECT)-$(VERSION_MAJOR).$(VERSION_MINOR)
+TAR = $(PROJECTDIR).tar
+TGZ = $(PROJECTDIR).tgz
 SPEC = $(PROJECT).spec
 
 #========================================================================
@@ -63,16 +68,19 @@ SPEC = $(PROJECT).spec
 # presume the simplest of dependencies and remake if includes change
 # for example.
 #========================================================================
-all: $(PROGRAM)
+all: $(LIBTIME)
 
 # This is not, actually, a particularly useful toplevel target.  To
-# work correctly it alsoo would require a full parsing of all
+# work correctly it also would require a full parsing of all
 # lower level dependencies.  I'm leaving it in for the moment just
 # to have a default target at the toplevel that CAN be used to test.
-$(PROGRAM):
-	(cd $(PROGSRC); \
-	make; \
-	cp $(PROGRAM) ..)
+$(LIBTIME):
+	(cd $(LIBRARY); \
+	make)
+
+$(PROGTIME):
+	(cd $(PROGRAM); \
+	make)
 
 $(SPEC): Makefile
 	# Version information is set ONLY in the toplevel Makefile.
@@ -86,11 +94,16 @@ $(SPEC): Makefile
 	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
 	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
 	mv /tmp/Makefile.$$ $(LIBRARY)/Makefile
-	cat $(PROGSRC)/Makefile | \
+	cat $(PROGRAM)/Makefile | \
 	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
 	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
 	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
-	mv /tmp/Makefile.$$ $(PROGSRC)/Makefile
+	mv /tmp/Makefile.$$ $(PROGRAM)/Makefile
+	cat $(MANUAL)/Makefile | \
+	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
+	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
+	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
+	mv /tmp/Makefile.$$ $(MANUAL)/Makefile
 
 $(ABS): Makefile
 	cat $(ABS) | \
@@ -103,42 +116,41 @@ $(ABS): Makefile
 # make PRECISELY what we need in terms of the source directories,
 # excluding all restricted material and irrelevant data.
 #========================================================================
-tgz: $(SPEC) $(ABS)
-	(rm -rf $(TGZ) $(PROJECT); \
-	mkdir -p $(PROJECT); \
-	cd $(PROGSRC); \
-	make clean; \
-	cd ../$(LIBRARY); \
+tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
+	( rm -rf $(TAR) $(TGZ) $(PROJECTDIR); \
+	mkdir -p $(PROJECTDIR); \
+	cd $(LIBRARY); \
 	make clean; \
 	cd ..; \
-	cp -r $(PROGSRC) $(PROJECT); \
-	cp -r $(LIBRARY) $(PROJECT); \
-	cp -r include $(PROJECT); \
-	rm -f lib/*; \
-	cp -r lib $(PROJECT); \
-	cp -r manual $(PROJECT); \
-	cp $(SPEC) $(PROJECT); \
-	cp $(ABS) $(PROJECT); \
-	cp $(PHP) $(PROJECT); \
-	cp Makefile $(PROJECT); \
-	cp Copyright $(PROJECT); \
-	cp COPYING $(PROJECT); \
-	cp README $(PROJECT); \
-	cp NOTES $(PROJECT); \
-	tar -cvpf $(PROJECT).tar \
+	cp -r $(LIBRARY) $(PROJECTDIR); \
+	cd $(PROGRAM); \
+	make clean; \
+	cd ..; \
+	cp -r $(PROGRAM) $(PROJECTDIR); \
+	cd $(MANUAL); \
+	make clean; \
+	cd ..; \
+	cp -r $(MANUAL) $(PROJECTDIR); \
+	cp -r include $(PROJECTDIR); \
+	cp $(SPEC) $(PROJECTDIR); \
+	cp $(ABS) $(PROJECTDIR); \
+	cp $(PHP) $(PROJECTDIR); \
+	cp Makefile $(PROJECTDIR); \
+	cp Copyright $(PROJECTDIR); \
+	cp COPYING $(PROJECTDIR); \
+	cp README $(PROJECTDIR); \
+	cp NOTES $(PROJECTDIR); \
+	tar -cvpf $(TAR) \
             --exclude=.svn \
 	    --exclude=Cruft \
-	    --exclude=Data \
 	    --exclude=Exclude \
-            --exclude=Results \
             --exclude=*.tar \
             --exclude=*.tgz \
             --exclude=*.rpm \
-            --exclude=doc \
-            ./$(PROJECT); \
-	gzip $(PROJECT).tar; \
-	mv $(PROJECT).tar.gz $(TGZ); \
-	rm -rf $(PROJECT))
+            ./$(PROJECTDIR); \
+	gzip $(TAR); \
+	mv $(TAR).gz $(TGZ); \
+	rm -rf $(PROJECTDIR))
 
 #========================================================================
 # rpm target special stuff
@@ -156,12 +168,14 @@ ARCH=`uname -i`
 # ARCH=i386
 # These are the three rpms automagically built by the spec
 SRPM = $(PROJECT)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
-PRPM = $(PROGRAM)-ui-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
-LRPM = $(LIBRARY)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
-$(PRPM): tgz rpm
-$(LRPM): tgz rpm
-$(SRPM): tgz rpm
+LRPM = libdieharder-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
+PRPM = dieharder-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
+MRPM = dieharder-manual-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).noarch.rpm
 $(TGZ): tgz
+$(SRPM): rpm
+$(LRPM): rpm
+$(PRPM): rpm
+$(MRPM): rpm
 
 #========================================================================
 # One stop shop.  Basically we build this every time, we hope.
@@ -170,8 +184,9 @@ rpm:	Makefile $(TGZ)
 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
 	rpmbuild -ba --target=$(ARCH) $(RPM_TOPDIR)/SPECS/$(SPEC)
 	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) .
-	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(PRPM) .
 	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(LRPM) .
+	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(PRPM) .
+	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(MRPM) 
 
 svn:
 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
@@ -193,40 +208,58 @@ sync:
 #  A standard cleanup target
 #========================================================================
 clean : 
-	- (cd dieharder_src; \
+	- (cd $(LIBRARY); \
 	$(MAKE) clean; \
-	cd ../libdieharder; \
+	cd ..; \
+	cd $(PROGRAM); \
+	$(MAKE) clean; \
+	cd ..; \
+	cd $(MANUAL); \
 	$(MAKE) clean;)
 
 #========================================================================
 # We need two toplevel targets that have to be mirrored in $(SPEC).
 #========================================================================
+install:
+	(make clean;\
+	make installlib;\
+	make installprog;\
+	make installman;\
+	)
+
 installlib:
 	(cd $(LIBRARY);\
-	make PREFIX=$(PREFIX) install)
+	make BUILDROOT=$(BUILDROOT) PREFIX=$(PREFIX) install)
 
 installprog:
-	(cd $(PROGSRC);\
+	(cd $(PROGRAM);\
 	make PREFIX=$(PREFIX) install)
 
-installweb : $(TGZ) $(RPM) $(SRPM)
-	(mkdir $(DIR);\
-	rsync -avz $(DIR) login.phy.duke.edu:public_html/General/; \
-	rsync -avz $(TGZ) login.phy.duke.edu:public_html/General/$(DIR)/; \
-	rsync -avz $(RPM) login.phy.duke.edu:public_html/General/$(DIR)/; \
-	rsync -avz $(SRPM) login.phy.duke.edu:public_html/General/$(DIR)/; \
-	rsync -avz $(ABS) login.phy.duke.edu:public_html/General/$(DIR)/; \
-	rsync -avz $(PHP) login.phy.duke.edu:public_html/General/; \
-	rmdir $(DIR))
+installman:
+	(cd $(MANUAL);\
+	make PREFIX=$(PREFIX) install)
+
+installweb : $(TGZ) $(RPM) $(SRPM) $(LRPM) $(PRPM) $(MRPM) $(ABS) $(PHP)
+	(ssh $(WLOGIN) mkdir -p public_html/$(WDIR)/$(PROJECT);\
+	rsync -avz $(TGZ) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+	rsync -avz $(SRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+	rsync -avz $(LRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+	rsync -avz $(PRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+	rsync -avz $(MRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+	rsync -avz $(ABS) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+	rsync -avz $(PHP) $(WLOGIN):public_html/$(WDIR)/)
 
 REPOSERVER = uriel
 REPOPATH = /var/www/html/fc/6/local/
-installrepo : $(TGZ) $(PRPM) $(LRPM) $(SRPM)
-	rsync -avz $(TGZ) root@$(REPOSERVER):$(REPOPATH)
-	rsync -avz $(SRPM) root@$(REPOSERVER):$(REPOPATH)/SRPM
-	rsync -avz $(PRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH)
-	rsync -avz $(LRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH)
-	ssh root@$(REPOSERVER) "cd $(REPOPATH)/$(ARCH);createrepo ."
+installrepo : $(TGZ) $(RPM) $(SRPM) $(LRPM) $(PRPM) $(MRPM) $(ABS) $(PHP)
+	(ssh $(REPOSERVER) mkdir -p $(REPOPATH);\
+	rsync -avz $(TGZ) root@$(REPOSERVER):$(REPOPATH);\
+	rsync -avz $(SRPM) root@$(REPOSERVER):$(REPOPATH)/SRPM;\
+	ssh $(REPOSERVER) mkdir -p $(REPOPATH)/$(ARCH);\
+	rsync -avz $(LRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH);\
+	rsync -avz $(PRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH);\
+	rsync -avz $(MRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH);\
+	ssh root@$(REPOSERVER) "cd $(REPOPATH)/$(ARCH);createrepo .")
 
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 

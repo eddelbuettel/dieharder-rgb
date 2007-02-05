@@ -22,6 +22,7 @@ Buildroot: /var/tmp/%{name}-%{version}-%{release}-root
 %package -n dieharder-ui
 Summary: dieharder is a random number generator tester and timer.
 Group: Development/Tools
+Requires: libdieharder = %{version}
 %description -n dieharder-ui
 
 dieharder is a fairly involved random number/uniform deviate generator
