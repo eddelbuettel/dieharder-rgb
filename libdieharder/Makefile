@@ -24,13 +24,22 @@ DIR = libdieharder
 # the various dieharder files will actually be assembled into an rpm
 # with PREFIX=/usr (for example).
 #========================================================================
-PREFIX=..
+BUILDROOT=../buildroot
+PREFIX=$(BUILDROOT)/usr
 LIBDIR=$(PREFIX)/lib
 INCDIR=$(PREFIX)/include
+INCTIME=include.time
 
 SVNTREE = $(HOME)/Src/svn-tree
 SVNPATH = $(SVNTREE)/$(PROJECT)
 SVNTIME = $(DIR:=.svn.time)
+
+# This is the library from which both wulfstat and wulflogger (and maybe
+# other stuff in the future) is built.
+PROGMAN = libdieharder.3
+PROGLIB = libdieharder.a
+PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
+PROGLIB_NAME = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
 
 # This is automagically set in the toplevel build.  Do not edit by
 # hand.
@@ -38,23 +47,15 @@ VERSION_MAJOR=2
 VERSION_MINOR=4.24
 RELEASE=3
 
-
 #========================================================================
 # Define all sources.  Note that we choose to depend on ALL the includes
 # in the include directory, which cannot be empty or this will barf.
 #========================================================================
 LIBSOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
-LIBINCLUDES = $(shell ls ../include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
 LIBOBJECTS = $(LIBSOURCES:.c=.o)
 
 DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
           -DRELEASE=$(RELEASE)
-
-# These are targets, and also dependencies for applications.
-PROGLIB = libdieharder.a
-PROGMAN = libdieharder.3
-PROGLIB_NAME = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
-PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
 
 #========================================================================
 # Define parameters and directives needed in compile/link steps.
@@ -63,7 +64,7 @@ PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
 CC = gcc
 
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 $(DEFINES) -I ../include
+CFLAGS = -O3 $(DEFINES) -I $(INCDIR)
 
 # Linker flags
 LDFLAGS = --shared -Wl,-soname,$(PROGLIB_SONAME)
@@ -76,8 +77,13 @@ LIBS = -lgsl -lgslcblas -lm
 # presume the simplest of dependencies and remake if includes change
 # for example.
 #========================================================================
-all: $(PROGLIB) $(PROGLIB_NAME)
+all: $(INCTIME) $(PROGLIB) $(PROGLIB_NAME)
 
+# This has to ALWAYS run before a build.
+$(INCTIME):
+	(install -d $(INCDIR)/dieharder; \
+	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder;)
+	
 $(PROGLIB): $(LIBOBJECTS) $(LIBINCLUDES)
 	ar r $(PROGLIB) $(LIBOBJECTS)
 	ranlib $(PROGLIB)

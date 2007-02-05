@@ -3,7 +3,7 @@
 # below.
 
 
-Name: dieharder
+Name: dieharder-src
 Version: 2.4.24
 Summary: dieharder is a random number generator tester and timer.
 Release: 3
@@ -18,12 +18,12 @@ Buildroot: /var/tmp/%{name}-%{version}-%{release}-root
 # To facilitate development of multiple UIs and interfaces, we
 # split off the actual testing code into a library with an API.
 
-# This is the UI package
-%package -n dieharder-ui
+# This is the dieharder tty UI
+%package -n dieharder
 Summary: dieharder is a random number generator tester and timer.
 Group: Development/Tools
 Requires: libdieharder = %{version}
-%description -n dieharder-ui
+%description -n dieharder
 
 dieharder is a fairly involved random number/uniform deviate generator
 tester.  It can either test any of its many prebuilt and linked
@@ -77,11 +77,13 @@ page(s) or /usr/share/dieharder*/dieharder.pdf for documentation.
 
 %build
 make clean
+make
 
-# We MUST build the library FIRST
+# Note that multipackage sources with libraries are happier with
+# their own local buildroot to facilitate development without a
+# full install.
 %install
-make PREFIX=%{buildroot}/usr installlib
-make PREFIX=%{buildroot}/usr installprog
+make BUILDROOT=%{buildroot} PREFIX=%{buildroot}/usr install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -104,7 +106,7 @@ rm -rf %{builddir}
 # The dieharder docs.
 %doc Copyright README COPYING NOTES manual/dieharder.pdf
 
-%files -n dieharder-ui
+%files -n dieharder
 %defattr(-,root,root)
 
 # The dieharder binary
