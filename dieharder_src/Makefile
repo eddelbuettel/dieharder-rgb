@@ -53,6 +53,7 @@ SRCINCLUDES = $(shell ls *.h  2>&1 | sed -e "/\/bin\/ls:/d")
 # and library at the same time.  Maybe with particular make targets...
 LIBINCLUDES = $(shell ls $(INCDIR)/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
 PROGLIB_SONAME = $(LIBDIR)/libdieharder.so.$(VERSION_MAJOR)
+PROGLIB_SO = $(LIBDIR)/libdieharder.so
 
 SOURCES = $(LIBSOURCES) $(SRCSOURCES)
 INCLUDES = $(LIBINCLUDES) $(SRCINCLUDES)
@@ -93,7 +94,8 @@ $(PROGRAM): $(OBJECTS) $(PROGLIB_SONAME)
 # the library first!
 #========================================================================
 $(PROGLIB_SONAME):
-	- (cd ../libdieharder ; $(MAKE) install)
+	- (cd ../libdieharder ;\
+	 $(MAKE) install)
 
 #========================================================================
 # The only safe place to do commits is in the toplevel directory
