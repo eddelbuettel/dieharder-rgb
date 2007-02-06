@@ -167,15 +167,14 @@ RPM_TOPDIR=$(HOME)/Src/rpm_tree
 ARCH=`uname -i`
 # ARCH=i386
 # These are the three rpms automagically built by the spec
+SSRPM = $(PROJECT)-src-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
 SRPM = $(PROJECT)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
 LRPM = libdieharder-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
 PRPM = dieharder-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
-MRPM = dieharder-manual-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).noarch.rpm
 $(TGZ): tgz
 $(SRPM): rpm
 $(LRPM): rpm
 $(PRPM): rpm
-$(MRPM): rpm
 
 #========================================================================
 # One stop shop.  Basically we build this every time, we hope.
@@ -183,10 +182,9 @@ rpm:	Makefile $(TGZ)
 	cp $(TGZ) $(RPM_TOPDIR)/SOURCES
 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
 	rpmbuild -ba --target=$(ARCH) $(RPM_TOPDIR)/SPECS/$(SPEC)
-	cp $(RPM_TOPDIR)/SRPMS/$(SRPM) .
+	cp $(RPM_TOPDIR)/SRPMS/$(SSRPM) $(SRPM)
 	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(LRPM) .
 	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(PRPM) .
-	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(MRPM) 
 
 svn:
 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
@@ -224,9 +222,9 @@ install:
 	(make clean;\
 	make installlib;\
 	make installprog;\
+	make installman;\
 	)
 
-#	make installman;\
 
 installlib:
 	(cd $(LIBRARY);\
