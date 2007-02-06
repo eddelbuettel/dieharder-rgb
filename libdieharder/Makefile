@@ -45,7 +45,7 @@ PROGLIB_NAME = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
 # hand.
 VERSION_MAJOR=2
 VERSION_MINOR=4.24
-RELEASE=3
+RELEASE=4
 
 #========================================================================
 # Define all sources.  Note that we choose to depend on ALL the includes
@@ -84,11 +84,11 @@ $(INCTIME):
 	(install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder;)
 	
-$(PROGLIB): $(LIBOBJECTS) $(LIBINCLUDES)
+$(PROGLIB): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
 	ar r $(PROGLIB) $(LIBOBJECTS)
 	ranlib $(PROGLIB)
 
-$(PROGLIB_NAME): $(LIBOBJECTS) $(LIBINCLUDES)
+$(PROGLIB_NAME): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
 	gcc $(LDFLAGS) -o $(PROGLIB_NAME) $(LIBOBJECTS)
 
 #========================================================================
@@ -136,31 +136,5 @@ install: $(PROGLIB) $(PROGLIB_NAME) $(PROGMAN)
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.
 #========================================================================
-%.o:%.c include/dieharder/libdieharder.h Makefile
+%.o:%.c $(LIBINCLUDES) Makefile
 	$(CC) -c $(CFLAGS) $<
-
-# dependencies.  There has to be a better way?
-rgb_timing.o: ../include/dieharder/rgb_timing.h
-rgb_persist.o: ../include/dieharder/rgb_persist.h
-rgb_bitdist.o: ../include/dieharder/rgb_bitdist.h
-diehard_birthdays.o: ../include/dieharder/diehard_birthdays.h
-diehard_operm5.o: ../include/dieharder/diehard_operm5.h
-diehard_.o: ../include/dieharder/diehard_operm5.h
-diehard_rank_32x32.o: ../include/dieharder/diehard_rank_32x32.h
-diehard_rank_6x8.o: ../include/dieharder/diehard_rank_6x8.h
-diehard_bitstream.o: ../include/dieharder/diehard_bitstream.h
-diehard_opso.o: ../include/dieharder/diehard_opso.h
-diehard_oqso.o: ../include/dieharder/diehard_oqso.h
-diehard_dna.o: ../include/dieharder/diehard_dna.h
-diehard_count_1s_stream.o: ../include/dieharder/diehard_count_1s_stream.h
-diehard_count_1s_byte.o: ../include/dieharder/diehard_count_1s_byte.h
-diehard_parking_lot.o: ../include/dieharder/diehard_parking_lot.h
-diehard_2dsphere.o: ../include/dieharder/diehard_2dsphere.h
-diehard_3dsphere.o: ../include/dieharder/diehard_3dsphere.h
-diehard_squeeze.o: ../include/dieharder/diehard_squeeze.h
-diehard_sums.o: ../include/dieharder/diehard_sums.h
-diehard_runs.o: ../include/dieharder/diehard_runs.h
-diehard_craps.o: ../include/dieharder/diehard_craps.h
-marsaglia_tsang_gcd.o: ../include/dieharder/marsaglia_tsang_gcd.h
-sts_monobit.o: ../include/dieharder/sts_monobit.h
-sts_runs.o: ../include/dieharder/sts_runs.h

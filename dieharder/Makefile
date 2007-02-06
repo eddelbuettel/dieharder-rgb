@@ -25,7 +25,8 @@ DIR = $(PROGRAM)
 # the various dieharder files will actually be assembled into an rpm
 # with PREFIX=/usr (for example).
 #========================================================================
-PREFIX=..
+BUILDROOT=../buildroot
+PREFIX=$(BUILDROOT)/usr
 LIBDIR=$(PREFIX)/lib
 INCDIR=$(PREFIX)/include
 
@@ -37,7 +38,7 @@ SVNTIME = $(DIR:=.svn.time)
 # hand.
 VERSION_MAJOR=2
 VERSION_MINOR=4.24
-RELEASE=3
+RELEASE=4
 
 #========================================================================
 # Define all sources.  Note that we choose to depend on ALL the includes
@@ -69,13 +70,13 @@ DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
 CC = gcc
 
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 $(DEFINES) -I $(INCDIR)
+CFLAGS = -O3 -I $(INCDIR) $(DEFINES) 
 
 # Linker flags
-LDFLAGS = -L $(LIBDIR)
+LDFLAGS = 
 
 # Libraries
-LIBS = -ldieharder -lgsl -lgslcblas -lm
+LIBS = -L $(LIBDIR) -ldieharder -lgsl -lgslcblas -lm
 
 #========================================================================
 # List of variants one can make.  all is the default.  We always

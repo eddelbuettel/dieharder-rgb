@@ -89,6 +89,9 @@ sync:
 clean:
 	rm -f $(DVI) $(AUX) $(LOGS) $(TOC) $(ERR) $(PS) $(PDF)
 
+install: $(PDF)
+	cp $(PDF) ..
+
 #
 #                RULES FOR BUILDING STANDARD TARGETS
 #

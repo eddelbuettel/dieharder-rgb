@@ -224,8 +224,9 @@ install:
 	(make clean;\
 	make installlib;\
 	make installprog;\
-	make installman;\
 	)
+
+#	make installman;\
 
 installlib:
 	(cd $(LIBRARY);\
