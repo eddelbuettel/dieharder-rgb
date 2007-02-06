@@ -37,9 +37,9 @@ SVNTIME = $(DIR:=.svn.time)
 # This is the library from which both wulfstat and wulflogger (and maybe
 # other stuff in the future) is built.
 PROGMAN = libdieharder.3
-PROGLIB = libdieharder.a
-PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
-PROGLIB_NAME = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
+PROGLIB_A = libdieharder.a
+PROGLIB_SO = libdieharder.so
+PROGLIB_SO_VERSION = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
 
 # This is automagically set in the toplevel build.  Do not edit by
 # hand.
@@ -67,7 +67,7 @@ CC = gcc
 CFLAGS = -O3 $(DEFINES) -I $(INCDIR)
 
 # Linker flags
-LDFLAGS = --shared -Wl,-soname,$(PROGLIB_SONAME)
+LDFLAGS = --shared -Wl,-soname,$(PROGLIB_SO)
 
 # Libraries
 LIBS = -lgsl -lgslcblas -lm
@@ -84,12 +84,12 @@ $(INCTIME):
 	(install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder;)
 	
-$(PROGLIB): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
-	ar r $(PROGLIB) $(LIBOBJECTS)
-	ranlib $(PROGLIB)
+$(PROGLIB_A): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
+	ar r $(PROGLIB_A) $(LIBOBJECTS)
+	ranlib $(PROGLIB_A)
 
-$(PROGLIB_NAME): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
-	gcc $(LDFLAGS) -o $(PROGLIB_NAME) $(LIBOBJECTS)
+$(PROGLIB_SO): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
+	gcc $(LDFLAGS) -o $(PROGLIB_SO) $(LIBOBJECTS)
 
 #========================================================================
 # The only safe place to do commits is in the toplevel directory
@@ -122,16 +122,17 @@ clean:
 # This target has to install precisely the files required by the
 # specfile for the dieharder package, in precisely the right locations.
 #========================================================================
-install: $(PROGLIB) $(PROGLIB_NAME) $(PROGMAN)
+install: $(PROGLIB_A) $(PROGLIB_SO) $(PROGMAN)
 	(install -d $(LIBDIR); \
-	install -m 755 $(PROGLIB) $(LIBDIR); \
-	install -m 755 $(PROGLIB_NAME) $(LIBDIR); \
+	install -m 755 $(PROGLIB_A) $(LIBDIR); \
+	install -m 755 $(PROGLIB_SO) $(LIBDIR); \
 	install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
 	install -d $(PREFIX)/share/man/man3; \
 	gzip -c $(PROGMAN) > $(PROGMAN).gz; \
 	install -m 644 $(DIR).3.gz $(PREFIX)/share/man/man3 )
 
+#	install -m 755 $(PROGLIB) $(LIBDIR); \
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.

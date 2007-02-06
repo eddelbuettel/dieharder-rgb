@@ -73,7 +73,7 @@ CC = gcc
 CFLAGS = -O3 -I $(INCDIR) $(DEFINES) 
 
 # Linker flags
-LDFLAGS = 
+LDFLAGS = -Bdynamic
 
 # Libraries
 LIBS = -L $(LIBDIR) -ldieharder -lgsl -lgslcblas -lm

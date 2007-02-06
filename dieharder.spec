@@ -102,7 +102,7 @@ rm -rf %{builddir}
 
 # The libdieharder library
 /usr/lib/libdieharder.a
-/usr/lib/libdieharder.so.%{version}
+/usr/lib/libdieharder.so
 
 # The libdieharder include files are under here
 %attr(644,root,root) /usr/include/dieharder
@@ -132,12 +132,13 @@ rm -rf %{builddir}
 %post -n libdieharder
 
 cd /usr/lib
-ln -sf libdieharder.so.%{version} libdieharder.so 
+ln -sf libdieharder.so libdieharder.so.%{version}
 ldconfig -n .
 
 %postun -n libdieharder
 
 rm -f /usr/lib/libdieharder.so
+rm -f /usr/lib/libdieharder.so.%{version}
 ldconfig
 
 %changelog

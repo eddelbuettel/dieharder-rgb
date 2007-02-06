@@ -68,7 +68,7 @@ SPEC = $(PROJECT).spec
 # presume the simplest of dependencies and remake if includes change
 # for example.
 #========================================================================
-all: $(LIBTIME)
+all: $(LIBTIME) $(PROGTIME)
 
 # This is not, actually, a particularly useful toplevel target.  To
 # work correctly it also would require a full parsing of all
