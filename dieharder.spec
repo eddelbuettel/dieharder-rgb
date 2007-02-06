@@ -101,8 +101,8 @@ rm -rf %{builddir}
 %defattr(-,root,root)
 
 # The libdieharder library
-/usr/lib/libdieharder.a
-/usr/lib/libdieharder.so
+# /usr/lib/libdieharder.a
+/usr/lib/libdieharder.so.%{version}
 
 # The libdieharder include files are under here
 %attr(644,root,root) /usr/include/dieharder
@@ -112,7 +112,7 @@ rm -rf %{builddir}
 
 # The dieharder docs go in with the library, since the library
 # is likely to be installed "everywhere".
-%doc Copyright README COPYING NOTES dieharder.pdf
+%doc Copyright README COPYING NOTES
 
 ########################################################################
 # Files installed with the dieharder tty UI
@@ -126,13 +126,15 @@ rm -rf %{builddir}
 # The dieharder man page
 %attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
+%doc Copyright README COPYING NOTES
+
 ########################################################################
 # Command to execute post install or uninstall of libdieharder
 ########################################################################
 %post -n libdieharder
 
 cd /usr/lib
-ln -sf libdieharder.so libdieharder.so.%{version}
+ln -sf libdieharder.so.%{version} libdieharder.so
 ldconfig -n .
 
 %postun -n libdieharder

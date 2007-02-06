@@ -222,8 +222,11 @@ install:
 	(make clean;\
 	make installlib;\
 	make installprog;\
-	make installman;\
 	)
+
+# Restore this here and in the specfile when we are ready to
+# actually publish the manual, which is NOT YET.
+#	make installman;\
 
 
 installlib:

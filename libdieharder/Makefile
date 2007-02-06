@@ -122,10 +122,9 @@ clean:
 # This target has to install precisely the files required by the
 # specfile for the dieharder package, in precisely the right locations.
 #========================================================================
-install: $(PROGLIB_A) $(PROGLIB_SO) $(PROGMAN)
+install: $(PROGLIB_A) $(PROGLIB_SO_VERSION) $(PROGMAN)
 	(install -d $(LIBDIR); \
-	install -m 755 $(PROGLIB_A) $(LIBDIR); \
-	install -m 755 $(PROGLIB_SO) $(LIBDIR); \
+	install -m 755 $(PROGLIB_SO_VERSION) $(LIBDIR); \
 	install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
 	install -d $(PREFIX)/share/man/man3; \
