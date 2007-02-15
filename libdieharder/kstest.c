@@ -109,20 +109,28 @@ double kstest_kuiper(double *pvalue,int count)
      printf("# kstest_kuiper(): %3d    %10.5f\n",i,pvalue[i]);
    }
  }
+
+ /*
+  * This test is useless if there is only one pvalue.  In fact, it appears
+  * to return a wrong answer in this case, as it cannot set BOTH vmin
+  * AND vmax correctly, or so it appears.  So one solution is to just
+  * return the one pvalue and skip the rest of the test.
+  */
+ if(count == 1) return pvalue[0];
  gsl_sort(pvalue,1,count);
 
  /*
-  * Here's the test.  For each (sorted) pvalue, its index is the
-  * number of values cumulated to the left of it.  d is the distance
-  * between that number and the straight line representing a uniform
-  * accumulation.  We save the maximum d across all cumulated samples
-  * and transform it into a p-value at the end.
+  * Here's the test.  For each (sorted) pvalue, its index is the number of
+  * values cumulated to the left of it.  v is the distance between that
+  * number and the straight line representing a uniform accumulation.  We
+  * save the maximum AND minimum v across all cumulated samples and
+  * transform it into a p-value at the end.
   */
  if(verbose == D_KSTEST || verbose == D_ALL){
    printf("    obs       exp           v        vmin         vmax\n");
  }
- vmin = 0.0;
- vmax = 0.0;
+ vmin = pvalue[0];
+ vmax = pvalue[0];
  for(i=0;i<count;i++){
    y = (double) i/count;
    v = pvalue[i] - y;
@@ -133,7 +141,7 @@ double kstest_kuiper(double *pvalue,int count)
      vmin = v;
    }
    if(verbose == D_KSTEST || verbose == D_ALL){
-     printf("%8.3f   %8.3f    %8.3f   %8.3f    %8.3f\n",pvalue[i],y,v,vmin,vmax);
+     printf("%8.3f   %8.3f    %16.6e   %16.6e    %16.6e\n",pvalue[i],y,v,vmin,vmax);
    }
  }
  v = fabs(vmax) + fabs(vmin);

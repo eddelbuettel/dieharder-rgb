@@ -72,8 +72,10 @@ CC = gcc
 # Compile flags (use fairly standard -O3 as default)
 CFLAGS = -O3 -I $(INCDIR) $(DEFINES) 
 
-# Linker flags
-LDFLAGS = -Bdynamic
+# Linker flags.  Use -dynamics for rpm builds, but -static is needed
+# for development work.
+# LDFLAGS = -dynamic
+LDFLAGS = -static
 
 # Libraries
 LIBS = -L $(LIBDIR) -ldieharder -lgsl -lgslcblas -lm

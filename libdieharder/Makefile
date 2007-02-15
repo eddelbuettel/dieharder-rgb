@@ -77,7 +77,7 @@ LIBS = -lgsl -lgslcblas -lm
 # presume the simplest of dependencies and remake if includes change
 # for example.
 #========================================================================
-all: $(INCTIME) $(PROGLIB) $(PROGLIB_NAME)
+all: $(INCTIME) $(PROGLIB_SO) $(PROGLIB_A)
 
 # This has to ALWAYS run before a build.
 $(INCTIME):
@@ -122,16 +122,18 @@ clean:
 # This target has to install precisely the files required by the
 # specfile for the dieharder package, in precisely the right locations.
 #========================================================================
-install: $(PROGLIB_A) $(PROGLIB_SO_VERSION) $(PROGMAN)
+install: $(PROGLIB_SO) $(PROGLIB_A) $(PROGMAN)
 	(install -d $(LIBDIR); \
-	install -m 755 $(PROGLIB_SO_VERSION) $(LIBDIR); \
+	install -m 755 $(PROGLIB_SO) $(LIBDIR)/$(PROGLIB_SO); \
+	install -m 755 $(PROGLIB_A) $(LIBDIR)/$(PROGLIB_A); \
+	install -m 755 $(PROGLIB_SO) $(LIBDIR)/$(PROGLIB_SO_VERSION); \
 	install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
 	install -d $(PREFIX)/share/man/man3; \
 	gzip -c $(PROGMAN) > $(PROGMAN).gz; \
 	install -m 644 $(DIR).3.gz $(PREFIX)/share/man/man3 )
 
-#	install -m 755 $(PROGLIB) $(LIBDIR); \
+#	install -m 755 $(PROGLIB_A) $(LIBDIR); \
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.

@@ -1,0 +1,54 @@
+If you JUST want to run dieharder and not monkey around with the user
+interface, I'd suggest downloading the dieharder source rpm and doing an
+
+  rpmbuild --rebuild dieharder-whatever.src.rpm
+
+(with your toplevel rpm directory set to point to a valid rpm build
+tree).  You should be able to do this in userspace, and on Fedora Core
+>= 4 or Centos systems >= 4 (with the GSL rpm at that level or higher
+installed), it should "just work".  If it doesn't, of course you should
+contact me at rgb at phy duke edu (obfuscated).
+
+If you plan to do actual development and want to toy with the sources
+(not unlikely, given that you can only read this if you grabbed the
+tarball in the first place) then you'll have to do a wee bit of tweaking
+to get a clean build and install.  dieharder is set up in a default
+configuration that makes proper installation or (especially) rpm
+building maximally easy while still letting one work in the build
+directory on library and UI at the same time (necessary for
+development).
+
+To install dieharder from tarball, be sure to set BUILDROOT and PREFIX
+on the make line, e.g.:
+
+  make BUILDROOT=/ PREFIX=/usr install
+
+Otherwise dieharder will install in the default ./buildroot tree in the
+source directory itself.  
+
+You may need to run ldconfig (as root) post install to insure that ldd
+can find the required shared library.  You'll know if dieharder
+complains about not finding the library when you try to run it.
+
+This is deliberate.  The dieharder build defaults to using the shared
+libdieharder.so.  This library therefore MUST be available to the
+dieharder ui during the build (which should happen automatically if you
+just enter "make" without resetting BUILDROOT or PREFIX).  However, if
+you build IN the dieharder tree the shared library will not be readily
+available unless the entire package is properly installed and ldconfig
+run so that the binary can find libdieharder.so.  Perfect for "real
+installation" of the binary, not so good for development.
+
+If you are interested in doing development, note that it is fairly easy
+to tweak the build so that it makes libdieharder.a (the static library)
+and does a static link so that dieharder can run standalone, but the
+people who are likely to want to do this are developers who are
+monkeying with the library itself, and if you're one of them, presumably
+you know how to Make It So (hopefully without destroying the "make rpm"
+target that is otherwise quite useful.
+
+At some point I'll probably make this automagical so setting e.g.
+STATIC in the Makefile forces a static library build/install that will
+run anywhere.  At some point I may even port the entire build over to
+use e.g. gnu's autoconf process to increase portability which may solve
+this problem the "gnu way".  But alas, it hasn't happened yet.

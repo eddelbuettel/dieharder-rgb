@@ -102,6 +102,7 @@ rm -rf %{builddir}
 
 # The libdieharder library
 # /usr/lib/libdieharder.a
+/usr/lib/libdieharder.so
 /usr/lib/libdieharder.so.%{version}
 
 # The libdieharder include files are under here
