@@ -12,6 +12,20 @@ Author Contact Information:
 
 ========================================================================
 
+                            Versioning
+
+Versioning in dieharder has a very specific meaning.  The major number
+is bumped when a major project milestone is reached OR when a major
+fundamental redesign takes place (something that happens roughly 3 times
+over the lifetime of any given project).  The first minor is bumped when
+e.g. a major change occurs within a release -- a bug is fixed, a new
+feature (but not a new test) is added.  The second minor is the number
+of tests built into the current snapshot.  Release is used only to track
+internal changes in the development cycle as they are tested out before
+becoming a bump in the first minor.  In this way one can always see if
+dieharder is likely to have major new features or bugfixes in it
+relative to your current version.
+
                Notes About the Tests in Dieharder
 
 Dieharder is original code written by and Copyright Robert G. Brown
@@ -78,14 +92,7 @@ has been tested primarily on gcc/linux-based systems, but should port
 well to any unixoid environment with at most some minor hacking of the
 include files or systems calls used.
 
-If one is using an RPM-based linux, the easiest way to simply build and
-install the library is to either take a chance on installing a binary
-rpm, preferrably one that was built on a system with the same general
-distribution and environment, or rebuilding the source RPM.  However,
-RPM based installations are actually less desireable with a tool such as
-diehard than source builds, since part of its appeal is the availability
-of its source and the ease with which new tests or generators can be
-directly implemented.  
+                   Development and Experimentation
 
 Dieharder is an open source project for a reason -- it simply is not
 possible to trust a test suite of this sort without access to the source
@@ -95,6 +102,41 @@ detriment of all concerned.  With the source readily available, any user
 is free to examine or modify the source for any test and determine
 whether or not the test is working and participate in the critical
 process whereby academia arrives at a consensus truth.
+
+Also, many individuals may wish to use the general dieharder library to
+test their own (software) rngs.  This may well involve adding tests or
+modifying individual tests already there, or dieharder defaults.  IT IS
+SUGGESTED that individuals who wish to work in this way (primarily in
+the development tree and not necessarily building and installing the
+binary and library globally) build the application to link libdieharder
+static and work strictly within the source tree.  Do this by
+uncommenting the appropriate LDFLAGS = -static macro in
+./dieharder/Makefile.
+
+                               RPM
+
+Dieharder is developed on RPM-based systems (FCX) and one should be able
+to build an RPM by using the make target:  "make rpm" (after setting up
+a private RPM build tree).  No root privileges are needed to build the
+rpms in this way.  
+
+You may or may not need or want to edit the -rpath components in
+./dieharder/Makefile -- they are set so that dieharder will build a
+dynamically linked version in the package source directory when not
+working on RPMs and so that the whole package will build before the
+dynamic library itself is installed.  Otherwise there is a catch 22 --
+dieharder won't build until libdieharder is both built and installed OR
+the dieharder that builds requires static linking -- either way the RPMs
+produced aren't quite "right" and in the former case development is a
+real pain.  You can always choose to package a static build of the UI --
+the dynamic libraries will still build and be packaged.
+
+                              DEBIAN
+
+It appears that Debian packaging finds -rpath anathema, so one will
+probably want to edit the Makefile(s) to opt instead the a static build
+for dieharder.  Change the LDFLAGS to the commented out -static version
+in ./dieharder/Makefile.
 
 ========================================================================
 

@@ -79,8 +79,8 @@ void show_test_results(Dtest *dtest,Test **test)
 
    printf("#                          Results\n");
    if(test[i]->psamples == 1){
-     printf("# Single test: p = %8.6f\n",test[i]->ks_pvalue);
-     printf("# Assessment: ");
+     printf("Single test: p = %8.6f\n",test[i]->ks_pvalue);
+     printf("Assessment: ");
      /* Work through some ranges here */
      if(test[i]->ks_pvalue < 0.0001 || test[i]->ks_pvalue > 0.9999){
        printf("FAILED at < 0.02%% for %s\n",dtest->name);
@@ -88,11 +88,11 @@ void show_test_results(Dtest *dtest,Test **test)
        printf("POOR at < 2%% for %s\n",dtest->name);
        printf("Recommendation:  Repeat test to verify failure.\n");
      } else {
-       printf("# PASSED at > 2%% for %s\n",dtest->name);
+       printf("PASSED at > 2%% for %s\n",dtest->name);
      }
    } else {
-     printf("# Kuiper KS: p = %8.6f\n",test[i]->ks_pvalue);
-     printf("# Assessment: ");
+     printf("Kuiper KS: p = %8.6f\n",test[i]->ks_pvalue);
+     printf("Assessment: ");
      /* Work through some ranges here */
      if(test[i]->ks_pvalue < 0.0001){
        printf("FAILED at < 0.01%% for %s\n",dtest->name);
@@ -100,10 +100,10 @@ void show_test_results(Dtest *dtest,Test **test)
        printf("POOR at < 1%% for %s\n",dtest->name);
        printf("Recommendation:  Repeat test to verify failure.\n");
      } else if(test[i]->ks_pvalue < 0.05){
-       printf("# POSSIBLY WEAK at < 5%% for %s\n",dtest->name);
-       printf("# Recommendation:  Repeat test to verify failure.\n");
+       printf("POSSIBLY WEAK at < 5%% for %s\n",dtest->name);
+       printf("Recommendation:  Repeat test to verify failure.\n");
      } else {
-       printf("# PASSED at > 5%% for %s\n",dtest->name);
+       printf("PASSED at > 5%% for %s\n",dtest->name);
      }
    }
  }

@@ -46,7 +46,7 @@ void run_rgb_bitdist()
  }
  if(all == YES) ntmin = 1;
 
- printf("Setting ntmin = %d ntmax = %d\n",ntmin,ntmax);
+ /* printf("Setting ntmin = %d ntmax = %d\n",ntmin,ntmax); */
  for(rgb_bitdist_ntuple = ntmin;rgb_bitdist_ntuple<=ntmax;rgb_bitdist_ntuple++){
    /*
     * First we create the test (to set some values displayed in test header

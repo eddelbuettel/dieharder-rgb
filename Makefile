@@ -31,7 +31,7 @@ MANTIME = manual.time
 # the various dieharder files will actually be assembled into an rpm
 # with PREFIX=/usr (for example).
 #========================================================================
-BUILDROOT=../buildroot
+BUILDROOT=$(PWD)/buildroot
 PREFIX=$(BUILDROOT)/usr
 
 # The destination on a remote webserver, used as:
@@ -51,8 +51,8 @@ SVNTIME = $(PROJECT:=.svn.time)
 # subsidiary Makefiles in the source subdirectories.
 #========================================================================
 VERSION_MAJOR=2
-VERSION_MINOR=4.24
-RELEASE=4
+VERSION_MINOR=5.24
+RELEASE=1
 
 ABS = $(PROJECT).abs
 PHP = $(PROJECT).php

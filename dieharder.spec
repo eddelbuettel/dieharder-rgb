@@ -6,7 +6,7 @@
 Name: dieharder-src
 Version: 2.4.24
 Summary: dieharder is a random number generator tester and timer.
-Release: 4
+Release: 5
 Group: Development/Tools
 License: Open Source (GPL v2b)
 Source: dieharder-%{version}.tgz
@@ -101,7 +101,7 @@ rm -rf %{builddir}
 %defattr(-,root,root)
 
 # The libdieharder library
-# /usr/lib/libdieharder.a
+/usr/lib/libdieharder.a
 /usr/lib/libdieharder.so
 /usr/lib/libdieharder.so.%{version}
 

@@ -45,7 +45,7 @@ PROGLIB_SO_VERSION = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
 # hand.
 VERSION_MAJOR=2
 VERSION_MINOR=4.24
-RELEASE=4
+RELEASE=5
 
 #========================================================================
 # Define all sources.  Note that we choose to depend on ALL the includes
@@ -124,8 +124,8 @@ clean:
 #========================================================================
 install: $(PROGLIB_SO) $(PROGLIB_A) $(PROGMAN)
 	(install -d $(LIBDIR); \
+ 	install -m 755 $(PROGLIB_A) $(LIBDIR)/$(PROGLIB_A); \
 	install -m 755 $(PROGLIB_SO) $(LIBDIR)/$(PROGLIB_SO); \
-	install -m 755 $(PROGLIB_A) $(LIBDIR)/$(PROGLIB_A); \
 	install -m 755 $(PROGLIB_SO) $(LIBDIR)/$(PROGLIB_SO_VERSION); \
 	install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
@@ -133,7 +133,6 @@ install: $(PROGLIB_SO) $(PROGLIB_A) $(PROGMAN)
 	gzip -c $(PROGMAN) > $(PROGMAN).gz; \
 	install -m 644 $(DIR).3.gz $(PREFIX)/share/man/man3 )
 
-#	install -m 755 $(PROGLIB_A) $(LIBDIR); \
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.

@@ -38,7 +38,7 @@ SVNTIME = $(DIR:=.svn.time)
 # hand.
 VERSION_MAJOR=2
 VERSION_MINOR=4.24
-RELEASE=4
+RELEASE=5
 
 #========================================================================
 # Define all sources.  Note that we choose to depend on ALL the includes
@@ -74,8 +74,8 @@ CFLAGS = -O3 -I $(INCDIR) $(DEFINES)
 
 # Linker flags.  Use -dynamics for rpm builds, but -static is needed
 # for development work.
-# LDFLAGS = -dynamic
-LDFLAGS = -static
+LDFLAGS = -dynamic -Xlinker -rpath -Xlinker $(LIBDIR)
+# LDFLAGS = -static
 
 # Libraries
 LIBS = -L $(LIBDIR) -ldieharder -lgsl -lgslcblas -lm
