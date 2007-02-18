@@ -4,9 +4,9 @@
 
 
 Name: dieharder-src
-Version: 2.4.24
+Version: 2.5.24
 Summary: dieharder is a random number generator tester and timer.
-Release: 5
+Release: 1
 Group: Development/Tools
 License: Open Source (GPL v2b)
 Source: dieharder-%{version}.tgz
@@ -52,26 +52,23 @@ Requires: libdieharder = %{version}
 dieharder is a fairly involved random number/uniform deviate generator
 tester.  It can either test any of its many prebuilt and linked
 generators (basically all of those in the Gnu Scientific Library plus
-any others I've been able to find) or a potentially random dataset in a
-file.  With file input, it can test either N-bit bitstrings (with N user
-specifiable) or (double precision) floating point numbers in the range
-[0.0,1.0) (uniform deviates).  It is thus suitable for use in testing
-both software RNG's and hardware RNG's.
+others I've added) or a potentially random dataset in a file.  With file
+input, it can manage either a variety of ascii-formatted input or a raw
+binary bitstring.  It is thus suitable for use in testing both software
+RNG's and hardware RNG's.
 
-rand_test returns several things.  First of all, if the dataset or
-generator is "random" within its ability to measure, it says so; if it
-is definitely NON-random it also says so; in both cases it also tries to
-estimate whether or not you should believe it and what to do to be more
-certain.  Second, it generates a test result file with cumulated scores
-on each test and explains WHY it passes or fails.  Finally, for its
-embedded tests, rand_test ALSO tests the relative speed of the generator
-and returns it as "megarands per second".
+dieharder does all of its work with a standalone, extensible library,
+libdieharder.  Its tests can therefore be integrated into other
+programs, subject to the requirements of the GPL (NOT, note, the LGPL as
+it uses the GSL which is full GSL, viral).
 
-rand_test encapsulates basically all the random number tests I have been
-able to find -- George Marsaglia's "diehard" battery of tests, STS
-(v1.5) from NIST FIPS, Knuth's tests, and more.  Check in the man page
-or /usr/share documentation for a complete list of the tests and
-references where possible.
+dieharder encapsulates (or will eventually encapsulate) basically all
+the random number tests I have been able to find -- George Marsaglia's
+"diehard" battery of tests, STS (v1.5) from NIST FIPS, Knuth's tests,
+and more.  Check in the man page or /usr/share documentation for a
+complete list of the tests and references where possible.  It is
+intended to be the "swiss army knife of random number testers", or "the
+last suite of random number testers you'll ever wear".
 
 ########################################################################
 # The main section common to all builds.
