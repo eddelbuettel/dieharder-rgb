@@ -46,7 +46,7 @@ PROGLIB_SO_VERSION = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
 # This is automagically set in the toplevel build.  Do not edit by
 # hand.
 VERSION_MAJOR=2
-VERSION_MINOR=5.24
+VERSION_MINOR=6.24
 RELEASE=1
 
 #========================================================================

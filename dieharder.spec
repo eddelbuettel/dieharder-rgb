@@ -1,10 +1,11 @@
-Name: dieharder-devel
-Version: 2.5.24
+Name: dieharder-src
+Version: 2.6.24
 Release: 1
-Summary: dieharder is a random number generator tester and timer.
+Summary: Dieharder is a random number generator tester and timer
 Group: Development/Tools
-License: Open Source (GPL v2b)
+License: Open Source (GPL)
 Source: dieharder-%{version}.tgz
+URL: http://www.phy.duke.edu/~rgb/General/dieharder.php
 
 # Mandatory path for Fedora Core builds
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -75,13 +76,12 @@ last suite of random number testers you'll ever wear".
 
 %build
 make clean
-make %{?_smp_mflags} 
 
 # Note that multipackage sources with libraries are happier with
 # their own local buildroot to facilitate development without a
 # full install.
 %install
-make %{?_smp_mflags} BUILDROOT=%{buildroot} PREFIX=%{buildroot}/usr install
+make BUILDROOT=%{buildroot} PREFIX=%{buildroot}/usr install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -141,5 +141,3 @@ rm -f /usr/lib/libdieharder.so.%{version}
 ldconfig
 
 %changelog 
-* Tue Nov  11 2004 Robert G. Brown <rgb@duke.edu>
-- Releasing v 0.4.0 beta -- first public release.

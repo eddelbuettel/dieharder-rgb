@@ -82,7 +82,7 @@ $(PROGTIME):
 	(cd $(PROGRAM); \
 	make)
 
-$(SPEC): Makefile
+$(SPEC): Makefile $(SPEC)
 	# Version information is set ONLY in the toplevel Makefile.
 	cat $(SPEC) | \
 	sed -e 's/^\(Version:\) \(.*\)/\1 $(VERSION_MAJOR).$(VERSION_MINOR)/' \
@@ -179,6 +179,7 @@ $(PRPM): rpm
 #========================================================================
 # One stop shop.  Basically we build this every time, we hope.
 rpm:	Makefile $(TGZ)
+	rm -rf /var/tmp/dieharder*
 	cp $(TGZ) $(RPM_TOPDIR)/SOURCES
 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
 	rpmbuild -ba --target=$(ARCH) $(RPM_TOPDIR)/SPECS/$(SPEC)
