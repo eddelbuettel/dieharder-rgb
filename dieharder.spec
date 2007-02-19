@@ -18,6 +18,7 @@ Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %package -n libdieharder
 Summary: A library of random number generator tests and timing routines
 Group: Development/Tools
+Provides: libdieharder.so
 %description -n libdieharder
 
 libdieharder is the core library of dieharder and friends, designed to

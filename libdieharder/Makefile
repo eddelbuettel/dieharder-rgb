@@ -69,7 +69,7 @@ CC = gcc
 CFLAGS = -O3 $(DEFINES) -I $(INCDIR)
 
 # Linker flags
-LDFLAGS = -g -shared -Wl,-soname,$(PROGLIB_SONAME)
+LDFLAGS = -g -fpic -shared -Wl,-soname,$(PROGLIB_SONAME)
 
 # Libraries
 LIBS = -lgsl -lgslcblas -lm
