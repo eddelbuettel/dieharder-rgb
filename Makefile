@@ -51,7 +51,7 @@ SVNTIME = $(PROJECT:=.svn.time)
 # subsidiary Makefiles in the source subdirectories.
 #========================================================================
 VERSION_MAJOR=2
-VERSION_MINOR=5.24
+VERSION_MINOR=6.24
 RELEASE=1
 
 ABS = $(PROJECT).abs

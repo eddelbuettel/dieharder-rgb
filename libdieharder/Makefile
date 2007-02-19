@@ -37,7 +37,8 @@ SVNTIME = $(DIR:=.svn.time)
 # This is the library from which both wulfstat and wulflogger (and maybe
 # other stuff in the future) is built.
 PROGMAN = libdieharder.3
-PROGLIB_A = libdieharder.a
+# (FC "requires" no static library build)
+# PROGLIB_A = libdieharder.a
 PROGLIB_SO = libdieharder.so
 PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
 PROGLIB_SO_VERSION = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
@@ -78,16 +79,17 @@ LIBS = -lgsl -lgslcblas -lm
 # presume the simplest of dependencies and remake if includes change
 # for example.
 #========================================================================
-all: $(INCTIME) $(PROGLIB_SO_VERSION) $(PROGLIB_A)
+all: $(INCTIME) $(PROGLIB_SO_VERSION) # $(PROGLIB_A)
 
 # This has to ALWAYS run before a build.
 $(INCTIME):
 	(install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder;)
-	
-$(PROGLIB_A): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
-	ar r $(PROGLIB_A) $(LIBOBJECTS)
-	ranlib $(PROGLIB_A)
+
+# FC "requires" no static lib build/install	
+# $(PROGLIB_A): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
+# 	ar r $(PROGLIB_A) $(LIBOBJECTS)
+# 	ranlib $(PROGLIB_A)
 
 $(PROGLIB_SO_VERSION): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
 	gcc $(LDFLAGS) -o $(PROGLIB_SO_VERSION) $(LIBOBJECTS)
@@ -125,17 +127,15 @@ clean:
 #========================================================================
 install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
 	(install -d $(LIBDIR); \
- 	install -m 755 $(PROGLIB_A) $(LIBDIR)/$(PROGLIB_A); \
 	install -m 755 $(PROGLIB_SO_VERSION) $(LIBDIR)/$(PROGLIB_SO_VERSION); \
 	install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
 	install -d $(PREFIX)/share/man/man3; \
 	gzip -c $(PROGMAN) > $(PROGMAN).gz; \
-	install -m 644 $(DIR).3.gz $(PREFIX)/share/man/man3; \
-	cd $(LIBDIR); \
-	ldconfig -n .; \
-	ln -sf $(PROGLIB_SONAME) $(PROGLIB_SO)  )
+	install -m 644 $(DIR).3.gz $(PREFIX)/share/man/man3)
 
+# FC requires no static lib install
+# 	install -m 755 $(PROGLIB_A) $(LIBDIR)/$(PROGLIB_A); \
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.

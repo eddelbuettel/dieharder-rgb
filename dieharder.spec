@@ -1,16 +1,13 @@
-# The following should match PROGRAM, VERSION and RELEASE in the
-# Makefile accompanying this program (and the .tgz defined in Source
-# below.
-
-
-Name: dieharder-src
+Name: dieharder-devel
 Version: 2.5.24
-Summary: dieharder is a random number generator tester and timer.
 Release: 1
+Summary: dieharder is a random number generator tester and timer.
 Group: Development/Tools
 License: Open Source (GPL v2b)
 Source: dieharder-%{version}.tgz
-Buildroot: /var/tmp/dieharder-%{version}-%{release}-root
+
+# Mandatory path for Fedora Core builds
+Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %description 
 
@@ -18,7 +15,7 @@ Buildroot: /var/tmp/dieharder-%{version}-%{release}-root
 # LIBRARY: This is the basic dieharder library
 ########################################################################
 %package -n libdieharder
-Summary: A library of random number generator tests and timing routines.
+Summary: A library of random number generator tests and timing routines
 Group: Development/Tools
 %description -n libdieharder
 
@@ -78,13 +75,13 @@ last suite of random number testers you'll ever wear".
 
 %build
 make clean
-make
+make %{?_smp_mflags} 
 
 # Note that multipackage sources with libraries are happier with
 # their own local buildroot to facilitate development without a
 # full install.
 %install
-make BUILDROOT=%{buildroot} PREFIX=%{buildroot}/usr install
+make %{?_smp_mflags} BUILDROOT=%{buildroot} PREFIX=%{buildroot}/usr install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -97,9 +94,11 @@ rm -rf %{builddir}
 
 %defattr(-,root,root)
 
-# The libdieharder library
-/usr/lib/libdieharder.a
-/usr/lib/libdieharder.so
+%dir /usr/lib
+
+# The libdieharder library.  We ONLY install the primary
+# versioned library -- ldconfig and ln are used to finish off
+# later.
 /usr/lib/libdieharder.so.%{version}
 
 # The libdieharder include files are under here
@@ -132,8 +131,8 @@ rm -rf %{builddir}
 %post -n libdieharder
 
 cd /usr/lib
-ln -sf libdieharder.so.%{version} libdieharder.so
 ldconfig -n .
+ln -sf libdieharder.so.%{version} libdieharder.so
 
 %postun -n libdieharder
 
@@ -141,6 +140,6 @@ rm -f /usr/lib/libdieharder.so
 rm -f /usr/lib/libdieharder.so.%{version}
 ldconfig
 
-%changelog
+%changelog 
 * Tue Nov  11 2004 Robert G. Brown <rgb@duke.edu>
 - Releasing v 0.4.0 beta -- first public release.
