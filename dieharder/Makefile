@@ -37,7 +37,7 @@ build_triplet = i686-redhat-linux-gnu
 host_triplet = i686-redhat-linux-gnu
 subdir = dieharder
 DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	COPYING INSTALL
+	COPYING
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -62,7 +62,7 @@ AWK = gawk
 #========================================================================
 # C Compiler
 CC = gcc
-CCDEPMODE = depmode=gcc3
+CCDEPMODE = depmode=none
 
 # Compile flags (use fairly standard -O3 as default)
 CFLAGS = -O3 -I $(INCDIR) $(DEFINES) 
@@ -117,8 +117,8 @@ ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_RANLIB = ranlib
 ac_ct_STRIP = strip
-am__fastdepCC_FALSE = #
-am__fastdepCC_TRUE = 
+am__fastdepCC_FALSE = 
+am__fastdepCC_TRUE = #
 am__include = include
 am__leading_dot = .
 am__quote = 

@@ -9,6 +9,8 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
 AM_MAINTAINER_MODE
 
+AC_DEFINE([RELEASED], [], [Description])
+
 dnl Library versioning (current:revision:age)
 dnl See the libtool manual for an explanation of the numbers
 dnl

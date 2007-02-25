@@ -56,7 +56,7 @@ AUTOHEADER = ${SHELL} /home/rgb/Src/Projects/dieharder/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/rgb/Src/Projects/dieharder/missing --run automake-1.9
 AWK = gawk
 CC = gcc
-CCDEPMODE = depmode=gcc3
+CCDEPMODE = depmode=none
 CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
@@ -105,8 +105,8 @@ ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_RANLIB = ranlib
 ac_ct_STRIP = strip
-am__fastdepCC_FALSE = #
-am__fastdepCC_TRUE = 
+am__fastdepCC_FALSE = 
+am__fastdepCC_TRUE = #
 am__include = include
 am__leading_dot = .
 am__quote = 
