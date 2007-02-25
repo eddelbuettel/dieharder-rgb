@@ -66,15 +66,14 @@ SVNTIME = $(PROJECT:=.svn.time)
 # It will automagically set the related information in $(SPEC) and the
 # subsidiary Makefiles in the source subdirectories.
 #========================================================================
-VERSION_MAJOR=2
-VERSION_MINOR=6.24
-RELEASE=1
+VERSION=@VERSION@
+RELEASE=@RELEASE@
 
 ABS = $(PROJECT).abs
 PHP = $(PROJECT).php
 
 # RPM/tarball target objects.  We need rules for all of these.
-PROJECTDIR = $(PROJECT)-$(VERSION_MAJOR).$(VERSION_MINOR)
+PROJECTDIR = $(PROJECT)-$(VERSION)
 TAR = $(PROJECTDIR).tar
 TGZ = $(PROJECTDIR).tgz
 SPEC = $(PROJECT).spec
@@ -98,32 +97,9 @@ $(PROGTIME):
 	(cd $(PROGRAM); \
 	make)
 
-# Version information is set ONLY in the toplevel Makefile.
-# While we're at it, update program and library Makefiles
-# $(SPEC): Makefile $(SPEC)
-# 	cat $(SPEC) | \
-# 	sed -e 's/^\(Version:\) \(.*\)/\1 $(VERSION_MAJOR).$(VERSION_MINOR)/' \
-# 	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' > /tmp/$(SPEC).$$
-# 	mv /tmp/$(SPEC).$$ $(SPEC)
-# 	cat $(LIBRARY)/Makefile | \
-# 	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
-# 	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
-# 	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
-# 	mv /tmp/Makefile.$$ $(LIBRARY)/Makefile
-# 	cat $(PROGRAM)/Makefile | \
-# 	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
-# 	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
-# 	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
-# 	mv /tmp/Makefile.$$ $(PROGRAM)/Makefile
-# 	cat $(MANUAL)/Makefile | \
-# 	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
-# 	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
-# 	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
-# 	mv /tmp/Makefile.$$ $(MANUAL)/Makefile
-
 $(ABS): Makefile
 	cat $(ABS) | \
-	sed -e 's/^\(<center><H2>Version \)\(.*\)/\1$(VERSION_MAJOR).$(VERSION_MINOR)<\/H2><\/center>/' > /tmp/$(ABS).$$
+	sed -e 's/^\(<center><H2>Version \)\(.*\)/\1$(VERSION)<\/H2><\/center>/' > /tmp/$(ABS).$$
 	mv /tmp/$(ABS).$$ $(ABS)
 
 #========================================================================
@@ -148,12 +124,23 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cd ..; \
 	cp -r $(MANUAL) $(PROJECTDIR); \
 	cp -r include $(PROJECTDIR); \
-	cp $(SPEC) $(PROJECTDIR); \
 	cp $(ABS) $(PROJECTDIR); \
 	cp $(PHP) $(PROJECTDIR); \
-	cp Makefile $(PROJECTDIR); \
+	cp Makefile.am $(PROJECTDIR); \
+	cp $(SPEC).in $(PROJECTDIR); \
+	cp dieharder_version.h.in $(PROJECTDIR); \
+	cp autogen.sh $(PROJECTDIR); \
+	cp missing $(PROJECTDIR); \
+	cp install.sh $(PROJECTDIR); \
+	cp mkinstalldirs $(PROJECTDIR); \
+	cp ltmain.sh $(PROJECTDIR); \
+	cp configure.ac $(PROJECTDIR); \
 	cp Copyright $(PROJECTDIR); \
 	cp COPYING $(PROJECTDIR); \
+	cp INSTALL $(PROJECTDIR); \
+	cp AUTHORS $(PROJECTDIR); \
+	cp NEWS $(PROJECTDIR); \
+	cp ChangeLog $(PROJECTDIR); \
 	cp README $(PROJECTDIR); \
 	cp NOTES $(PROJECTDIR); \
 	tar -cvpf $(TAR) \
@@ -183,10 +170,10 @@ RPM_TOPDIR=$(HOME)/Src/rpm_tree
 ARCH=`uname -i`
 # ARCH=i386
 # These are the three rpms automagically built by the spec
-SSRPM = $(PROJECT)-src-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
-SRPM = $(PROJECT)-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).src.rpm
-LRPM = libdieharder-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
-PRPM = dieharder-$(VERSION_MAJOR).$(VERSION_MINOR)-$(RELEASE).$(ARCH).rpm
+SSRPM = $(PROJECT)-src-$(VERSION)-$(RELEASE).src.rpm
+SRPM = $(PROJECT)-$(VERSION)-$(RELEASE).src.rpm
+LRPM = libdieharder-$(VERSION)-$(RELEASE).$(ARCH).rpm
+PRPM = dieharder-$(VERSION)-$(RELEASE).$(ARCH).rpm
 $(TGZ): tgz
 $(SRPM): rpm
 $(LRPM): rpm

@@ -24,15 +24,19 @@ DIR = libdieharder
 # the various dieharder files will actually be assembled into an rpm
 # with PREFIX=/usr (for example).
 #========================================================================
-# BUILDROOT=../buildroot
 PREFIX=@prefix@
 LIBDIR=$(PREFIX)/lib
 INCDIR=$(PREFIX)/include
-# INCTIME=include.time
 
 SVNTREE = $(HOME)/Src/svn-tree
 SVNPATH = $(SVNTREE)/$(PROJECT)
 SVNTIME = $(DIR:=.svn.time)
+
+# This is automagically set in the toplevel build.  Do not edit by
+# hand.
+VERSION=@VERSION@
+VERSION_MAJOR=$(shell echo $VERSION | expr - : '\(.*\)\..*' \| $VERSION)
+RELEASE=0
 
 # This is the library from which both wulfstat and wulflogger (and maybe
 # other stuff in the future) is built.
@@ -41,13 +45,7 @@ PROGMAN = libdieharder.3
 # PROGLIB_A = libdieharder.a
 PROGLIB_SO = libdieharder.so
 PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
-PROGLIB_SO_VERSION = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
-
-# This is automagically set in the toplevel build.  Do not edit by
-# hand.
-VERSION_MAJOR=2
-VERSION_MINOR=6.24
-RELEASE=1
+PROGLIB_SO_VERSION = libdieharder.so.$(VERSION)
 
 #========================================================================
 # Define all sources.  Note that we choose to depend on ALL the includes
@@ -56,8 +54,7 @@ RELEASE=1
 LIBSOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
 LIBOBJECTS = $(LIBSOURCES:.c=.o)
 
-DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
-          -DRELEASE=$(RELEASE)
+DEFINES = -DVERSION=$(VERSION)
 
 #========================================================================
 # Define parameters and directives needed in compile/link steps.

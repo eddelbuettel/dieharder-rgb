@@ -36,9 +36,7 @@ SVNTIME = $(DIR:=.svn.time)
 
 # This is automagically set in the toplevel build.  Do not edit by
 # hand.
-VERSION_MAJOR=2
-VERSION_MINOR=6.24
-RELEASE=1
+VERSION=@VERSION@
 
 #========================================================================
 # Define all sources.  Note that we choose to depend on ALL the includes
@@ -53,15 +51,13 @@ SRCINCLUDES = $(shell ls *.h  2>&1 | sed -e "/\/bin\/ls:/d")
 # see how to force a consistent build when working on the UI
 # and library at the same time.  Maybe with particular make targets...
 LIBINCLUDES = $(shell ls $(INCDIR)/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
-PROGLIB_SONAME = $(LIBDIR)/libdieharder.so.$(VERSION_MAJOR)
-# PROGLIB_SO = $(LIBDIR)/libdieharder.so
+PROGLIB_SONAME = $(LIBDIR)/libdieharder.so.$(VERSION)
 
 SOURCES = $(LIBSOURCES) $(SRCSOURCES)
 INCLUDES = $(LIBINCLUDES) $(SRCINCLUDES)
 OBJECTS = $(SRCSOURCES:.c=.o)
 
-DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
-          -DRELEASE=$(RELEASE)
+DEFINES = -DVERSION=$(VERSION)
 
 #========================================================================
 # Define parameters and directives needed in compile/link steps.

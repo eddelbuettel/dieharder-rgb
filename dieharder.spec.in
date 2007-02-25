@@ -4,7 +4,7 @@ Name: dieharder-src
 Summary: Dieharder is a random number generator tester and timer
 Packager: rgb@phy.duke.edu
 %define version @VERSION@
-%define release 0
+%define release @RELEASE@
 Version: %{version}
 Release: %{release}
 License: Open Source (GPL)
@@ -82,11 +82,7 @@ last suite of random number testers you'll ever wear".
 
 %build
 ./autogen.sh
-./configure --prefix=%{_prefix} \
-    --bindir=%{_bindir} --mandir=%{_mandir} \
-    --localstatedir=%{_localstatedir} --libdir=%{_libdir} \
-    --datadir=%{_datadir} --includedir=%{_includedir} \
-    --sysconfdir=%{_sysconfdir}
+./configure --prefix=$RPM_BUILD_ROOT%{_prefix}
 make
 
 # Note that multipackage sources with libraries are happier with
@@ -126,7 +122,7 @@ rm -rf $RPM_BUILD_ROOT
 
 # The dieharder docs go in with the library, since the library
 # is likely to be installed "everywhere".
-%doc Changelog Copyright README COPYING NOTES
+%doc ChangeLog Copyright README COPYING NOTES
 
 ########################################################################
 # Files installed with the dieharder tty UI
@@ -140,7 +136,7 @@ rm -rf $RPM_BUILD_ROOT
 # The dieharder man page
 %attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
-%doc Changelog Copyright README COPYING NOTES
+%doc ChangeLog Copyright README COPYING NOTES
 
 ########################################################################
 # Command to execute post install or uninstall of libdieharder
@@ -157,4 +153,3 @@ rm -f /usr/lib/libdieharder.so
 rm -f /usr/lib/libdieharder.so.%{version}
 ldconfig
 
-%changelog 

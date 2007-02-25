@@ -54,9 +54,11 @@ AC_C_INLINE
 
 DIEHARDER_CFLAGS="-I$includedir"
 DIEHARDER_LIBS="-L$libdir -ldieharder"
+RELEASE=0
 
 AC_SUBST(DIEHARDER_CFLAGS)
 AC_SUBST(DIEHARDER_LIBS)
+AC_SUBST(RELEASE)
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-ldieharder':
