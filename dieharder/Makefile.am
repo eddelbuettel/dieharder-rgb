@@ -28,7 +28,7 @@ DIR = $(PROGRAM)
 # BUILDROOT=../buildroot
 PREFIX=@prefix@
 LIBDIR=$(PREFIX)/lib
-INCDIR=$(PREFIX)/include
+INCDIR=../include
 
 SVNTREE = $(HOME)/Src/svn-tree
 SVNPATH = $(SVNTREE)/$(PROJECT)
