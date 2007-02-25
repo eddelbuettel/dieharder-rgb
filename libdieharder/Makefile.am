@@ -93,6 +93,8 @@ $(INCTIME):
 
 $(PROGLIB_SO_VERSION): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
 	gcc $(LDFLAGS) -o $(PROGLIB_SO_VERSION) $(LIBOBJECTS)
+	ldconfig -n .
+	ln -sf $(PROGLIB_SO_VERSION) $(PROGLIB_SO)
 
 #========================================================================
 # The only safe place to do commits is in the toplevel directory
@@ -128,8 +130,6 @@ clean:
 install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
 	(install -d $(LIBDIR); \
 	install -m 755 $(PROGLIB_SO_VERSION) $(LIBDIR)/$(PROGLIB_SO_VERSION); \
-	ldconfig -n $(LIBDIR); \
-	ln -sf $(LIBDIR)/$(PROGLIB_SO_VERSION) $(LIBDIR)/$(PROGLIB_SO); \
 	install -d $(INCDIR)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
 	install -d $(PREFIX)/share/man/man3; \
@@ -138,6 +138,8 @@ install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
 
 # FC requires no static lib install
 # 	install -m 755 $(PROGLIB_A) $(LIBDIR)/$(PROGLIB_A); \
+	# ldconfig -n $(LIBDIR); \
+	# ln -sf $(LIBDIR)/$(PROGLIB_SO_VERSION) $(LIBDIR)/$(PROGLIB_SO); \
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.

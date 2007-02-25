@@ -27,7 +27,7 @@ DIR = $(PROGRAM)
 #========================================================================
 # BUILDROOT=../buildroot
 PREFIX=@prefix@
-LIBDIR=$(PREFIX)/lib
+LIBDIR=../libdieharder
 INCDIR=../include
 
 SVNTREE = $(HOME)/Src/svn-tree
@@ -96,7 +96,7 @@ $(PROGRAM): $(OBJECTS) $(PROGLIB_SONAME)
 #========================================================================
 $(PROGLIB_SONAME):
 	- (cd ../libdieharder ;\
-	 $(MAKE) install)
+	 $(MAKE))
 
 #========================================================================
 # The only safe place to do commits is in the toplevel directory
