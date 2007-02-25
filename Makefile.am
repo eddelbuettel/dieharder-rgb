@@ -100,26 +100,26 @@ $(PROGTIME):
 
 # Version information is set ONLY in the toplevel Makefile.
 # While we're at it, update program and library Makefiles
-$(SPEC): Makefile $(SPEC)
-	cat $(SPEC) | \
-	sed -e 's/^\(Version:\) \(.*\)/\1 $(VERSION_MAJOR).$(VERSION_MINOR)/' \
-	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' > /tmp/$(SPEC).$$
-	mv /tmp/$(SPEC).$$ $(SPEC)
-	cat $(LIBRARY)/Makefile | \
-	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
-	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
-	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
-	mv /tmp/Makefile.$$ $(LIBRARY)/Makefile
-	cat $(PROGRAM)/Makefile | \
-	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
-	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
-	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
-	mv /tmp/Makefile.$$ $(PROGRAM)/Makefile
-	cat $(MANUAL)/Makefile | \
-	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
-	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
-	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
-	mv /tmp/Makefile.$$ $(MANUAL)/Makefile
+# $(SPEC): Makefile $(SPEC)
+# 	cat $(SPEC) | \
+# 	sed -e 's/^\(Version:\) \(.*\)/\1 $(VERSION_MAJOR).$(VERSION_MINOR)/' \
+# 	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' > /tmp/$(SPEC).$$
+# 	mv /tmp/$(SPEC).$$ $(SPEC)
+# 	cat $(LIBRARY)/Makefile | \
+# 	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
+# 	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
+# 	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
+# 	mv /tmp/Makefile.$$ $(LIBRARY)/Makefile
+# 	cat $(PROGRAM)/Makefile | \
+# 	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
+# 	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
+# 	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
+# 	mv /tmp/Makefile.$$ $(PROGRAM)/Makefile
+# 	cat $(MANUAL)/Makefile | \
+# 	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
+# 	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
+# 	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
+# 	mv /tmp/Makefile.$$ $(MANUAL)/Makefile
 
 $(ABS): Makefile
 	cat $(ABS) | \
