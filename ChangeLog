@@ -1,3 +1,220 @@
+2007-02-25 19:32  rgb
+
+	* Makefile.am, configure.ac, dieharder.abs, dieharder.spec,
+	  dieharder.spec.in, dieharder.svn.time, dieharder/Makefile.am,
+	  libdieharder/Makefile.am: Ok, this is TAG=2.24.1, the first Gnu
+	  Build Tools release that builds
+	  rpms clean from (we hope) SVN. I do need to validate this with
+	  one
+	  last SVN checkout, but I'm pretty sure it is the case...
+
+2007-02-25 18:35  rgb
+
+	* Makefile.am, dieharder.spec, dieharder.spec.in,
+	  dieharder.svn.time: Well, a time to check in. We're about to see
+	  if an rpm build works...
+
+2007-02-25 18:15  rgb
+
+	* Makefile, dieharder.svn.time, dieharder/Makefile,
+	  dieharder/Makefile.am, libdieharder/Makefile,
+	  libdieharder/Makefile.am, manual/Makefile: This may be a really
+	  nice advance. The dieharder build now uses
+	  ../include and ../libdieharder as -I and -L respectively, and
+	  plain old
+	  "make" in both cases should work, from a clean checkout. I'm
+	  guessing
+	  that I can add a simple Makefile.am to include to do the actual
+	  install
+	  of the include files.
+
+2007-02-25 17:47  rgb
+
+	* Makefile, dieharder.svn.time, dieharder/Makefile,
+	  dieharder/Makefile.am, libdieharder/Makefile, ltmain.sh,
+	  manual/Makefile: This should be REALLY REALLY close. We'll
+	  checkin, do a full checkout,
+	  and try building. If/when we get there, we'll work strictly from
+	  build
+	  to build once again.
+
+2007-02-25 17:27  rgb
+
+	* AUTHORS, Makefile, NEWS, autogen.sh, configure.ac,
+	  dieharder.svn.time, dieharder/Makefile, libdieharder/Makefile,
+	  manual/Makefile: OK, this is one whole cut closer, and ALMOST
+	  works, but we're definitely
+	  going to have to try this one more time... We also need at some
+	  point
+	  to stop svn control of Makefiles and maintain only Makefile.ams
+
+2007-02-25 17:17  rgb
+
+	* dieharder.svn.time, dieharder/Makefile.am,
+	  dieharder/configure.ac, libdieharder/Makefile.am,
+	  libdieharder/configure.ac, manual/Makefile.am,
+	  manual/configure.ac: Adding what MAY be all the things needed to
+	  enable full automated Gnu
+	  style builds from the autogen.sh script.
+
+2007-02-25 17:16  rgb
+
+	* Makefile, Makefile.am, autogen.sh, configure.ac, dieharder.spec,
+	  dieharder.spec.in, dieharder.svn.time, dieharder/Makefile,
+	  dieharder_version.h.in, install-sh, libdieharder/Makefile,
+	  manual/Makefile, missing, mkinstalldirs, po, po/Makefile,
+	  po/Makefile.in, po/Makefile.in.in, po/POTFILES, po/POTFILES.in:
+	  Finished a first cut at adding GBT support. Need to check in the
+	  .in
+	  files and configure.ac files one level down, and do a full
+	  checkout to
+	  see if it autobuilds from an svn checkout.
+
+2007-02-19 14:23  rgb
+
+	* ChangeLog, buildroot, dieharder.spec, dieharder.svn.time,
+	  dieharder/Makefile, libdieharder/Makefile: This dumps buildroot.
+	  We don't need or want this in the tarball or rpm
+	  sources.
+
+2007-02-19 08:47  rgb
+
+	* ChangeLog, Makefile, dieharder.abs, dieharder.spec,
+	  dieharder.svn.time, dieharder/Makefile, libdieharder/Makefile: We
+	  are working quite hard on getting the ChangeLog to be
+	  automagically
+	  registered. I'm guessing it should just go into %doc and we
+	  should
+	  pretty much forget the tag otherwise.
+
+2007-02-19 08:05  rgb
+
+	* ChangeLog, Makefile, dieharder.spec, dieharder.svn.time,
+	  libdieharder/Makefile: This fixes a variety of problems with
+	  using shared libraries correctly,
+	  and moves the project much closer to where it could e.g. be
+	  included in
+	  FC extras. The library builds nicely now, for example. However, I
+	  do
+	  need to switch to using autoconf, however much I generally
+	  dislike it.
+
+2007-02-19 06:32  rgb
+
+	* dieharder.svn.time, dieharder/Makefile, libdieharder/Makefile:
+	  OK, this fixes some serious uglyness. Let's see if the rpm
+	  builds...
+
+2007-02-18 21:49  rgb
+
+	* dieharder.abs, dieharder.spec, dieharder.svn.time,
+	  dieharder/Makefile, libdieharder/Makefile: Updating the svn tree
+	  and sync'ing, perhaps for the last time. Will
+	  this now reside on code.google.com? We'll see.
+
+2007-02-18 13:37  rgb
+
+	* Makefile, README, dieharder.spec, dieharder.svn.time,
+	  dieharder/Makefile, dieharder/run_rgb_bitdist.c,
+	  dieharder/test.c, libdieharder/Makefile: Let's call this
+	  TAG=2.5.24 -- bumping the first minor to announce that
+	  we've cleaned up several bugs and repackaged.
+
+2007-02-15 18:55  rgb
+
+	* INSTALL, dieharder.spec, dieharder.svn.time, dieharder/Makefile,
+	  dieharder/test.c, libdieharder/Makefile, libdieharder/kstest.c:
+	  This fixes a bug reported by Matthias Braeunig
+	  <mb.atelier@web.de>, who
+	  was running the test on a file of data just one time per test
+	  using more
+	  or less this line:
+	  
+	  for t in $(echo "-d"{1..19} "-r"{1..4} "-s"{1..2}); do
+	  ./dieharder -q -t9375 -p1 $t;done > results
+	  
+	  He noted that kstest_kuiper returned 2.0 for input single pvalues
+	  of
+	  0.0, and that the test overall returned a pass even if p=1.0
+	  exactly
+	  (which it also should not do for single pvalues).
+	  
+	  I made the following changes. kstest_kuiper now returns a single
+	  input
+	  pvalue as its output pvalue -- clearly that's all one can do and
+	  the
+	  right thing to do. The test.c assessment that prints out the
+	  results
+	  also no longer calls the return a KStest result, and reports
+	  failure
+	  a bit differently, flagging the high-p failures as well as the
+	  low p
+	  failures, and adjusting the reported failure range accordingly.
+	  
+	  To do this I had to use -static in the Makefile to work in the
+	  development tree. I'm guessing that I need to add LDFLAG =
+	  -dynamic to
+	  the build make line in the specfile and should LEAVE it -static
+	  in the
+	  actual tree so people don't get stymied if they download and
+	  build in
+	  the tarball directory ("people" including me) while rpm's will
+	  still
+	  autobuild dynamic correctly.
+	  
+	  Finally, Matthias reported that the -q flag doesn't work. He's
+	  right,
+	  but I'm not sure I'm going to fix that. Rather I should probably
+	  just
+	  kill it and let people filter the output results by hand...
+
+2007-02-06 04:42  rgb
+
+	* Makefile, dieharder.abs, dieharder.spec, dieharder.svn.time,
+	  libdieharder/Makefile: I've just fired this up to the web. I deem
+	  it finished enough.
+	  Now to backport the library fix to wulfware, and call it a night,
+	  very
+	  much a night.
+
+2007-02-06 03:06  rgb
+
+	* Makefile, dieharder.spec, dieharder.svn.time, dieharder/Makefile,
+	  libdieharder/Makefile: OK, it installs and builds PERFECTLY, and
+	  THIS time it almost certainly
+	  is dynamically linking to libdieharder.so, as it linked without
+	  the .a
+	  library present at all. I'll now have to go retrofit this to
+	  wulfware,
+	  as it is not building correctly.
+
+2007-02-06 02:39  rgb
+
+	* Makefile, dieharder.svn.time: This actually rand and built! Now
+	  to try to rebuild it WITHOUT the .a
+	  library installed...
+
+2007-02-06 02:30  rgb
+
+	* Makefile, dieharder.spec, dieharder.svn.time, dieharder/Makefile,
+	  libdieharder/Makefile, manual/Makefile: Just in case I drop
+	  something, I finally seem to have "fixed" the
+	  libdieharder makefile. On to fame and glory.
+
+2007-02-05 20:06  rgb
+
+	* dieharder.spec, dieharder.svn.time, lib, libdieharder/Cruft,
+	  libdieharder/Makefile: OK, this is crawling on closer to ready to
+	  go...
+
+2007-02-05 19:51  rgb
+
+	* Makefile, NOTES, R, buildroot, buildroot/usr, buildroot/usr/bin,
+	  buildroot/usr/lib, buildroot/usr/share, buildroot/usr/share/doc,
+	  buildroot/usr/share/man, dieharder, dieharder.spec,
+	  dieharder.svn.time, dieharder/Cruft, dieharder/Makefile,
+	  dieharder_src: Make this go away, please.
+
 2007-02-05 19:47  rgb
 
 	* dieharder_src/Makefile: This maybe will get to where I can clean

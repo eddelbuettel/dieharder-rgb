@@ -24,6 +24,12 @@
  * tribution with the specified 120x120 covariance matrix (with  ::
  * rank 99).  This version uses 1,000,000 integers, twice.       ::
  *
+ * Note -- this test almost certainly has errors.  It has been
+ * suggested that the actual rank is 5!-4!=96, not 99.  However,
+ * "good" generators still fail this test with the lower rank.
+ * I really think that the covariance matrix is going to have to
+ * recomputed...
+ *
  *                       Comment
  * Good test.  Just about everything fails it.  It is validated
  * to the extent humanly possible against the last c port of
@@ -219,7 +225,7 @@ void diehard_operm5(Test **test, int irun)
   * routine to crash, so we protect it with the fabs() call.
   */
  chisq = fabs(chisq / norm);
- ndof = 99;
+ ndof = 96;
  MYDEBUG(D_DIEHARD_OPERM5){
    printf("# diehard_operm5(): chisq[%u] = %10.5f\n",kspi,chisq);
  }
