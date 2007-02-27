@@ -22,12 +22,8 @@ DIR = libdieharder
 # We therefore point to the directory one level up, where we should
 # find a ./lib, ./include, ./share and ./bin directory tree from which
 # the various dieharder files will actually be assembled into an rpm
-# with PREFIX=/usr (for example).
+# with prefix=/usr (for example).
 #========================================================================
-PREFIX=@prefix@
-LIBDIR=$(PREFIX)/lib
-INCDIR=$(PREFIX)/include
-
 SVNTREE = $(HOME)/Src/svn-tree
 SVNPATH = $(SVNTREE)/$(PROJECT)
 SVNTIME = $(DIR:=.svn.time)
@@ -80,8 +76,8 @@ all: $(INCTIME) $(PROGLIB_SO_VERSION) # $(PROGLIB_A)
 
 # This has to ALWAYS run before a build.
 $(INCTIME):
-	(install -d $(INCDIR)/dieharder; \
-	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder;)
+	(install -d $(includedir)/dieharder; \
+	install -m 644 ../include/dieharder/*.h $(includedir)/dieharder;)
 
 # FC "requires" no static lib build/install	
 # $(PROGLIB_A): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
@@ -119,24 +115,24 @@ clean:
 
 #========================================================================
 # This is critical.  For the toplevel rpm build to succeed,
-#  make PREFIX=/usr install
+#  make prefix=/usr install
 # (run by rpmbuild from the specfile) has to work, in the right order.
 # This target has to install precisely the files required by the
 # specfile for the dieharder package, in precisely the right locations.
 #========================================================================
 install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
-	(install -d $(LIBDIR); \
-	install -m 755 $(PROGLIB_SO_VERSION) $(LIBDIR)/$(PROGLIB_SO_VERSION); \
-	install -d $(INCDIR)/dieharder; \
-	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
-	install -d $(PREFIX)/share/man/man3; \
+	(install -d $(libdir); \
+	install -m 755 $(PROGLIB_SO_VERSION) $(libdir)/$(PROGLIB_SO_VERSION); \
+	install -d $(includedir)/dieharder; \
+	install -m 644 ../include/dieharder/*.h $(includedir)/dieharder; \
+	install -d $(prefix)/share/man/man3; \
 	gzip -c $(PROGMAN) > $(PROGMAN).gz; \
-	install -m 644 $(DIR).3.gz $(PREFIX)/share/man/man3)
+	install -m 644 $(DIR).3.gz $(prefix)/share/man/man3)
 
 # FC requires no static lib install
-# 	install -m 755 $(PROGLIB_A) $(LIBDIR)/$(PROGLIB_A); \
-	# ldconfig -n $(LIBDIR); \
-	# ln -sf $(LIBDIR)/$(PROGLIB_SO_VERSION) $(LIBDIR)/$(PROGLIB_SO); \
+# 	install -m 755 $(PROGLIB_A) $(libdir)/$(PROGLIB_A); \
+# ldconfig -n $(libdir); \
+# ln -sf $(libdir)/$(PROGLIB_SO_VERSION) $(libdir)/$(PROGLIB_SO); \
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.

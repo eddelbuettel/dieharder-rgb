@@ -25,11 +25,6 @@ DIR = $(PROGRAM)
 # the various dieharder files will actually be assembled into an rpm
 # with PREFIX=/usr (for example).
 #========================================================================
-# BUILDROOT=../buildroot
-PREFIX=@prefix@
-LIBDIR=../libdieharder
-INCDIR=../include
-
 SVNTREE = $(HOME)/Src/svn-tree
 SVNPATH = $(SVNTREE)/$(PROJECT)
 SVNTIME = $(DIR:=.svn.time)
@@ -50,7 +45,7 @@ SRCINCLUDES = $(shell ls *.h  2>&1 | sed -e "/\/bin\/ls:/d")
 # These are important dependencies, although it isn't easy to
 # see how to force a consistent build when working on the UI
 # and library at the same time.  Maybe with particular make targets...
-LIBINCLUDES = $(shell ls $(INCDIR)/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
+LIBINCLUDES = $(shell ls ../include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
 PROGLIB_SONAME = $(LIBDIR)/libdieharder.so.$(VERSION)
 
 SOURCES = $(LIBSOURCES) $(SRCSOURCES)
@@ -66,13 +61,13 @@ DEFINES = -DVERSION=$(VERSION)
 CC = gcc
 
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 -I $(INCDIR) $(DEFINES) 
+CFLAGS = -O3 -I ../include $(DEFINES) 
 
 # Linker flags.
 LDFLAGS =
 
 # Libraries
-LIBS = -L $(LIBDIR) -ldieharder -lgsl -lgslcblas -lm
+LIBS = -L ../libdieharder -ldieharder -lgsl -lgslcblas -lm
 
 #========================================================================
 # List of variants one can make.  all is the default.  We always
@@ -120,18 +115,18 @@ clean :
 
 #========================================================================
 # This is critical.  For the toplevel rpm build to succeed,
-#  make PREFIX=/usr install
+#  make prefix=/usr install
 # (run by rpmbuild from the specfile) has to work, in the right order.
 # This target has to install precisely the files required by the
 # specfile for the dieharder package, in precisely the right locations.
 #========================================================================
 install : $(PROGRAM)
 	(strip $(PROGRAM);\
-	install -d $(PREFIX)/bin; \
-	install -m 755 $(PROGRAM) $(PREFIX)/bin; \
-	install -d $(PREFIX)/share/man/man1; \
+	install -d $(prefix)/bin; \
+	install -m 755 $(PROGRAM) $(prefix)/bin; \
+	install -d $(prefix)/share/man/man1; \
 	gzip -c $(PROGRAM).1 > $(PROGRAM).1.gz; \
-	install -m 644 $(PROGRAM).1.gz $(PREFIX)/share/man/man1)
+	install -m 644 $(PROGRAM).1.gz $(prefix)/share/man/man1)
 
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
