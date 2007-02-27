@@ -953,3 +953,23 @@ continuous stream of random bits.
 I need to upload the new 2.x release to the website, and probably clean
 up the website.  Sigh.  LOTS to do, and so little time and
 competition...
+
+==================================================================
+02/27/07
+
+dieharder now builds with the usual ./configure;make sequence.  Gnu
+Build Tools Suck.  However, they are standard and expected, if
+infinitely painful.  Hopefully this will facilitate the debian build,
+though, and make rpm still works.
+
+May have fixed a minor bug in operm5, where it has been claimed that the
+correct number of degrees of freedom is 5!-4! = 96, not 99.  This makes
+at least some sense, so I implemented the change, but operm5 has MORE
+errors in either code or data, and I don't have time or knowledge to fix
+them...
+
+On to the next step -- putting the code on a truly public svn repo ---
+code.google.com.  This will take one little bit of work, as the svnsync
+didn't work the first times I tried it...
+
+   rgb

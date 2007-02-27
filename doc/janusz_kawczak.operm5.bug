@@ -1,0 +1,219 @@
+From jkawczak@gmail.com Mon Feb 26 22:58:07 2007
+Date: Mon, 26 Feb 2007 22:58:25 -0500
+From: Janusz Kawczak <jkawczak@gmail.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Cc: Dirk Eddelbuettel <edd@debian.org>
+Subject: Re: Random R-Package
+
+Hello, without going to much into peculiarities (for now, at least) of
+the rngs and numbers coming from Marsaglia and you (Robert), I would
+like to give the result from our paper that is directly applicable to
+the operm5 header you cited below:
+
+"...(with # rank 99)..." - this is the point I questioned in our paper.
+I asked Marsaglia how he got this rank, but I never received the reply
+from him. I can only presume that he either guessed this number or
+estimated it (somehow). It remains a mystery to me; like a Marsaglia's
+voodoo step. The answer should be 96=5!-4!. It is not a big deal
+of a difference in this case, however, the theorem we proved allows one
+to consider cased of perm6, perm7 ... and higher with the exact number
+of degree of freedom calculations. Thus, exact and not guessed results.
+
+It is my opinion that the operm-type test is very powerful for detecting
+local correlations (dependencies) and it should be used for such
+purpose. So, any algorithmic PRNG will suffer and most likely do not
+dwell well when exposed to this test. I have not had a chance to do
+serious experiments on the "natural-random" generators, e.g.
+alpha-particle counting, radio noise signals and many others. But, I
+suspect that the operm-type test should do well in this situation.
+
+I cannot promise at this time much, but I am going to look at the issues
+you addressed in your e-mail. However, the questions you've raised are a
+bit different animals to deal with.
+
+In summary, it would be useful, once and for all, to correct 99 degrees
+to 96 in the operm5 Marsaglia's header file. Maybe, one day, this will
+happen :-)
+
+Best, Janusz.
+
+Robert G. Brown wrote:
+
+> On Sun, 25 Feb 2007, Janusz Kawczak wrote:
+> 
+> Hi, I'm going to try to answer here.  I'll rearrange the forwarded
+> material a bit to (hopefully) address the issues in the order where they
+> appeared.
+> 
+> > >     The reason I am writing is that I was going over some stuff
+> > > related to
+> > >     the RNG's and came across your comments for the R-package
+> > > 'Random'.
+> > >     Therein, you write (on page 4 of random-intro.pdf in the help):
+> > >         "The Diehard Overlapping 5-Permutations may be prone to type I
+> > >     errors so the failure may be disregarded."
+> > >         Could you please elaborate on this, i.e. what specific feature
+> > > of PRNGs
+> > >     leads to that or this is a problem in the design of the test or
+> > >     something entirely different. I may have some comments on this
+> > > subjects
+> 
+> ...
+> 
+> > A couple of years ago I (and co-authors) published a paper on special
+> > type of Markov chains, the nilpotent ones, and we found a natural
+> > application of the theoretical result to the Marsaglia's Perm5 test.
+> > It turned out that the rank of the covariance matrix in Marsaglia's
+> > original test was not correct. I am just wondering whether calculating
+> > type I error is not related to the error in obtaining the degree
+> > of freedom for the chi-square test.
+> > 
+> > The details for the paper are:
+> > "On the Class of Nilpotent Markov Chains, I. The Spectrum of Covariance
+> > Operator.", Markov Processes and Related Fields, Vol. 10, 4, 2004.
+> 
+> 
+> Here is the output from a "standard" dieharder run on operm5.  It uses
+> Marsaglia's numbers from diehard (his r and s matrices).  Marsaglia used
+> to run the test only twice, since it consumed 10^6 uint rands and his
+> tests ran from tables.  When I converted the code so that it would run
+> hooked up directly to the GSL rngs, where I standardized all tests (with
+> an effectively infinite number of rands accessible) to run to generate
+> at least 100 pvalues and do a KS test on the result, that while operm5
+> would nearly always generate "reasonable" pvalues -- examined one at a
+> time -- in the expected range 0-1, if one looks at the distribution of p
+> it is clearly nonuniform.
+> 
+> It fails in this way for basically all rngs in the GSL and a few e.g.
+> entropy-based generators as well -- several of which are supposed to be
+> "good", or at any rate state of the art -- and which pass all the
+> embedded diehard and moment tests BUT one other test that I also suspect
+> of having bad diehard data by inheritance (bitstream).  I contacted
+> Marsaglia around five or six months ago and pointed out that I was
+> experiencing this problem and that I suspected bad data in diehard.  He
+> was not enthused, but agreed that since the numbers were computed a LONG
+> time ago, in many cases by extensive simulation with 80's or 90's
+> computing resources and rngs, they might be in error.  He was going to
+> look at this and get back to me but never did, and I've been too busy
+> fixing other bugs and making Dirk The Slave Driver happy ;-) to get back
+> to the issue myself.  So I just mark the two tests doubtful and have
+> actually been waiting/hoping for a user to come forth with a solution.
+> As (I hope) you have:-).
+> 
+> Note the output below for mt19937_1999, which is one of the four really
+> excellent rngs in the GSL (taus*, mt19937*, ranlxd2, and gfsr4).  The
+> beginning para of the header stuff is diehard's comment/description, the
+> next two are my mods and comment.  A glance at the histogram makes it
+> clear that p is not uniformly distributed.  I actually can run the test
+> either with or without overlapping samples my means of a command line
+> flag (the example presented is with) and get pretty much the same result
+> either way, as one might expect.
+> 
+> #==================================================================
+> #          Diehard Overlapping 5-Permutations Test.
+> # This is the OPERM5 test.  It looks at a sequence of one mill- # ion
+> 32-bit random integers.  Each set of five consecutive # integers can be in
+> one of 120 states, for the 5! possible or- # derings of five numbers.
+> Thus the 5th, 6th, 7th,...numbers # each provide a state. As many
+> thousands of state transitions # are observed,  cumulative counts are made
+> of the number of # occurences of each state.  Then the quadratic form in
+> the # weak inverse of the 120x120 covariance matrix yields a test #
+> equivalent to the likelihood ratio test that the 120 cell # counts came
+> from the specified (asymptotically) normal dis- # tribution with the
+> specified 120x120 covariance matrix (with # rank 99).  This version uses
+> 1,000,000 integers, twice. #
+> # Note that Dieharder runs the test 100 times, not twice, by
+> # default.
+> #
+> # WARNING! This test currently fails ALL RNGs including ones that
+> # are strongly believed to be "good" ones (that pass the other # dieharder
+> tests).  DO NOT USE THIS TEST TO ASSESS RNGs!  It very
+> # likely contains either implementation bugs or incorrect data used
+> # to compute the test statistic.  rgb
+> #==================================================================
+> #                        Run Details
+> # Random number generator tested: mt19937_1999
+> # Samples per test pvalue = 1000000 (test default is 1000000)
+> # P-values in final KS test = 100 (test default is 100)
+> #==================================================================
+> #                Histogram of p-values
+> # Counting histogram bins, binscale = 0.100000
+> #     40|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |    |    |    |    |    |    |
+> #     36|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |    |    |    |    |    |    |
+> #     32|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |    |    |    |    |    |    |
+> #     28|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |    |    |    |    |    |    |
+> #     24|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |    |    |    |    |    |****|
+> #     20|    |    |    |    |    |    |    |    |    |****|
+> #       |    |    |    |    |    |    |    |    |****|****|
+> #     16|****|    |    |    |    |    |    |    |****|****|
+> #       |****|    |    |    |    |    |    |    |****|****|
+> #     12|****|    |    |    |    |    |    |    |****|****|
+> #       |****|    |    |    |    |    |    |    |****|****|
+> #      8|****|    |    |    |    |    |    |    |****|****|
+> #       |****|    |****|****|****|    |****|****|****|****|
+> #      4|****|****|****|****|****|****|****|****|****|****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #       |--------------------------------------------------
+> #       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+> #==================================================================
+> #                          Results
+> Kuiper KS: p = 0.000003
+> Assessment: FAILED at < 0.01% for Diehard OPERM5 Test
+> 
+> 
+> (Back to me again).  Of course, this is definitely not positive evidence
+> of any problem with diehard, only with dieharder.  In spite of my best
+> efforts and several checks against the original diehard data I might
+> have made an error in the data, in the code reimplementation (all code
+> is a clean port into C -- I didn't reuse any of the diehard fortran code
+> because Marsaglia's code doesn't have any attached licenses, for all
+> that it was developed with NSF support and has been openly published on
+> the net for years).  One chore on my to-do list is to compile dieharder,
+> dump a test file from one of the GSL rngs to use as a standard, and try
+> to crossvalidate the new code.  Alas, I won't get exactly the same
+> numbers (almost certainly) but I should get at least comparable pvalues.
+> I also want to establish a standard validation run for dieharder anyway,
+> so people who build it locally to play can try to detect when they break
+> something.
+> 
+> So if you have a separate reason to expect that operm5 is broken -- and
+> in particular have revised r and s, and map matrices, assuming that the
+> general test algorithm is ok -- that's very interesting to me.  I'd be
+> happy to put your numbers in my code and test them, or to help walk you
+> through a build so that you can figure out how to play with the numbers
+> (or algorithm) yourself.  I'd actually be thrilled to get a new set of
+> numbers with a sound theoretical basis that "fix" this test.
+> 
+> Also, if you are looking for more to do on a related problem, I would
+> draw your attention to the fact that bitstream with Marsaglia's numbers
+> also seems to be broken.  This one, too, I run overlapping or
+> non-overlapping with roughly equivalent results (as one might
+> expect,actually).  Here there aren't a whole lot of numbers -- Marsaglia
+> gives us mean 141,909 and sigma 428, both known IIRC from his 1980's
+> simulations.  I haven't measured what these values are as returned by
+> dieharder simulations with far more data and far more runs than likely
+> went into their original construction yet, but again the distribution of
+> p is in the range 0-1 as expected, so Marsaglia's 20 runs might well
+> reveal nothing amiss where 100 makes the failure apparent and 1000 makes
+> it overwhelming.
+> 
+> Anyway, I'd love a draft copy of your paper, although I'll try to grab
+> one through Duke's journal subscriptions from the web as well.  I should
+> warn you that although I use a lot of rands, understand stats well
+> enough (certainly enough to understand how random number testing works
+> etc) and am a decent programmer, I'm basically a physicist.  One other
+> reason I haven't tackled operm5 is that it is NOT an easy test to
+> understand, and is a bit beyond my self-trained knowledge of statistics
+> to assess without a lot more self-training...;-) So you may have to use
+> baby talk or help direct me when it comes to my implementing covariance
+> matrices from your paper...
+> 
+>    rgb
+> 
+
+

@@ -2,7 +2,7 @@
 <center><H2>Version 2.24.1</H2></center>
 
 <center><H3>Robert G. Brown (rgb)</H3></center>
-
+<center><H3>Dirk Eddelbuettel</H3></center>
 
 <p>At the suggestion of Linas Vepstas on the Gnu Scientific Library
 (GSL) list this GPL'd suite of random number tests will be named
@@ -49,18 +49,16 @@ they can be linked into scripting languages such as R, new UIs, or user
 code.  3.x.x would be expected to indicate that the entire STS suite is
 incorporated, and so on.
 
-<li> Second number (first minor).  This number is bumped when
-significant features are added or altered.  For example, this new
-project page accompanies the new 0.5.x release, where I completely
-rewrote the command line options, global variable list, and the test
-structure so that it was convenient and uniform for all tests that run
-so far.  Bug fix releases bump this number.  This number is reset to 0
-when the major is bumped to flag a debugging/beta release.  In one sense
-this is the least significant number.
-
-<li> Third number (second minor).  This number indicates the number of
+<li> Second number (first minor).  This number indicates the number of
 tests currently supported.  When it bumps, it means new tests have been
 added from e.g. STS, Knuth, Marsaglia and Tsang, rgb, or elsewhere.
+
+<li> Third number (second minor).  This number is bumped when
+significant features are added or altered.  Bug fixes bump this number,
+usually after a few bumps of the release number for testing snapshots.
+This number and the release are reset to 0 when the major is bumped or a
+new test is added to maintain the strictly increasing numerical value on
+which e.g. yum upgrades rely.
 
 </ul>
 
