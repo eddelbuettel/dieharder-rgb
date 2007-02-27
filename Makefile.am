@@ -216,7 +216,7 @@ installweb : $(TGZ) $(RPM) $(SRPM) $(LRPM) $(PRPM) $(MRPM) $(ABS) $(PHP)
 	rsync -avz $(ABS) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
 	ssh $(WLOGIN) "cd public_html/$(WDIR)/$(PROJECT);ln -sf $(TGZ) $(PROJECT).tgz"; \
 	ssh $(WLOGIN) "cd public_html/$(WDIR)/$(PROJECT);ln -sf $(SRPM) $(PROJECT).src.rpm"; \
-	ssh $(WLOGIN) "cd public_html/$(WDIR)/$(PROJECT);touch Current_Is_$(VERSION)"; \
+	ssh $(WLOGIN) "cd public_html/$(WDIR)/$(PROJECT);rm Current*;touch Current_Is_$(VERSION)"; \
 	rsync -avz $(PHP) $(WLOGIN):public_html/$(WDIR)/)
 
 REPOSERVER = uriel

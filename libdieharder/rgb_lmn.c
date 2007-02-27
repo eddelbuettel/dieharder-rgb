@@ -131,7 +131,8 @@ double rgb_lmn()
    gsl_rng_set(rng,1);
  }
 
- test_header(dtest);
+ /* show_test_header(dtest); */
+
  /*
   * Any custom test header output lines go here.  They should be
   * used VERY sparingly.
@@ -145,8 +146,8 @@ double rgb_lmn()
 
  /*
   * Test Results, standard form.
+ show_test_results(dtest,pks,ks_pvalue,"Lagged Sum Test");
   */
- test_footer(dtest,pks,ks_pvalue,"Lagged Sum Test");
 
  /*
   * Put back tsamples

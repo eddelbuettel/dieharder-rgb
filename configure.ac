@@ -2,9 +2,9 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([dieharder], [2.24.1])
+AC_INIT([dieharder], [2.24.2])
 AC_CONFIG_SRCDIR([dieharder.abs])
-RELEASE=2
+RELEASE=0
 AC_SUBST(RELEASE)
 
 AM_INIT_AUTOMAKE
