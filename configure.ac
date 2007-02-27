@@ -4,6 +4,8 @@ AC_PREREQ(2.59)
 
 AC_INIT([dieharder], [2.24.1])
 AC_CONFIG_SRCDIR([dieharder.abs])
+RELEASE=1
+AC_SUBST(RELEASE)
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
@@ -54,11 +56,9 @@ AC_C_INLINE
 
 DIEHARDER_CFLAGS="-I$includedir"
 DIEHARDER_LIBS="-L$libdir -ldieharder"
-RELEASE=0
 
 AC_SUBST(DIEHARDER_CFLAGS)
 AC_SUBST(DIEHARDER_LIBS)
-AC_SUBST(RELEASE)
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-ldieharder':

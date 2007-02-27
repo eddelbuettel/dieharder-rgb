@@ -31,7 +31,7 @@ SVNTIME = $(DIR:=.svn.time)
 # This is automagically set in the toplevel build.  Do not edit by
 # hand.
 VERSION=@VERSION@
-VERSION_MAJOR=$(shell echo $VERSION | expr - : '\(.*\)\..*' \| $VERSION)
+VERSION_MAJOR = $(shell expr $(VERSION) : '\(.*\)\..*\..*' \| $(VERSION))
 RELEASE=0
 
 # This is the library from which both wulfstat and wulflogger (and maybe
@@ -111,7 +111,7 @@ printout:
 #  A standard cleanup target
 #========================================================================
 clean:
-	rm -f core $(PROGLIB) $(PROGLIB_NAME) $(LIBOBJECTS) $(PROGMAN).gz
+	rm -f core $(PROGLIB_SO)* $(LIBOBJECTS) $(PROGMAN).gz
 
 #========================================================================
 # This is critical.  For the toplevel rpm build to succeed,
