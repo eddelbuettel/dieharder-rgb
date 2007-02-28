@@ -66,9 +66,15 @@ void diehard_sums(Test **test, int irun)
   * occurring from the random sum.  The vector of p-values can be turned
   * into an overall p-value via a KS test.
   *
-  * However, the sums formed from OVERLAPPING vectors are not uncorrelated.
-  * They have to be transformed with a matrix to make them independent
-  * normal.  Things get all funky then in Marsaglia's description, at least
+  * This appears to be yet another variant on the nilpotent Markov
+  * chain tests, like those Janusz Kawczak has communicated with me
+  * about (see paper in docs).  In principle if I figure out one of
+  * these tests I can figure them all out, and maybe see how to fix
+  * them, as I strongly suspect that they are broken and/or need an
+  * update as far as the numbers in the covariance matrices are
+  * concerned.
+  *
+  * Things get all funky then in Marsaglia's description, at least
   * to a poor ignorant physicist like myself.  I quote:
   *
   *   The y's covariance matrix T is Toeplitz with diagonals 100,99,...2,1
@@ -80,22 +86,21 @@ void diehard_sums(Test **test, int irun)
   * Ouch!  Toeplitz!  Cholesky factorization!  Off to wikipedia or
   * the wolfram site to figure out what that means in plain English...;-)
   *
-  * The greatest tragedy, of course, is that I THINK that he's working
-  * this hard to avoid having to use too many rands.  After all, if one
-  * uses NON-overlapping sums, they ARE independent already and a
-  * simple chisq on the vector yields a p-value.  Is there some reason
-  * to expect a generator might fail on the overlapping sums but pass
-  * on the much more straightforward test on real non-overlapping ones?
+  * Nilpotent Markov Chains... (by A.M. Alhakim, J. Kawczak and S.
+  * Molchanov) is no better, although it certainly appears to be more
+  * mathematically valid and consistent.  I may have to work with a
+  * "real statistician" on this one to get a scalable code framework
+  * established, ideally one where the "100" used in sums is a parameter.
   *
-  * We will Find Out Shortly, folks, as I have at my disposal the overlap
-  * flag, and plan to implement Marsaglia's test precisely in the -O(verlap)
-  * segment and just plain doggone sum independent sequences of uniform
-  * rands and see how they distribute around 100*0.5 = 50 with a boring
-  * old chisq test...
-  *
-  * I may make this an rgb test, of course, because several parameters of
-  * this process can be varied a lot more easily if I just write the test
-  * from scratch from the beginning.
+  * As it is now, by the way.  Generators that fail when the number of
+  * test samples is only 100 PASS when I crank up the number of samples
+  * to around 200 or 300, then fail consistently with a distribution of
+  * p that is now biased LOW (where before it was biased HIGH) for all
+  * the "best" rngs in the GSL.  Again, this suggests that there is a
+  * very subtle error somewhere but is far from definitive.  If you are
+  * a real stats person and a coder and are reading this, PLEASE consider
+  * helping out by figuring this out and contributing a fix -- otherwise
+  * I'll fix it (or at least address it) when I have time to get to it.
   */
 
  /*
@@ -222,8 +227,9 @@ void diehard_sums(Test **test, int irun)
   * At last, the x[i]'s are a presumably UNIFORM distribution from 0-1, in
   * fact a distribution of test[0]->tsamples p-values!  We can then do the same old
   * ks test on them that we'll eventually do on ks_pvalue[]!
-  */
  test[0]->pvalues[irun] = kstest_kuiper(x,test[0]->tsamples);
+  */
+ test[0]->pvalues[irun] = kstest(x,test[0]->tsamples);
  MYDEBUG(D_DIEHARD_SUMS) {
    printf("# diehard_sums(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }

@@ -3,14 +3,17 @@
  * 
  *  Copyright (C) Tony Pasqualoni / Sept. 20, 2006
  *
- *  GSL packaged for dieharder by Robert G. Brown 2/27/07
+ *  From:
+ *
+ *      http://home.southernct.edu/~pasqualonia1/ca/report.html
+ *
+ *  GSL-style packaging for dieharder by Robert G. Brown 2/27/07
  *
  *  Cellular automaton random number generator
- *  Uses a 256-state automaton to generate random sequences of 32-bit unsigned integers.
+ *  Uses a 256-state automaton to generate random sequences of
+ *  32-bit unsigned integers.
  *
- *  Functions:
- *  ca_rng_initialize (unsigned int seed): initialize automaton using specified seed.
- *  unsigned int ca_rng_get_int (void): returns a 32-bit unsigned integer produced by the automaton.
+ *========================================================================
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
