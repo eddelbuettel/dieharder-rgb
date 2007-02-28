@@ -30,6 +30,7 @@ GSL_VAR const gsl_rng_type *gsl_rng_dev_urandom;
 GSL_VAR const gsl_rng_type *gsl_rng_empty_random;
 GSL_VAR const gsl_rng_type *gsl_rng_file_input;
 GSL_VAR const gsl_rng_type *gsl_rng_file_input_raw;
+GSL_VAR const gsl_rng_type *gsl_rng_ca;
 
 void add_my_types()
 {
@@ -58,6 +59,9 @@ void add_my_types()
  if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
  i++;
  types[i] = (gsl_rng_file_input_raw);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_ca);
  if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
  i++;
  

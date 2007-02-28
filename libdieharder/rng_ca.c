@@ -152,7 +152,7 @@ ca_set (void *vstate, unsigned long int s) {
 
    /* evolve automaton before returning integers */
    for (i = 0 ; i < ( (CA_WIDTH * CA_WIDTH) / 4.0); i++) 
-      ca_rng_get_int();
+      ca_get(vstate);
 
 }
 
@@ -165,4 +165,4 @@ static const gsl_rng_type ca_type =
  &ca_get,
  &ca_get_double};
 
-const gsl_rng_type *gsl_rng_ca = &dev_ca_type;
+const gsl_rng_type *gsl_rng_ca = &ca_type;
