@@ -7,38 +7,10 @@
 % Filename: dieharder_jcgs.tex
 % Description:  Latex sources for a simple article/dieharder_jcgs
 
-\documentclass{article}
-\usepackage{epsfig}
-\usepackage{html}
+\documentclass[12pt]{article}
+\usepackage{epsf}
 
-% \setlength{\topmargin}{-1.0in}
-% \setlength{\textheight}{9.2in}
-% \setlength{\oddsidemargin}{0.0in}
-% \setlength{\textwidth}{6.5in}
-% \setlength{\parindent}{0.0in}
-\newcommand{\partialdiv}[2]{\frac{\partial #1}{\partial #2}}
-\newcommand{\del}{{\bf \nabla}}
-\newcommand{\deldot}{\del \cdot }
-\newcommand{\vsh}[2]{{\bf Y}_{#1}^{#2}}
-\newcommand{\abs}[1]{\left| #1 \right|}
-\newcommand{\ddt}[1]{\frac{d #1}{dt}}
-\newcommand{\ddtsq}[1]{\frac{d^2 #1}{dt^2}}
-\newcommand{\half}{\frac{1}{2}}
-\newcommand{\RE}{\rm I \hspace{-.180em} R}
-\newcommand{\be}{ \begin{equation} }
-\newcommand{\ee}{ \end{equation} }
-\newcommand{\bea}{ \begin{eqnarray} }
-\newcommand{\eea}{ \end{eqnarray} }
-\newcommand{\bi}{ \begin{itemize} }
-\newcommand{\ei}{ \end{itemize} }
-\newcommand{\ben}{ \begin{enumerate} }
-\newcommand{\een}{ \end{enumerate} }
-\newcommand{\bv}{ \begin{verbatim} }
-% one cannot end verbatim with a macro, as the macro
-% is interpreted as verbatim text, duh...
-\newcommand{\pagefill}{\vspace*{\fill} \newpage \vspace*{\fill}}
-\newcommand{\tot}{{\rm tot}}
-\renewcommand{\deg}{^{\circ}}
+\input{macros.tex}
 
 % \def \epsfsize#1#2{0.5#1}
 % Spare figure template
@@ -73,6 +45,7 @@ rgb@phy.duke.edu}
 \centerline{\large \bf Copyright Notice}
 \centerline{Copyright Robert G. Brown 
 $ $Date: 2006/02/20 05:12:02 $.$ }
+\centerline{Snapshot version: \version}
 
 \newpage
 
@@ -668,7 +641,7 @@ terribly easy to turn a KS result into an actual $p$-value -- it tends
 to be more sensitive to one end or the other of an empirical
 distribution and has other difficulties\footnote{See for example the
 remarks  at \\
-\centerline{\htmladdnormallink{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35g.htm}
+\centerline{\link{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35g.htm}
  {http://www.itl.nist.gov/div898/handbook/eda/section3/eda35g.htm}}}.
 
 For that reason, the KS statistic for the uniform distribution is
