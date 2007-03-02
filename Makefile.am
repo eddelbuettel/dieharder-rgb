@@ -2,23 +2,10 @@
 
 SUBDIRS = dieharder libdieharder manual
 
-# pkginclude_HEADERS = copyright.h diehard_parking_lot.h rgb_bitdist.h \
-#  diehard_2dsphere.h diehard_rank_32x32.h rgb_lmn.h diehard_3dsphere.h \
-#  diehard_rank_6x8.h rgb_persist.h diehard_birthdays.h diehard_runs.h \
-#  rgb_timing.h diehard_bitstream.h diehard_squeeze.h std_test.h \
-#  diehard_count_1s_byte.h diehard_sums.h sts_monobit.h \
-#  diehard_count_1s_stream.h Dtest.h sts_runs.h diehard_craps.h \
-#  libdieharder.h tests.h diehard_dna.h marsaglia_tsang_gcd.h verbose.h \
-#  diehard_operm5.h marsaglia_tsang_gorilla.h Vtest.h diehard_opso.h \
-#  operm5_rdata.h Xtest.h diehard_oqso.h parse.h
-
-# bin_SCRIPTS = gsl-config
-# pkgconfigdir = $(libdir)/pkgconfig
-# pkgconfig_DATA= gsl.pc
-
 EXTRA_DIST = autogen.sh dieharder-config.in configure.ac THANKS BUGS SUPPORT dieharder.spec.in dieharder.m4 test_dieharder.sh
 
-# bin_PROGRAMS = dieharder/dieharder
+#  install the man pages  (nope, not doing this right yet)
+# man_MANS=dieharder.1 libdieharder.3
 
 # m4datadir = $(datadir)/aclocal
 # m4data_DATA = dieharder.m4

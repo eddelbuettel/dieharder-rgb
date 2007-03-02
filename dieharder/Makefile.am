@@ -125,7 +125,7 @@ install : $(PROGRAM)
 	install -d $(prefix)/bin; \
 	install -m 755 $(PROGRAM) $(prefix)/bin; \
 	install -d $(prefix)/share/man/man1; \
-	gzip -c $(PROGRAM).1 > $(PROGRAM).1.gz; \
+	gzip -c -9 $(PROGRAM).1 > $(PROGRAM).1.gz; \
 	install -m 644 $(PROGRAM).1.gz $(prefix)/share/man/man1)
 
 #========================================================================

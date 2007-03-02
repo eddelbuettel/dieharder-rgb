@@ -76,6 +76,11 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 
 AC_CONFIG_FILES([
- dieharder_version.h dieharder.spec
- dieharder/Makefile libdieharder/Makefile manual/Makefile Makefile])
+ dieharder_version.h 
+ dieharder.spec
+ dieharder/Makefile 
+ libdieharder/Makefile 
+ manual/Makefile 
+ manual/macros.tex
+ Makefile])
 AC_OUTPUT

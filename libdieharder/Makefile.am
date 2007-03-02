@@ -126,7 +126,7 @@ install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
 	install -d $(includedir)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(includedir)/dieharder; \
 	install -d $(prefix)/share/man/man3; \
-	gzip -c $(PROGMAN) > $(PROGMAN).gz; \
+	gzip -c -9 $(PROGMAN) > $(PROGMAN).gz; \
 	install -m 644 $(DIR).3.gz $(prefix)/share/man/man3)
 
 # FC requires no static lib install
