@@ -945,7 +945,8 @@ uint get_uint_rand(gsl_rng *gsl_rng)
  static uint bl,bu,tmp;
 
  /*
-  * First call -- initialize/fill bits_rand from current rng
+  * First call -- initialize/fill bits_rand from current rng.  bl and bu
+  * should be static so they are preserved for later calls.
   */
  if(bleft == -1){
    /* e.g. 32 */

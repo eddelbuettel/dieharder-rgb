@@ -24,7 +24,7 @@ void parsecl(int argc, char **argv)
  filename[0] = (char)0; /* No input file */
  fromfile = 0;          /* Not from an input file */
  output = 0;            /* No output file */
- overlap = 0;           /* Default is NOT to use overlapping samples */
+ overlap = 1;           /* Default is to use overlapping samples */
  generator = 13;        /* Default is mt19937 as a "good" generator */
  help_flag = NO;        /* No help requested */
  hist_flag = YES;       /* For the moment, histograms on */
@@ -44,7 +44,7 @@ void parsecl(int argc, char **argv)
  y_user = 0.0;          /* and can be used by any test without having to */
  z_user = 0.0;          /* rewrite parsecl() or add global variables */
 
- while ((c = getopt(argc,argv,"aBb:d:f:g:H:hi:ln:Oop:qr:S:s:t:u:v:x:y:z:")) != EOF){
+ while ((c = getopt(argc,argv,"aBb:d:f:g:H:hi:lNn:op:qr:S:s:t:u:v:x:y:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
@@ -80,8 +80,8 @@ void parsecl(int argc, char **argv)
      case 'n':
        ntuple = strtol(optarg,(char **) NULL,10);
        break;
-     case 'O':
-       overlap = 1;
+     case 'N':
+       overlap = 0;
        break;
      case 'o':
        output = 1;
