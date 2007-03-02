@@ -1,0 +1,20 @@
+From brian.j.wong@yale.edu Thu Mar  1 15:23:45 2007
+Date: Thu, 1 Mar 2007 15:23:39 -0500
+From: Brian J. Wong <brian.j.wong@yale.edu>
+To: rgb@phy.duke.edu
+Subject: get_uint_rand in dieharder
+
+Prof. Brown,
+
+It seems that bl and bu should be declared static uint in the function
+get_uint_rand() of bits.c.
+
+An unrelated query: I have found that a number of PRNGs (e.g., cryptographic
+hash functions, AES) pass rgb_bitdist even for 11- and 12-tuples (which is
+as far as my patience went). Since this doesn't accord with your results
+(i.e., no generator passes for n>6), I think there might be some build
+issues. Are you aware of anyone who has used dieharder in the
+cygwin/x86-32/wnt environment?
+
+Many thanks,
+Brian Wong

@@ -942,7 +942,7 @@ uint get_uint_rand(gsl_rng *gsl_rng)
 {
 
  int i,j;
- uint bl,bu,tmp;
+ static uint bl,bu,tmp;
 
  /*
   * First call -- initialize/fill bits_rand from current rng

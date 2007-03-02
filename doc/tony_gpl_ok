@@ -1,0 +1,1459 @@
+From oblivio_n@yahoo.com Thu Mar  1 14:21:23 2007
+Date: Thu, 1 Mar 2007 11:21:17 -0800 (PST)
+From: Tony <oblivio_n@yahoo.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Random number generation using a 256-state cellular automaton
+
+
+Hello,
+                                                                          
+                                                  
+Thanks for getting back to me with the results so quickly.  I was
+hoping my RNG would be at least as good as the GSL generators and it
+was very encouraging to see these results from more extensive testing.
+                                                                          
+                                                  
+Please do add it to dieharder. The more exposure my RNG gets the
+better. As for the GPL header, I agree, that should probably be
+there. I'm not familiar with the license but I will take a look at it
+and probably add it to my copy of the code as well.
+                                                                          
+                                                  
+I haven't run dieharder yet but judging from the output it looks like
+a huge improvement over diehard. I will experiment with it once I have
+time. And thank you for asking me to participate. I will keep this in
+mind - right now however is not a good time since I'm finishing my thesis
+in time to graduate.
+                                                                          
+                                                  
+It's good to see my little RNG performing so well. I didn't expect so
+much interest in it. As you suggested I will request that the GSL
+people add it to their RNG collection.
+                                                                          
+                                                  
+Thanks again,
+                                                                          
+                                                  
+Tony
+
+
+--- "Robert G. Brown" <rgb@phy.duke.edu> wrote:
+
+> On Wed, 28 Feb 2007, Tony wrote:
+> 
+> >
+> > Sure, the more tests it gets, the better. I came across your site
+> before,
+> > but only after I had nearly finished the project, so I decided to
+> stick
+> > with diehard. I'm very interested in learning how the RNG performs
+> with
+> > your test suite.
+> >
+> > One thing, on sci.crypt.random-numbers, someone suggested a small
+> > modification. Instead of using a null boundary, this code
+> >
+> > if (cell_a == first_cell) {
+> >   *cell_a = rule[*cell_a + *last_cell];
+> >
+> > might produce better results (except for seed 0). I haven't tested it
+> very
+> > much, but preliminary tests show an improvement in terms of the amount
+> of
+> > tests passed.
+> 
+> I went ahead and put your generator in a GSL wrapper (which slows it
+> down to match the speed of the faster better GSL generators, probably
+> de-optimizes it in some way but this is a code vectorization issue that
+> one day I'm going to address for ALL the gsl generators as they ALL
+> ought to loop and fill a per-generator ring buffer with a block of rands
+> all at once and then fill individual rands out of the block until a call
+> triggers the next block fill to be able to take advantage of proper
+> vectorization of the generator code, at least for most simulation
+> applications that consume 10^18 or so rands over a few weeks or
+> months...:-).  I attach the code used -- please note that I stuck a GPL
+> on top because I cannot distribute your routine without one as dieharder
+> is GPL by design and inheritance from the GSL both.  Is this OK?  You
+> should almost certainly add a GPL notice and copyright notice to your
+> online code -- the copyright isn't technically needed, but the license
+> is VERY important.
+> 
+> One thing about diehard that drove me and drives many other people
+> bananas is that Marsaglia didn't put either a copyright notice or any
+> sort of license notice into his sources, but put them up online for the
+> world to use AND at the same time appears to run a small business
+> testing random numbers for money. This was a major factor behind my
+> writing dieharder.  The other is that it actually permits a limited
+> amount of experimentation with and tuning of the test parameters, and in
+> all cases does a MUCH better and more consistent job of dealing with
+> test run pvalues.
+> 
+> I also attach the results of a full "standard" test run with a random
+> seed.  Failure in dieharder is generally unambiguous (or can be made so
+> by cranking up the number of samples or number of generated pvalues for
+> many of the tests -- the former isn't always possible or permitted, but
+> the latter is nearly always allowed for a software rng that can generate
+> an unlimited number of trial rands) unlike the case with diehard.  This
+> is because diehard only generates a tiny number of pvalues for many
+> tests, or even just one pvalue from a single test run, and leaves it to
+> the user to decide what that p means with a cryptic phrase like "p
+> happens".
+> 
+> dieharder generates a standard number of pvalues from independent runs
+> of the basic dieharder test and subjects them consistently to a (Kuiper)
+> KS test, Kuiper to avoid bias at the ends of the interval [0,1]
+> (although practically speaking Kuiper rarely violently disagrees with
+> Anderson-Darling KS and I may eventually make this a user option so they
+> can play with THIS without recompiling:-).  In tests that fail, you can
+> usually see at a glance from the distribution of p WHY they fail, and
+> you can also see at a glance why diehard would often pass the same
+> generator when testing only (say) 10 pvalues or 2 pvalues or presenting
+> a SINGLE pvalue -- many failing distributions of p are nicely spread out
+> over the [0,1] interval but the distribution is consistently and
+> reproducibly non-uniform.
+> 
+> Your generator consistently or occasionally fails three tests -- operm5,
+> bitstream and sums in a standard run -- and was a bit weak on one of the
+> gcd tests as well but I haven't pushed it to see if this is a consistent
+> failure.  (In the attached run it actually did pretty well on these
+> tests, although you can see the hint of the incipient failure in the
+> distribution of p for them.)  Don't feel bad, pretty much ALL the GSL
+> generators (including the best generators out there) fail those tests in
+> a very similar way in dieharder.  This has actually created some
+> interesting questions.  The failures could be because:
+> 
+>    a) These are very strong tests -- operm5 and sums both pick up very
+> subtle deviations from randomness by looking at the decay of
+> correlations as an overlapping window is slid down a series of numbers
+> and transformed into a suitable function.  Software generators could
+> fail the tests because they are good tests and reveal nonrandom
+> correlations in this decay.
+> 
+>    b) My port of diehard has bugs.  I've triple checked the input data
+> against diehard, but dieharder is all original code and a C port of
+> fortran code and bugs are certainly possible.  In fact, I've already
+> fixed a number of bugs reported by people from elsewhere in the code,
+> but again checking the algorithms and implementation against the diehard
+> fortran FAIRLY carefully reveals no obvious error.  It is also
+> interesting to note that the failure isn't egregious (which would make
+> it easy to presume and fix a bug) but subtle -- dieharder returns
+> numbers that diehard would generally PASS because of its
+> distribution-of-p weakness.
+> 
+>    c) Diehard has bugs.  Those bugs are subtle -- small errors in target
+> values, in the numerical values of the covariance matrices, in the rank
+> of some of the simulation target chisq's.  I've had at least one
+> almost-certain error reported to me (from the author of published
+> literature that convincingly derives a different number from what
+> Marsaglia used).  Others may derive from the fact that Marsaglia
+> simulated many of the test targets back in the 80's and early 90's on
+> relatively primitive hardware with relatively primitive software
+> generators -- we could just be resolving the fact that all of these
+> modern generators are better than the ones he used at that time.
+> 
+> If c) is correct, the errors being revealed were again not previously
+> visible as egregious bugs in diehard because diehard by itself isn't
+> stringent enough to reveal the failure and because we lack a "gold
+> standard" truly random sequence to use to test the testing program,
+> alas.  Even physics based random number generators often failed even
+> diehard, because unpredictable is not the same thing as "random" in the
+> sense of perfectly uncorrelated at all moments and displacements.  Even
+> quantum phenomena are often correlated at e.g. second order (Hanbury
+> Brown and Twiss) at the same time they are "random" in first order.
+> 
+> Since different tests are involved, all three could be true, or more
+> than one of these could be true for a single test.  Annoying, but part
+> of the point of making dieharder available GPL is to get feedback and
+> hopefully correction from an entire community and not just from one
+> small group.  This appears to be working, as I'm getting bug reports and
+> useful code fixes (and have a rather complex paper on nilpotent markov
+> chains to work through, alas, in order to be able to maybe resolve the
+> operm5 and sums problem).  I'm always soliciting help on this from the
+> community, if you are interested in doing some fairly serious
+> mathematical/programming work on one of the tests, as I'm really a
+> physicist/coder and not a professional math/stats person;-)
+> 
+> Anyway, feel free to grab dieharder from my website and play.  If you
+> send me permission to leave in the GPL and permanently include your
+> generator (and perhaps to submit it back to the GSL for inclusion there)
+> you can wait a day and download a copy with your generator already
+> embedded in the test harness so you can play with it to your hearts
+> content at the same time you can look over and tweak the entire test
+> sources.  At that time you can test your suggested fix from above in
+> source (just make the change, recompile, test) and see what it does to
+> failure probability as a function of seed -- you can currently enter a
+> seed on the command line and eventually I will probably add a facility
+> to be able to sweep the seed from e.g. 0 or 1 to N where the user inputs
+> N, to pick up odd-even or cyclic problems for at least modest seed
+> ranges.  (Note well that to work in the dieharder source directories
+> while hacking the library or test calls you'll have to put a suitable
+> LD_LIBRARY_PATH into your environment as dieharder builds on
+> shared/dynamic libraries and the dynamic loader has to be able to find
+> libdieharder.  Similarly, if you install it from a make install, you'll
+> probably have to run ldconfig by hand on the install library directory
+> e.g. /usr/lib.)
+> 
+> It was fun to play with your rng -- cellular automata are something that
+> interest me anyway -- and as far as dieharder can tell it is at least AS
+> good as the best generators in the GSL as far as quality of rands goes
+> and yes, it is barely the fastest in the GSL harness (and may do better
+> still if re-optimized in this harness).  Good reasons for the GSL
+> committee to accept it and add it in, in my opinion.
+> 
+>     rgb
+> 
+> >
+> > Tony
+> >
+> >
+> >
+> >
+> > --- rgb <rgbatduke@gmail.com> wrote:
+> >
+> >> On Jan 15, 9:37 am, oblivi...@yahoo.com wrote:
+> >>> Hi everyone,
+> >>>
+> >>> I developed a 256-state cellular automaton that serves as a random
+> >>> number generator. It's more than three times faster than the GNU
+> >>> Scientific Library RNGs I tested (taus, gfsr4, mt19937, and ranlxd1)
+> >>> and scores very well on the Diehard tests.
+> >>>
+> >>> It's fast because the algorithm is basically an array lookup with
+> >>> pointer value updates.
+> >>>
+> >>> Alas, there is no proof about cycles or such, but the statistical
+> >>> results so far are very good. Enjoy.
+> >>>
+> >>> Code and results are here:
+> >>>
+> >>> http://home.southernct.edu/~pasqualonia1/ca/report.html
+> >>>
+> >>> Tony Pasqualoni
+> >>
+> >>
+> >> Dear Tony,
+> >>
+> >> Check out http://www.phy.duke.edu/~rgb/General/dieharder.php
+> >>
+> >> This is a project to make a GPL random number tester that extends
+> >> diehard significantly and adds tests from other sources.  It also
+> >> contains wrapper code into which one can insert rng's.  With your
+> >> permission, I'd like to put your rng in and run the suite on it (it
+> >> tests both speed and quality with a whole suite of tests).
+> 
+=== message truncated ===> /*
+>  *  rng_ca.c
+>  * 
+>  *  Copyright (C) Tony Pasqualoni / Sept. 20, 2006
+>  *
+>  *  From:
+>  *
+>  *      http://home.southernct.edu/~pasqualonia1/ca/report.html
+>  *
+>  *  GSL-style packaging for dieharder by Robert G. Brown 2/27/07
+>  *
+>  *  Cellular automaton random number generator
+>  *  Uses a 256-state automaton to generate random sequences of
+>  *  32-bit unsigned integers.
+>  *
+> 
+>
+*========================================================================
+>  *
+>  * This program is free software; you can redistribute it and/or modify
+>  * it under the terms of the GNU General Public License as published by
+>  * the Free Software Foundation; either version 2 of the License, or (at
+>  * your option) any later version.
+>  * 
+>  * This program is distributed in the hope that it will be useful, but
+>  * WITHOUT ANY WARRANTY; without even the implied warranty of
+>  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+>  * General Public License for more details.
+>  * 
+>  * You should have received a copy of the GNU General Public License
+>  * along with this program; if not, write to the Free Software
+>  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+>  */
+> 
+> #include <dieharder/libdieharder.h>
+> 
+> /*
+>  * This is a wrapping of the /dev/random hardware rng
+>  */
+> 
+> static unsigned long int ca_get (void *vstate);
+> static double ca_get_double (void *vstate);
+> static void ca_set (void *vstate, unsigned long int s);
+> 
+> typedef struct
+>   {
+>     FILE *fp;
+>   }
+> ca_state_t;
+> 
+> #define CA_WIDTH 2056   // width in cells of cellular automaton
+> #define RULESIZE 511    // amount of elements in rule table
+> 
+> static unsigned char init_config[CA_WIDTH];  // initial configuration of
+> CA
+> static unsigned char * first_cell;           // leftmost cell
+> static unsigned char * last_cell;            // rightmost cell
+> static unsigned char * cell_d;               // current cell
+> 
+> unsigned int rule[RULESIZE] = {
+>   
+>
+100,75,16,3,229,51,197,118,24,62,198,11,141,152,241,188,2,17,71,47,179,177,126,231,202,243,59,25,77,196,30,134,
+>   
+>
+199,163,34,216,21,84,37,182,224,186,64,79,225,45,143,20,48,147,209,221,125,29,99,12,46,190,102,220,80,215,242,
+>   
+>
+105,15,53,0,67,68,69,70,89,109,195,170,78,210,131,42,110,181,145,40,114,254,85,107,87,72,192,90,201,162,122,86,
+>   
+>
+252,94,129,98,132,193,249,156,172,219,230,153,54,180,151,83,214,123,88,164,167,116,117,7,27,23,213,235,5,65,124,
+>   
+>
+60,127,236,149,44,28,58,121,191,13,250,10,232,112,101,217,183,239,8,32,228,174,49,113,247,158,106,218,154,66,
+>   
+>
+226,157,50,26,253,93,205,41,133,165,61,161,187,169,6,171,81,248,56,175,246,36,178,52,57,212,39,176,184,185,245,
+>   
+>
+63,35,189,206,76,104,233,194,19,43,159,108,55,200,155,14,74,244,255,222,207,208,137,128,135,96,144,18,95,234,
+>   
+>
+139,173,92,1,203,115,223,130,97,91,227,146,4,31,120,211,38,22,138,140,237,238,251,240,160,142,119,73,103,166,33,
+>   
+>
+148,9,111,136,168,150,82,204,100,75,16,3,229,51,197,118,24,62,198,11,141,152,241,188,2,17,71,47,179,177,126,231,
+>   
+>
+202,243,59,25,77,196,30,134,199,163,34,216,21,84,37,182,224,186,64,79,225,45,143,20,48,147,209,221,125,29,99,12,
+>   
+>
+46,190,102,220,80,215,242,105,15,53,0,67,68,69,70,89,109,195,170,78,210,131,42,110,181,145,40,114,254,85,107,87,
+>   
+>
+72,192,90,201,162,122,86,252,94,129,98,132,193,249,156,172,219,230,153,54,180,151,83,214,123,88,164,167,116,117,
+>   
+>
+7,27,23,213,235,5,65,124,60,127,236,149,44,28,58,121,191,13,250,10,232,112,101,217,183,239,8,32,228,174,49,113,
+>   
+>
+247,158,106,218,154,66,226,157,50,26,253,93,205,41,133,165,61,161,187,169,6,171,81,248,56,175,246,36,178,52,57,
+>   
+>
+212,39,176,184,185,245,63,35,189,206,76,104,233,194,19,43,159,108,55,200,155,14,74,244,255,222,207,208,137,128,
+>   
+>
+135,96,144,18,95,234,139,173,92,1,203,115,223,130,97,91,227,146,4,31,120,211,38,22,138,140,237,238,251,240,160,
+>    142,119,73,103,166,33,148,9,111,136,168,150,82
+> };
+> 
+> static inline unsigned long int
+> ca_get (void *vstate)
+> {
+>   /* Returns a 32-bit unsigned integer produced by the automaton */
+> 
+>   /*
+>    * cell addresses (these cells and cell_d serve as pointers to the 4
+>    * bytes of the next integer)
+>    */
+>   unsigned char * cell_a;
+>   unsigned char * cell_b;
+>   unsigned char * cell_c;
+> 
+>   /* set cell addresses using address of current cell (cell_d) */
+>   cell_c = cell_d - 1; 
+>   cell_b = cell_c - 1; 
+>   cell_a = cell_b - 1; 
+> 
+>   /* update cell states using rule table */
+>   *cell_d = rule[*cell_c + *cell_d]; 
+>   *cell_c = rule[*cell_b + *cell_c]; 
+>   *cell_b = rule[*cell_a + *cell_b]; 
+> 
+>   /*
+>    * update the state of cell_a and shift current cell (cell_d) to the
+>    * left by 4 bytes (first_cell - 1 = last_cell)
+>    */
+>   if (cell_a == first_cell) {
+>     *cell_a = rule[*cell_a]; 
+>     cell_d = last_cell; 
+>     return( *((unsigned int *)cell_a) ); 
+>   } else { 
+>     *cell_a = rule[*(cell_a - 1) + *cell_a];
+>     cell_d -= 4; 
+>     return( *((unsigned int *)cell_a) ); 
+>   }
+> 
+> }
+> 
+> static double
+> ca_get_double (void *vstate)
+> {
+>   return ca_get (vstate) / (double) UINT_MAX;
+> }
+> 
+> static void
+> ca_set (void *vstate, unsigned long int s) {
+> 
+>  /* Initialize automaton using specified seed. */
+>  ca_state_t *state = (ca_state_t *) vstate;
+> 
+> 
+>  int i;
+> 
+>  /* clear cells */
+>  for (i = 0; i < CA_WIDTH - 1; i++) 
+> 
+>    init_config[i] = 0;
+> 
+>    /* set initial cell states using seed */
+>    init_config[CA_WIDTH - 1] = (unsigned char)(seed);
+>    init_config[CA_WIDTH - 2] = (unsigned char)(seed << 8);
+>    init_config[CA_WIDTH - 3] = (unsigned char)(seed << 16);
+>    init_config[CA_WIDTH - 4] = (unsigned char)(seed << 24);
+>    if (seed != 0xFFFFFFFF)
+>       seed++;
+>    for (i = 0; i < CA_WIDTH - 4; i++) 
+>      init_config[i] = (unsigned char) ( seed >> (i % 32) );
+> 
+>    /* define addresses of first_cell and last_cell */
+>    first_cell = init_config;
+>    last_cell = init_config + CA_WIDTH - 1;
+> 
+>    /*
+>     * set address of current cell to last_cell (automaton is updated
+> right
+>     * to left)
+>     */
+>    cell_d = last_cell;
+> 
+>    /* evolve automaton before returning integers */
+>    for (i = 0 ; i < ( (CA_WIDTH * CA_WIDTH) / 4.0); i++) 
+>       ca_get(vstate);
+> 
+> }
+> 
+> static const gsl_rng_type ca_type =
+> {"ca",                          /* name */
+>  UINT_MAX,			/* RAND_MAX */
+>  0,				/* RAND_MIN */
+>  sizeof (ca_state_t),
+>  &ca_set,
+>  &ca_get,
+>  &ca_get_double};
+> 
+> const gsl_rng_type *gsl_rng_ca = &ca_type;
+> > 
+>
+#========================================================================
+> #                      RGB Timing Test
+> #
+> # This test times the selected random number generator only.  It is
+> # generally run at the beginning of a run of -a(ll) the tests to provide
+> # some measure of the relative time taken up generating random numbers
+> # for the various generators and tests.
+> #                        Run Details
+> # Random number generator tested: ca
+> # Samples per test pvalue = 1000000 (test default is 1000000)
+> # P-values in final KS test = 10 (test default is 10)
+>
+#========================================================================
+> # rgb_timing() test using the ca generator 
+> # Average time per rand = 2.592000e+01 nsec.
+> # Rands per second = 3.858025e+07.
+> 
+>
+#========================================================================
+> #                   RGB Bit Persistence Test
+> # This test generates 256 sequential samples of an random unsigned
+> # integer from the given rng.  Successive integers are logically
+> # processed to extract a mask with 1's whereever bits do not
+> # change.  Since bits will NOT change when filling e.g. unsigned
+> # ints with 16 bit ints, this mask logically &'d with the maximum
+> # random number returned by the rng.  All the remaining 1's in the
+> # resulting mask are therefore significant -- they represent bits
+> # that never change over the length of the test.  These bits are
+> # very likely the reason that certain rng's fail the monobit
+> # test -- extra persistent e.g. 1's or 0's inevitably bias the
+> # total bitcount.  In many cases the particular bits repeated
+> # appear to depend on the seed.  If the -i flag is given, the
+> # entire test is repeated with the rng reseeded to generate a mask
+> # and the extracted mask cumulated to show all the possible bit
+> # positions that might be repeated for different seeds.
+> #                        Run Details
+> # Random number generator tested: ca
+> # Samples per test pvalue = 256 (test default is 256)
+> # P-values in final KS test = 1 (test default is 1)
+> #==================================================================
+> #                          Results
+> # Results for ca rng, using its 32 valid bits:
+> # (Cumulated mask of zero is good.)
+> # cumulated_mask =          0 = 00000000000000000000000000000000
+> # randm_mask     = 4294967295 = 11111111111111111111111111111111
+> # random_max     = 4294967295 = 11111111111111111111111111111111
+> # rgb_persist test PASSED (no bits repeat)
+> #==================================================================
+> 
+>
+#========================================================================
+> #                 RGB Bit Distribution Test
+> # Accumulates the frequencies of all n-tuples of bits in a list
+> # of random integers and compares the distribution thus generated
+> # with the theoretical (binomial) histogram, forming chisq and the
+> # associated p-value.  In this test n-tuples are selected without
+> # WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+> # are independent.  Every other sample is offset modulus of the
+> # sample index and ntuple_max.
+> #
+> #                        Run Details
+> # Random number generator tested: ca
+> # Samples per test pvalue = 100000 (test default is 100000)
+> # P-values in final KS test = 100 (test default is 100)
+> # Testing 1-bit ntuples in 32-bit random words
+> #==================================================================
+> #                Histogram of p-values
+> # Counting histogram bins, binscale = 0.100000
+> #     20|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |    |    |    |    |    |    |
+> #     18|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |****|    |    |    |    |    |    |    |
+> #     16|    |    |****|    |    |    |    |    |    |    |
+> #       |****|    |****|    |    |    |    |    |    |    |
+> #     14|****|    |****|    |    |    |    |    |    |    |
+> #       |****|    |****|****|    |    |    |****|    |    |
+> #     12|****|    |****|****|****|    |    |****|    |    |
+> #       |****|    |****|****|****|    |    |****|    |    |
+> #     10|****|    |****|****|****|    |    |****|    |    |
+> #       |****|    |****|****|****|    |    |****|    |    |
+> #      8|****|****|****|****|****|    |    |****|    |    |
+> #       |****|****|****|****|****|    |    |****|    |****|
+> #      6|****|****|****|****|****|****|    |****|****|****|
+> #       |****|****|****|****|****|****|    |****|****|****|
+> #      4|****|****|****|****|****|****|    |****|****|****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #      2|****|****|****|****|****|****|****|****|****|****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #       |--------------------------------------------------
+> #       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+> #==================================================================
+> #                          Results
+> Kuiper KS: p = 0.144662
+> Assessment: PASSED at > 5% for RGB Bit Distribution Test
+> 
+>
+#========================================================================
+> #                 RGB Bit Distribution Test
+> # Accumulates the frequencies of all n-tuples of bits in a list
+> # of random integers and compares the distribution thus generated
+> # with the theoretical (binomial) histogram, forming chisq and the
+> # associated p-value.  In this test n-tuples are selected without
+> # WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+> # are independent.  Every other sample is offset modulus of the
+> # sample index and ntuple_max.
+> #
+> #                        Run Details
+> # Random number generator tested: ca
+> # Samples per test pvalue = 100000 (test default is 100000)
+> # P-values in final KS test = 100 (test default is 100)
+> # Testing 2-bit ntuples in 32-bit random words
+> #==================================================================
+> #                Histogram of p-values
+> # Counting histogram bins, binscale = 0.100000
+> #     20|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |    |    |    |    |    |    |
+> #     18|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |    |    |    |    |    |    |
+> #     16|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |****|    |    |    |    |    |
+> #     14|    |    |    |    |****|    |    |    |    |    |
+> #       |    |    |    |    |****|    |    |    |    |    |
+> #     12|    |    |    |    |****|****|    |    |    |    |
+> #       |****|    |    |    |****|****|    |    |    |    |
+> #     10|****|    |****|    |****|****|    |    |****|    |
+> #       |****|****|****|****|****|****|    |****|****|    |
+> #      8|****|****|****|****|****|****|****|****|****|    |
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #      6|****|****|****|****|****|****|****|****|****|****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #      4|****|****|****|****|****|****|****|****|****|****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #      2|****|****|****|****|****|****|****|****|****|****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #       |--------------------------------------------------
+> #       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+> #==================================================================
+> #                          Results
+> Kuiper KS: p = 0.888642
+> Assessment: PASSED at > 5% for RGB Bit Distribution Test
+> 
+>
+#========================================================================
+> #                 RGB Bit Distribution Test
+> # Accumulates the frequencies of all n-tuples of bits in a list
+> # of random integers and compares the distribution thus generated
+> # with the theoretical (binomial) histogram, forming chisq and the
+> # associated p-value.  In this test n-tuples are selected without
+> # WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+> # are independent.  Every other sample is offset modulus of the
+> # sample index and ntuple_max.
+> #
+> #                        Run Details
+> # Random number generator tested: ca
+> # Samples per test pvalue = 100000 (test default is 100000)
+> # P-values in final KS test = 100 (test default is 100)
+> # Testing 3-bit ntuples in 32-bit random words
+> #==================================================================
+> #                Histogram of p-values
+> # Counting histogram bins, binscale = 0.100000
+> #     20|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |    |    |    |    |    |    |
+> #     18|    |    |    |    |    |    |    |    |    |    |
+> #       |    |    |    |    |****|    |    |    |    |    |
+> #     16|    |    |    |    |****|    |    |    |    |    |
+> #       |    |    |    |    |****|    |    |    |    |    |
+> #     14|    |    |    |    |****|    |    |    |    |    |
+> #       |    |    |    |    |****|    |    |    |    |****|
+> #     12|    |    |    |    |****|    |    |    |    |****|
+> #       |****|    |    |    |****|    |****|    |    |****|
+> #     10|****|    |    |    |****|    |****|****|    |****|
+> #       |****|    |    |    |****|****|****|****|    |****|
+> #      8|****|****|    |    |****|****|****|****|    |****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #      6|****|****|****|****|****|****|****|****|****|****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #      4|****|****|****|****|****|****|****|****|****|****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #      2|****|****|****|****|****|****|****|****|****|****|
+> #       |****|****|****|****|****|****|****|****|****|****|
+> #       |--------------------------------------------------
+> #       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+> #==================================================================
+> #                          Results
+> Kuiper KS: p = 0.731639
+> Assessment: PASSED at > 5% for RGB Bit Distribution Test
+> 
+>
+#========================================================================
+> #                 RGB Bit Distribution Test
+> # Accumulates the frequencies of all n-tuples of bits in a list
+> # of random integers and compares the distribution thus generated
+> # with the theoretical (binomial) histogram, forming chisq and the
+> # associated p-value.  In this test n-tuples are selected without
+> # WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+> # are independent.  Every other sample is offset modulus of the
+> # sample index and ntuple_max.
+> #
+> #                        Run Details
+> # Random number generator tested: ca
+> # Samples per test pvalue = 100000 (test default is 100000)
+> # P-values in final KS test = 100 (test default is 100)
+> # Testing 4-bit ntuples in 32-bit random words
+> #==================================================================
+> #                Histogram of p-values
+> # Counting histogram bins, binscale = 0.100000
+> 
+=== message truncated ===
+
+
+
+
+ 
+____________________________________________________________________________________
+Need Mail bonding?
+Go to the Yahoo! Mail Q&A for great tips from Yahoo! Answers users.
+http://answers.yahoo.com/dir/?link=list&sid=396546091
+
+From rgb@phy.duke.edu Thu Mar  1 19:04:58 2007
+Date: Thu, 1 Mar 2007 19:06:59 -0500 (EST)
+From: Robert G. Brown <rgb@phy.duke.edu>
+To: Tony <oblivio_n@yahoo.com>
+Cc: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Random number generation using a 256-state cellular automaton
+
+On Thu, 1 Mar 2007, Tony wrote:
+
+> 
+> Hello,
+> 
+> 
+> Thanks for getting back to me with the results so quickly.  I was
+> hoping my RNG would be at least as good as the GSL generators and it
+> was very encouraging to see these results from more extensive testing.
+
+Yeah, I was a bit surprised as well.  It isn't easy to write a decent
+rng, especially one with what may be a completely new algorithm.  But
+that's part of the point of dieharder -- you persevered and downloaded
+diehard from the hong kong site, compiled it in fortran, and wrote a
+shell program for your rng to generate the requisite files.  Then you
+probably had to run diehard a whole bunch of times to see how it did on
+distinct files (noting your results tables).  Not easy.
+
+It took me literally fifteen minutes to add to dieharder -- partly
+because your code was excellent, by the way -- I'm a serious code myself
+and I'm impressed.  You had two of the routines required -- I just
+changed the headers and subroutine calls, added the necessary
+prototypes, added the float routine (I'm hoping/assuming that it does
+return uints so that the float routine returns uniform deviates in 0-1)
+and the last three or four lines and boom, it compiled, linked into the
+library, and was available to the testing UI.  In the testing UI I added
+one two-line segment to add it to the list of GSL-wrapped rngs available
+to the GSL rng wrapper call, and it was just there.  I had run the full
+suite on it -- twice -- in less than an hour of work, and of course now
+one can run on it repeatedly, try different seeds, run a single test
+repeatedly, crank up -t or -p on individual tests where that is
+possible.  It even did decently on operm5 in the second run and that was
+pretty astounding.
+
+Hopefully this will inspire you to really whack away on it and optimize
+it IN the GSL harness.  As it is -- a cold port, no real optimization --
+it almost exactly ties the speed of 3 of the top four generators.  I'm
+guessing that vectorizing it just a bit as I suggested will give back
+at least part of that missing speed.
+
+> Please do add it to dieharder. The more exposure my RNG gets the
+> better. As for the GPL header, I agree, that should probably be
+> there. I'm not familiar with the license but I will take a look at it
+> and probably add it to my copy of the code as well.
+
+You should.  Basically the license says "This is my code and will
+continue to be my code.  You can use it freely.  You can hack it to your
+own needs, improve it, modify it, change it.  You can even sell it, or
+programs that use it, or programs that use a version of it that you
+modified.  BUT, if you do, you MUST provide the code of your entire
+application, including all modifications, to anyone who asks for it for
+free upon request, and all of these applications and modifications must
+carry this same license".
+
+The latter is known as the "viral" clause of the GPL.  It is free code,
+and nobody can take your own contributed code, co-opt it, and sell it
+back to you with their own copyright on it.  So if it goes into
+dieharder under the GPL, you'll never have to buy an application
+(including dieharder) with your own code in it.  It is free now and will
+remain free, and even people that try to sell it (who are welcome to,
+and may succeed in doing so if they offer to support the application or
+those who use it in exchange for the money) cannot "own" it and keep
+other people from using it freely or adapting it to their own needs.
+
+It is the basis of pretty much the entire linux/gnu software project and
+the open source software revolution.  If you use linux, nearly all the
+code in the applications you use are GPL or equivalent open source
+licenses, and you can ALWAYS get source for them, ALWAYS debug them,
+hack them to your own needs, sell them, etc -- you just cannot call them
+your own as you do so or restrict others from accessing either the
+original sources or your modifications if you do.
+
+> I haven't run dieharder yet but judging from the output it looks like
+> a huge improvement over diehard. I will experiment with it once I have
+> time. And thank you for asking me to participate. I will keep this in
+> mind - right now however is not a good time since I'm finishing my thesis
+> in time to graduate.
+
+Thanks.  Being a physics professor, of course I understand...;-)
+
+Let me know if/when you have time on your hands -- I can always use the
+help of a good coder who is into random numbers...
+
+> It's good to see my little RNG performing so well. I didn't expect so
+> much interest in it. As you suggested I will request that the GSL
+> people add it to their RNG collection.
+
+You might want to experiment a bit with that seed question in dieharder
+first.  I don't know if you are a shell programmer or can do perl or
+python, but if you wrap dieharder in a shell script that iterates a
+seed, you can call dieharder -a or dieharder on selected tests with the
+different seeds and see if some seeds are indeed a problem.
+
+I only say that because even though it did well on two runs, one summer
+a swallow does not make, so to speak...;-).  You're young and could
+probably survive the embarrassment if you submit it and it turns out to
+have some horrible flaw, but trust me, a better idea is to really run it
+through as rigorous a testing scheme as you can before putting it into a
+REALLY public venue.
+
+When I have time (I'm kind of busy hacking dieharder) I might even do
+the testing for you, but I can't do it right away -- I've got a few
+small bugs to fix and am working to clean it up for public packaging,
+and then the REAL works starts -- I've got a million changes and
+advances in mind, including a series of hierarchical tests that will
+give a would-be-rng-writer really useful information about failure
+modes, at the expense of maybe a day or two's worth of runtime...:-)
+
+I will go ahead and check in the current snap, though.  At that point
+your routine will be a part of dieharder under the GPL, and there are
+definitely a bunch of people who will see it and use it.
+
+Oh yeah -- if you write up a little documentation blurb at your
+convenience and send it to me -- no real hurry -- I'll add it to the
+program documentation.
+
+   rgb
+
+> 
+> 
+> Thanks again,
+> 
+> 
+> Tony
+> 
+> 
+> --- "Robert G. Brown" <rgb@phy.duke.edu> wrote:
+> 
+> > On Wed, 28 Feb 2007, Tony wrote:
+> > 
+> > > 
+> > > Sure, the more tests it gets, the better. I came across your site
+> > before,
+> > > but only after I had nearly finished the project, so I decided to
+> > stick
+> > > with diehard. I'm very interested in learning how the RNG performs
+> > with
+> > > your test suite.
+> > > 
+> > > One thing, on sci.crypt.random-numbers, someone suggested a small
+> > > modification. Instead of using a null boundary, this code
+> > > 
+> > > if (cell_a == first_cell) {
+> > >   *cell_a = rule[*cell_a + *last_cell];
+> > > 
+> > > might produce better results (except for seed 0). I haven't tested it
+> > very
+> > > much, but preliminary tests show an improvement in terms of the amount
+> > of
+> > > tests passed.
+> > 
+> > I went ahead and put your generator in a GSL wrapper (which slows it
+> > down to match the speed of the faster better GSL generators, probably
+> > de-optimizes it in some way but this is a code vectorization issue that
+> > one day I'm going to address for ALL the gsl generators as they ALL
+> > ought to loop and fill a per-generator ring buffer with a block of rands
+> > all at once and then fill individual rands out of the block until a call
+> > triggers the next block fill to be able to take advantage of proper
+> > vectorization of the generator code, at least for most simulation
+> > applications that consume 10^18 or so rands over a few weeks or
+> > months...:-).  I attach the code used -- please note that I stuck a GPL
+> > on top because I cannot distribute your routine without one as dieharder
+> > is GPL by design and inheritance from the GSL both.  Is this OK?  You
+> > should almost certainly add a GPL notice and copyright notice to your
+> > online code -- the copyright isn't technically needed, but the license
+> > is VERY important.
+> > 
+> > One thing about diehard that drove me and drives many other people
+> > bananas is that Marsaglia didn't put either a copyright notice or any
+> > sort of license notice into his sources, but put them up online for the
+> > world to use AND at the same time appears to run a small business
+> > testing random numbers for money. This was a major factor behind my
+> > writing dieharder.  The other is that it actually permits a limited
+> > amount of experimentation with and tuning of the test parameters, and in
+> > all cases does a MUCH better and more consistent job of dealing with
+> > test run pvalues.
+> > 
+> > I also attach the results of a full "standard" test run with a random
+> > seed.  Failure in dieharder is generally unambiguous (or can be made so
+> > by cranking up the number of samples or number of generated pvalues for
+> > many of the tests -- the former isn't always possible or permitted, but
+> > the latter is nearly always allowed for a software rng that can generate
+> > an unlimited number of trial rands) unlike the case with diehard.  This
+> > is because diehard only generates a tiny number of pvalues for many
+> > tests, or even just one pvalue from a single test run, and leaves it to
+> > the user to decide what that p means with a cryptic phrase like "p
+> > happens".
+> > 
+> > dieharder generates a standard number of pvalues from independent runs
+> > of the basic dieharder test and subjects them consistently to a (Kuiper)
+> > KS test, Kuiper to avoid bias at the ends of the interval [0,1]
+> > (although practically speaking Kuiper rarely violently disagrees with
+> > Anderson-Darling KS and I may eventually make this a user option so they
+> > can play with THIS without recompiling:-).  In tests that fail, you can
+> > usually see at a glance from the distribution of p WHY they fail, and
+> > you can also see at a glance why diehard would often pass the same
+> > generator when testing only (say) 10 pvalues or 2 pvalues or presenting
+> > a SINGLE pvalue -- many failing distributions of p are nicely spread out
+> > over the [0,1] interval but the distribution is consistently and
+> > reproducibly non-uniform.
+> > 
+> > Your generator consistently or occasionally fails three tests -- operm5,
+> > bitstream and sums in a standard run -- and was a bit weak on one of the
+> > gcd tests as well but I haven't pushed it to see if this is a consistent
+> > failure.  (In the attached run it actually did pretty well on these
+> > tests, although you can see the hint of the incipient failure in the
+> > distribution of p for them.)  Don't feel bad, pretty much ALL the GSL
+> > generators (including the best generators out there) fail those tests in
+> > a very similar way in dieharder.  This has actually created some
+> > interesting questions.  The failures could be because:
+> > 
+> >    a) These are very strong tests -- operm5 and sums both pick up very
+> > subtle deviations from randomness by looking at the decay of
+> > correlations as an overlapping window is slid down a series of numbers
+> > and transformed into a suitable function.  Software generators could
+> > fail the tests because they are good tests and reveal nonrandom
+> > correlations in this decay.
+> > 
+> >    b) My port of diehard has bugs.  I've triple checked the input data
+> > against diehard, but dieharder is all original code and a C port of
+> > fortran code and bugs are certainly possible.  In fact, I've already
+> > fixed a number of bugs reported by people from elsewhere in the code,
+> > but again checking the algorithms and implementation against the diehard
+> > fortran FAIRLY carefully reveals no obvious error.  It is also
+> > interesting to note that the failure isn't egregious (which would make
+> > it easy to presume and fix a bug) but subtle -- dieharder returns
+> > numbers that diehard would generally PASS because of its
+> > distribution-of-p weakness.
+> > 
+> >    c) Diehard has bugs.  Those bugs are subtle -- small errors in target
+> > values, in the numerical values of the covariance matrices, in the rank
+> > of some of the simulation target chisq's.  I've had at least one
+> > almost-certain error reported to me (from the author of published
+> > literature that convincingly derives a different number from what
+> > Marsaglia used).  Others may derive from the fact that Marsaglia
+> > simulated many of the test targets back in the 80's and early 90's on
+> > relatively primitive hardware with relatively primitive software
+> > generators -- we could just be resolving the fact that all of these
+> > modern generators are better than the ones he used at that time.
+> > 
+> > If c) is correct, the errors being revealed were again not previously
+> > visible as egregious bugs in diehard because diehard by itself isn't
+> > stringent enough to reveal the failure and because we lack a "gold
+> > standard" truly random sequence to use to test the testing program,
+> > alas.  Even physics based random number generators often failed even
+> > diehard, because unpredictable is not the same thing as "random" in the
+> > sense of perfectly uncorrelated at all moments and displacements.  Even
+> > quantum phenomena are often correlated at e.g. second order (Hanbury
+> > Brown and Twiss) at the same time they are "random" in first order.
+> > 
+> > Since different tests are involved, all three could be true, or more
+> > than one of these could be true for a single test.  Annoying, but part
+> > of the point of making dieharder available GPL is to get feedback and
+> > hopefully correction from an entire community and not just from one
+> > small group.  This appears to be working, as I'm getting bug reports and
+> > useful code fixes (and have a rather complex paper on nilpotent markov
+> > chains to work through, alas, in order to be able to maybe resolve the
+> > operm5 and sums problem).  I'm always soliciting help on this from the
+> > community, if you are interested in doing some fairly serious
+> > mathematical/programming work on one of the tests, as I'm really a
+> > physicist/coder and not a professional math/stats person;-)
+> > 
+> > Anyway, feel free to grab dieharder from my website and play.  If you
+> > send me permission to leave in the GPL and permanently include your
+> > generator (and perhaps to submit it back to the GSL for inclusion there)
+> > you can wait a day and download a copy with your generator already
+> > embedded in the test harness so you can play with it to your hearts
+> > content at the same time you can look over and tweak the entire test
+> > sources.  At that time you can test your suggested fix from above in
+> > source (just make the change, recompile, test) and see what it does to
+> > failure probability as a function of seed -- you can currently enter a
+> > seed on the command line and eventually I will probably add a facility
+> > to be able to sweep the seed from e.g. 0 or 1 to N where the user inputs
+> > N, to pick up odd-even or cyclic problems for at least modest seed
+> > ranges.  (Note well that to work in the dieharder source directories
+> > while hacking the library or test calls you'll have to put a suitable
+> > LD_LIBRARY_PATH into your environment as dieharder builds on
+> > shared/dynamic libraries and the dynamic loader has to be able to find
+> > libdieharder.  Similarly, if you install it from a make install, you'll
+> > probably have to run ldconfig by hand on the install library directory
+> > e.g. /usr/lib.)
+> > 
+> > It was fun to play with your rng -- cellular automata are something that
+> > interest me anyway -- and as far as dieharder can tell it is at least AS
+> > good as the best generators in the GSL as far as quality of rands goes
+> > and yes, it is barely the fastest in the GSL harness (and may do better
+> > still if re-optimized in this harness).  Good reasons for the GSL
+> > committee to accept it and add it in, in my opinion.
+> > 
+> >     rgb
+> > 
+> > > 
+> > > Tony
+> > > 
+> > > 
+> > > 
+> > > 
+> > > --- rgb <rgbatduke@gmail.com> wrote:
+> > > 
+> > > > On Jan 15, 9:37 am, oblivi...@yahoo.com wrote:
+> > > > > Hi everyone,
+> > > > > 
+> > > > > I developed a 256-state cellular automaton that serves as a random
+> > > > > number generator. It's more than three times faster than the GNU
+> > > > > Scientific Library RNGs I tested (taus, gfsr4, mt19937, and
+> > > > > ranlxd1)
+> > > > > and scores very well on the Diehard tests.
+> > > > > 
+> > > > > It's fast because the algorithm is basically an array lookup with
+> > > > > pointer value updates.
+> > > > > 
+> > > > > Alas, there is no proof about cycles or such, but the statistical
+> > > > > results so far are very good. Enjoy.
+> > > > > 
+> > > > > Code and results are here:
+> > > > > 
+> > > > > http://home.southernct.edu/~pasqualonia1/ca/report.html
+> > > > > 
+> > > > > Tony Pasqualoni
+> > > > 
+> > > > 
+> > > > Dear Tony,
+> > > > 
+> > > > Check out http://www.phy.duke.edu/~rgb/General/dieharder.php
+> > > > 
+> > > > This is a project to make a GPL random number tester that extends
+> > > > diehard significantly and adds tests from other sources.  It also
+> > > > contains wrapper code into which one can insert rng's.  With your
+> > > > permission, I'd like to put your rng in and run the suite on it (it
+> > > > tests both speed and quality with a whole suite of tests).
+> > 
+> === message truncated ===> /*
+> >  *  rng_ca.c
+> >  *
+> >  *  Copyright (C) Tony Pasqualoni / Sept. 20, 2006
+> >  *
+> >  *  From:
+> >  *
+> >  *      http://home.southernct.edu/~pasqualonia1/ca/report.html
+> >  *
+> >  *  GSL-style packaging for dieharder by Robert G. Brown 2/27/07
+> >  *
+> >  *  Cellular automaton random number generator
+> >  *  Uses a 256-state automaton to generate random sequences of
+> >  *  32-bit unsigned integers.
+> >  *
+> > 
+> > 
+> *========================================================================
+> >  *
+> >  * This program is free software; you can redistribute it and/or modify
+> >  * it under the terms of the GNU General Public License as published by
+> >  * the Free Software Foundation; either version 2 of the License, or (at
+> >  * your option) any later version.
+> >  *
+> >  * This program is distributed in the hope that it will be useful, but
+> >  * WITHOUT ANY WARRANTY; without even the implied warranty of
+> >  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> >  * General Public License for more details.
+> >  *
+> >  * You should have received a copy of the GNU General Public License
+> >  * along with this program; if not, write to the Free Software
+> >  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+> >  */
+> > 
+> > #include <dieharder/libdieharder.h>
+> > 
+> > /*
+> >  * This is a wrapping of the /dev/random hardware rng
+> >  */
+> > 
+> > static unsigned long int ca_get (void *vstate);
+> > static double ca_get_double (void *vstate);
+> > static void ca_set (void *vstate, unsigned long int s);
+> > 
+> > typedef struct
+> >   {
+> >     FILE *fp;
+> >   }
+> > ca_state_t;
+> > 
+> > #define CA_WIDTH 2056   // width in cells of cellular automaton
+> > #define RULESIZE 511    // amount of elements in rule table
+> > 
+> > static unsigned char init_config[CA_WIDTH];  // initial configuration of
+> > CA
+> > static unsigned char * first_cell;           // leftmost cell
+> > static unsigned char * last_cell;            // rightmost cell
+> > static unsigned char * cell_d;               // current cell
+> > 
+> > unsigned int rule[RULESIZE] = {
+> > 
+> > 
+> 100,75,16,3,229,51,197,118,24,62,198,11,141,152,241,188,2,17,71,47,179,177
+> ,126,231,202,243,59,25,77,196,30,134,
+> > 
+> > 
+> 199,163,34,216,21,84,37,182,224,186,64,79,225,45,143,20,48,147,209,221,125
+> ,29,99,12,46,190,102,220,80,215,242,
+> > 
+> > 
+> 105,15,53,0,67,68,69,70,89,109,195,170,78,210,131,42,110,181,145,40,114,25
+> 4,85,107,87,72,192,90,201,162,122,86,
+> > 
+> > 
+> 252,94,129,98,132,193,249,156,172,219,230,153,54,180,151,83,214,123,88,164
+> ,167,116,117,7,27,23,213,235,5,65,124,
+> > 
+> > 
+> 60,127,236,149,44,28,58,121,191,13,250,10,232,112,101,217,183,239,8,32,228
+> ,174,49,113,247,158,106,218,154,66,
+> > 
+> > 
+> 226,157,50,26,253,93,205,41,133,165,61,161,187,169,6,171,81,248,56,175,246
+> ,36,178,52,57,212,39,176,184,185,245,
+> > 
+> > 
+> 63,35,189,206,76,104,233,194,19,43,159,108,55,200,155,14,74,244,255,222,20
+> 7,208,137,128,135,96,144,18,95,234,
+> > 
+> > 
+> 139,173,92,1,203,115,223,130,97,91,227,146,4,31,120,211,38,22,138,140,237,
+> 238,251,240,160,142,119,73,103,166,33,
+> > 
+> > 
+> 148,9,111,136,168,150,82,204,100,75,16,3,229,51,197,118,24,62,198,11,141,1
+> 52,241,188,2,17,71,47,179,177,126,231,
+> > 
+> > 
+> 202,243,59,25,77,196,30,134,199,163,34,216,21,84,37,182,224,186,64,79,225,
+> 45,143,20,48,147,209,221,125,29,99,12,
+> > 
+> > 
+> 46,190,102,220,80,215,242,105,15,53,0,67,68,69,70,89,109,195,170,78,210,13
+> 1,42,110,181,145,40,114,254,85,107,87,
+> > 
+> > 
+> 72,192,90,201,162,122,86,252,94,129,98,132,193,249,156,172,219,230,153,54,
+> 180,151,83,214,123,88,164,167,116,117,
+> > 
+> > 
+> 7,27,23,213,235,5,65,124,60,127,236,149,44,28,58,121,191,13,250,10,232,112
+> ,101,217,183,239,8,32,228,174,49,113,
+> > 
+> > 
+> 247,158,106,218,154,66,226,157,50,26,253,93,205,41,133,165,61,161,187,169,
+> 6,171,81,248,56,175,246,36,178,52,57,
+> > 
+> > 
+> 212,39,176,184,185,245,63,35,189,206,76,104,233,194,19,43,159,108,55,200,1
+> 55,14,74,244,255,222,207,208,137,128,
+> > 
+> > 
+> 135,96,144,18,95,234,139,173,92,1,203,115,223,130,97,91,227,146,4,31,120,2
+> 11,38,22,138,140,237,238,251,240,160,
+> >    142,119,73,103,166,33,148,9,111,136,168,150,82
+> > };
+> > 
+> > static inline unsigned long int
+> > ca_get (void *vstate)
+> > {
+> >   /* Returns a 32-bit unsigned integer produced by the automaton */
+> > 
+> >   /*
+> >    * cell addresses (these cells and cell_d serve as pointers to the 4
+> >    * bytes of the next integer)
+> >    */
+> >   unsigned char * cell_a;
+> >   unsigned char * cell_b;
+> >   unsigned char * cell_c;
+> > 
+> >   /* set cell addresses using address of current cell (cell_d) */
+> >   cell_c = cell_d - 1;
+> >   cell_b = cell_c - 1;
+> >   cell_a = cell_b - 1;
+> > 
+> >   /* update cell states using rule table */
+> >   *cell_d = rule[*cell_c + *cell_d];
+> >   *cell_c = rule[*cell_b + *cell_c];
+> >   *cell_b = rule[*cell_a + *cell_b];
+> > 
+> >   /*
+> >    * update the state of cell_a and shift current cell (cell_d) to the
+> >    * left by 4 bytes (first_cell - 1 = last_cell)
+> >    */
+> >   if (cell_a == first_cell) {
+> >     *cell_a = rule[*cell_a];
+> >     cell_d = last_cell;
+> >     return( *((unsigned int *)cell_a) );
+> >   } else {
+> >     *cell_a = rule[*(cell_a - 1) + *cell_a];
+> >     cell_d -= 4;
+> >     return( *((unsigned int *)cell_a) );
+> >   }
+> > 
+> > }
+> > 
+> > static double
+> > ca_get_double (void *vstate)
+> > {
+> >   return ca_get (vstate) / (double) UINT_MAX;
+> > }
+> > 
+> > static void
+> > ca_set (void *vstate, unsigned long int s) {
+> > 
+> >  /* Initialize automaton using specified seed. */
+> >  ca_state_t *state = (ca_state_t *) vstate;
+> > 
+> > 
+> >  int i;
+> > 
+> >  /* clear cells */
+> >  for (i = 0; i < CA_WIDTH - 1; i++)
+> > 
+> >    init_config[i] = 0;
+> > 
+> >    /* set initial cell states using seed */
+> >    init_config[CA_WIDTH - 1] = (unsigned char)(seed);
+> >    init_config[CA_WIDTH - 2] = (unsigned char)(seed << 8);
+> >    init_config[CA_WIDTH - 3] = (unsigned char)(seed << 16);
+> >    init_config[CA_WIDTH - 4] = (unsigned char)(seed << 24);
+> >    if (seed != 0xFFFFFFFF)
+> >       seed++;
+> >    for (i = 0; i < CA_WIDTH - 4; i++)
+> >      init_config[i] = (unsigned char) ( seed >> (i % 32) );
+> > 
+> >    /* define addresses of first_cell and last_cell */
+> >    first_cell = init_config;
+> >    last_cell = init_config + CA_WIDTH - 1;
+> > 
+> >    /*
+> >     * set address of current cell to last_cell (automaton is updated
+> > right
+> >     * to left)
+> >     */
+> >    cell_d = last_cell;
+> > 
+> >    /* evolve automaton before returning integers */
+> >    for (i = 0 ; i < ( (CA_WIDTH * CA_WIDTH) / 4.0); i++)
+> >       ca_get(vstate);
+> > 
+> > }
+> > 
+> > static const gsl_rng_type ca_type =
+> > {"ca",                          /* name */
+> >  UINT_MAX,			/* RAND_MAX */
+> >  0,				/* RAND_MIN */
+> >  sizeof (ca_state_t),
+> >  &ca_set,
+> >  &ca_get,
+> >  &ca_get_double};
+> > 
+> > const gsl_rng_type *gsl_rng_ca = &ca_type;
+> > > 
+> > 
+> #========================================================================
+> > #                      RGB Timing Test
+> > #
+> > # This test times the selected random number generator only.  It is
+> > # generally run at the beginning of a run of -a(ll) the tests to provide
+> > # some measure of the relative time taken up generating random numbers
+> > # for the various generators and tests.
+> > #                        Run Details
+> > # Random number generator tested: ca
+> > # Samples per test pvalue = 1000000 (test default is 1000000)
+> > # P-values in final KS test = 10 (test default is 10)
+> > 
+> #========================================================================
+> > # rgb_timing() test using the ca generator
+> > # Average time per rand = 2.592000e+01 nsec.
+> > # Rands per second = 3.858025e+07.
+> > 
+> > 
+> #========================================================================
+> > #                   RGB Bit Persistence Test
+> > # This test generates 256 sequential samples of an random unsigned
+> > # integer from the given rng.  Successive integers are logically
+> > # processed to extract a mask with 1's whereever bits do not
+> > # change.  Since bits will NOT change when filling e.g. unsigned
+> > # ints with 16 bit ints, this mask logically &'d with the maximum
+> > # random number returned by the rng.  All the remaining 1's in the
+> > # resulting mask are therefore significant -- they represent bits
+> > # that never change over the length of the test.  These bits are
+> > # very likely the reason that certain rng's fail the monobit
+> > # test -- extra persistent e.g. 1's or 0's inevitably bias the
+> > # total bitcount.  In many cases the particular bits repeated
+> > # appear to depend on the seed.  If the -i flag is given, the
+> > # entire test is repeated with the rng reseeded to generate a mask
+> > # and the extracted mask cumulated to show all the possible bit
+> > # positions that might be repeated for different seeds.
+> > #                        Run Details
+> > # Random number generator tested: ca
+> > # Samples per test pvalue = 256 (test default is 256)
+> > # P-values in final KS test = 1 (test default is 1)
+> > #==================================================================
+> > #                          Results
+> > # Results for ca rng, using its 32 valid bits:
+> > # (Cumulated mask of zero is good.)
+> > # cumulated_mask =          0 = 00000000000000000000000000000000
+> > # randm_mask     = 4294967295 = 11111111111111111111111111111111
+> > # random_max     = 4294967295 = 11111111111111111111111111111111
+> > # rgb_persist test PASSED (no bits repeat)
+> > #==================================================================
+> > 
+> > 
+> #========================================================================
+> > #                 RGB Bit Distribution Test
+> > # Accumulates the frequencies of all n-tuples of bits in a list
+> > # of random integers and compares the distribution thus generated
+> > # with the theoretical (binomial) histogram, forming chisq and the
+> > # associated p-value.  In this test n-tuples are selected without
+> > # WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+> > # are independent.  Every other sample is offset modulus of the
+> > # sample index and ntuple_max.
+> > #
+> > #                        Run Details
+> > # Random number generator tested: ca
+> > # Samples per test pvalue = 100000 (test default is 100000)
+> > # P-values in final KS test = 100 (test default is 100)
+> > # Testing 1-bit ntuples in 32-bit random words
+> > #==================================================================
+> > #                Histogram of p-values
+> > # Counting histogram bins, binscale = 0.100000
+> > #     20|    |    |    |    |    |    |    |    |    |    |
+> > #       |    |    |    |    |    |    |    |    |    |    |
+> > #     18|    |    |    |    |    |    |    |    |    |    |
+> > #       |    |    |****|    |    |    |    |    |    |    |
+> > #     16|    |    |****|    |    |    |    |    |    |    |
+> > #       |****|    |****|    |    |    |    |    |    |    |
+> > #     14|****|    |****|    |    |    |    |    |    |    |
+> > #       |****|    |****|****|    |    |    |****|    |    |
+> > #     12|****|    |****|****|****|    |    |****|    |    |
+> > #       |****|    |****|****|****|    |    |****|    |    |
+> > #     10|****|    |****|****|****|    |    |****|    |    |
+> > #       |****|    |****|****|****|    |    |****|    |    |
+> > #      8|****|****|****|****|****|    |    |****|    |    |
+> > #       |****|****|****|****|****|    |    |****|    |****|
+> > #      6|****|****|****|****|****|****|    |****|****|****|
+> > #       |****|****|****|****|****|****|    |****|****|****|
+> > #      4|****|****|****|****|****|****|    |****|****|****|
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #      2|****|****|****|****|****|****|****|****|****|****|
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #       |--------------------------------------------------
+> > #       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+> > #==================================================================
+> > #                          Results
+> > Kuiper KS: p = 0.144662
+> > Assessment: PASSED at > 5% for RGB Bit Distribution Test
+> > 
+> > 
+> #========================================================================
+> > #                 RGB Bit Distribution Test
+> > # Accumulates the frequencies of all n-tuples of bits in a list
+> > # of random integers and compares the distribution thus generated
+> > # with the theoretical (binomial) histogram, forming chisq and the
+> > # associated p-value.  In this test n-tuples are selected without
+> > # WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+> > # are independent.  Every other sample is offset modulus of the
+> > # sample index and ntuple_max.
+> > #
+> > #                        Run Details
+> > # Random number generator tested: ca
+> > # Samples per test pvalue = 100000 (test default is 100000)
+> > # P-values in final KS test = 100 (test default is 100)
+> > # Testing 2-bit ntuples in 32-bit random words
+> > #==================================================================
+> > #                Histogram of p-values
+> > # Counting histogram bins, binscale = 0.100000
+> > #     20|    |    |    |    |    |    |    |    |    |    |
+> > #       |    |    |    |    |    |    |    |    |    |    |
+> > #     18|    |    |    |    |    |    |    |    |    |    |
+> > #       |    |    |    |    |    |    |    |    |    |    |
+> > #     16|    |    |    |    |    |    |    |    |    |    |
+> > #       |    |    |    |    |****|    |    |    |    |    |
+> > #     14|    |    |    |    |****|    |    |    |    |    |
+> > #       |    |    |    |    |****|    |    |    |    |    |
+> > #     12|    |    |    |    |****|****|    |    |    |    |
+> > #       |****|    |    |    |****|****|    |    |    |    |
+> > #     10|****|    |****|    |****|****|    |    |****|    |
+> > #       |****|****|****|****|****|****|    |****|****|    |
+> > #      8|****|****|****|****|****|****|****|****|****|    |
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #      6|****|****|****|****|****|****|****|****|****|****|
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #      4|****|****|****|****|****|****|****|****|****|****|
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #      2|****|****|****|****|****|****|****|****|****|****|
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #       |--------------------------------------------------
+> > #       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+> > #==================================================================
+> > #                          Results
+> > Kuiper KS: p = 0.888642
+> > Assessment: PASSED at > 5% for RGB Bit Distribution Test
+> > 
+> > 
+> #========================================================================
+> > #                 RGB Bit Distribution Test
+> > # Accumulates the frequencies of all n-tuples of bits in a list
+> > # of random integers and compares the distribution thus generated
+> > # with the theoretical (binomial) histogram, forming chisq and the
+> > # associated p-value.  In this test n-tuples are selected without
+> > # WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+> > # are independent.  Every other sample is offset modulus of the
+> > # sample index and ntuple_max.
+> > #
+> > #                        Run Details
+> > # Random number generator tested: ca
+> > # Samples per test pvalue = 100000 (test default is 100000)
+> > # P-values in final KS test = 100 (test default is 100)
+> > # Testing 3-bit ntuples in 32-bit random words
+> > #==================================================================
+> > #                Histogram of p-values
+> > # Counting histogram bins, binscale = 0.100000
+> > #     20|    |    |    |    |    |    |    |    |    |    |
+> > #       |    |    |    |    |    |    |    |    |    |    |
+> > #     18|    |    |    |    |    |    |    |    |    |    |
+> > #       |    |    |    |    |****|    |    |    |    |    |
+> > #     16|    |    |    |    |****|    |    |    |    |    |
+> > #       |    |    |    |    |****|    |    |    |    |    |
+> > #     14|    |    |    |    |****|    |    |    |    |    |
+> > #       |    |    |    |    |****|    |    |    |    |****|
+> > #     12|    |    |    |    |****|    |    |    |    |****|
+> > #       |****|    |    |    |****|    |****|    |    |****|
+> > #     10|****|    |    |    |****|    |****|****|    |****|
+> > #       |****|    |    |    |****|****|****|****|    |****|
+> > #      8|****|****|    |    |****|****|****|****|    |****|
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #      6|****|****|****|****|****|****|****|****|****|****|
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #      4|****|****|****|****|****|****|****|****|****|****|
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #      2|****|****|****|****|****|****|****|****|****|****|
+> > #       |****|****|****|****|****|****|****|****|****|****|
+> > #       |--------------------------------------------------
+> > #       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+> > #==================================================================
+> > #                          Results
+> > Kuiper KS: p = 0.731639
+> > Assessment: PASSED at > 5% for RGB Bit Distribution Test
+> > 
+> > 
+> #========================================================================
+> > #                 RGB Bit Distribution Test
+> > # Accumulates the frequencies of all n-tuples of bits in a list
+> > # of random integers and compares the distribution thus generated
+> > # with the theoretical (binomial) histogram, forming chisq and the
+> > # associated p-value.  In this test n-tuples are selected without
+> > # WITHOUT overlap (e.g. 01|10|10|01|11|00|01|10) so the samples
+> > # are independent.  Every other sample is offset modulus of the
+> > # sample index and ntuple_max.
+> > #
+> > #                        Run Details
+> > # Random number generator tested: ca
+> > # Samples per test pvalue = 100000 (test default is 100000)
+> > # P-values in final KS test = 100 (test default is 100)
+> > # Testing 4-bit ntuples in 32-bit random words
+> > #==================================================================
+> > #                Histogram of p-values
+> > # Counting histogram bins, binscale = 0.100000
+> > 
+> === message truncated ===
+> 
+> 
+> 
+> 
+> 
+> __________________________________________________________________________
+> __________
+> Need Mail bonding?
+> Go to the Yahoo! Mail Q&A for great tips from Yahoo! Answers users.
+> http://answers.yahoo.com/dir/?link=list&sid=396546091
+> 
+
+-- 
+Robert G. Brown	                       http://www.phy.duke.edu/~rgb/
+Duke University Dept. of Physics, Box 90305
+Durham, N.C. 27708-0305
+Phone: 1-919-660-2567  Fax: 919-660-2525     email:rgb@phy.duke.edu
+
