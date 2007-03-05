@@ -114,11 +114,12 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cp $(ABS) $(PROJECTDIR); \
 	cp $(PHP) $(PROJECTDIR); \
 	cp Makefile.am $(PROJECTDIR); \
+	cp configure $(PROJECTDIR); \
 	cp $(SPEC).in $(PROJECTDIR); \
 	cp dieharder_version.h.in $(PROJECTDIR); \
 	cp autogen.sh $(PROJECTDIR); \
 	cp missing $(PROJECTDIR); \
-	cp install.sh $(PROJECTDIR); \
+	cp install-sh $(PROJECTDIR); \
 	cp mkinstalldirs $(PROJECTDIR); \
 	cp ltmain.sh $(PROJECTDIR); \
 	cp configure.ac $(PROJECTDIR); \

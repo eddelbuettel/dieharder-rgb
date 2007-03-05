@@ -80,7 +80,5 @@ AC_CONFIG_FILES([
  dieharder.spec
  dieharder/Makefile 
  libdieharder/Makefile 
- manual/Makefile 
- manual/macros.tex
  Makefile])
 AC_OUTPUT

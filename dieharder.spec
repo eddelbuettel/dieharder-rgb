@@ -120,9 +120,8 @@ rm -rf $RPM_BUILD_ROOT
 # The libdieharder man page
 %attr(644,root,root) /usr/share/man/man3/libdieharder.3.gz
 
-# The dieharder MANUAL goes in with the library, since the library
-# is likely to be installed "everywhere".
-%doc ChangeLog Copyright README COPYING NOTES manual/dieharder.pdf
+# These are all pretty much standard.
+%doc ChangeLog Copyright README COPYING NOTES
 
 ########################################################################
 # Files installed with the dieharder tty UI
@@ -136,6 +135,7 @@ rm -rf $RPM_BUILD_ROOT
 # The dieharder man page
 %attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
+# These are all pretty much standard.
 %doc ChangeLog Copyright README COPYING NOTES
 
 ########################################################################
