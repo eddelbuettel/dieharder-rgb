@@ -1,8 +1,9 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = dieharder libdieharder manual
+SUBDIRS = dieharder libdieharder
 
-EXTRA_DIST = autogen.sh dieharder-config.in configure.ac THANKS BUGS SUPPORT dieharder.spec.in dieharder.m4 test_dieharder.sh
+EXTRA_DIST = autogen.sh dieharder-config.in configure.ac \
+ THANKS BUGS SUPPORT dieharder.spec.in dieharder.m4 test_dieharder.sh
 
 #  install the man pages  (nope, not doing this right yet)
 # man_MANS=dieharder.1 libdieharder.3
