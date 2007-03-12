@@ -7,6 +7,8 @@
 
 autoheader
 aclocal
+rm -f Makefile Makefile.in dieharder/Makefile dieharder/Makefile.in \
+   libdieharder/Makefile libdieharder/Makefile.in
 automake --add-missing --gnu
 autoconf
 echo "Now use ./configure --prefix=/usr for a regular install"
