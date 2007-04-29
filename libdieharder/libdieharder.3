@@ -1,180 +1,127 @@
-.\" $Id: libdieharder.3 221 2006-08-16 22:43:03Z rgb $
-.TH DieHarder 1 "Copyright 2004 Robert G. Brown" "DieHarder"
+.\" Copyright (c) 1999 Andries Brouwer (aeb@cwi.nl)
+.\"
+.\" This is free documentation; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License as
+.\" published by the Free Software Foundation; either version 2 of
+.\" the License, or (at your option) any later version.
+.\"
+.\" The GNU General Public License's references to "object code"
+.\" and "executables" are to be interpreted as the output of any
+.\" document formatting or typesetting system, including
+.\" intermediate and printed output.
+.\"
+.\" This manual is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public
+.\" License along with this manual; if not, write to the Free
+.\" Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111,
+.\" USA.
+.\"
+.TH libdieharder 3 "Copyright 2006 Robert G. Brown" "libdieharder"
 .SH NAME
-rand_rate \- A testing and benchmarking tool for GSL random number 
+libdieharder \- A testing and benchmarking library for random number
 generators
 
 .SH SYNOPSIS
-dieharder [-a] [-b bits] [-d diehard test number] [-f filename]
-          [-g generator number] [-h] [-i iterations] [-l]
-          [-n ntuple] [-p number of p samples] [-q]
-          [-r rgb test number] [-s sts test number]
-          [-t number of test samples] [-u user test number]
-          [-v verbose flag] [-x xvalue] [-y yvalue] [-z zvalue]
+.B #include "dieharder.h"
+.sp
+.B void run_user_template()
+.br
+.B {
 
-.SH DieHarder OPTIONS
-
-.TP
--a Runs all the tests with standard/default options to create a report
-.TP
--b bits - sets the number of bits to be used in tests that act on a bit
-string of variable length, e.g. the rgb bitdist test.
-.TP
--d test number -  selects specific diehard test.
-.TP
--f filename will EVENTUALLY permit random strings to be tested to be
-read in from a file, but this is not yet implemented!
-.TP
--g generator number - selects a specific generator for testing.  Using
--1 causes all known generators to be printed out to the display.
-.TP
--h prints context-sensitive help -- usually Usage (this message) or a
-test synopsis if entered as e.g. dieharder -d 3 -h.
-.TP
--i iterations - sets iteration count for timing runs (should not be
-needed).
-.TP
--l list all known tests.
-.TP
--n ntuple - set ntuple length for tests on short bit strings that permit
-the length to be varied (e.g. rgb bitdist).
-.TP
--p count - sets the number of p-value samples per test (default 100).
-.TP
--q selects \"quiet\" operation: results only are printed on a single line
-(where applicable).  This is a way of getting a very compact report.
-.TP
--r test number - selects specific rgb test.
-.TP
--s test number - selects specific sts test.
-.TP
--t count - sets the number of random entities used in each test, where
-possible.  Be warned -- some tests will take a long time with the
-default value of 10000.  Read the test synopses for suggested settings
-for -t or use -a first.
-.TP
--u test number - selects specific user-developed test, if you've added
-one or more to this tool.  dieharder provides this interface to make
-it easy to add your own tests.
-.TP
--v verbose flag -- controls the verbosity of the output for debugging
-only.  Probably of little use to non-developers, and developers can
-read the enum(s) in dieharder.h and the test sources to see which
-flag values turn on output on which routines.  1 is \"all\" and will
-result in a fairly detailed trace of program activity.
-.TP
--x,-y,-z number - Some tests have parameters that can safely be varied
-from their default value.  For example, in the diehard birthdays test,
-one can vary the number of \"dates\" drawn from the \"year\" of some
-length, which can also be varied.  -x 2048 -y 30 alters these two
-values but should still run fine.
-
-.B NOTE WELL:  
-The "bogomegarates" returned by this tool are BOGUS and may not be even 
-approximately correct in your context.  Also, the quality assessment(s) 
-for the rngs may, in fact, be completely incorrect or misleading.  Use 
-them at your Own Risk!  Be Warned!
+.B "Test **user_template_test;"
+.br
+.B "/*"
+.br
+.B " * Create the test"
+.br
+.B " */"
+.br
+.B "user_template_test = create_test(&user_template_dtest,tsamples,psamples,&user_template);"
+.sp
+.B "/*"
+.br
+.B " * Set any GLOBAL data used by the test."
+.br
+.B " */"
+.br
+.B "user_template_lag = (int)x_user;"
+.sp
+.B "/*"
+.br
+.B " * Show the standard test header"
+.br
+.B " */"
+.br
+.B "show_test_header(&user_template_dtest,user_template_test);"
+.sp
+.B "/*"
+.br
+.B " * Call the test"
+.br
+.B " */"
+.br
+.B "std_test(&user_template_dtest,user_template_test);"
+.sp
+.B "/*"
+.br
+.B " * This almost certainly belongs in the show_test_results section,"
+.br
+.B " * possibly with additional conditionals rejecting test results involving"
+.br
+.B " * rewinds, period."
+.br
+.B " */"
+.br
+.B "if(strncmp(\"file_input\",gsl_rng_name(rng),10) == 0){"
+.br
+.B "  printf("# %u rands were used in this test\n",file_input_get_rtot(rng));"
+.br
+.B "  printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));"
+.br
+.B "}"
+.sp
+.B "/*"
+.br
+.B " * Show standard test results"
+.br
+.B " */".
+.br
+.B "show_test_results(&user_template_dtest,user_template_test);"
+.sp
+.B "}"
 
 
 .SH DESCRIPTION
-.B DieHarder
-This is the current snapshot of the dieharder random number
-tester.  It encapsulates all of the Gnu Scientific Library random number
-generators as well as /dev/random and /dev/urandom in a single harness
-that can time them and subject them to various tests for randomness.
-These tests are variously drawn from George Marsaglia's "Diehard battery of
-random number tests", the NIST Statistical Test Suite, and include a
-few useful e.g. binning or spectral tests that I've found doing research 
-into random number tests or tests that I myself have made up or that are 
-improvements on tests from other sources.
+.B libdieharder
 
-The primary point of this tester is to make it easy to time and test
-(pseudo)random number generators OR hardware or other generators.  Three
-examples are provided of wrapping a random number generator and
-inserting it so that it is can be called via the GSL interface.  An
-interface is planned that would allow random numbers to be read in from
-a file, allowing the tool to be used with any generator (wrappable or
-not) that can generate a table of random numbers.
+The libdieharder library provides an API to user interface programs
+wishing to call dieharder tests.  Commands are defined for creating
+tests, initializing the tests and running the tests.  Showing the
+results is of course the responsibility of the UI.
 
-Another important motivation for writing dieharder is to have the
-entire test code and documentation be fully Gnu Public Licensed and
-hence openly available for adaptation, testing, modification, including
-the addition of new tests.  The primary objections I have towards
-diehard and sts are not that they are or are not adequate and complete;
-it is that the code is obscure and not explicitly published for reuse.
-It is my hope that by providing this tool in autodocumenting source, it
-makes it easy to add new tests, critique older tests, and improve the
-suite in general.
+libdieharder also wraps certain additional random number generators so
+that they can be tested.  libdieharder can be default test all the
+random number generators in the Gnu Scientific Library plus these
+additional generators (which include "generators" for reading in numbers
+from a file).
 
-.SH FILE INPUT
+libdieharder is extensible.  It is fairly easy to add additional test
+"objects" or random number generators using existing sources as
+templates.
 
-To test your own random number generator or to test the randomness of
-some file of presumably random numbers, two approaches are possible.
-First of all, there are five generators that are wrapped up in GSL
-compatible clothes and linked to the GSL so that the standard GSL
-interface works for them.  Using these as prototypes and working with
-the fully GPL dieharder sources, any software or hardware random number
-generator that one wishes to test can be added for testing using these
-as prototypes, and can likely be submitted to the GSL for inclusion if
-they pass the tests as well or better than the generators that are already
-there.  Dieharder is designed to (ultimately) be a
-.I very convenient tool
-for testing new software RNGs.
-
-However, the last two non-gsl generators are "universal" generators in
-the sense that they permit you to input a random number stream from a
-.I file 
-(but 
-.I not 
-from /dev/random or /dev/urandom, be warned).  
-
-The file_input generator requires a file of "cooked" (ascii readable)
-random numbers, one per line, with a header that describes the format to
-dieharder.  This interface is still somewhat experimental -- not all
-ascii formats have been tested.  However, it has been tested and should
-work for 32 bit unsigned integers represented directly in ascii or as 32
-bits of binary.  Example files for a couple of possible input formats
-are included in the sources.
-
-Finally, the type file_input_raw accepts a file of raw bits as input,
-such as might be generated by:
-
- dd if=/dev/urandom of=testrands.raw bs=4 count=1000000
-
-(to generate 1,000,000 four-byte ints directly from the
-software-augmented kernel entropy generator).  That is, running the
-tests from such a file should be 
-.I approximately
-the same as testing /dev/urandom directly.
-
-The main (important!) difference is that some of the test require a
-.I lot
-of random numbers -- far more than were needed by diehard.  Indeed,
-dieharder typically runs many of the diehard tests 100 
-.I independent 
-times, generating a p-value for each, and plots a histogram of the
-p-values and generates a p-value for the (presumed uniform) distribution
-of p-values!  This approach mimics the histogram presented in the STS
-suite but augments it with a hard number.
-
-This protects one from the "p happens" problem -- every now and then you
-will have a run with a very low or high p from a good generator, but
-over time a good generator will generate a uniform distribution of
-p-values.  Dieharder lets you visually decide if the distribution is or
-isn't credibly uniform, while giving you an index that in most cases is
-a fairly clear "good" or "bad" indicator for a given random sequence or
-generator.
-
-File input rands are delivered to the tests on demand, but if the test
-needs more than are available it simply rewinds the file and cycles
-through it again, and again, and again as needed.  Obviously this
-significantly reduces the sample space and can lead to completely
-incorrect results for the p-value histograms unless there are enough
-rands to run EACH test without repetition (it is harmless to reuse the
-sequence for different tests).  Let the user beware!
+The API will be documented in more detail as the project approaches
+completion.  In the meantime, it is strongly recommended that users
+wishing to call the library use the source of the dieharder tty UI as a
+template and list of all currently supported objects, as this is the
+primary libdieharder debugging vehicle in addition to being the current
+"standard" application of the library.
 
 .SH PUBLICATION RULES
-.B DieHarder
+.B libdieharder
 is entirely original code and can be modified and used at will by any 
 user, provided that:
 

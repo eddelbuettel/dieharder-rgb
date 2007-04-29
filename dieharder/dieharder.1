@@ -7,7 +7,7 @@ generators
 .SH SYNOPSIS
 dieharder [-a] [-b bits] [-d diehard test number] [-f filename]
           [-g generator number] [-h] [-i iterations] [-l]
-          [-n ntuple] [-p number of p samples] [-q]
+          [-n ntuple] [-p number of p samples] [-q] [-N]
           [-r rgb test number] [-s sts test number]
           [-t number of test samples] [-u user test number]
           [-v verbose flag] [-x xvalue] [-y yvalue] [-z zvalue]
@@ -43,6 +43,10 @@ the length to be varied (e.g. rgb bitdist).
 .TP
 -q selects \"quiet\" operation: results only are printed on a single line
 (where applicable).  This is a way of getting a very compact report.
+.TP
+-N selects non-overlapping samples even in tests that \"require\"
+overlapping samples, such as operm5.  In some cases this will matter.
+In others it will not.
 .TP
 -r test number - selects specific rgb test.
 .TP
