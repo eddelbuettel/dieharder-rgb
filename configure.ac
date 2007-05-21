@@ -80,5 +80,6 @@ AC_CONFIG_FILES([
  dieharder.spec
  dieharder/Makefile 
  libdieharder/Makefile 
+ RDieHarder/DESCRIPTION
  Makefile])
 AC_OUTPUT

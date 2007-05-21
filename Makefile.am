@@ -219,3 +219,40 @@ installrepo : $(TGZ) $(RPM) $(SRPM) $(LRPM) $(PRPM) $(MRPM) $(ABS) $(PHP)
 	rsync -avz $(PRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH);\
 	rsync -avz $(MRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH);\
 	ssh root@$(REPOSERVER) "cd $(REPOPATH)/$(ARCH);createrepo .")
+
+#========================================================================
+# This target takes the dieharder sources and "magically" transforms
+# them into RDieHarder sources.
+RDHTAR=RDieHarder_@VERSION@.tar
+RDHPKG=RDieHarder_@VERSION@.tar.gz
+
+RDHPKG: rdhtgz
+
+rdhtgz:
+	rm -rf RDieHarder/src/*.h RDieHarder/src/*.c \
+	RDieHarder/src/*.o RDieHarder/src/Makefile RDieHarder/src/*.so
+	cp dieharder/*.c RDieHarder/src/
+	cp dieharder/*.h RDieHarder/src/
+	mv RDieHarder/src/rdieharder.c RDieHarder/src/dieharder.c
+	cp dieharder/Makefile.RDH RDieHarder/src/Makefile
+	tar -cvpf $(RDHTAR) RDieHarder
+	gzip -f $(RDHTAR)
+
+# This can be run by anybody
+rdhclean:
+	rm -rf RDieHarder/src/*.h RDieHarder/src/*.c $(RDHTAR) $(RDHPKG) \
+	RDieHarder/src/*.o RDieHarder/src/Makefile RDieHarder/src/*.so
+
+# This can be run as anybody
+rdhprep:
+	rm -rf RDieHarder/src/*.h RDieHarder/src/*.c \
+	RDieHarder/src/*.o RDieHarder/src/Makefile RDieHarder/src/*.so
+	cp dieharder/*.c RDieHarder/src/
+	cp dieharder/*.h RDieHarder/src/
+	mv RDieHarder/src/rdieharder.c RDieHarder/src/dieharder.c
+	cp dieharder/Makefile.RDH RDieHarder/src/Makefile
+
+# This has to be run only as root, sorry.
+rdh:	$(RDHPKG)
+	R CMD INSTALL $(RDHPKG)
+

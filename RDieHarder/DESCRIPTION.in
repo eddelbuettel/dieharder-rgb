@@ -1,5 +1,5 @@
 Package: RDieHarder
-Version: @VERSION@.@RELEASE@
+Version: @VERSION@
 Date: $Date$
 Author: Dirk Eddelbuettel <edd@debian.org>
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
