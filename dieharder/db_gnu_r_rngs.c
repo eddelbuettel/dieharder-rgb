@@ -22,9 +22,11 @@
  *  Foundation, Inc., 51 Franklin Street Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-/* a few defines to select 'dieharder' mode (which is what we use here 
-   and 'GNU_R_MODE' (which is how we 'turn off' the features used by R but
-   not here */
+/*
+ * A few defines to select 'dieharder' mode (which is what we use here and
+ * 'GNU_R_MODE' (which is how we 'turn off' the features used by R but not
+ * here.
+ */
 #ifndef DIEHARDER
 #define DIEHARDER
 #ifdef GNU_R_MODE
@@ -170,8 +172,7 @@ static double fixup(double x)
     return x;
 }
 
-
-double unif_rand(void)
+static double unif_rand(void) 	/* made static to ensure will be called */
 {
     double value;
 
@@ -366,7 +367,8 @@ r_rng_get_double (void *vstate)
 {
   r_rng_tab_t *state = (r_rng_tab_t *) vstate;
   RNG_kind = state->kind;
-  return(unif_rand());
+  double u = unif_rand();
+  return(u);
 }
 
 /* -------------------------------------- GNU R generator 1: wichmann_hill */

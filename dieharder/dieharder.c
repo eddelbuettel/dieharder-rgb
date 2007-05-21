@@ -6,19 +6,12 @@
  *========================================================================
  */
 
-/*
- *========================================================================
- *  Project template.
- *========================================================================
- */
-
 #include "dieharder.h"
 
 
 /*
  * main() is just a shell for routines that parse the command line,
- * do all the requested work, and then exit cleanly.  main() is pretty
- * much all there is in cpu_rate.c
+ * do all the requested work, and then exit cleanly.
  */
 int main(int argc, char *argv[]) 
 {

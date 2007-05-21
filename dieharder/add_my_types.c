@@ -31,6 +31,12 @@ GSL_VAR const gsl_rng_type *gsl_rng_empty_random;
 GSL_VAR const gsl_rng_type *gsl_rng_file_input;
 GSL_VAR const gsl_rng_type *gsl_rng_file_input_raw;
 GSL_VAR const gsl_rng_type *gsl_rng_ca;
+GSL_VAR const gsl_rng_type *gsl_rng_r_wichmann_hill;	/* edd May 2007 */
+GSL_VAR const gsl_rng_type *gsl_rng_r_marsaglia_mc;	/* edd May 2007 */
+GSL_VAR const gsl_rng_type *gsl_rng_r_super_duper;	/* edd May 2007 */
+GSL_VAR const gsl_rng_type *gsl_rng_r_mersenne_twister;	/* edd May 2007 */
+GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp;	/* edd May 2007 */
+GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp2;	/* edd May 2007 */
 
 void add_my_types()
 {
@@ -62,6 +68,24 @@ void add_my_types()
  if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
  i++;
  types[i] = (gsl_rng_ca);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_r_wichmann_hill);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_r_marsaglia_mc);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_r_super_duper);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_r_mersenne_twister);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_r_knuth_taocp);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
+ types[i] = (gsl_rng_r_knuth_taocp2);
  if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
  i++;
  
