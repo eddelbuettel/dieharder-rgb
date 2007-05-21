@@ -82,6 +82,46 @@
  double q_ks(double x);
  double q_ks_kuiper(double x);
 
+ double output_rnds(void);
+ void add_my_types(void);
+ void help_user_template(void);
+ void list_rngs(void);
+ void parsecl(int argc, char **argv);
+ void run_diehard_2dsphere(void);
+ void run_diehard_3dsphere(void);
+ void run_diehard_birthdays(void);
+ void run_diehard_bitstream(void);
+ void run_diehard_count_1s_byte(void);
+ void run_diehard_count_1s_stream(void);
+ void run_diehard_craps(void);
+ void run_diehard_dna(void);
+ void run_diehard_operm5(void);
+ void run_diehard_opso(void);
+ void run_diehard_oqso(void);
+ void run_diehard_parking_lot(void);
+ void run_diehard_rank_32x32(void);
+ void run_diehard_rank_6x8(void);
+ void run_diehard_runs(void);
+ void run_diehard_squeeze(void);
+ void run_diehard_sums(void);
+ void run_marsaglia_tsang_gcd(void);
+ void run_rgb_bitdist(void);
+ void run_rgb_persist(void);
+ void run_rgb_timing(void);
+ void run_sts_monobit(void);
+ void run_sts_runs(void);
+ void run_user_template(void);
+ void startup(void);
+ void user_template(Test **test,int irun);
+ void work(void);
+ void Xtest_eval(Xtest *xtest);
+
+#ifdef RDieHarder
+ int histogram(double *input,int inum,double min,double max,int nbins,char *label);
+ Test *testptr;		/* kludge: need a global to report back to main + R */
+ Dtest *dtestptr;	/* kludge: need a global to report back to main + R */
+#endif
+
 
  /*
   *========================================================================
