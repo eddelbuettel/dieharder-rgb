@@ -1,5 +1,5 @@
 
-PKG_CFLAGS = 	-g -W -I. -DRDieHarder
+PKG_CFLAGS = 	-g -W -I. -DRDIEHARDER
 PKG_LIBS =	-ldieharder -lgsl -lgslcblas -lm
 
 sources := 	$(wildcard *.c)

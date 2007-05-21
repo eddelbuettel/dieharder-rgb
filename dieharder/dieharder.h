@@ -116,7 +116,7 @@
  void work(void);
  void Xtest_eval(Xtest *xtest);
 
-#ifdef RDieHarder
+#ifdef RDIEHARDER
  int histogram(double *input,int inum,double min,double max,int nbins,char *label);
  Test *testptr;		/* kludge: need a global to report back to main + R */
  Dtest *dtestptr;	/* kludge: need a global to report back to main + R */

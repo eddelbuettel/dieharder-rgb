@@ -37,6 +37,7 @@ PROGRAM = dieharder
 PROGTIME = dieharder.time
 MANUAL = manual
 MANTIME = manual.time
+RDIEHARDER = RDieHarder
 
 # The destination on a remote webserver, used as:
 #    $(HOME)/public_html/$(WDIR)
@@ -110,6 +111,8 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cd $(MANUAL); \
 	make clean; \
 	cd ..; \
+	make rdhclean; \
+	cp -r $(RDIEHARDER) $(PROJECTDIR); \
 	cp -r $(MANUAL) $(PROJECTDIR); \
 	cp -r include $(PROJECTDIR); \
 	cp $(ABS) $(PROJECTDIR); \
@@ -226,9 +229,9 @@ installrepo : $(TGZ) $(RPM) $(SRPM) $(LRPM) $(PRPM) $(MRPM) $(ABS) $(PHP)
 RDHTAR=RDieHarder_@VERSION@.tar
 RDHPKG=RDieHarder_@VERSION@.tar.gz
 
-RDHPKG: rdhtgz
+$(RDHPKG): rdhpkg
 
-rdhtgz:
+rdhpkg:
 	rm -rf RDieHarder/src/*.h RDieHarder/src/*.c \
 	RDieHarder/src/*.o RDieHarder/src/Makefile RDieHarder/src/*.so
 	cp dieharder/*.c RDieHarder/src/
