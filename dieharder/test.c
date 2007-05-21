@@ -117,8 +117,8 @@ void show_test_results(Dtest *dtest,Test **test)
    #endif  /* !defined(RDIEHARDER) */
  }
 #ifdef RDIEHARDER
- testptr = test[0]; /* NB we drop all but the first one!! */
- dtestptr = dtest;
+ rdh_testptr = test[0]; /* NB we drop all but the first one!! */
+ rdh_dtestptr = dtest;
 #endif /* RDIEHARDER */
 }
 

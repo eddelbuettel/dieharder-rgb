@@ -69,18 +69,18 @@ SEXP dieharder(SEXP genS, SEXP testS, SEXP seedS, SEXP psamplesS, SEXP verbS) {
   PROTECT(result = allocVector(VECSXP, 3)); 
   /* alloc scalar, and set it */
   PROTECT(pv = allocVector(REALSXP, 1));
-  REAL(pv)[0] = testptr->ks_pvalue;
+  REAL(pv)[0] = rdh_testptr->ks_pvalue;
   /* vector and set it */
-  PROTECT(vec = allocVector(REALSXP, testptr->psamples)); 
-  for (i = 0; i < testptr->psamples; i++) {
-    REAL(vec)[i] = testptr->pvalues[i];
+  PROTECT(vec = allocVector(REALSXP, rdh_testptr->psamples)); 
+  for (i = 0; i < rdh_testptr->psamples; i++) {
+    REAL(vec)[i] = rdh_testptr->pvalues[i];
   }
   PROTECT(name = allocVector(STRSXP, 1));
-  SET_STRING_ELT(name, 0, mkChar(dtestptr->name));
+  SET_STRING_ELT(name, 0, mkChar(rdh_dtestptr->name));
   //PROTECT(desc = allocVector(STRSXP, 1));
-  //SET_STRING_ELT(desc, 0, mkChar(dtestptr->description));
+  //SET_STRING_ELT(desc, 0, mkChar(rdh_dtestptr->description));
   //PROTECT(nkps = allocVector(REALSXP, 1));
-  //REAL(nkps)[0] = (double) testptr->nkps;
+  //REAL(nkps)[0] = (double) rdh_testptr->nkps;
 
   /* insert scalar and vector */
   SET_VECTOR_ELT(result, 0, pv);
@@ -135,8 +135,8 @@ SEXP dieharderVectorised(SEXP genS, SEXP testS, SEXP verbS) {
    */
 
     work();
-    Rprintf("C function dieharder called with gen=%d test=%d -> %f\n", generator, diehard, testptr->ks_pvalue);
-    REAL(result)[i] = testptr->ks_pvalue;
+    Rprintf("C function dieharder called with gen=%d test=%d -> %f\n", generator, diehard, rdh_testptr->ks_pvalue);
+    REAL(result)[i] = rdh_testptr->ks_pvalue;
   }
 
   UNPROTECT(1);

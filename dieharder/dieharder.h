@@ -81,6 +81,7 @@
  double kstest_kuiper(double *pvalue,int count);
  double q_ks(double x);
  double q_ks_kuiper(double x);
+ void Exit(int);
 
  double output_rnds(void);
  void add_my_types(void);
@@ -118,8 +119,8 @@
 
 #ifdef RDIEHARDER
  int histogram(double *input,int inum,double min,double max,int nbins,char *label);
- Test *testptr;		/* kludge: need a global to report back to main + R */
- Dtest *dtestptr;	/* kludge: need a global to report back to main + R */
+ Test *rdh_testptr;		/* kludge: need a global to report back to main + R */
+ Dtest *rdh_dtestptr;	/* kludge: need a global to report back to main + R */
 #endif
 
 

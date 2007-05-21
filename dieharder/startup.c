@@ -74,7 +74,7 @@ reasonable amount of time).\n\
    -u 1 User Template (Lagged Sum Test)\n\
 \n");
 
-   exit(0);
+   Exit(0);
  }
 
  /*
@@ -105,13 +105,13 @@ reasonable amount of time).\n\
 
  if(generator == -1){
    list_rngs();
-   exit(0);
+   Exit(0);
  }
 
  if(generator > num_rngs-1){
    fprintf(stderr,"Error:  rng %d (> %d) does not exist!\n",generator,num_rngs-1);
    list_rngs();
-   exit(0);
+   Exit(0);
  }
 
  /*
@@ -125,12 +125,12 @@ reasonable amount of time).\n\
    if(fromfile != 1){
      fprintf(stderr,"Error: generator %s uses file input but no file has been loaded",types[generator]->name);
      list_rngs();
-     exit(0);
+     Exit(0);
    }
    if(output){
      fprintf(stderr,"Error: generator %s uses file input but output flag set.",types[generator]->name);
      Usage();
-     exit(0);
+     Exit(0);
    }
  }
 
@@ -162,7 +162,7 @@ reasonable amount of time).\n\
  if(output){
    output_rnds();
    /* We'll fix it so we don't have to exit here later, maybe. */
-   exit(0);
+   Exit(0);
  }
 
  /*
@@ -185,7 +185,7 @@ reasonable amount of time).\n\
   * quite complex and crucial to happy testing.  We cannot test this until
   * AFTER rng is set up.
   testbits();
-  exit(0);
+  Exit(0);
   *
   */
 

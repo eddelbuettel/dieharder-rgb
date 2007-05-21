@@ -16,12 +16,6 @@
 
 #include "dieharder.h"
 
-static void Exit(int exitcode) {
-#if !defined(RDIEHARDER)
-  exit(exitcode);
-#endif  /* !defined(RDIEHARDER) */
-}
-
 void work()
 {
 

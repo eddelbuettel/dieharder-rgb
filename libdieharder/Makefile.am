@@ -123,6 +123,7 @@ clean:
 install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
 	(install -d $(libdir); \
 	install -m 755 $(PROGLIB_SO_VERSION) $(libdir)/$(PROGLIB_SO_VERSION); \
+        ln -sf $(libdir)/$(PROGLIB_SO_VERSION) $(libdir)/$(PROGLIB_SO); \
 	install -d $(includedir)/dieharder; \
 	install -m 644 ../include/dieharder/*.h $(includedir)/dieharder; \
 	install -d $(prefix)/share/man/man3; \
@@ -132,7 +133,6 @@ install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
 # FC requires no static lib install
 # 	install -m 755 $(PROGLIB_A) $(libdir)/$(PROGLIB_A); \
 # ldconfig -n $(libdir); \
-# ln -sf $(libdir)/$(PROGLIB_SO_VERSION) $(libdir)/$(PROGLIB_SO); \
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.
