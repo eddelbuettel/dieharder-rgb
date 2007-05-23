@@ -198,12 +198,6 @@
  uint filecount;	/* number of rands in file */
  char filetype;         /* file type */
 
- /*
-  * rng global vectors and variables for setup and tests.
-  */
- const gsl_rng_type **types;    /* where all the rng types go */
- gsl_rng *rng;                  /* global gsl random number generator */
-
  void show_test_header(Dtest *dtest,Test **test);
  void show_test_header_debug(Dtest *dtest,Test **test);
  void test_header(Dtest *dtest);

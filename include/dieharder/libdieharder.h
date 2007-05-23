@@ -31,6 +31,7 @@
 #include <dieharder/Vtest.h>
 #include <dieharder/std_test.h>
 #include <dieharder/tests.h>
+#include <dieharder/add_lib_rngs.h>
 
 /*
  *========================================================================
@@ -98,6 +99,7 @@
  uint get_uint_rand(gsl_rng *gsl_rng);
  void get_rand_bits(void *result,uint rsize,uint nbits,gsl_rng *gsl_rng);
  
+ void add_lib_rngs();
     
 
  

@@ -93,9 +93,17 @@ reasonable amount of time).\n\
  num_gsl_rngs = i;
 
  /*
-  * Now add my own types and count THEM.
+  * Now add the library gsl-wrapped generators
   */
- add_my_types();
+ add_lib_rngs();
+ while(types[i] != NULL){
+   i++;
+ }
+
+ /*
+  * If there are any, we can even add generators at the UI level
+  */
+ add_ui_rngs();
  while(types[i] != NULL){
    i++;
  }
