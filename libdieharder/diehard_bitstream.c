@@ -184,6 +184,7 @@ void diehard_bitstream(Test **test, int irun)
  if(verbose == D_DIEHARD_BITSTREAM || verbose == D_ALL){
    printf("%f %f %f\n",ptest.y,ptest.x,ptest.x-ptest.y);
  }
+ printf("%f\n",ptest.x);
 
  Xtest_eval(&ptest);
  test[0]->pvalues[irun] = ptest.pvalue;
