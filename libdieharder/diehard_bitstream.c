@@ -60,10 +60,20 @@ void diehard_bitstream(Test **test, int irun)
   *
   * ptest.x = number of "missing ntuples" given 2^21 trials
   * ptest.y = 141909
-  * ptest.sigma = 288
+  *
+  * This is from my own independent simulations of bitstream using
+  * the best RNGs out there, and is accurate to easily plus or minus
+  * 2.  It corresponds to a s.d. around 0.57 for the number of samples
+  * I have so far, and the simulated mean matches the theoretical mean
+  * within this sigma (that is, working on the seventh significant
+  * figure).  I have no doubt that it is correct and Marsaglia's value
+  * above is incorrect.
+  *
+  * ptest.sigma = 290
+  *
   */
- ptest.y = 141909.0;
- ptest.sigma = 288.0;
+ ptest.y = 141909;
+ ptest.sigma = 290.0;
 
  /*
   * We now make test[0]->tsamples measurements, as usual, to generate the
