@@ -33,9 +33,10 @@
  GSL_VAR const gsl_rng_type *gsl_rng_r_wichmann_hill;	/* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_marsaglia_mc;	/* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_super_duper;	/* edd May 2007 */
- GSL_VAR const gsl_rng_type *gsl_rng_r_mersenne_twister;	/* edd May 2007 */
+ GSL_VAR const gsl_rng_type *gsl_rng_r_mersenne_twister;  /* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp;	/* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp2;	/* edd May 2007 */
+ GSL_VAR const gsl_rng_type *gsl_rng_uvag;	        /* rgb June 2007 */
 
  /*
   * rng global vectors and variables for setup and tests.

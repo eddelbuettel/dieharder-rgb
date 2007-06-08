@@ -56,5 +56,8 @@ void add_lib_rngs()
  types[i] = (gsl_rng_r_knuth_taocp2);
  if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
  i++;
+ types[i] = (gsl_rng_uvag);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
  
 }

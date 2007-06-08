@@ -207,10 +207,6 @@
   */
  const gsl_rng_type **types;    /* where all the rng types go */
  gsl_rng *rng;               /* global gsl random number generator */
- /* The following are cruft from pre-library days -- remove */
- /* unsigned int *rand_int;        /* vector of "random" uints */
- /* unsigned int **rand_mtx;       /* matrix of "random" uints */
- /* double *rand_dbl;              /* vector of "random" uniform deviates */
 
  /*
   * All required for GSL Singular Value Decomposition (to obtain
@@ -219,7 +215,7 @@
  gsl_matrix *A,*V;
  gsl_vector *S,*svdwork;
 
- unsigned int seed;             /* rng seed of run (?) */
+ unsigned long int seed;             /* rng seed of run (?) */
  unsigned int random_max;       /* maximum rng returned by generator */
  unsigned int rmax;             /* scratch space for random_max manipulation */
  unsigned int rmax_bits;        /* Number of valid bits in rng */
