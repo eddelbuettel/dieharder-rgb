@@ -12,9 +12,39 @@
  *  Alex has agree to make this available under the GSL so it can be
  *  integrated with the dieharder package.
  *
- *  Cellular automaton random number generator
- *  Uses a 256-state automaton to generate random sequences of
- *  32-bit unsigned integers.
+ *  Here is pretty much the only documentation on this generator in
+ *  existence, at least until dieharder-based studies enable a real
+ *  publication to occur.  The following is from Alex:
+ *
+ * UVAG: The Universal Virtual Array Generator
+ *
+ * This generator is universal in the sense that a single algorithm
+ * can be used to produce random numbers with any integer data TYPE.
+ * Thus it is trivial to extend it to 64 bits and beyond.  If and when
+ * long long = 128 bits, UVAG is ready to go.
+ *
+ * The array is virtual in that when TYPE>char the 256 inner TYPES overlap
+ * producing an effectively huge "virtual" inner complexity in a very small
+ * physical memory. When TYPE = uint, every cycle changes 4-7 (depending on
+ * where rp is pointing in the array) virtual TYPEs in the array.  When
+ * TYPE = long long each cycle changes 8-15 virtual TYPES at a physical
+ * memory cost of just 4 bytes over uint for the entire array.
+ *
+ * As sindex is incremented, its next potential value has been changed many
+ * times since it was last encountered along with the entire inner state.
+ * Not very rigorous but then I'm no mathematician.  UVAG is something I
+ * would dub a chaotic prng.  It doesn't yield easily to mathematical
+ * analysis unlike well researched prngs like MT and RC4.  I have
+ * experimented using fewer than 256 seeds.  Fewer than 100 do well in
+ * DIEHARD.  The cost is in speed due to an extra mod.
+ *
+ * Where did UVAG come from?
+ *
+ * It evolved over years of playing around.  In its previous incarnation, rp
+ * was moved randomly and proved (as Makoto Matsumoto predicted) to zero out
+ * after extended cycling. Systematically stepping thru the array with sindex
+ * seems to eliminate the problem although I have not consulted further with
+ * Dr Matsumoto.
  *
  *========================================================================
  *
@@ -59,27 +89,25 @@ uvag_state_t;
 /* #define TYPE long long || char || short || int || long */
 #define TYPE uint
 #define WORD sizeof(TYPE)
-#define BYTESOUT 11000000
 
 /*
  * Global variables and data for UVAG
  */
 
-TYPE *rp, rndint;
+TYPE *rp;
+TYPE rndint;
 unsigned char sindex, svec[255 + WORD];  /* 256 overlapping TYPE seeds */
 
 static inline unsigned long int
 uvag_get (void *vstate)
 {
+
   /*
    * Returns a 32-bit unsigned integer produced by the UVAG
    */
-  rp = svec + svec[sindex+=1];
-  *rp += rndint;
-  rndint += *rp;
+  rp = (TYPE *)(svec + svec[sindex+=1]);
+  rndint += *rp += rndint;
   return rndint;
-/*  rndint += *rp += rndint;
-  return *rndint; */
 
 }
 
@@ -89,8 +117,7 @@ uvag_get_double (void *vstate)
   return uvag_get (vstate) / (double) UINT_MAX;
 }
 
-static void
-uvag_set (void *vstate, unsigned long int s) {
+static void uvag_set (void *vstate, unsigned long int s) {
 
  /* Initialize automaton using specified seed. */
  uvag_state_t *state = (uvag_state_t *) vstate;
