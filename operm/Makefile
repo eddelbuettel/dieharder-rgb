@@ -19,9 +19,9 @@
 #========================================================================
 # This should be the name of the binary produced by this package.  The
 # directory may or may not be the same:
-PROGRAM = OPERM
+PROGRAM = operm
 # DIR = $(PROGRAM)
-DIR = c_OPERM
+DIR = operm
 
 # The destination on a remote webserver, used as:
 #    $(HOME)/public_html/$(WDIR)
