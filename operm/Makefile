@@ -52,7 +52,7 @@ SOURCE = $(PROGRAM:=.c)
 
 SOURCES = $(SOURCE) \
   parsecl.c \
-  OPERM_work.c \
+  operm_work.c \
   # Add more/new sources to list above this line...
 
 INCLUDE = $(PROGRAM:=.h)
@@ -131,7 +131,7 @@ CFLAGS = -O3 -g $(DEFINES)
 # Linker flags
 LDFLAGS =
 # Libraries (I always include math library)
-LIBS = -lm
+LIBS = -lgsl -lgslcblas -lm
 
 #========================================================================
 # Define standard sources and targets.

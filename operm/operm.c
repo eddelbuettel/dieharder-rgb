@@ -12,7 +12,7 @@
  *========================================================================
  */
 
-#include "OPERM.h"
+#include "operm.h"
 
 
 /*
@@ -34,18 +34,18 @@ int main(int argc, char *argv[])
   *
   * Startup: Allocate memory, initialize all derivative variables from
   * command line values.  
- OPERM_startup();
+ operm_startup();
   */
 
  /*
   * Work: Do all the work.  In a complicated OPERM, project_work would
   * itself be a shell for a lot of other modular routines.
   */
- OPERM_work();
+ operm_work();
 
  /* 
   * Quit:  Done. Clean up (if necessary) and exit.
- OPERM_quit();
+ operm_quit();
   */
 
 }

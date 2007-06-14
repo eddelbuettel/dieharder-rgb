@@ -6,7 +6,7 @@
  *========================================================================
  */
 
-#include "OPERM.h"
+#include "operm.h"
 
 /*
  * This routine sets certain globals to their default values and permits
