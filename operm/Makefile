@@ -21,7 +21,7 @@
 # directory may or may not be the same:
 PROGRAM = operm
 # DIR = $(PROGRAM)
-DIR = operm
+DIR = dieharder
 
 # The destination on a remote webserver, used as:
 #    $(HOME)/public_html/$(WDIR)
