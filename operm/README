@@ -1,0 +1,21 @@
+This is a fake README.  If it were a real README, it would probably
+do something useful like tell you how to use this project template
+to create a fabulous project.  However, most of its real documentation
+of this sort is in the project.abs file, which is in html but alas lacks
+the <html> headers (it is designed to be embedded in a php document with
+an include).  Sorry.
+
+Still, now that you're reading this you should probably go ahead and
+edit it for YOUR personal project, but not in the original project
+template directory.  First read project.abs, then follow its
+instructions and run "newproject" etc.
+
+This template ASSUMES (possibly wrongly) that you know how to code, are
+at least moderately familiar with Make (you can learn a lot looking at
+the Makefile), familiar with rpm, with tar, with gzip, with gcc, with
+how man pages work.  This might not be true.  If it isn't, don't panic.
+Try to follow the (then regrettably sparse) instructions for one in your
+state and see if you can get a new project started so it will at least
+build and run.  If it does, you're off to the races -- get some books,
+read, learn, make the new project just a bit more complicated at a time
+and you'll be programming in no time...
