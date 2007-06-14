@@ -76,10 +76,9 @@ void operm_work()
   c[i] = (double *)malloc(k*sizeof(double));
   for(j = 0;j<k;j++){
      c[i][j] = f(i,fperms[j]);
-     printf("%f  ",c[i][j]);
+     printf("f[%d][%d] = %8.4f\n",i,j,c[i][j]);
      c[i][j] = 0.0;   /* Eventually this will just zero c the hard way */
   }
-  printf("\n");
  }
 
  /*
@@ -114,20 +113,20 @@ double f(int ip,gsl_permutation *ap)
 {
 
  double fret;
- printf("Executing f\n");
+ /* printf("Executing f\n"); */
  if(memcmp(fperms[ip]->data,ap->data,k*sizeof(size_t)) == 0){
-   printf("Permutations match: f = ");
+   /* printf("Permutations match: f = ");
    gsl_permutation_fprintf(stdout,fperms[ip],"%u ");
    printf(" = a = ");
    gsl_permutation_fprintf(stdout,ap,"%u ");
-   printf("\n");
+   printf("\n"); */
    fret = (double) (kperms-1.0)/kperms;
  } else {
-   printf("Permutations don't match: f = ");
+   /* printf("Permutations don't match: f = ");
    gsl_permutation_fprintf(stdout,fperms[ip],"%u ");
    printf(" = a = ");
    gsl_permutation_fprintf(stdout,ap,"%u ");
-   printf("\n");
+   printf("\n"); */
    fret = (double) (-1.0)/kperms;
  }
 
