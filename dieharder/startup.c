@@ -64,7 +64,8 @@ reasonable amount of time).\n\
    -r 1 Timing test (times the rng)\n\
    -r 2 Bit Persist test\n\
    -r 3 Bit Ntuple Distribution test suite (-n ntuple)\n\
-   -r 4 L-M-Ntuple Distribution test suite (quite long)\n\
+   -r 4 Overlapping Permutations test suite (-n 8>length>1)\n\
+   -r 5 L-M-Ntuple Distribution test suite (quite long)\n\
 \n\
       Statistical Test Suite (STS)\n\
    -s 1 STS Monobit test\n\
