@@ -148,6 +148,10 @@ void work()
      run_rgb_bitdist();
      Exit(0);
      break;
+   case RGB_OPERM:
+     run_rgb_operm();
+     Exit(0);
+     break;
 /*   case RGB_LMN:
      rgb_lmn();
      Exit(0);

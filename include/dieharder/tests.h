@@ -8,6 +8,7 @@
 #include <dieharder/rgb_timing.h>
 #include <dieharder/rgb_persist.h>
 #include <dieharder/rgb_bitdist.h>
+#include <dieharder/rgb_operm.h>
 #include <dieharder/diehard_birthdays.h>
 #include <dieharder/diehard_operm5.h>
 #include <dieharder/diehard_rank_32x32.h>
@@ -65,6 +66,7 @@
    RGB_TIMING,
    RGB_PERSIST,
    RGB_BITDIST,
+   RGB_OPERM,
    RGB_LMN,
    N_RGB_TESTS
  } Rgb_Tests;
