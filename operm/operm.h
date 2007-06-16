@@ -13,6 +13,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <math.h>
+#include <string.h>
 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_permutation.h>
@@ -37,6 +38,9 @@
   *========================================================================
   */
  void Usage();
+ double f(int pind,size_t *data,int len,int offset,int nkp);
+ uint kperm(size_t *data,int len,int offset);
+
 
 
  /*
@@ -47,4 +51,8 @@
   *========================================================================
   */
  int verbose;
+
+ int kcov;
+ gsl_permutation **fperms,**operms,**lperms,**rperms;
+ double **c;
 
