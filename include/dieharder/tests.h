@@ -66,8 +66,8 @@
    RGB_TIMING,
    RGB_PERSIST,
    RGB_BITDIST,
-   RGB_OPERM,
    RGB_LMN,
+   RGB_OPERM,
    N_RGB_TESTS
  } Rgb_Tests;
 

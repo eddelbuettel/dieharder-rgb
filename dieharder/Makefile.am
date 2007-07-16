@@ -16,15 +16,6 @@ PROJECT = dieharder
 PROGRAM = dieharder
 DIR = $(PROGRAM)
 
-#========================================================================
-# This is essential.  The rpmbuild overrides it, but we have to make
-# build "work" when executed only in the source tree directory itself.
-# This isn't easy, since the dependences are more than a bit scattered.
-# We therefore point to the directory one level up, where we should
-# find a ./lib, ./include, ./share and ./bin directory tree from which
-# the various dieharder files will actually be assembled into an rpm
-# with PREFIX=/usr (for example).
-#========================================================================
 SVNTREE = $(HOME)/Src/svn-tree
 SVNPATH = $(SVNTREE)/$(PROJECT)
 SVNTIME = $(DIR:=.svn.time)
@@ -46,7 +37,7 @@ SRCINCLUDES = $(shell ls *.h  2>&1 | sed -e "/\/bin\/ls:/d")
 # see how to force a consistent build when working on the UI
 # and library at the same time.  Maybe with particular make targets...
 LIBINCLUDES = $(shell ls ../include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
-PROGLIB_SONAME = $(LIBDIR)/libdieharder.so.$(VERSION)
+PROGLIB_SONAME = ../libwulf/libdieharder.so.$(VERSION)
 
 SOURCES = $(LIBSOURCES) $(SRCSOURCES)
 INCLUDES = $(LIBINCLUDES) $(SRCINCLUDES)
@@ -113,13 +104,6 @@ printout:
 clean : 
 	- rm -f core $(PROGRAM) *.o $(PROGRAM).1.gz
 
-#========================================================================
-# This is critical.  For the toplevel rpm build to succeed,
-#  make prefix=/usr install
-# (run by rpmbuild from the specfile) has to work, in the right order.
-# This target has to install precisely the files required by the
-# specfile for the dieharder package, in precisely the right locations.
-#========================================================================
 install : $(PROGRAM)
 	(strip $(PROGRAM);\
 	install -d $(prefix)/bin; \

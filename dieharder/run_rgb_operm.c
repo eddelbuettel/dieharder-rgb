@@ -38,12 +38,11 @@ void run_rgb_operm()
    ntmin = ntuple;
  } else {
    /*
-    * Default is to test 1 through 12 bits, which takes
-    * around 30 minutes on my laptop but is a VERY thorough
-    * test of randomness.
+    * Default will be to test 2 through 5 bit permutation.
+    * Currently, though, we're just doing 2.
     */
-   ntmin = 1;
-   ntmax = 12;
+   ntmin = 2;
+   ntmax = 2;
  }
  if(all == YES) ntmin = 1;
 
