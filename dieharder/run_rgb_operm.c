@@ -24,13 +24,13 @@ void run_rgb_operm()
  uint ntmin,ntmax;
 
  /*
-  * Set any GLOBAL data used by the test.  rgb_ntuple is the value
-  * assigned by -n ntuple (max) on the command line, or default 0 which
-  * means -- do all ntuples in range 1 to 8.  rgb_operm_dtest.nkps is
-  * the number of pvalues to be returned, which is just ntuple.
+  * Set any GLOBAL data used by the test.  rgb_operm_k is the value
+  * assigned by -n ntuple (max).  We'll start, at least, by just running
+  * the test for one value of rgb_operm_k but will leave in a harness
+  * loop that can run a whole range.
   *
-  * Note that we have to do this BEFORE creating the test because
-  * dtest.nkps depends on the value of ntuple!
+  * Note that we have to do this BEFORE creating the test (in the latter
+  * case because dtest.nkps will depend on the value of rgb_operm_k.
   */
 
  if(ntuple){
@@ -47,7 +47,7 @@ void run_rgb_operm()
  if(all == YES) ntmin = 1;
 
  /* printf("Setting ntmin = %d ntmax = %d\n",ntmin,ntmax); */
- for(rgb_operm_ntuple = ntmin;rgb_operm_ntuple<=ntmax;rgb_operm_ntuple++){
+ for(rgb_operm_k = ntmin;rgb_operm_k<=ntmax;rgb_operm_k++){
    /*
     * First we create the test (to set some values displayed in test header
     * correctly).
@@ -61,7 +61,7 @@ void run_rgb_operm()
    /*
     * Append the following SPECIAL line
     */
-   printf("# Testing %d-integer overlapping permutations\n",rgb_operm_ntuple);
+   printf("# Testing distribution of overlapping permutations of %d integers.\n",rgb_operm_k);
 
    /*
     * Set any GLOBAL data used by the test.  Then call the test itself

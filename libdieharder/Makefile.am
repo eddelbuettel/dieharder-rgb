@@ -5,7 +5,7 @@
 # make          alone should build the application.
 #
 # make clean    deletes the application and all object files
-# make install  strips and installs application and a man page
+# make install  installs application and a man page
 # make printout prints out all source and include files
 # 
 # These two commands execute in the toplevel project directory only.

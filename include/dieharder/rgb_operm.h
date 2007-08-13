@@ -27,6 +27,9 @@ static Dtest rgb_operm_dtest = {
 };
 
 /*
- * Global variables, each with a "locally identifiable" name.
+ * Global variables.
+ *
+ * rgb_operm_k is the size of the overlapping window that is slid along
+ * a data stream of rands from x_i to x_{i+k} to compute c[][].
  */
-uint rgb_operm_ntuple;
+uint rgb_operm_k;
