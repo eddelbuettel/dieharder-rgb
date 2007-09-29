@@ -9,6 +9,7 @@
 #include <dieharder/rgb_persist.h>
 #include <dieharder/rgb_bitdist.h>
 #include <dieharder/rgb_operm.h>
+#include <dieharder/rgb_minimum_distance.h>
 #include <dieharder/diehard_birthdays.h>
 #include <dieharder/diehard_operm5.h>
 #include <dieharder/diehard_rank_32x32.h>
@@ -68,6 +69,7 @@
    RGB_BITDIST,
    RGB_LMN,
    RGB_OPERM,
+   RGB_MINIMUM_DISTANCE,
    N_RGB_TESTS
  } Rgb_Tests;
 
