@@ -95,26 +95,21 @@ void rgb_minimum_distance(Test **test, int irun)
   * floating point variables.  Is there some aspect of this test that cares
   * what the "scale" is?  I don't think so.
   */
- points = (dTuple *)malloc(tsamples*sizeof(dTuple));
+ points = (dTuple *)malloc(test[0]->tsamples*sizeof(dTuple));
 
-/*
  if(verbose == D_RGB_MINIMUM_DISTANCE || verbose == D_ALL){
-     printf("Generating a list of %u points in %d dimensions\n",tsamples,rgb_md_dim);
+     printf("Generating a list of %u points in %d dimensions\n",test[0]->tsamples,rgb_md_dim);
  }
- */
- for(t=0;t<tsamples;t++){
+ for(t=0;t<test[0]->tsamples;t++){
    /*
     * Generate a new d-dimensional point in the unit d-cube (with
     * periodic boundary conditions).
     */
-   /*
    if(verbose == D_RGB_MINIMUM_DISTANCE || verbose == D_ALL){
        printf("points[%u]: (",t);
    }
-   */
    for(d=0;d<rgb_md_dim;d++) {
      points[t].c[d] = gsl_rng_uniform_pos(rng);
-     /*
      if(verbose == D_RGB_MINIMUM_DISTANCE || verbose == D_ALL){
        printf("%6.4f",points[t].c[d]);
        if(d == rgb_md_dim - 1){
@@ -123,7 +118,6 @@ void rgb_minimum_distance(Test **test, int irun)
          printf(",");
        }
      }
-     */
    }
  }
 
@@ -133,12 +127,12 @@ void rgb_minimum_distance(Test **test, int irun)
   * of the gcc prototype warning.  Probably need a cast of some
   * sort.
   */
- gsl_heapsort(points,tsamples,sizeof(dTuple),compare_points);
+ gsl_heapsort(points,test[0]->tsamples,sizeof(dTuple),
+                    (gsl_comparison_fn_t) compare_points);
 
-/*
  if(verbose == D_RGB_MINIMUM_DISTANCE || verbose == D_ALL){
    printf("List of points sorted by first coordinate:\n");
-   for(t=0;t<tsamples;t++){
+   for(t=0;t<test[0]->tsamples;t++){
      printf("points[%u]: (",t);
      for(d=0;d<rgb_md_dim;d++) {
        printf("%6.4f",points[t].c[d]);
@@ -150,13 +144,12 @@ void rgb_minimum_distance(Test **test, int irun)
      }
    }
  }
-*/
 
  /*
   * Now we do the SINGLE PASS through to determine mindist
   */
  mindist = 1.0;
- for(i=0;i<tsamples;i++){
+ for(i=0;i<test[0]->tsamples;i++){
    /*
     * One thing to experiment with here (very much) is
     * whether or not we need periodic wraparound.  For
@@ -165,20 +158,19 @@ void rgb_minimum_distance(Test **test, int irun)
     * than not and checks to be sure that points are correct
     * on or very near a boundary.
     */
-   for(j=i+1;j<tsamples;j++){
+   for(j=i+1;j<test[0]->tsamples;j++){
      if(points[j].c[0] - points[i].c[0] > mindist) break;
      dist = distance(points[j],points[i]);
-     /*
      MYDEBUG(D_RGB_MINIMUM_DISTANCE) {
        printf("d(%d,%d) = %16.10e\n",i,j,dist);
      }
-     */
      if( dist < mindist) mindist = dist;
    }
  }
  MYDEBUG(D_RGB_MINIMUM_DISTANCE) {
    printf("Found rmin = %16.10e\n",mindist);
  }
+ rgb_mindist_avg += mindist;
 
  /*
   * OK, now we are cooking.  We have to DYNAMICALLY CALCULATE
@@ -194,12 +186,15 @@ void rgb_minimum_distance(Test **test, int irun)
  } else {
    dvolume = 2.0*pow(2.0*PI,(rgb_md_dim-1)/2)*pow(mindist,rgb_md_dim)/gsl_sf_doublefact(rgb_md_dim);
  }
- earg = -1.0*tsamples*(tsamples-1)*dvolume/2.0;
- qarg = 1.0 + ((2.0+rgb_md_Q[rgb_md_dim])/6.0)*pow(1.0*tsamples,3)*dvolume*dvolume;
+ earg = -1.0*test[0]->tsamples*(test[0]->tsamples-1)*dvolume/2.0;
+ qarg = 1.0 + ((2.0+rgb_md_Q[rgb_md_dim])/6.0)*pow(1.0*test[0]->tsamples,3)*dvolume*dvolume;
  MYDEBUG(D_RGB_MINIMUM_DISTANCE) {
    printf("minimum volume is %16.10e, exponential argument is %16.10e\n",dvolume,earg);
  }
  test[0]->pvalues[irun] = 1.0 - exp(earg)*qarg;
+
+ /* Oops.  Leaking all sieve-y like I am. */
+ free(points);
 
  MYDEBUG(D_RGB_MINIMUM_DISTANCE) {
    printf("# diehard_2dsphere(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);

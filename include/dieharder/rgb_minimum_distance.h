@@ -35,9 +35,9 @@ static Dtest rgb_minimum_distance_dtest = {
 # as thoroughly as one likes subject to the generous constraints\n\
 # associated with the eventual need for still higher order corrections\n\
 # as n and p are made large enough.\n\
-\n",
-  100,
-  8000,
+#\n",
+  1000,
+  10000,
   1
 };
 
@@ -55,4 +55,6 @@ typedef struct {
  */
 
 uint rgb_md_dim;
+double rgb_mindist_avg;
 static double rgb_md_Q[] = {0.0,0.0,0.4135,0.5312,0.6202,1.3789};
+
