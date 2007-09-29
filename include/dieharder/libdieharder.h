@@ -22,6 +22,7 @@
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_sf.h>
 #include <gsl/gsl_permutation.h>
+#include <gsl/gsl_heapsort.h>
 #include <gsl/gsl_sort.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>

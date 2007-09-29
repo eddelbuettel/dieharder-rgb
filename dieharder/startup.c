@@ -66,6 +66,7 @@ reasonable amount of time).\n\
    -r 3 Bit Ntuple Distribution test suite (-n ntuple)\n\
    -r 4 L-M-Ntuple Distribution test suite (quite long)\n\
    -r 5 Overlapping Permutations test (new)\n\
+   -r 6 Generalized Minimum Distance test (new)\n\
 \n\
       Statistical Test Suite (STS)\n\
    -s 1 STS Monobit test\n\

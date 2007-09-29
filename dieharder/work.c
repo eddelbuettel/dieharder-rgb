@@ -30,6 +30,7 @@ void work()
    run_rgb_persist();
    run_rgb_bitdist();
    run_rgb_operm();
+   run_rgb_minimum_distance();
    run_diehard_birthdays();
    run_diehard_operm5();
    run_diehard_rank_32x32();
@@ -155,6 +156,10 @@ void work()
      break;
    case RGB_OPERM:
      run_rgb_operm();
+     Exit(0);
+     break;
+   case RGB_MINIMUM_DISTANCE:
+     run_rgb_minimum_distance();
      Exit(0);
      break;
    default:
