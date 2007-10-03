@@ -2,7 +2,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([dieharder], [2.24.5])
+AC_INIT([dieharder], [2.24.6])
 AC_CONFIG_SRCDIR([dieharder.abs])
 RELEASE=0
 AC_SUBST(RELEASE)

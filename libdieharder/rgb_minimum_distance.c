@@ -47,19 +47,17 @@ int compare_points(const dTuple *a,const dTuple *b)
   return 0;
 }
 
-double distance(const dTuple a,const dTuple b)
+double distance(const dTuple a,const dTuple b,uint dim)
 {
   int i;
   double delta,distance = 0.0;
-  for(i = 0;i < rgb_md_dim; i++){
+  for(i = 0;i < dim; i++){
     delta = a.c[i] - b.c[i];
     distance += delta*delta;
   }
   distance = sqrt(distance);
   return(distance);
 }
-
- 
 
 void rgb_minimum_distance(Test **test, int irun)
 {
@@ -160,7 +158,7 @@ void rgb_minimum_distance(Test **test, int irun)
     */
    for(j=i+1;j<test[0]->tsamples;j++){
      if(points[j].c[0] - points[i].c[0] > mindist) break;
-     dist = distance(points[j],points[i]);
+     dist = distance(points[j],points[i],rgb_md_dim);
      MYDEBUG(D_RGB_MINIMUM_DISTANCE) {
        printf("d(%d,%d) = %16.10e\n",i,j,dist);
      }
@@ -189,8 +187,9 @@ void rgb_minimum_distance(Test **test, int irun)
  earg = -1.0*test[0]->tsamples*(test[0]->tsamples-1)*dvolume/2.0;
  qarg = 1.0 + ((2.0+rgb_md_Q[rgb_md_dim])/6.0)*pow(1.0*test[0]->tsamples,3)*dvolume*dvolume;
  MYDEBUG(D_RGB_MINIMUM_DISTANCE) {
-   printf("minimum volume is %16.10e, exponential argument is %16.10e\n",dvolume,earg);
+   printf("V_min = %16.10e, earg = %16.10e, qarg = %16.10e\n",dvolume,earg,qarg);
  }
+ /* qarg = 1.0; */
  test[0]->pvalues[irun] = 1.0 - exp(earg)*qarg;
 
  /* Oops.  Leaking all sieve-y like I am. */
