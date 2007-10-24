@@ -1,0 +1,4 @@
+#!/bin/sh
+DIEHARD_DIR=`pwd`
+LD_LIBRARY_PATH=$DIEHARD_DIR/libdieharder:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
