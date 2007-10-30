@@ -35,11 +35,15 @@
 
 #include <dieharder/libdieharder.h>
 
- double fcentral(int pind,size_t *data,int len,int offset,int nkp);
- uint iperm(size_t *data,int len,int offset);
- void make_ctarget();
-
- double **ctarget,**cexpt;
+/*
+ * Some globals that will eventually go in the test include where they
+ * arguably belong.
+ */
+double fcentral(int pind,size_t *data,int len,int offset,int nkp);
+uint iperm(size_t *data,int len,int offset);
+void make_ctarget();
+void make_cexpt();
+double **ctarget,**cexpt;
 
 
 void rgb_operm(Test **test,int irun)
@@ -56,6 +60,7 @@ void rgb_operm(Test **test,int irun)
   * For a given n = ntuple size in bits, there are n! bit orderings
   */
  MYDEBUG(D_RGB_OPERM){
+   printf("#==================================================================\n");
    printf("# rgb_operm: Running rgb_operm verbosely for k = %d.\n",rgb_operm_k);
    printf("# rgb_operm: Use -v = %d to focus.\n",D_RGB_OPERM);
    printf("# rgb_operm: ======================================================\n");
@@ -90,6 +95,8 @@ void rgb_operm(Test **test,int irun)
 
  Vtest_create(&vtest[i],csamples+1,"rgb_operm",gsl_rng_name(rng));
 
+ make_cexpt();
+
  exit(0);
 
 }
@@ -110,6 +117,8 @@ void make_ctarget()
   * is the index that matches the indices in the covariance matrix c[i][j].
   */
  MYDEBUG(D_RGB_OPERM){
+   printf("#==================================================================\n");
+   printf("# rgb_operm: Running ctarget()\n");
    printf("# rgb_operm: Running operm verbosely for rgb_operm_k = %d.\n",rgb_operm_k);
    printf("# rgb_operm: Forming basic permutations of %d integers.\n",rgb_operm_k);
    printf("# rgb_operm: fperms[] = \n");
@@ -253,7 +262,8 @@ void make_cexpt()
   *   2*n-1 random numbers x_i that have at least log_2(2*n-1) bits.
   *   We convert them into a "permutation" -- a set of integers from
   *   0 to 2*n-1 that indicate the rank order of the x_i.  For example,
-  *   for n=2 (and 2*n-1 = 3) we might the following three 8-bit numbers:
+  *   for n=2 (and 2*n-1 = 3) we might get the following three 8-bit
+  *   numbers:
   *     17 242 99 -> 0 2 1 = p_0 p_1 p_2
   *     112 48 47 -> 2 1 0 = p_0 p_1 p_2
   *     200 85 142 -> 2 0 1 = p_0 p_1 p_2
@@ -270,6 +280,8 @@ void make_cexpt()
   * target.
   */
  MYDEBUG(D_RGB_OPERM){
+   printf("#==================================================================\n");
+   printf("# rgb_operm: Entering make_cexpt()\n");
    printf("# rgb_operm: Size of sliding window = %d.\n",rgb_operm_k);
    printf("# rgb_operm: Forming basic permutations of %d integers.\n",rgb_operm_k-1);
    printf("# rgb_operm: fperms[] = \n");
