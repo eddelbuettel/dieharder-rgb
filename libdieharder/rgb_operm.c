@@ -249,21 +249,47 @@ void make_cexpt()
  int i,j,k,n,off1,off2;
  int nperms,noperms,tnoperms;
  double fi,fj;
+ uint testv[19];  /* easier than malloc etc, but beware length */
+ uint *testw;     /* the sliding test window pointer */
 
  gsl_permutation **fperms,**operms,**lperms,**rperms;
 
  /*
   * This routine should more or less recapitluate make_ctarget() EXCEPT
   * that instead of computing the values of c, they are simulated from
-  * a stream of data {x_n} = {x_1, x_2, x_3, x_4, ...}.
+  * a stream of data X_tsamples = {x_1, x_2, ... x_{tsamples+rgb_operm_k}}.
+  * For the moment these integers are pulled from the rng as 32 bit uints
+  * (which makes the test the symmetric inverse of testing floats generated
+  * from the uints by division, and much faster).
   *
-  * What that means is:
-  *   From n = ntuple (the length of the running window) we draw
-  *   2*n-1 random numbers x_i that have at least log_2(2*n-1) bits.
-  *   We convert them into a "permutation" -- a set of integers from
-  *   0 to 2*n-1 that indicate the rank order of the x_i.  For example,
-  *   for n=2 (and 2*n-1 = 3) we might get the following three 8-bit
-  *   numbers:
+  * We then start at offset i=1 and pull a set s_i of rgb_operm_k numbers
+  * from the prefilled (for speed) vector X, e.g. s_i = x_i,x_i+1 for
+  * rgb_operm_k = 2.
+  *
+  * We compute the permutation number of this set: p_i = permno(s_i).  This
+  * corresponds to the index of a counter, which we increment, accumulating
+  * the relative frequency of that permutation in X.  We then increment i,
+  * form s_i+1 = x_i+1,x_i+2 (NOTE WELL the overlap!) form p_i+1, increment
+  * its counter, and loop over all tsamples s_i contained in the vector.
+  *
+  * If we divide the counters by tsamples, the resulting vector is the
+  * measured relative frequency of the occurence of each permutation.  This
+  * number can be used in a manner identical to the computed probability to
+  * form the experimental permutation matrix C.  The difference between the
+  * computed and observed permutation matrices is a vector that should be
+  * distributed according to the chisq distribution with rgb_operm_k! - 1
+  * degrees of freedom, or something like that.  This part I've got to
+  * work out by trial and error once I generate the experimental relative
+  * frequency (measured probability) of the permutations.
+  *
+  * Note that to convert the integers into a "permutation" we have to
+  * map them into a set of 0 to rgb_operm_k-1 integers that indicate
+  * the rank order of the x_i.  For example, for rgb_operm_k=2 and the
+  * following string of 8-bit numbers:
+  *  X = {17 242 99 112 48 47 200 85}
+  *
+  *   s_1 = {17 242} -> {0 1} -> p_1 = 1
+  *   s_2 = {242 17} -> {1 0} 
   *     17 242 99 -> 0 2 1 = p_0 p_1 p_2
   *     112 48 47 -> 2 1 0 = p_0 p_1 p_2
   *     200 85 142 -> 2 0 1 = p_0 p_1 p_2
@@ -367,9 +393,34 @@ void make_cexpt()
  }
 
  /*
-  * We now apply the rule very directly.
-  * with each rgb_operm_ntuple-window onto the permutation from left to right.
+  * We now evaluate this by sampling.  In a nutshell, this involves
+  *   a) Filling a vector 2*rgb_operm_k - 1 rands.
+  *   b) Filling a vector of length rgb_operm_k from a sliding window on
+  *      the first vector (can be done with a pointer instead of actual
+  *      data movement).
+  *   c) Passing this vector/pointer to a routine that transforms it into
+  *      the order indices in a permutation object, then returns its
+  *      permutation index.  I'm guessing/hoping that there is
+  *      a clever recursion that does this efficiently, or perhaps a
+  *      canned subroutine call from the GSL.
+  *   d) Cumulate C_expt(pi,pi') of the permutation number from these
+  *      samples
+  *   e) tsamples times
+  *   f) and then divide by tsamples or whatever to make its normalization
+  *      match that of C_theoretical.
+  *
+  * We'll figure out what to do then, to evaluate a suitable chisq p-value.
   */
+ for(t=0;t<tsamples;t++){
+   for(k=0;k<2*rgb_operm_k;k++) testv[k] = gsl_rng_get(rng);
+   testw = testv;
+   i = permind(rgb_operm_k,testw);
+   for(k=1;k<rgb_operm_k;k++){
+     j = permind(rgb_operm_k,testw+k);
+IAMHERE IAMHERE   
+ 
+ }
+
  for(i=0;i<nperms;i++){
    for(j=0;j<nperms;j++){
      /* Sum over permutations */
