@@ -34,22 +34,23 @@
  */
 
 #include <dieharder/libdieharder.h>
+#define RGB_OPERM_KMAX 10
 
 /*
  * Some globals that will eventually go in the test include where they
  * arguably belong.
  */
-double fcentral(int pind,size_t *data,int len,int offset,int nkp);
-uint iperm(size_t *data,int len,int offset);
-void make_ctarget();
+double fpipi(int pi1,int pi2,int nkp);
+uint piperm(size_t *data,int len);
+void make_cexact();
 void make_cexpt();
-double **ctarget,**cexpt;
-
+int nperms,noperms;
+double **cexact,**cexpt;
 
 void rgb_operm(Test **test,int irun)
 {
 
- int i,j,n,nb,noperms,nperms;
+ int i,j,n,nb;
  uint csamples;   /* rgb_operm_k^2 is vector size of cov matrix */
  uint *count,ctotal; /* counters */
  uint size;
@@ -65,25 +66,19 @@ void rgb_operm(Test **test,int irun)
    printf("# rgb_operm: Use -v = %d to focus.\n",D_RGB_OPERM);
    printf("# rgb_operm: ======================================================\n");
  }
- nperms = gsl_sf_fact(rgb_operm_k);
- csamples = rgb_operm_k*rgb_operm_k;
- n = 2*rgb_operm_k - 1;
- noperms = gsl_sf_fact(n);
- MYDEBUG(D_RGB_OPERM){
-   printf("# rgb_operm: Forming overlapping permutations of %d integers.\n",rgb_operm_k);
- }
- make_ctarget();
 
-
- if(rgb_operm_k>0){
-   nb = rgb_operm_k;
-   MYDEBUG(D_RGB_OPERM){
-     printf("# rgb_operm: Testing nb = %u (CRUFT)\n",nb);
-   }
- } else {
-   printf("Error:  rgb_operm_k must be a positive integer.  Exiting.\n");
+ /*
+  * Sanity check first
+  */
+ if((rgb_operm_k < 0) || (rgb_operm_k > RGB_OPERM_KMAX)){
+   printf("\nError:  rgb_operm_k must be a positive integer <= %u.  Exiting.\n",RGB_OPERM_KMAX);
    exit(0);
  }
+
+ nperms = gsl_sf_fact(rgb_operm_k);
+ n = 2*rgb_operm_k - 1;
+ noperms = gsl_sf_fact(n);
+ csamples = rgb_operm_k*rgb_operm_k;
 
  /*
   * Allocate memory for value_max vector of Vtest structs and counts,
@@ -95,97 +90,88 @@ void rgb_operm(Test **test,int irun)
 
  Vtest_create(&vtest[i],csamples+1,"rgb_operm",gsl_rng_name(rng));
 
+ /*
+  * We have to allocate and free the cexact and cexpt matrices here
+  * or they'll be forgotten when these routines return.
+  */
+ MYDEBUG(D_RGB_OPERM){
+   printf("# rgb_operm: Creating and zeroing cexact[][] and cexpt[][].\n");
+ }
+ cexact = (double **)malloc(nperms*sizeof(double*));
+ cexpt = (double **)malloc(nperms*sizeof(double*));
+ for(i=0;i<nperms;i++){
+   cexact[i] = (double *)malloc(rgb_operm_k*sizeof(double));
+   cexpt[i] = (double *)malloc(rgb_operm_k*sizeof(double));
+   for(j = 0;j<nperms;j++){
+     cexact[i][j] = 0.0;
+     cexpt[i][j] = 0.0;
+   }
+ }
+
+ make_cexact();
  make_cexpt();
+
+ /*
+  * Free cexact[][] and cexpt[][]
+  */
+ for(i=0;i<nperms;i++){
+   free(cexact[i]);
+   free(cexpt[i]);
+ }
+ free(cexact);
+ free(cexpt);
+ 
 
  exit(0);
 
 }
 
-void make_ctarget()
+void make_cexact()
 {
 
- int i,j,k,n,off1,off2;
- int nperms,noperms,tnoperms;
+ int i,j,k,ip,t;
  double fi,fj;
- gsl_permutation **fperms,**operms,**lperms,**rperms;
-
  /*
-  * We first form the permutations of 0,1,...,k-1 in lexicographic order.
-  * This order determines the "index" argument to f, e.g. f(0,ap) determines
-  * if the permutation sent to it matches the one indexed by 0 or not and
-  * returns the centered statistic I_\pi - 1/k! either way.  This index
-  * is the index that matches the indices in the covariance matrix c[i][j].
+  * This is the test vector.
   */
+ double testv[RGB_OPERM_KMAX*2];  /* easier than malloc etc, but beware length */
+ /*
+  * pi[] is the permutation index of a sample.  ps[] holds the
+  * actual sample.
+  */
+ int pi[RGB_OPERM_KMAX*2],ps[RGB_OPERM_KMAX*2];
+ /*
+  * This holds the set of all permutations of the ints
+  * from 0 to rgb_operm_k*2-1.
+  */
+ gsl_permutation **operms;
+
  MYDEBUG(D_RGB_OPERM){
    printf("#==================================================================\n");
-   printf("# rgb_operm: Running ctarget()\n");
-   printf("# rgb_operm: Running operm verbosely for rgb_operm_k = %d.\n",rgb_operm_k);
-   printf("# rgb_operm: Forming basic permutations of %d integers.\n",rgb_operm_k);
-   printf("# rgb_operm: fperms[] = \n");
- }
- nperms = gsl_sf_fact(rgb_operm_k);
- fperms = (gsl_permutation**) malloc(nperms*sizeof(gsl_permutation*));
- for(i=0;i<nperms;i++){
-   fperms[i] = gsl_permutation_alloc(rgb_operm_k);
-   if(i == 0){
-     gsl_permutation_init(fperms[i]);
-   } else {
-     gsl_permutation_memcpy(fperms[i],fperms[i-1]);
-     gsl_permutation_next(fperms[i]);
-   }
- }
-
- for(i=0;i<nperms;i++){
-   MYDEBUG(D_RGB_OPERM){
-     printf("# rgb_operm:  kperm = %d  i = %d: ",iperm(fperms[i]->data,rgb_operm_k,0),i);
-     gsl_permutation_fprintf(stdout,fperms[i]," %u");
-     printf("\n");
-   }
+   printf("# rgb_operm: Running cexact()\n");
  }
 
  /*
-  * Test fcentral().
-  */
+  * Test fpipi().  This is probably cruft, actually.
  MYDEBUG(D_RGB_OPERM){
-   printf("# rgb_operm: Testing fcentral(i,nperms,kperm):\n");
+   printf("# rgb_operm: Testing fpipi()\n");
    for(i=0;i<nperms;i++){
      for(j = 0;j<nperms;j++){
-       printf("# rgb_operm:   fcentral(%d,",i);
-       gsl_permutation_fprintf(stdout,fperms[j],"%u ");
-       printf(") = %12.6f\n",fcentral(i,fperms[j]->data,rgb_operm_k,0,nperms));
+       printf("# rgb_operm: fpipi(%u,%u,%u) = %f\n",i,j,nperms,fpipi(i,j,nperms));
      }
    }
-
-   /*
-    * Create c (covariance matrix for operm test) and zero it.
-    */
-   printf("# rgb_operm: Creating and zeroing c[][]:\n");
-
  }
+ */
 
- ctarget = (double **)malloc(nperms*sizeof(double*));
- for(i=0;i<nperms;i++){
-   ctarget[i] = (double *)malloc(rgb_operm_k*sizeof(double));
-   for(j = 0;j<nperms;j++){
-     ctarget[i][j] = 0.0;
-   }
- }
-
- /*
-  * Now we make the complete set of overlapping permutations.  There
-  * are 2*rgb_operm_ntuple - 1 elements, permuted.
-  */
  MYDEBUG(D_RGB_OPERM){
-   printf("# rgb_operm: Forming overlapping permutations out to n = %d.\n",2*rgb_operm_k-1);
+   printf("#==================================================================\n");
+   printf("# rgb_operm: Forming set of %u overlapping permutations\n",noperms);
+   printf("# rgb_operm: Permutations\n");
+   printf("# rgb_operm:==============================\n");
  }
- n = 2*rgb_operm_k - 1;
- noperms = gsl_sf_fact(n);
  operms = (gsl_permutation**) malloc(noperms*sizeof(gsl_permutation*));
- MYDEBUG(D_RGB_OPERM){
-   printf("# rgb_operm: Permuting integers from 0 to %d:\n",n-1);
- }
  for(i=0;i<noperms;i++){
-   operms[i] = gsl_permutation_alloc(n);
+   operms[i] = gsl_permutation_alloc(2*rgb_operm_k - 1);
    MYDEBUG(D_RGB_OPERM){
      printf("# rgb_operm: ");
    }
@@ -202,37 +188,77 @@ void make_ctarget()
  }
 
  /*
-  * We now apply the rule very directly.
-  * with each rgb_operm_ntuple-window onto the permutation from left to right.
+  * We now form c_exact PRECISELY the same way that we do c_expt[][]
+  * below, except that instead of pulling random samples of integers
+  * or floats and averaging over the permutations thus represented,
+  * we iterate over the complete set of equally weighted permutations
+  * to get an exact answer.
   */
- for(i=0;i<nperms;i++){
-   for(j=0;j<nperms;j++){
-     /* Sum over permutations */
-     for(k=0;k<noperms;k++){
-       /* and sum over all overlapping offsets in the permutations */
-       for(off1=0;off1<1;off1++){
-         for(off2=1;off2<rgb_operm_k;off2++){
-           fi = fcentral(i,operms[k]->data,rgb_operm_k,0,nperms);
-           fj = fcentral(j,operms[k]->data,rgb_operm_k,off2,nperms);
-           ctarget[i][j] += fi*fj;
-	 }
+ for(t=0;t<noperms;t++){
+   /*
+    * To sort into a perm, test vector needs to be double.
+    */
+   for(k=0;k<2*rgb_operm_k - 1;k++) testv[k] = (double) operms[t]->data[k];
+
+   /* Not cruft, but quiet...
+   MYDEBUG(D_RGB_OPERM){
+     printf("#------------------------------------------------------------------\n");
+     printf("# Generating offset sample permutation pi's\n");
+   }
+   */
+   for(k=0;k<rgb_operm_k;k++){
+     gsl_sort_index(ps,&testv[k],1,rgb_operm_k);
+     pi[k] = piperm(ps,rgb_operm_k);
+
+     /* Not cruft, but quiet...
+     MYDEBUG(D_RGB_OPERM){
+       printf("# %u: ",k);
+       for(ip=k;ip<rgb_operm_k+k;ip++){
+         printf("%.1f ",testv[ip]);
        }
+       printf("\n# ");
+       for(ip=0;ip<rgb_operm_k;ip++){
+         printf("%u ",ps[ip]);
+       }
+       printf(" = %u\n",pi[k]);
+     }
+     */
+
+   }
+
+   /*
+    * This is the business end of things.  The covariance matrix is the
+    * the sum of a central function of the permutation indices that yields
+    * nperms-1/nperms on diagonal, -1/nperms off diagonal, for all the
+    * possible permutations, for the FIRST permutation in a sample (fi)
+    * times the sum of the same function over all the overlapping permutations
+    * drawn from the same sample.  Quite simple, really.
+    */
+   for(i=0;i<nperms;i++){
+     fi = fpipi(i,pi[0],nperms);
+     for(j=0;j<nperms;j++){
+       fj = 0.0;
+       for(k=1;k<rgb_operm_k;k++){
+         fj += fpipi(j,pi[k],nperms);
+       }
+       cexact[i][j] += fi*fj;
      }
    }
+
  }
 
  MYDEBUG(D_RGB_OPERM){
-   printf("# rgb_operm: number of permutations = %d\n",noperms);
-   printf("# rgb_operm: target (exact) covariance matrix = \n");
+   printf("# rgb_operm:==============================\n");
+   printf("# rgb_operm: cexact[][] = \n");
  }
  for(i=0;i<nperms;i++){
    MYDEBUG(D_RGB_OPERM){
      printf("# rgb_operm: ");
    }
    for(j=0;j<nperms;j++){
-     ctarget[i][j] /= noperms;
+     cexact[i][j] /= noperms;
      MYDEBUG(D_RGB_OPERM){
-       printf("%10.6f  ",ctarget[i][j]);
+       printf("%10.6f  ",cexact[i][j]);
      }
    }
    MYDEBUG(D_RGB_OPERM){
@@ -240,215 +266,130 @@ void make_ctarget()
    }
  }
 
-  
+ /*
+  * Free operms[]
+  */
+ for(i=0;i<noperms;i++){
+   gsl_permutation_free(operms[i]);
+ }
+ free(operms);
+
 }
 
 void make_cexpt()
 {
 
- int i,j,k,n,off1,off2;
- int nperms,noperms,tnoperms;
+ int i,j,k,ip,t;
  double fi,fj;
- uint testv[19];  /* easier than malloc etc, but beware length */
- uint *testw;     /* the sliding test window pointer */
-
- gsl_permutation **fperms,**operms,**lperms,**rperms;
-
  /*
-  * This routine should more or less recapitluate make_ctarget() EXCEPT
-  * that instead of computing the values of c, they are simulated from
-  * a stream of data X_tsamples = {x_1, x_2, ... x_{tsamples+rgb_operm_k}}.
-  * For the moment these integers are pulled from the rng as 32 bit uints
-  * (which makes the test the symmetric inverse of testing floats generated
-  * from the uints by division, and much faster).
-  *
-  * We then start at offset i=1 and pull a set s_i of rgb_operm_k numbers
-  * from the prefilled (for speed) vector X, e.g. s_i = x_i,x_i+1 for
-  * rgb_operm_k = 2.
-  *
-  * We compute the permutation number of this set: p_i = permno(s_i).  This
-  * corresponds to the index of a counter, which we increment, accumulating
-  * the relative frequency of that permutation in X.  We then increment i,
-  * form s_i+1 = x_i+1,x_i+2 (NOTE WELL the overlap!) form p_i+1, increment
-  * its counter, and loop over all tsamples s_i contained in the vector.
-  *
-  * If we divide the counters by tsamples, the resulting vector is the
-  * measured relative frequency of the occurence of each permutation.  This
-  * number can be used in a manner identical to the computed probability to
-  * form the experimental permutation matrix C.  The difference between the
-  * computed and observed permutation matrices is a vector that should be
-  * distributed according to the chisq distribution with rgb_operm_k! - 1
-  * degrees of freedom, or something like that.  This part I've got to
-  * work out by trial and error once I generate the experimental relative
-  * frequency (measured probability) of the permutations.
-  *
-  * Note that to convert the integers into a "permutation" we have to
-  * map them into a set of 0 to rgb_operm_k-1 integers that indicate
-  * the rank order of the x_i.  For example, for rgb_operm_k=2 and the
-  * following string of 8-bit numbers:
-  *  X = {17 242 99 112 48 47 200 85}
-  *
-  *   s_1 = {17 242} -> {0 1} -> p_1 = 1
-  *   s_2 = {242 17} -> {1 0} 
-  *     17 242 99 -> 0 2 1 = p_0 p_1 p_2
-  *     112 48 47 -> 2 1 0 = p_0 p_1 p_2
-  *     200 85 142 -> 2 0 1 = p_0 p_1 p_2
-  *     127 78 78 -> 2 0 1 OR 2 1 0 with a toggle (this will be rare
-  *   as the number of bits increases...
-  *
-  * We then form f_i(y_s), f_j(y_{s+1}),... f_k(y_{s+n-1}) for all
-  * i,j,k... in (0...n-1).  Finally,
-  *    c[i][j] = 1/n_samp \sum_n_samp { f_i(y_s) f_j(y_{s+1}) +
-  *      f_i(y_s) f_j(y_{s+2}) + ...f_i(y_s) f_j(y_{s+n-1}) }
-  *
-  * This SHOULD turn out to be (in the limit) the same as c_target[i][j],
-  * and we can at least hope that their difference is a nice \chisq
-  * target.
+  * This is the test vector.
   */
+ double testv[RGB_OPERM_KMAX*2];  /* easier than malloc etc, but beware length */
+ /*
+  * pi[] is the permutation index of a sample.  ps[] holds the
+  * actual sample.
+  */
+ int pi[RGB_OPERM_KMAX*2],ps[RGB_OPERM_KMAX*2];
+
  MYDEBUG(D_RGB_OPERM){
    printf("#==================================================================\n");
-   printf("# rgb_operm: Entering make_cexpt()\n");
-   printf("# rgb_operm: Size of sliding window = %d.\n",rgb_operm_k);
-   printf("# rgb_operm: Forming basic permutations of %d integers.\n",rgb_operm_k-1);
-   printf("# rgb_operm: fperms[] = \n");
- }
- nperms = gsl_sf_fact(rgb_operm_k);
- fperms = (gsl_permutation**) malloc(nperms*sizeof(gsl_permutation*));
- for(i=0;i<nperms;i++){
-   fperms[i] = gsl_permutation_alloc(rgb_operm_k);
-   if(i == 0){
-     gsl_permutation_init(fperms[i]);
-   } else {
-     gsl_permutation_memcpy(fperms[i],fperms[i-1]);
-     gsl_permutation_next(fperms[i]);
-   }
- }
-
- for(i=0;i<nperms;i++){
-   MYDEBUG(D_RGB_OPERM){
-     printf("# rgb_operm:  kperm = %d  i = %d: ",iperm(fperms[i]->data,rgb_operm_k,0),i);
-     gsl_permutation_fprintf(stdout,fperms[i]," %u");
-     printf("\n");
-   }
+   printf("# rgb_operm: Running cexpt()\n");
  }
 
  /*
-  * Test fcentral().
+  * We evaluate cexpt[][] by sampling.  In a nutshell, this involves
+  *   a) Filling testv[] with 2*rgb_operm_k - 1 random uints or doubles
+  * It clearly cannot matter which we use, as long as the probability of
+  * exact duplicates in a sample is very low.
+  *   b) Using gsl_sort_index the exact same way it was used in make_cexact()
+  * to generate the pi[] index, using ps[] as scratch space for the sort
+  * indices.
+  *   c) Evaluating fi and fj from the SAMPLED result, tsamples times.
+  *   d) Normalizing.
+  * Note that this is pretty much identical to the way we formed c_exact[][]
+  * except that we are determining the relative frequency of each sort order
+  * permutation 2*rgb_operm_k-1 long.
+  *
+  * NOTE WELL!  I honestly think that it is borderline silly to view
+  * this as a matrix and to go through all of this nonsense.  The theoretical
+  * c_exact[][] is computed from the observation that all the permutations
+  * of n objects have equal weight = 1/n!.  Consequently, they should
+  * individually be binomially distributed, tending to normal with many
+  * samples.  Collectively they should be distributed like a vector of
+  * equal binomial probabilities and a p-value should follow either from
+  * chisq on n!-1 DoF or for that matter a KS test.  I see no way that
+  * making it into a matrix can increase the sensitivity of the test -- if
+  * the p-values are well defined in the two cases they can only be equal
+  * by their very definition.
+  *
+  * If you are a statistician reading these words and disagree, please
+  * communicate with me and explain why I'm wrong.  I'm still very much
+  * learning statistics and would cherish gentle correction.
   */
- MYDEBUG(D_RGB_OPERM){
-   printf("# rgb_operm: Testing fcentral(i,nperms,kperm):\n");
-   for(i=0;i<nperms;i++){
-     for(j = 0;j<nperms;j++){
-       printf("# rgb_operm:   fcentral(%d,",i);
-       gsl_permutation_fprintf(stdout,fperms[j],"%u ");
-       printf(") = %12.6f\n",fcentral(i,fperms[j]->data,rgb_operm_k,0,nperms));
+ for(t=0;t<tsamples;t++){
+   /*
+    * To sort into a perm, test vector needs to be double.
+    */
+   for(k=0;k<2*rgb_operm_k;k++) testv[k] = (double) gsl_rng_get(rng);
+
+   /* Not cruft, but quiet...
+   MYDEBUG(D_RGB_OPERM){
+     printf("#------------------------------------------------------------------\n");
+     printf("# Generating offset sample permutation pi's\n");
+   }
+   */
+   for(k=0;k<rgb_operm_k;k++){
+     gsl_sort_index(ps,&testv[k],1,rgb_operm_k);
+     pi[k] = piperm(ps,rgb_operm_k);
+
+     /* Not cruft, but quiet...
+     MYDEBUG(D_RGB_OPERM){
+       printf("# %u: ",k);
+       for(ip=k;ip<rgb_operm_k+k;ip++){
+         printf("%.1f ",testv[ip]);
+       }
+       printf("\n# ");
+       for(ip=0;ip<rgb_operm_k;ip++){
+         printf("%u ",permsample->data[ip]);
+       }
+       printf(" = %u\n",pi[k]);
      }
+     */
    }
 
    /*
-    * Create c (covariance matrix for operm test) and zero it.
+    * This is the business end of things.  The covariance matrix is the
+    * the sum of a central function of the permutation indices that yields
+    * nperms-1/nperms on diagonal, -1/nperms off diagonal, for all the
+    * possible permutations, for the FIRST permutation in a sample (fi)
+    * times the sum of the same function over all the overlapping permutations
+    * drawn from the same sample.  Quite simple, really.
     */
-   printf("# rgb_operm: Creating and zeroing c[][]:\n");
-
- }
-
- cexpt = (double **)malloc(nperms*sizeof(double*));
- for(i=0;i<nperms;i++){
-   cexpt[i] = (double *)malloc(rgb_operm_k*sizeof(double));
-   for(j = 0;j<nperms;j++){
-     ctarget[i][j] = 0.0;
-   }
- }
-
- /*
-  * All of the above is pretty much the same for both routines.  Here,
-  * though, we have to pull the 2*rgb_operm_ntuple - 1 random uints (for
-  * example) and transform them into a permutation.  The question is,
-  * how do we do that?
-  */
- MYDEBUG(D_RGB_OPERM){
-   printf("# rgb_operm: Forming overlapping permutations out to n = %d.\n",2*rgb_operm_k-1);
- }
- n = 2*rgb_operm_k - 1;
- noperms = gsl_sf_fact(n);
- operms = (gsl_permutation**) malloc(noperms*sizeof(gsl_permutation*));
- MYDEBUG(D_RGB_OPERM){
-   printf("# rgb_operm: Permuting integers from 0 to %d:\n",n-1);
- }
- for(i=0;i<noperms;i++){
-   operms[i] = gsl_permutation_alloc(n);
-   MYDEBUG(D_RGB_OPERM){
-     printf("# rgb_operm: ");
-   }
-   if(i == 0){
-     gsl_permutation_init(operms[i]);
-   } else {
-     gsl_permutation_memcpy(operms[i],operms[i-1]);
-     gsl_permutation_next(operms[i]);
-   }
-   MYDEBUG(D_RGB_OPERM){
-     gsl_permutation_fprintf(stdout,operms[i]," %u");
-     printf("\n");
-   }
- }
-
- /*
-  * We now evaluate this by sampling.  In a nutshell, this involves
-  *   a) Filling a vector 2*rgb_operm_k - 1 rands.
-  *   b) Filling a vector of length rgb_operm_k from a sliding window on
-  *      the first vector (can be done with a pointer instead of actual
-  *      data movement).
-  *   c) Passing this vector/pointer to a routine that transforms it into
-  *      the order indices in a permutation object, then returns its
-  *      permutation index.  I'm guessing/hoping that there is
-  *      a clever recursion that does this efficiently, or perhaps a
-  *      canned subroutine call from the GSL.
-  *   d) Cumulate C_expt(pi,pi') of the permutation number from these
-  *      samples
-  *   e) tsamples times
-  *   f) and then divide by tsamples or whatever to make its normalization
-  *      match that of C_theoretical.
-  *
-  * We'll figure out what to do then, to evaluate a suitable chisq p-value.
-  */
- for(t=0;t<tsamples;t++){
-   for(k=0;k<2*rgb_operm_k;k++) testv[k] = gsl_rng_get(rng);
-   testw = testv;
-   i = permind(rgb_operm_k,testw);
-   for(k=1;k<rgb_operm_k;k++){
-     j = permind(rgb_operm_k,testw+k);
-IAMHERE IAMHERE   
- 
- }
-
- for(i=0;i<nperms;i++){
-   for(j=0;j<nperms;j++){
-     /* Sum over permutations */
-     for(k=0;k<noperms;k++){
-       /* and sum over all overlapping offsets in the permutations */
-       for(off1=0;off1<1;off1++){
-         for(off2=1;off2<rgb_operm_k;off2++){
-           fi = fcentral(i,operms[k]->data,rgb_operm_k,0,nperms);
-           fj = fcentral(j,operms[k]->data,rgb_operm_k,off2,nperms);
-           ctarget[i][j] += fi*fj;
-	 }
+   for(i=0;i<nperms;i++){
+     fi = fpipi(i,pi[0],nperms);
+     for(j=0;j<nperms;j++){
+       fj = 0.0;
+       for(k=1;k<rgb_operm_k;k++){
+         fj += fpipi(j,pi[k],nperms);
        }
+       cexpt[i][j] += fi*fj;
      }
    }
+
  }
 
  MYDEBUG(D_RGB_OPERM){
-   printf("# rgb_operm: number of permutations = %d\n",noperms);
-   printf("# rgb_operm: target (exact) covariance matrix = \n");
+   printf("# rgb_operm:==============================\n");
+   printf("# rgb_operm: cexpt[][] = \n");
  }
  for(i=0;i<nperms;i++){
    MYDEBUG(D_RGB_OPERM){
      printf("# rgb_operm: ");
    }
    for(j=0;j<nperms;j++){
-     ctarget[i][j] /= noperms;
+     cexpt[i][j] /= tsamples;
      MYDEBUG(D_RGB_OPERM){
-       printf("%10.6f  ",ctarget[i][j]);
+       printf("%10.6f  ",cexpt[i][j]);
      }
    }
    MYDEBUG(D_RGB_OPERM){
@@ -456,10 +397,9 @@ IAMHERE IAMHERE
    }
  }
 
-  
 }
 
-uint iperm(size_t *data,int len,int offset)
+uint piperm(size_t *data,int len)
 {
 
  uint i,j,k,max;
@@ -474,15 +414,19 @@ uint iperm(size_t *data,int len,int offset)
  }
 
  /*
-  * Copy a chunk of length len from data+offset -> dtmp
+  * Copy data -> dtmp
   */
- memcpy((void *)dtmp,(void *) &data[offset],len*sizeof(size_t));
+ memcpy((void *)dtmp,(void *) data,len*sizeof(size_t));
  MYDEBUG(D_RGB_OPERM){
+   /* This isn't exactly cruft, but we don't need to
+    * watch just now.  Truthfully, I doubt we need
+    * to generate this at all in cexpt().
    printf("# rgb_operm: iperm(): dtmp = ");
    for(i=0;i<len;i++){
      printf("%u ",dtmp[i]);
    }
    printf("\n");
+   */
  }
 
  pindex = 0;
@@ -505,7 +449,7 @@ uint iperm(size_t *data,int len,int offset)
 
 }
 
-double fcentral(int pind,size_t *data,int len,int offset,int nkp)
+double fpipi(int pi1,int pi2,int nkp)
 {
 
  int i;
@@ -516,27 +460,19 @@ double fcentral(int pind,size_t *data,int len,int offset,int nkp)
   * at data[offset] of length len.  If it matches pind, return
   * the first quantity, otherwise return the second.
   */
- if(iperm(data,len,offset) == pind){
+ if(pi1 == pi2){
 
    fret = (double) (nkp - 1.0)/nkp;
-   if(verbose>1){
-     printf(" f(%d,",pind);
-     for(i=0;i<len;i++){
-       printf("%u ",data[offset+i]);
-     }
-     printf(",%d,%d) = %10.6f\n",len,offset,fret);
+   if(verbose < 0){
+     printf(" f(%d,%d) = %10.6f\n",pi1,pi2,fret);
    }
    return(fret);
 
  } else {
 
    fret = (double) (-1.0/nkp);
-   if(verbose>1){
-     printf(" f(%d,",pind);
-     for(i=0;i<len;i++){
-       printf("%u ",data[offset+i]);
-     }
-     printf(",%d,%d) = %10.6f\n",len,offset,fret);
+   if(verbose < 0){
+     printf(" f(%d,%d) = %10.6f\n",pi1,pi2,fret);
    }
    return(fret);
 
@@ -544,4 +480,7 @@ double fcentral(int pind,size_t *data,int len,int offset,int nkp)
 
 
 }
+
+
+
 
