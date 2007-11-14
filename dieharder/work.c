@@ -29,7 +29,7 @@ void work()
    run_rgb_timing();
    run_rgb_persist();
    run_rgb_bitdist();
-   run_rgb_operm();
+   /*  run_rgb_operm(); */
    run_rgb_minimum_distance();
    run_diehard_birthdays();
    run_diehard_operm5();

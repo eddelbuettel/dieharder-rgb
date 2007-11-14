@@ -45,17 +45,20 @@ uint piperm(size_t *data,int len);
 void make_cexact();
 void make_cexpt();
 int nperms,noperms;
-double **cexact,**cexpt;
+double **cexact,**ceinv,**cexpt,**idty;
+double *cvexact,*cvein,*cvexpt,*vidty;
 
 void rgb_operm(Test **test,int irun)
 {
 
- int i,j,n,nb;
+ int i,j,n,nb,iv,s;
  uint csamples;   /* rgb_operm_k^2 is vector size of cov matrix */
  uint *count,ctotal; /* counters */
  uint size;
  double pvalue,ntuple_prob,pbin;  /* probabilities */
  Vtest *vtest;   /* Chisq entry vector */
+
+ gsl_matrix_view CEXACT,CEINV,CEXPT,IDTY;
 
  /*
   * For a given n = ntuple size in bits, there are n! bit orderings
@@ -76,9 +79,9 @@ void rgb_operm(Test **test,int irun)
  }
 
  nperms = gsl_sf_fact(rgb_operm_k);
- n = 2*rgb_operm_k - 1;
- noperms = gsl_sf_fact(n);
+ noperms = gsl_sf_fact(2*rgb_operm_k - 1);
  csamples = rgb_operm_k*rgb_operm_k;
+ gsl_permutation * p = gsl_permutation_alloc(nperms);
 
  /*
   * Allocate memory for value_max vector of Vtest structs and counts,
@@ -87,7 +90,6 @@ void rgb_operm(Test **test,int irun)
   */
  vtest = (Vtest *)malloc(csamples*sizeof(Vtest));
  count = (uint *)malloc(csamples*sizeof(uint));
-
  Vtest_create(&vtest[i],csamples+1,"rgb_operm",gsl_rng_name(rng));
 
  /*
@@ -98,28 +100,135 @@ void rgb_operm(Test **test,int irun)
    printf("# rgb_operm: Creating and zeroing cexact[][] and cexpt[][].\n");
  }
  cexact = (double **)malloc(nperms*sizeof(double*));
- cexpt = (double **)malloc(nperms*sizeof(double*));
+ ceinv  = (double **)malloc(nperms*sizeof(double*));
+ cexpt  = (double **)malloc(nperms*sizeof(double*));
+ idty   = (double **)malloc(nperms*sizeof(double*));
+ cvexact = (double *)malloc(nperms*nperms*sizeof(double));
+ cvein   = (double *)malloc(nperms*nperms*sizeof(double));
+ cvexpt  = (double *)malloc(nperms*nperms*sizeof(double));
+ vidty   = (double *)malloc(nperms*nperms*sizeof(double));
  for(i=0;i<nperms;i++){
-   cexact[i] = (double *)malloc(rgb_operm_k*sizeof(double));
-   cexpt[i] = (double *)malloc(rgb_operm_k*sizeof(double));
+   /* Here we pack addresses to map the matrix addressing onto the vector */
+   cexact[i] = &cvexact[i*nperms];
+   ceinv[i] = &cvein[i*nperms];
+   cexpt[i] = &cvexpt[i*nperms];
+   idty[i] = &vidty[i*nperms];
    for(j = 0;j<nperms;j++){
      cexact[i][j] = 0.0;
-     cexpt[i][j] = 0.0;
+     ceinv[i][j] = 0.0;
+     cexpt[i][j]  = 0.0;
+     idty[i][j]   = 0.0;
    }
  }
 
  make_cexact();
  make_cexpt();
 
+ iv=0;
+ for(i=0;i<nperms;i++){
+   for(j=0;j<nperms;j++){
+     cvexact[iv] = cexact[i][j];
+     cvexpt[iv]  = cexpt[i][j];
+     vidty[iv]   = 0.0;
+   }
+ }
+
+ CEXACT = gsl_matrix_view_array(cvexact, nperms, nperms);
+ CEINV  = gsl_matrix_view_array(cvein  , nperms, nperms);
+ CEXPT  = gsl_matrix_view_array(cvexpt , nperms, nperms);
+ IDTY   = gsl_matrix_view_array(vidty  , nperms, nperms);
+
+ /*
+  * Hmmm, looks like cexact isn't invertible.  Duh.  So it has eigenvalues.
+  * This seems to be important (how, I do not know) so let's find out.
+  * Here is the gsl ritual for evaluating eigenvalues etc.
+  */
+
+ gsl_vector *eval = gsl_vector_alloc (nperms);
+ gsl_matrix *evec = gsl_matrix_alloc (nperms,nperms);
+ /*
+ gsl_eigen_nonsymm_workspace* w =  gsl_eigen_nonsymmv_alloc(nperms);
+ gsl_eigen_nonsymm_params (1,0,w);
+ gsl_eigen_nonsymmv(&CEXACT.matrix, eval, evec, w);
+ gsl_eigen_nonsymmv_free (w);
+ */
+ gsl_eigen_symmv_workspace* w =  gsl_eigen_symmv_alloc(nperms);
+ gsl_eigen_symmv(&CEXACT.matrix, eval, evec, w);
+ gsl_eigen_symmv_free (w);
+ gsl_eigen_symmv_sort (eval, evec, GSL_EIGEN_SORT_ABS_ASC);
+
+ {
+   int i;
+
+   printf("#==================================================================\n");
+   for (i = 0; i < nperms; i++) {
+     double eval_i = gsl_vector_get (eval, i);
+     gsl_vector_view evec_i = gsl_matrix_column (evec, i);
+     printf ("eigenvalue[%u] = %g\n", i, eval_i);
+     printf ("eigenvector[%u] = \n",i);
+     gsl_vector_fprintf (stdout,&evec_i.vector, "%10.5f");
+   }
+   printf("#==================================================================\n");
+ }
+
+ gsl_vector_free (eval);
+ gsl_matrix_free (evec);
+
+/*
+ gsl_linalg_LU_decomp(&CEXACT.matrix, p, &s);
+ gsl_linalg_LU_invert(&CEXACT, p, &CEINV);
+ gsl_permutation_free(p);
+ gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &CEINV.matrix, &CEXPT.matrix, 0.0, &IDTY.matrix);
+ printf("#==================================================================\n");
+ printf("# Should be inverse of C, assuming it is invertible:\n");
+ for(i=0;i<nperms;i++){
+   printf("# ");
+   for(j = 0;j<nperms;j++){
+     printf("%8.3f ",idty[i][j]);
+   }
+   printf("\n");
+ }
+ printf("#==================================================================\n");
+ printf("#==================================================================\n");
+ printf("# Should be normal on identity:\n");
+ for(i=0;i<nperms;i++){
+   printf("# ");
+   for(j = 0;j<nperms;j++){
+     printf("%8.3f ",idty[i][j]);
+   }
+   printf("\n");
+ }
+ printf("#==================================================================\n");
+ */
+
+    
+
+ /*
+  * OK, at this point we have two matricies:  cexact[][] is filled with
+  * the exact covariance matrix expected for the overlapping permutations.
+  * cexpt[][] has been filled numerically by generating strings of random
+  * uints or floats, generating sort index permutations, and
+  * using them to IDENTICALLY generate an "experimental" version of c[][].
+  * The two should correspond, in the limit of large tsamples.  IF I
+  * understand Alhakim, Kawczak and Molchanov, then the way to implement
+  * the simplest possible chisq test is to evaluate:
+  *       cexact^-1 cexpt \approx I
+  * where the diagonal terms should form a vector that is chisq distributed?
+  * Let's try this...
+  */
+ 
+ 
+
  /*
   * Free cexact[][] and cexpt[][]
-  */
+  * Fix this when we're done so we don't leak; for now to much trouble.
  for(i=0;i<nperms;i++){
    free(cexact[i]);
    free(cexpt[i]);
  }
  free(cexact);
  free(cexpt);
+  */
  
 
  exit(0);
@@ -253,7 +362,7 @@ void make_cexact()
  }
  for(i=0;i<nperms;i++){
    MYDEBUG(D_RGB_OPERM){
-     printf("# rgb_operm: ");
+     printf("# ");
    }
    for(j=0;j<nperms;j++){
      cexact[i][j] /= noperms;
@@ -384,7 +493,7 @@ void make_cexpt()
  }
  for(i=0;i<nperms;i++){
    MYDEBUG(D_RGB_OPERM){
-     printf("# rgb_operm: ");
+     printf("# ");
    }
    for(j=0;j<nperms;j++){
      cexpt[i][j] /= tsamples;

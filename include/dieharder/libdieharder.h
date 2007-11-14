@@ -24,8 +24,10 @@
 #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_heapsort.h>
 #include <gsl/gsl_sort.h>
+#include <gsl/gsl_blas.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
+#include <gsl/gsl_eigen.h>
 #include <dieharder/Dtest.h>
 #include <dieharder/parse.h>
 #include <dieharder/verbose.h>
