@@ -79,7 +79,7 @@ void rgb_operm(Test **test,int irun)
  }
 
  nperms = gsl_sf_fact(rgb_operm_k);
- noperms = gsl_sf_fact(2*rgb_operm_k - 1);
+ noperms = gsl_sf_fact(3*rgb_operm_k-2);
  csamples = rgb_operm_k*rgb_operm_k;
  gsl_permutation * p = gsl_permutation_alloc(nperms);
 
@@ -204,7 +204,7 @@ void rgb_operm(Test **test,int irun)
     
 
  /*
-  * OK, at this point we have two matricies:  cexact[][] is filled with
+  * OK, at this point we have two matrices:  cexact[][] is filled with
   * the exact covariance matrix expected for the overlapping permutations.
   * cexpt[][] has been filled numerically by generating strings of random
   * uints or floats, generating sort index permutations, and
@@ -250,8 +250,12 @@ void make_cexact()
   */
  int pi[RGB_OPERM_KMAX*2],ps[RGB_OPERM_KMAX*2];
  /*
-  * This holds the set of all permutations of the ints
-  * from 0 to rgb_operm_k*2-1.
+  * We seem to have made a mistake of sorts.  We actually have to sum
+  * BOTH the forward AND the backward directions.  That means that the
+  * permutation vector has to be of length 3k-1, with the pi=1 term
+  * corresponding to the middle.  So for k=2, instead of 0,1,2 we need
+  * 0 1 2 3 4 and we'll have to do 23, 34 in the leading direction and
+  * 21, 10 in the trailing direction.
   */
  gsl_permutation **operms;
 
@@ -280,7 +284,7 @@ void make_cexact()
  }
  operms = (gsl_permutation**) malloc(noperms*sizeof(gsl_permutation*));
  for(i=0;i<noperms;i++){
-   operms[i] = gsl_permutation_alloc(2*rgb_operm_k - 1);
+   operms[i] = gsl_permutation_alloc(3*rgb_operm_k - 2);
    MYDEBUG(D_RGB_OPERM){
      printf("# rgb_operm: ");
    }
@@ -301,13 +305,14 @@ void make_cexact()
   * below, except that instead of pulling random samples of integers
   * or floats and averaging over the permutations thus represented,
   * we iterate over the complete set of equally weighted permutations
-  * to get an exact answer.
+  * to get an exact answer.  Note that we have to center on 2k-1 and
+  * go both forwards and backwards.
   */
  for(t=0;t<noperms;t++){
    /*
     * To sort into a perm, test vector needs to be double.
     */
-   for(k=0;k<2*rgb_operm_k - 1;k++) testv[k] = (double) operms[t]->data[k];
+   for(k=0;k<3*rgb_operm_k - 2;k++) testv[k] = (double) operms[t]->data[k];
 
    /* Not cruft, but quiet...
    MYDEBUG(D_RGB_OPERM){
@@ -315,7 +320,7 @@ void make_cexact()
      printf("# Generating offset sample permutation pi's\n");
    }
    */
-   for(k=0;k<rgb_operm_k;k++){
+   for(k=0;k<2*rgb_operm_k-1;k++){
      gsl_sort_index(ps,&testv[k],1,rgb_operm_k);
      pi[k] = piperm(ps,rgb_operm_k);
 
@@ -344,11 +349,12 @@ void make_cexact()
     * drawn from the same sample.  Quite simple, really.
     */
    for(i=0;i<nperms;i++){
-     fi = fpipi(i,pi[0],nperms);
+     fi = fpipi(i,pi[rgb_operm_k-1],nperms);
      for(j=0;j<nperms;j++){
        fj = 0.0;
        for(k=1;k<rgb_operm_k;k++){
-         fj += fpipi(j,pi[k],nperms);
+         fj += fpipi(j,pi[rgb_operm_k - 1 + k],nperms);
+         fj += fpipi(j,pi[rgb_operm_k - 1 - k],nperms);
        }
        cexact[i][j] += fi*fj;
      }
@@ -439,7 +445,7 @@ void make_cexpt()
    /*
     * To sort into a perm, test vector needs to be double.
     */
-   for(k=0;k<2*rgb_operm_k;k++) testv[k] = (double) gsl_rng_get(rng);
+   for(k=0;k<3*rgb_operm_k - 2;k++) testv[k] = (double) gsl_rng_get(rng);
 
    /* Not cruft, but quiet...
    MYDEBUG(D_RGB_OPERM){
@@ -447,7 +453,7 @@ void make_cexpt()
      printf("# Generating offset sample permutation pi's\n");
    }
    */
-   for(k=0;k<rgb_operm_k;k++){
+   for(k=0;k<2*rgb_operm_k-1;k++){
      gsl_sort_index(ps,&testv[k],1,rgb_operm_k);
      pi[k] = piperm(ps,rgb_operm_k);
 
@@ -475,11 +481,12 @@ void make_cexpt()
     * drawn from the same sample.  Quite simple, really.
     */
    for(i=0;i<nperms;i++){
-     fi = fpipi(i,pi[0],nperms);
+     fi = fpipi(i,pi[rgb_operm_k-1],nperms);
      for(j=0;j<nperms;j++){
        fj = 0.0;
        for(k=1;k<rgb_operm_k;k++){
-         fj += fpipi(j,pi[k],nperms);
+         fj += fpipi(j,pi[rgb_operm_k - 1 + k],nperms);
+         fj += fpipi(j,pi[rgb_operm_k - 1 - k],nperms);
        }
        cexpt[i][j] += fi*fj;
      }
