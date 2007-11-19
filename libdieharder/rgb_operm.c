@@ -238,7 +238,7 @@ void rgb_operm(Test **test,int irun)
 void make_cexact()
 {
 
- int i,j,k,ip,t;
+ int i,j,k,ip,t,nop;
  double fi,fj;
  /*
   * This is the test vector.
@@ -248,7 +248,7 @@ void make_cexact()
   * pi[] is the permutation index of a sample.  ps[] holds the
   * actual sample.
   */
- int pi[RGB_OPERM_KMAX*2],ps[RGB_OPERM_KMAX*2];
+ int pi[4096],ps[4096];
  /*
   * We seem to have made a mistake of sorts.  We actually have to sum
   * BOTH the forward AND the backward directions.  That means that the
@@ -285,19 +285,23 @@ void make_cexact()
  operms = (gsl_permutation**) malloc(noperms*sizeof(gsl_permutation*));
  for(i=0;i<noperms;i++){
    operms[i] = gsl_permutation_alloc(3*rgb_operm_k - 2);
+   /* Must quiet down
    MYDEBUG(D_RGB_OPERM){
      printf("# rgb_operm: ");
    }
+   */
    if(i == 0){
      gsl_permutation_init(operms[i]);
    } else {
      gsl_permutation_memcpy(operms[i],operms[i-1]);
      gsl_permutation_next(operms[i]);
    }
+   /*
    MYDEBUG(D_RGB_OPERM){
      gsl_permutation_fprintf(stdout,operms[i]," %u");
      printf("\n");
    }
+   */
  }
 
  /*
@@ -320,7 +324,7 @@ void make_cexact()
      printf("# Generating offset sample permutation pi's\n");
    }
    */
-   for(k=0;k<2*rgb_operm_k-1;k++){
+   for(k=0;k<2*rgb_operm_k - 1;k++){
      gsl_sort_index(ps,&testv[k],1,rgb_operm_k);
      pi[k] = piperm(ps,rgb_operm_k);
 
@@ -352,9 +356,11 @@ void make_cexact()
      fi = fpipi(i,pi[rgb_operm_k-1],nperms);
      for(j=0;j<nperms;j++){
        fj = 0.0;
-       for(k=1;k<rgb_operm_k;k++){
+       for(k=0;k<rgb_operm_k;k++){
          fj += fpipi(j,pi[rgb_operm_k - 1 + k],nperms);
-         fj += fpipi(j,pi[rgb_operm_k - 1 - k],nperms);
+         if(k != 0){
+           fj += fpipi(j,pi[rgb_operm_k - 1 - k],nperms);
+	 }
        }
        cexact[i][j] += fi*fj;
      }
@@ -404,7 +410,7 @@ void make_cexpt()
   * pi[] is the permutation index of a sample.  ps[] holds the
   * actual sample.
   */
- int pi[RGB_OPERM_KMAX*2],ps[RGB_OPERM_KMAX*2];
+ int pi[4096],ps[4096];
 
  MYDEBUG(D_RGB_OPERM){
    printf("#==================================================================\n");
@@ -484,9 +490,11 @@ void make_cexpt()
      fi = fpipi(i,pi[rgb_operm_k-1],nperms);
      for(j=0;j<nperms;j++){
        fj = 0.0;
-       for(k=1;k<rgb_operm_k;k++){
+       for(k=0;k<rgb_operm_k;k++){
          fj += fpipi(j,pi[rgb_operm_k - 1 + k],nperms);
-         fj += fpipi(j,pi[rgb_operm_k - 1 - k],nperms);
+	 if(k != 0){
+           fj += fpipi(j,pi[rgb_operm_k - 1 - k],nperms);
+	 }
        }
        cexpt[i][j] += fi*fj;
      }
@@ -518,50 +526,71 @@ void make_cexpt()
 uint piperm(size_t *data,int len)
 {
 
- uint i,j,k,max;
- static size_t *dtmp = 0;
+ uint i,j,k,max,min;
  uint pindex,uret,tmp;
+ static gsl_permutation** lookup = 0;
 
  /*
-  * Allocate space for the temporary copy only the first time
+  * Allocate space for lookup table and fill it.
   */
- if(dtmp == 0){
-   dtmp = (size_t *)malloc((len+1)*sizeof(size_t));
- }
-
- /*
-  * Copy data -> dtmp
-  */
- memcpy((void *)dtmp,(void *) data,len*sizeof(size_t));
- MYDEBUG(D_RGB_OPERM){
-   /* This isn't exactly cruft, but we don't need to
-    * watch just now.  Truthfully, I doubt we need
-    * to generate this at all in cexpt().
-   printf("# rgb_operm: iperm(): dtmp = ");
-   for(i=0;i<len;i++){
-     printf("%u ",dtmp[i]);
+ if(lookup == 0){
+   lookup = (gsl_permutation**) malloc(nperms*sizeof(gsl_permutation*));
+   MYDEBUG(D_RGB_OPERM){
+     printf("# rgb_operm: Allocating piperm lookup table of perms.\n");
    }
-   printf("\n");
-   */
- }
-
- pindex = 0;
- for(i=len-1;i>0;i--){
-   max = dtmp[0];
-   k = 0;
-   for(j=1;j<=i;j++){
-     if(max <= dtmp[j]){
-       max = dtmp[j];
-       k = j;
+   for(i=0;i<nperms;i++){
+        lookup[i] = gsl_permutation_alloc(rgb_operm_k);
+   }
+   for(i=0;i<nperms;i++){
+     if(i == 0){
+       gsl_permutation_init(lookup[i]);
+     } else {
+       gsl_permutation_memcpy(lookup[i],lookup[i-1]);
+       gsl_permutation_next(lookup[i]);
      }
    }
-   pindex = (i+1)*pindex + k;
-   tmp = dtmp[i];
-   dtmp[i] = dtmp[k];
-   dtmp[k] = tmp;
+
+   /*
+    * This method yields a mirror symmetry in the permutations top to
+    * bottom.
+   for(i=0;i<nperms/2;i++){
+     if(i == 0){
+       gsl_permutation_init(lookup[i]);
+       for(j=0;j<rgb_operm_k;j++){
+         lookup[nperms-i-1]->data[rgb_operm_k-j-1] = lookup[i]->data[j];
+       }
+     } else {
+       gsl_permutation_memcpy(lookup[i],lookup[i-1]);
+       gsl_permutation_next(lookup[i]);
+       for(j=0;j<rgb_operm_k;j++){
+         lookup[nperms-i-1]->data[rgb_operm_k-j-1] = lookup[i]->data[j];
+       }
+     }
+   }
+   */
+   MYDEBUG(D_RGB_OPERM){
+     for(i=0;i<nperms;i++){
+       printf("# rgb_operm: %u => ",i);
+       gsl_permutation_fprintf(stdout,lookup[i]," %u");
+       printf("\n");
+     }
+   }
+
  }
 
- return(pindex);
+ for(i=0;i<nperms;i++){
+   if(memcmp(data,lookup[i]->data,len*sizeof(uint))==0){
+     /* Not cruft, but off:
+     MYDEBUG(D_RGB_OPERM){
+       printf("# piperm(): ");
+       gsl_permutation_fprintf(stdout,lookup[i]," %u");
+       printf(" = %u\n",i);
+     }
+     */
+     return(i);
+   }
+ }
+ printf("We'd better not get here...\n");
 
 }
 
