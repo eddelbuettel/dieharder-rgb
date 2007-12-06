@@ -188,14 +188,14 @@ void diehard_operm5(Test **test, int irun)
    }
  }
 
- if(verbose){
+ MYDEBUG(D_DIEHARD_OPERM5){
    for(i=0;i<120;i++){
      printf("%u: %f\n",i,count[i]);
    }
  }
  for(i=0;i<120;i++){
    tcount[i] += count[i];
-   printf("%u: %f\n",i,tcount[i]);
+   /* printf("%u: %f\n",i,tcount[i]); */
  }
 
  /*

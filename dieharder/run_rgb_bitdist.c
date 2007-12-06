@@ -62,6 +62,7 @@ void run_rgb_bitdist()
     * Append the following SPECIAL line
     */
    printf("# Testing %d-bit ntuples in 32-bit random words\n",rgb_bitdist_ntuple);
+   fflush(stdout);
 
    /*
     * Set any GLOBAL data used by the test.  Then call the test itself
@@ -77,6 +78,7 @@ void run_rgb_bitdist()
    if(strncmp("file_input",gsl_rng_name(rng),10) == 0){
      printf("# %u rands were used in this test\n",file_input_get_rtot(rng));
      printf("# The file %s was rewound %u times\n",gsl_rng_name(rng),file_input_get_rewind_cnt(rng));
+     fflush(stdout);
    }
 
    /*
