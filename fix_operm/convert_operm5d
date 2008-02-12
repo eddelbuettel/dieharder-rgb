@@ -152,11 +152,22 @@
  printf("   Actual output lines -- put in diehard_operm5.h \n");
  printf("static int r[60][60] = {\n");
  for($i=1;$i<61;$i++){
-   printf("  {");
+   printf("{");
    for($j=1;$j<60;$j++){
-     printf("%12d,",$r[$i][$j]);
+     if($j == 1){
+       printf("%9d,",$r[$i][$j]);
+     } else {
+       printf("%10d,",$r[$i][$j]);
+     }
      if($j == 59){
-       printf("%12d},",$r[$i][60]);
+       if($i != 60){
+         printf("%10d },",$r[$i][60]);
+       } else {
+         printf("%10d }",$r[$i][60]);
+       }
+     }
+     if(($j%6) == 0){
+       printf("\n");
      }
    }
    printf("\n");
@@ -165,11 +176,22 @@
 
  printf("static int s[60][60] = {\n");
  for($i=1;$i<61;$i++){
-   printf("  {");
+   printf("{");
    for($j=1;$j<60;$j++){
-     printf("%12d,",$s[$i][$j]);
+     if($j == 1){
+       printf("%9d,",$s[$i][$j]);
+     } else {
+       printf("%10d,",$s[$i][$j]);
+     }
      if($j == 59){
-       printf("%12d},",$s[$i][60]);
+       if($i != 60){
+         printf("%10d },",$s[$i][60]);
+       } else {
+         printf("%10d }",$s[$i][60]);
+       }
+     }
+     if(($j%6) == 0){
+       printf("\n");
      }
    }
    printf("\n");
