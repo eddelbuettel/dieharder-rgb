@@ -16,9 +16,10 @@
 # We parse the CL with getopt standard (single character)
 #========================================================================
 # Option list
- getopts('hv:');
+ getopts('f:hv:');
  $verbose = 0;
 # Assignments
+ if($opt_f) {$file = $opt_f;}
  if($opt_h) {Usage();exit;}
  if($opt_v) {$verbose = $opt_v;}
 
@@ -30,8 +31,152 @@
  }
 
  if($verbose){
-   print "Running template program\n";
+   print "Running convert_operm5d program\n";
  }
+
+ open(IN,"operm5d.ata") || die "Sorry, I couldn't open operm5d.ata\n";
+ $i=1;
+ $j=1;
+ $sy = 0;
+ while(<IN>){
+   chop;
+   @field = split(/\s+/,$_);
+   while(($fc = @field) > 0){
+     $nextnum = shift(@field);
+     if($nextnum){
+       # printf("%9d\n",$nextnum);
+       # OK right here we can just set up $r[i][j] and $s[i][j] in order
+       if($sy == 0){
+         $r[$i][$j] = $nextnum;
+         $r[$j][$i] = $nextnum;
+       } else {
+         $s[$i][$j] = $nextnum;
+         $s[$j][$i] = $nextnum;
+       }
+       $j++;
+       if($j == 61) {
+         $i++;
+         $j = $i;
+       }
+       if($i == 61) {
+         $sy = 1;
+         $i = 1;
+         $j = 1;
+       }
+     }
+   }
+ }
+
+ # At this point, r and s should once again be loaded.  We haven't yet
+ # used r[i][j] = r[j][i]; both are upper triangular.  Let's dump them,
+ # after saving a linear dump from the current version for future
+ # comparison.
+ printf("--------------------------------------------r[i][j]-----------------------------\n");
+ for($i=1;$i<61;$i++){
+   for($j=1;$j<61;$j++){
+     printf("%10d",$r[$i][$j]);
+   }
+   printf("\n");
+ }
+ printf("--------------------------------------------s[i][j]-----------------------------\n");
+ for($i=1;$i<61;$i++){
+   for($j=1;$j<61;$j++){
+     printf("%10d",$s[$i][$j]);
+   }
+   printf("\n");
+ }
+ printf("--------------------------------------------------------------------------------\n");
+
+ open(IN,"operm5d.cdata") || die "Sorry, I couldn't open operm5d.cdata\n";
+ $i=1;
+ $j=1;
+ $sy = 0;
+ while(<IN>){
+   chop;
+   @field = split(/\s+/,$_);
+   while(($fc = @field) > 0){
+     $nextnum = shift(@field);
+     if($nextnum){
+       # printf("%9d\n",$nextnum);
+       # OK right here we can just set up $r[i][j] and $s[i][j] in order
+       if($sy == 0){
+         $rc[$i][$j] = $nextnum;
+       } else {
+         $sc[$i][$j] = $nextnum;
+       }
+       $j++;
+       if($j == 61) {
+         $i++;
+         $j = 1;
+       }
+       if($i == 61) {
+         $sy = 1;
+         $i = 1;
+         $j = 1;
+       }
+     }
+   }
+ }
+
+ # At this point, r and s should once again be loaded.  We haven't yet
+ # used r[i][j] = r[j][i]; both are upper triangular.  Let's dump them,
+ # after saving a linear dump from the current version for future
+ # comparison.
+ printf("--------------------------------------------r[i][j]-----------------------------\n");
+ for($i=1;$i<61;$i++){
+   for($j=1;$j<61;$j++){
+     if($r[$i][$j] != $rc[$i][$j]){
+       printf("\n r[%d][%d] = %10d ! = rc[%d][%d] = %10d\n",$i,$j,$r[$i][$j],$i,$j,$rc[$i][$j]);
+     }
+     # printf("%10d",$rc[$i][$j]);
+   }
+   # printf("\n");
+ }
+ printf("--------------------------------------------s[i][j]-----------------------------\n");
+ for($i=1;$i<61;$i++){
+   for($j=1;$j<61;$j++){
+     if($s[$i][$j] != $sc[$i][$j]){
+       printf("\n s[%d][%d] = %10d ! = sc[%d][%d] = %10d\n",$i,$j,$s[$i][$j],$i,$j,$sc[$i][$j]);
+     }
+     # printf("%10d",$sc[$i][$j]);
+   }
+   # printf("\n");
+ }
+ printf("--------------------------------------------------------------------------------\n");
+
+
+ # At this point, r and s should once again be loaded.  We haven't yet
+ # used r[i][j] = r[j][i]; both are upper triangular.  Let's dump them,
+ # after saving a linear dump from the current version for future
+ # comparison.
+ printf("   Actual output lines -- put in diehard_operm5.h \n");
+ printf("static int r[60][60] = {\n");
+ for($i=1;$i<61;$i++){
+   printf("  {");
+   for($j=1;$j<60;$j++){
+     printf("%12d,",$r[$i][$j]);
+     if($j == 59){
+       printf("%12d}",$r[$i][60]);
+     }
+   }
+   printf("\n");
+ }
+ printf("};\n");
+
+ printf("static int s[60][60] = {\n");
+ for($i=1;$i<61;$i++){
+   printf("  {");
+   for($j=1;$j<60;$j++){
+     printf("%12d,",$s[$i][$j]);
+     if($j == 59){
+       printf("%12d}",$s[$i][60]);
+     }
+   }
+   printf("\n");
+ }
+ printf("};\n");
+
+
 
  exit;
 
