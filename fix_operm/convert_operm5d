@@ -126,7 +126,7 @@
  for($i=1;$i<61;$i++){
    for($j=1;$j<61;$j++){
      if($r[$i][$j] != $rc[$i][$j]){
-       printf("\n r[%d][%d] = %10d ! = rc[%d][%d] = %10d\n",$i,$j,$r[$i][$j],$i,$j,$rc[$i][$j]);
+       # printf("\n r[%d][%d] = %10d ! = rc[%d][%d] = %10d\n",$i,$j,$r[$i][$j],$i,$j,$rc[$i][$j]);
      }
      # printf("%10d",$rc[$i][$j]);
    }
@@ -136,7 +136,7 @@
  for($i=1;$i<61;$i++){
    for($j=1;$j<61;$j++){
      if($s[$i][$j] != $sc[$i][$j]){
-       printf("\n s[%d][%d] = %10d ! = sc[%d][%d] = %10d\n",$i,$j,$s[$i][$j],$i,$j,$sc[$i][$j]);
+       # printf("\n s[%d][%d] = %10d ! = sc[%d][%d] = %10d\n",$i,$j,$s[$i][$j],$i,$j,$sc[$i][$j]);
      }
      # printf("%10d",$sc[$i][$j]);
    }
@@ -156,7 +156,7 @@
    for($j=1;$j<60;$j++){
      printf("%12d,",$r[$i][$j]);
      if($j == 59){
-       printf("%12d}",$r[$i][60]);
+       printf("%12d},",$r[$i][60]);
      }
    }
    printf("\n");
@@ -169,7 +169,7 @@
    for($j=1;$j<60;$j++){
      printf("%12d,",$s[$i][$j]);
      if($j == 59){
-       printf("%12d}",$s[$i][60]);
+       printf("%12d},",$s[$i][60]);
      }
    }
    printf("\n");
