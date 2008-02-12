@@ -1,0 +1,2673 @@
+From crispin@centtech.com Wed Jan  9 16:22:56 2008
+Date: Wed, 9 Jan 2008 15:22:43 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: rgb@phy.duke.edu
+Cc: glennh@centtech.com, crispin@centtech.com
+Subject: Dieharder, OPERM and BITSTREAM
+
+By way of introduction, Centaur Technologies are the designers of the VIA line
+of X86 compatible processors.  As you may know, since 2003 our CPU have included
+a hardware RNG, and since 2004 hardware acceleration for cryptographic functions
+such as AES.  These features are available directly to the end user via extensions
+for the X86 isntruction set, and require neither device drivers nor operating
+system support.
+
+I will forward in a subsequent email copies (PDF) of our documentation.  As we
+like to support the open source communtity, we would be happy to send you (at our
+expense) a system with our CPU for your use in further RNG work.
+
+ ----
+
+Among my many jobs here are writing the processor microcode to support the RNG and
+cryptographic instructions; testing and validating the features; writing the supporting
+documentation; and acting as technical liaison via email.  As for actually meeting the
+public, well, they don't often let me out of my cage.  *grin*
+
+
+I stumbled across Dieharder earlier this week.  My compliments!  Some five years ago
+while testing the first interation of our HW RNG I encountered many of the same
+issues with diehard implementation, especially faulty file rewinds.  I have added our
+HW RNG to the Dieharder library, and will forward a copy of the source to you after some
+cleanups and idiot-proofing.  After all, an Intel or AMD part will segfault if they
+attempt to execute our RNG/AES extensions.
+
+
+While testing my implementation, I ran the OPERM test and saw your notes.  A quick google
+search found (some of?) your correspondence with Janusz Kawczak on the subject.  I went
+back to our diehard implementation, tweaked OPERM to generate 100 iid samples and have
+seen the same results (although we still have Anderson-Darling KS).  I took 100 separate
+500MB samples to get 100 sets of 100 p-values: note that for internal historical reasons I'm
+displaying 1-P
+
+
+[crispin@dhcp-10-30-1-5 ~]$ grep Final operm.results
+         Final Summary: KSTEST of 100 p-values                   0.99880
+         Final Summary: KSTEST of 100 p-values                   0.99999
+         Final Summary: KSTEST of 100 p-values                   0.99087
+         Final Summary: KSTEST of 100 p-values                   0.99850
+         Final Summary: KSTEST of 100 p-values                   0.99997
+         Final Summary: KSTEST of 100 p-values                   0.99446
+         Final Summary: KSTEST of 100 p-values                   0.99999
+         Final Summary: KSTEST of 100 p-values                   0.99832
+         Final Summary: KSTEST of 100 p-values                   0.99871
+         Final Summary: KSTEST of 100 p-values                   1.00000
+         Final Summary: KSTEST of 100 p-values                   0.99787
+         Final Summary: KSTEST of 100 p-values                   0.99997
+         Final Summary: KSTEST of 100 p-values                   0.99993
+         Final Summary: KSTEST of 100 p-values                   0.99984
+         Final Summary: KSTEST of 100 p-values                   0.99996
+         Final Summary: KSTEST of 100 p-values                   0.99999
+         Final Summary: KSTEST of 100 p-values                   0.99973
+         Final Summary: KSTEST of 100 p-values                   0.99883
+         Final Summary: KSTEST of 100 p-values                   0.99663
+         Final Summary: KSTEST of 100 p-values                   0.99995
+         Final Summary: KSTEST of 100 p-values                   1.00000
+         Final Summary: KSTEST of 100 p-values                   1.00000
+         Final Summary: KSTEST of 100 p-values                   0.99706
+         Final Summary: KSTEST of 100 p-values                   0.99957
+         Final Summary: KSTEST of 100 p-values                   0.99995
+         Final Summary: KSTEST of 100 p-values                   0.99527
+         Final Summary: KSTEST of 100 p-values                   0.99986
+         Final Summary: KSTEST of 100 p-values                   0.99992
+         Final Summary: KSTEST of 100 p-values                   0.99974
+         Final Summary: KSTEST of 100 p-values                   0.99812
+         Final Summary: KSTEST of 100 p-values                   0.99999
+         Final Summary: KSTEST of 100 p-values                   1.00000
+         Final Summary: KSTEST of 100 p-values                   0.99994
+         Final Summary: KSTEST of 100 p-values                   0.99980
+         Final Summary: KSTEST of 100 p-values                   1.00000
+         Final Summary: KSTEST of 100 p-values                   0.98857
+         Final Summary: KSTEST of 100 p-values                   0.99975
+         Final Summary: KSTEST of 100 p-values                   0.99885
+         Final Summary: KSTEST of 100 p-values                   0.99997
+         Final Summary: KSTEST of 100 p-values                   0.98869
+         Final Summary: KSTEST of 100 p-values                   0.99999
+         Final Summary: KSTEST of 100 p-values                   0.97225
+         Final Summary: KSTEST of 100 p-values                   0.98034
+         Final Summary: KSTEST of 100 p-values                   0.99980
+         Final Summary: KSTEST of 100 p-values                   0.95138
+         Final Summary: KSTEST of 100 p-values                   0.99983
+         Final Summary: KSTEST of 100 p-values                   0.99994
+         Final Summary: KSTEST of 100 p-values                   0.99999
+         Final Summary: KSTEST of 100 p-values                   0.99586
+         Final Summary: KSTEST of 100 p-values                   0.99997
+         Final Summary: KSTEST of 100 p-values                   0.99991
+         Final Summary: KSTEST of 100 p-values                   0.99779
+         Final Summary: KSTEST of 100 p-values                   0.97894
+         Final Summary: KSTEST of 100 p-values                   0.99958
+         Final Summary: KSTEST of 100 p-values                   0.99998
+         Final Summary: KSTEST of 100 p-values                   0.99944
+         Final Summary: KSTEST of 100 p-values                   0.99871
+         Final Summary: KSTEST of 100 p-values                   0.99964
+         Final Summary: KSTEST of 100 p-values                   0.98268
+         Final Summary: KSTEST of 100 p-values                   0.99981
+         Final Summary: KSTEST of 100 p-values                   0.99627
+         Final Summary: KSTEST of 100 p-values                   0.98364
+         Final Summary: KSTEST of 100 p-values                   0.99864
+         Final Summary: KSTEST of 100 p-values                   0.99751
+         Final Summary: KSTEST of 100 p-values                   0.99995
+         Final Summary: KSTEST of 100 p-values                   0.99982
+         Final Summary: KSTEST of 100 p-values                   0.99388
+         Final Summary: KSTEST of 100 p-values                   0.99763
+         Final Summary: KSTEST of 100 p-values                   0.99943
+         Final Summary: KSTEST of 100 p-values                   0.99739
+         Final Summary: KSTEST of 100 p-values                   0.95220
+         Final Summary: KSTEST of 100 p-values                   0.99991
+         Final Summary: KSTEST of 100 p-values                   0.99933
+         Final Summary: KSTEST of 100 p-values                   1.00000
+         Final Summary: KSTEST of 100 p-values                   0.99984
+         Final Summary: KSTEST of 100 p-values                   1.00000
+         Final Summary: KSTEST of 100 p-values                   0.99999
+         Final Summary: KSTEST of 100 p-values                   0.99925
+         Final Summary: KSTEST of 100 p-values                   0.99685
+         Final Summary: KSTEST of 100 p-values                   1.00000
+         Final Summary: KSTEST of 100 p-values                   0.99790
+         Final Summary: KSTEST of 100 p-values                   0.99953
+         Final Summary: KSTEST of 100 p-values                   0.99999
+         Final Summary: KSTEST of 100 p-values                   0.98968
+         Final Summary: KSTEST of 100 p-values                   0.98927
+         Final Summary: KSTEST of 100 p-values                   0.99994
+         Final Summary: KSTEST of 100 p-values                   0.99982
+         Final Summary: KSTEST of 100 p-values                   0.99784
+         Final Summary: KSTEST of 100 p-values                   0.99806
+         Final Summary: KSTEST of 100 p-values                   0.98752
+         Final Summary: KSTEST of 100 p-values                   0.99993
+         Final Summary: KSTEST of 100 p-values                   1.00000
+         Final Summary: KSTEST of 100 p-values                   0.99981
+         Final Summary: KSTEST of 100 p-values                   0.98628
+         Final Summary: KSTEST of 100 p-values                   0.99975
+         Final Summary: KSTEST of 100 p-values                   0.99995
+         Final Summary: KSTEST of 100 p-values                   0.99981
+         Final Summary: KSTEST of 100 p-values                   0.99842
+         Final Summary: KSTEST of 100 p-values                   0.99945
+         Final Summary: KSTEST of 100 p-values                   0.99992
+
+
+Just as you did, when I originally built my copy of diehard I verified that I got the
+same results with known input file RNG as the standard model.  I compared your source code
+with mine and have concluded that they calculate the same numbers - I will probably rebuild
+the file input option on our test suite as a further check.
+
+However - I did a special formatted dump of the covariance matrix values from your code and
+mine (we both cut/pasted from the original, right?) and noticed that all values are the
+same except for s[i][59] which differ for all 60 values.  [I guess I will go lookup the
+original Fortran, not that it seems to matter]
+
+The suspicion that there are errors in the covariance matrix grows.  Especially, if as seems
+to be the case these were generated from Marsaglia's simulations which can't be re-checked.
+
+
+
+For bitstream I'm not seeing the same thing.  I tweaked Dieharder to use
+the original sigma and do in fact see the same failures.  However, with my version (again
+tweaked to generate 100+ p-values) I do not see the failures.  The p-values are nicely
+distributed.  (Again, think  1-P)
+
+
+        CENTAUR RNG ANALYSIS PACKAGE           Tue Jan  8 22:48:12 2008
+
+        Diehard Test                p-values                     KSTEST
+        ---------------------------------------------------------------
+        MONKEY TEST   0.35485 0.03558 0.42190 0.13744 0.41825
+                      0.86528 0.55913 0.32574 0.87176 0.05623
+                      0.96575 0.96412 0.58206 0.66183 0.82899
+                      0.10048 0.56281 0.62614 0.02112 0.48106
+                      0.78900 0.66097 0.91871 0.22150 0.53878
+                      0.59388 0.62968 0.17480 0.66012 0.95252
+                      0.36270 0.83601 0.12310 0.47920 0.61726
+                      0.36008 0.50249 0.09445 0.54712 0.47454
+                      0.53228 0.39649 0.79899 0.39020 0.55174
+                      0.76889 0.17420 0.37859 0.58024 0.81248
+                      0.80613 0.89591 0.47361 0.91586 0.96662
+                      0.48013 0.72095 0.61011 0.37682 0.86780
+                      0.10466 0.44395 0.64892 0.09804 0.49037
+                      0.19602 0.49876 0.17300 0.19026 0.01843
+                      0.62260 0.30827 0.98283 0.15566 0.73796
+                      0.72095 0.01781 0.19217 0.69693 0.93838
+                      0.46246 0.59660 0.48758 0.79569 0.30580
+                      0.48665 0.72330 0.78629 0.49876 0.34447
+                      0.94359 0.14743 0.71859 0.37327 0.55082
+                      0.73184 0.32743 0.70906 0.19473 0.63056
+                      0.70826 0.25026 0.47640 0.62437 0.53692
+                      0.69856 0.41187 0.58024 0.72174 0.41916
+                      0.45968 0.52205 0.82720 0.69693 0.01662
+                      0.32154 0.52205 0.16361 0.22081 0.15678
+                      0.95760 0.20321 0.43842 0.17241 0.76100
+                      0.99626 0.07795 0.81932 0.34791 0.50249
+                      0.28010 0.11656 0.17905 0.89591 0.03688
+                      0.35485 0.99357 0.57841 0.82839 0.56925
+                      0.58297 0.95697 0.70986 0.68041 0.15734
+                      0.85489 0.86730 0.46989 0.56833 0.96224
+                      0.38037 0.12939 0.72798 0.58571 0.41187
+                      0.83601 0.88083 0.35921 0.79767 0.87078
+                      0.01504 0.30744 0.89464 0.05089 0.79964
+                      0.97820 0.87176 0.37416 0.08036 0.05288
+                      0.18212 0.78697 0.78968 0.11656 0.18027
+                      0.98160 0.32154 0.81747 0.47920 0.13642
+                      0.32574 0.02563 0.93309 0.05570 0.95206
+                      0.29202 0.19345 0.78765 0.86015 0.10131
+                      0.10852 0.42739 0.79569 0.57108 0.00607
+                      0.93781 0.53878 0.28405 0.61369 0.16188
+
+         Final Summary: KSTEST of 200 p-values                   0.15937
+
+
+
+I've compared the two source codes; yours is pretty clean while ours is a direct line for
+line conversion from the original Fortran (I downloaded that this afternoon to further check)
+and - at least as I currently understand - it makes the same calculations in accumulating the w[i].
+
+But this old diehard code is not using standard gsl functions; in fact the calculation for
+phi(x) looks awfully ad hoc.   I just did a compare of the original fortran with our C code
+and, again, it's a line for line translation.
+
+I am going to experiment a little further and will let you know what I find.  If it's the
+original Fortran that's an issue will that bring other of the original diehard tests into question?
+
+      function Phi(x)
+      implicit real*8(a-h,o-z)
+      real*4 x,phi
+      real*8 v(0:14)
+      data v/
+     &1.253314137315500d0,.6556795424187985d0,.4213692292880545d0,
+     &.3045902987101033d0,.2366523829135607d0,.1928081047153158d0,
+     &.1623776608968675d0,.1401041834530502d0,.1231319632579329d0,
+     &.1097872825783083d0,.9902859647173193d-1,.9017567550106468d-1,
+     &.8276628650136917d-1,.764757610162485d-1,.7106958053885211d-1/
+      phi=.5+sign(.5,x)
+      if(abs(x).gt.7) return
+      cPhi=.5d0-sign(.5d0,x)
+      j=abs(x)+.5d0
+      j=min(j,14)
+      z=j
+      h=abs(x)-z
+      a=v(j)
+      b=z*a-1d0
+      pwr=1d0
+      sum=a+h*b
+      do 2 i=2,24-j,2
+      a=(a+z*b)/i
+      b=(b+z*a)/(i+1)
+      pwr=pwr*h**2
+2     sum=sum+pwr*(a+h*b)
+      cPhi=sum*dexp(-.5d0*x*x-.918938533204672d0)
+      phi=1d0-cphi
+      if(x.lt.0d0) phi=cPhi
+      return
+      end
+
+
+
+Thanks for your attention, and thanks again for all your work on Dieharder.  I am going to look
+into using gnuplot to display ongoing feedback for some of these very long tests: once we have
+some more samples for my RNG testing I will try to have a dozen or so boxes accumulating RNG
+continuously and it would be nice to have remote X feedback along with the summaries.
+
+If I get it working, naturally I will send you the source.
+
+
+-- Tom Crispin
+   512-493-8625
+   crispin@centtech.com
+
+
+
+
+
+
+
+
+
+
+From crispin@centtech.com Wed Jan  9 16:37:29 2008
+Date: Wed, 9 Jan 2008 15:37:16 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: rgb@phy.duke.edu
+Subject: VIA RNG/AES documentation
+
+Hi --
+
+Attached are the current versions of our RNG/AES/SHA documentation.  Please note that the
+RNG was tested extensively by Crytpographic Research, Inc of San Francisco (that's Paul
+Kocker, Ben Jun, et al) and they have a white paper at their site discussing our RNG.
+
+Note that these docs refer to our currently shipping C7 line of processors.  Our newest
+has refinements which I will be happy to discuss, but I doubt that we will have enough
+engineering samples available that we could get one to you before Q2.
+
+My understanding is that we are currently out of C7 here in Austin and will need to
+get some from Taiwan if you want one.  If a slightly older CPU is good enough, we have
+a number of older systems and could get one out the door in just a few days.
+
+
+FWIW, Wal-Mart is about to sell a $399 sub notebook based on our C7; which includes
+all of the RNG and cryptographic features just standard.
+
+http://www.viaarena.com/default.aspx?PageID=5&ArticleID=549
+
+
+Thanks
+
+-- Tom Crispin
+
+
+
+
+    [ Part 2, Application/PDF  424KB. ]
+    [ Unable to print this part. ]
+
+
+    [ Part 3, Application/PDF  510KB. ]
+    [ Unable to print this part. ]
+
+
+From crispin@centtech.com Wed Jan  9 17:42:20 2008
+Date: Wed, 9 Jan 2008 16:42:12 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: rgb@phy.duke.edu
+Cc: glennh@centtech.com
+Subject: dieharder and operm -- solved?
+
+
+I need to spend a little time screaming and shouting and not kicking things, then will do some tests.
+
+
+
+Here is the original fortran:
+
+       open(4,file='operm5d.ata')
+       read(4,212) ((r(i,j),j=i,60),i=1,60)
+       read(4,212) ((s(i,j),j=i,60),i=1,60)
+
+
+
+Here are the first few rows of operm5d.ata -- I have added a break after the first 60 entries
+
+   5817257  -6873271  -5128747  -5402629    777663    980677   2407731   2347927
+   2954082   2749952   2512448   3103860   2631372   1019585   5833700  -1609797
+   -136098     14746   4199803  15820046  15661640   5888319  -3837421  -1317810
+   -375269   -496546    149397     21483   -341148    314595   2772502    843578
+   8843654  -1211426   2341534   3013752   1250340   -699051   -654566    961558
+  -2338987  -2621631   2873613   1261792   8000951  -1746067      6638    -47636
+  -5088578  -5013620  -3253847  -3180615   2711412   3844202    880534  -1042552
+   6946781  -3015244    406795   1147260
+
+                                           5940872  -5186478  -5307926    773214
+    938192   2462991   2185748   2756969   2860993   2501911   3080424   2695718
+   1101077   7899915  -3833937   -175045    -54950   6072206  13434946  15661640
+
+
+Here are the first entries for diehard_operm5.h, formatted to match the above
+
+static int r[60][60] = {
+  {    5817257,   -6873271,   -5128747,   -5402629,     777663,     980677,    2407731,    2347927,
+       2954082,    2749952,    2512448,    3103860,    2631372,    1019585,    5833700,   -1609797,
+       -136098,      14746,    4199803,   15820046,   15661640,    5888319,   -3837421,   -1317810,
+       -375269,    -496546,     149397,      21483,    -341148,     314595,    2772502,     843578,
+       8843654,   -1211426,    2341534,    3013752,    1250340,    -699051,    -654566,     961558,
+      -2338987,   -2621631,    2873613,    1261792,    8000951,   -1746067,       6638,     -47636,
+      -5088578,   -5013620,   -3253847,   -3180615,    2711412,    3844202,     880534,   -1042552,
+       6946781,   -3015244,     406795,    1147260},
+
+  {                                                   -6873271,    5940872,   -5186478,   -5307926,
+        773214,     938192,    2462991,    2185748,    2756969,    2860993,    2501911,    3080424,
+        2695718,    1101077,    7899915,   -3833937,   -175045,     -54950,    6072206,   13434946,
+
+
+
+The first 60 entries match.  But look at the second block: somewhere along the line in the C code
+that we both copied, somebody got confused regarding the array indexing differences between C and
+Fortran.
+
+We should both rebuild the r[][] and s[][] arrays from the original.  FWIW, the C datafile from FSU
+matches the Fortran modulo white space
+
+
+Cheers!
+
+-- Tom
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+From crispin@centtech.com Wed Jan  9 18:02:33 2008
+Date: Wed, 9 Jan 2008 17:02:25 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: rgb@phy.duke.edu
+Subject: oops re OPERM
+
+OOPS  My bad
+
+   r[i][j] = r[j][i]
+
+
+
+Still need to see why we had different values for the matrix.
+
+
+
+
+From crispin@centtech.com Wed Jan  9 18:49:57 2008
+Date: Wed, 9 Jan 2008 17:49:27 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Cc: Tom Crispin <crispin@centtech.com>, glennh@centtech.com
+Subject: Re: Dieharder, OPERM and BITSTREAM
+
+
+Do you want to wait a few weeks for a current model, or will a somewhat
+older CPU do?  We're not kidding - we have pretty good contacts with
+most of the linux/bsd distros and some of the crypto community.  It will
+sure be a lot cheaper shipping to North Carolina than getting thru customs
+to Brain Gladman in England!
+
+
+I did a quick compare of the my code and yours -- it looks like your
+s[i][59] are incorrect as mine matched against the FSU masters.  However, I
+rebuilt dieharder using my r[][] and s[][] and OPERM still has it's problems.
+
+Maybe not quite so bad; actually PASSED twice with the changes (2 of 9)
+
+
+
+'Course after my earlier brain fart it will be worth a triple check.  I'm
+attaching my modified include/dieharder/diehard_operm5.h (as operm.xxx so the
+mail client doesn't imbed in the email) with the tweaks to the arrays if you
+want to take a look
+
+
+
+If you've had a chance to look at our docs, I think that at least the
+technical stuff is honest.  The whitened bits coming out of the oscillators are
+a good fast entropy source (maybe even good enough for some cryptographic
+work since entropy is around .95 bits/bit ?)   For statistics that's of course
+horrible.
+
+
+For our latest part (still in test - but you can do it with the older ones
+"by hand") we take 16 bytes of "raw" bits with the above entropy as an AES
+"key".  The next 16 bytes out of the generator are treated as AES "plaintext",
+and we pass it through our HW AES engine (which runs somewhere around 15G bits/sec
+at peak) to generate 16 bytes of "ciphertext" which we output as our RNG.
+
+So 32 bytes in, 16 bytes out.  I simulated this a few years back with one of
+our older parts and it just sails right through.  Fails the OPERM, however, just
+like the PRNG.
+
+
+
+The user can get either the "raw" bits if he just wants an entropy source
+or the "good" bits if he is in a hurry.  My test part is generating about 15M bits/sec
+at the slow/good setting and 30M bits/sec "raw".
+
+
+
+Some of the distros already have drivers that will recognize a VIA part and
+use it as an entropy source.  I don't know which ones of the top of my head ...
+
+
+
+More later.  Am going to look at bitstream since I've hit my competence limit
+on the operm.
+
+
+Thanks
+
+
+
+-- Tom
+
+
+
+
+
+
+On Wed, Jan 09, 2008 at 06:10:25PM -0500, Robert G. Brown wrote:
+> On Wed, 9 Jan 2008, Tom Crispin wrote:
+> 
+> >By way of introduction, Centaur Technologies are the designers of the VIA 
+> >line
+> >of X86 compatible processors.  As you may know, since 2003 our CPU have 
+> >included
+> >a hardware RNG, and since 2004 hardware acceleration for cryptographic 
+> >functions
+> >such as AES.  These features are available directly to the end user via 
+> >extensions
+> >for the X86 isntruction set, and require neither device drivers nor 
+> >operating
+> >system support.
+> >
+> >I will forward in a subsequent email copies (PDF) of our documentation.  
+> >As we
+> >like to support the open source communtity, we would be happy to send you 
+> >(at our
+> >expense) a system with our CPU for your use in further RNG work.
+> 
+> That would be simply lovely -- I never turn down a free box, especially
+> one with something that even purports to be a "true random number
+> generator".  /dev/random and /dev/urandom are slow, so slow that it is
+> difficult to test them.  Currently I use a mix of true random numbers
+> from random.org and mt19937, taus, gfs4 to test the tester, and of
+> course that has its own risks.  Even if I (forgive me) approach your
+> generator with a healthy degree of skepticism until I actually put it
+> through its paces it would be great to have another top quality,
+> reasonably fast source to use testing the tester.
+> 
+> >----
+> >
+> >Among my many jobs here are writing the processor microcode to support the 
+> >RNG and
+> >cryptographic instructions; testing and validating the features; writing 
+> >the supporting
+> >documentation; and acting as technical liaison via email.  As for actually 
+> >meeting the
+> >public, well, they don't often let me out of my cage.  *grin*
+> 
+> I know about that, for sure:-)
+> 
+> >I stumbled across Dieharder earlier this week.  My compliments!  Some five 
+> >years ago
+> >while testing the first interation of our HW RNG I encountered many of the 
+> >same
+> >issues with diehard implementation, especially faulty file rewinds.  I 
+> >have added our
+> >HW RNG to the Dieharder library, and will forward a copy of the source to 
+> >you after some
+> >cleanups and idiot-proofing.  After all, an Intel or AMD part will 
+> >segfault if they
+> >attempt to execute our RNG/AES extensions.
+> 
+> Sure.  Are you going to add a driver for e.g. /dev/viarandom to the
+> kernel?  That would make it maximally easy for users to find and use
+> outside of stuff you build.  And/or add a driver to the GSL (the one you
+> build for dieharder should work) with a simple test that defaults in
+> some sane way if the system isn't one of yours.
+> 
+> >While testing my implementation, I ran the OPERM test and saw your notes.  
+> >A quick google
+> >search found (some of?) your correspondence with Janusz Kawczak on the 
+> >subject.  I went
+> >back to our diehard implementation, tweaked OPERM to generate 100 iid 
+> >samples and have
+> >seen the same results (although we still have Anderson-Darling KS).  I 
+> >took 100 separate
+> >500MB samples to get 100 sets of 100 p-values: note that for internal 
+> >historical reasons I'm
+> >displaying 1-P
+> 
+> >Just as you did, when I originally built my copy of diehard I verified 
+> >that I got the
+> >same results with known input file RNG as the standard model.  I compared 
+> >your source code
+> >with mine and have concluded that they calculate the same numbers - I will 
+> >probably rebuild
+> >the file input option on our test suite as a further check.
+> >
+> >However - I did a special formatted dump of the covariance matrix values 
+> >from your code and
+> >mine (we both cut/pasted from the original, right?) and noticed that all 
+> >values are the
+> >same except for s[i][59] which differ for all 60 values.  [I guess I will 
+> >go lookup the
+> >original Fortran, not that it seems to matter]
+> >
+> >The suspicion that there are errors in the covariance matrix grows.  
+> >Especially, if as seems
+> >to be the case these were generated from Marsaglia's simulations which 
+> >can't be re-checked.
+> 
+> I'm actually in the end stages of fixing this.  I can compute the exact
+> covariance matrix.  I can simulate the exact covariance matrix.  I have
+> papers on weak inverses (something I didn't understand before) and what
+> they have to do with computing p-values for distributions drawn from
+> overlapping samples.  It is really, really difficult stuff, but I think
+> I'm going to be able to eventually make this test work properly, and
+> even generalize it so that it works for anywhere from overlaps of from
+> 2-6 items.
+> 
+> But not quiiiite yet.  Maybe "soon".  I started teaching today, and am
+> working on books and stuff in addition to dieharder, so I have to work
+> in cycles on it.
+> 
+> >For bitstream I'm not seeing the same thing.  I tweaked Dieharder to use
+> >the original sigma and do in fact see the same failures.  However, with my 
+> >version (again
+> >tweaked to generate 100+ p-values) I do not see the failures.  The 
+> >p-values are nicely
+> >distributed.  (Again, think  1-P)
+> 
+> Always good...;-)
+> 
+> >I've compared the two source codes; yours is pretty clean while ours is a 
+> >direct line for
+> >line conversion from the original Fortran (I downloaded that this 
+> >afternoon to further check)
+> >and - at least as I currently understand - it makes the same calculations 
+> >in accumulating the w[i].
+> >
+> >But this old diehard code is not using standard gsl functions; in fact the 
+> >calculation for
+> >phi(x) looks awfully ad hoc.   I just did a compare of the original 
+> >fortran with our C code
+> >and, again, it's a line for line translation.
+> >
+> >I am going to experiment a little further and will let you know what I 
+> >find.  If it's the
+> >original Fortran that's an issue will that bring other of the original 
+> >diehard tests into question?
+> >
+> >     function Phi(x)
+> >     implicit real*8(a-h,o-z)
+> >     real*4 x,phi
+> >     real*8 v(0:14)
+> >     data v/
+> >    &1.253314137315500d0,.6556795424187985d0,.4213692292880545d0,
+> >    &.3045902987101033d0,.2366523829135607d0,.1928081047153158d0,
+> >    &.1623776608968675d0,.1401041834530502d0,.1231319632579329d0,
+> >    &.1097872825783083d0,.9902859647173193d-1,.9017567550106468d-1,
+> >    &.8276628650136917d-1,.764757610162485d-1,.7106958053885211d-1/
+> >     phi=.5+sign(.5,x)
+> >     if(abs(x).gt.7) return
+> >     cPhi=.5d0-sign(.5d0,x)
+> >     j=abs(x)+.5d0
+> >     j=min(j,14)
+> >     z=j
+> >     h=abs(x)-z
+> >     a=v(j)
+> >     b=z*a-1d0
+> >     pwr=1d0
+> >     sum=a+h*b
+> >     do 2 i=2,24-j,2
+> >     a=(a+z*b)/i
+> >     b=(b+z*a)/(i+1)
+> >     pwr=pwr*h**2
+> >2     sum=sum+pwr*(a+h*b)
+> >     cPhi=sum*dexp(-.5d0*x*x-.918938533204672d0)
+> >     phi=1d0-cphi
+> >     if(x.lt.0d0) phi=cPhi
+> >     return
+> >     end
+> 
+> I'm pretty sure that I checked this empirically and found that it
+> actually works.  But it has been a real pain in the butt to try to
+> confirm that diehard and dieharder produce identical numbers for
+> identical streams, in part because I didn't literally translate all the
+> fortran -- most of dieharder I did by rewriting the code from scratch
+> using the descriptions.  The exceptions were the tests I really didn't
+> understand, like operm5, and I had to use the diehard data initially,
+> although in some cases I've been able to regenerate it or re-simulate it
+> on my own.  This is partly to avoid any possibility of copyright issues,
+> since diehard is provided with no copyright notice or license, and in my
+> one conversation with Marsaglia it sounded like he was inclined to be
+> pissy about protecting diehard.
+> 
+> This is apparently not that uncommon.  I >>think<< random number testing
+> is big business (or small business, or whatever) to a few of the top
+> dogs in the business, probably selling consulting to e.g. cryptography
+> people.  dieharder has the obvious potential to really impact this, as
+> clean GSL code that is readily available and openly vetted and repaired.
+> 
+> >Thanks for your attention, and thanks again for all your work on 
+> >Dieharder.  I am going to look
+> >into using gnuplot to display ongoing feedback for some of these very long 
+> >tests: once we have
+> >some more samples for my RNG testing I will try to have a dozen or so 
+> >boxes accumulating RNG
+> >continuously and it would be nice to have remote X feedback along with the 
+> >summaries.
+> >
+> >If I get it working, naturally I will send you the source.
+> 
+> That would be great.  You can also do this internal to R -- that was one
+> of the points of integrating it in the latest revision.  And sooner or
+> later I'm going to give it a proper GUI, or have a student do it for me
+> (maybe this semester, we'll see -- I have a CPS independent study
+> student who is interested in working on one of my projects:-).
+> 
+> If you really aren't kidding about the system, my home address is
+> 
+>  3209 Annandale Road
+>  Durham 27705
+> 
+> If you are, no hard feelings...;-)
+> 
+>     rgb
+> 
+> >-- Tom Crispin
+> >  512-493-8625
+> >  crispin@centtech.com
+> 
+> -- 
+> Robert G. Brown                            Phone(cell): 1-919-280-8443
+> Duke University Physics Dept, Box 90305
+> Durham, N.C. 27708-0305
+> Web: http://www.phy.duke.edu/~rgb
+> Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+
+    [ Part 2, Text/PLAIN  1,390 lines. ]
+    [ Unable to print this part. ]
+
+
+From crispin@centtech.com Thu Jan 10 14:21:49 2008
+Date: Thu, 10 Jan 2008 13:21:40 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Cc: Tom Crispin <crispin@centtech.com>, glennh@centtech.com
+Subject: Re: Dieharder and BITSTREAM
+
+
+It looks like the Dieharder version of bitstream is not quite the same test
+as the Diehard version, so it isn't quite correct that Marsaglia's sigma is
+wrong.
+
+The original Diehard code assumes a continuous bistream, and moves a 20-bit
+window down the stream moving one bit at a time.  Neither of the two
+versions (overlap or not) of Dieharder work that way since get_bit_ntuple()
+wraps at the end of the 32-bit integer input as the bitstream.
+
+Isn't clear to me why this changes sigma, but it clearly does - just compare
+the two versions.  I verified that the phi(x) calculation in the original
+diehard (and thus my copy) give the same result as the gsl to about 1 part
+in a 1000.
+
+I am going to tweak diehard_bitstream.c to exactly copy the original Fortran
+and I anticipate that using Marsaglia's sigma of 428 that it will start PASSING
+the various RNGs (and will fail with a sigma of 290)
+
+Assuming I'm right, you will want to modify the "diehard" bitstream test in
+Dieharder to mimic my changes, and then use your version as a newer bitstream.  I
+don't know enough statistics to argue one way or the other as to which method
+of calculating J "really" produces a normal distribution.
+
+
+
+BTW, on that system that we will send you: do you have a preferred distro?  We also
+have most flavors of BSD.
+
+
+Thanks
+
+
+-- Tom
+
+
+
+
+
+
+
+
+From crispin@centtech.com Thu Jan 10 16:25:27 2008
+Date: Thu, 10 Jan 2008 15:25:16 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Cc: Tom Crispin <crispin@centtech.com>, glennh@centtech.com
+Subject: Re: Dieharder and BITSTREAM
+
+
+Here's a dump from Dieharder using my implementation of the bitstream test as written
+by Marsaglia, and with his original sigma of 428
+
+bash-3.00$ N=1
+bash-3.00$ while [ $N -lt 50 ]; do ../dieharder/dieharder -g 13 -d 5 -q; N=$(($N+1)); done
+Kuiper KS: p = 0.627424
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.704822
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.995121
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.868591
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.697948
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.628187
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.099717
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.777235
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.984938
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.915350
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.324805
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.955064
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.587607
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.397027
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.047529
+Assessment: POSSIBLY WEAK at < 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.340336
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.403369
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.617957
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.826623
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.699357
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.153684
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.937550
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.894709
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.362704
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.592225
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.847295
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.200625
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.840599
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.574950
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.964337
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.538590
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.419873
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.323136
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.610821
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.754444
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.554404
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.929744
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.857335
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.997699
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.508341
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.380750
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.512029
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.989408
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.613946
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.882617
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.205619
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.873526
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.713346
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+Kuiper KS: p = 0.782705
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+
+
+ -------------------------------------------
+
+I've attached my modified version of diehard_bitstream.c
+
+
+ -------------------------------------------
+
+
+Question re Kolmogorov-Smirnov:  my understanding is that we use this test
+when we don't have "enough" samples to do a "proper" statistical test.  Since
+the p-values are expected to be uniform in [0,1) and we typically use ten
+bins, at what point should we switch to doing a chi-square of the p-values rather
+than relying on KS?
+
+And if there is no quantity of samples for which we should make the switch, why
+isn't KS used in the first place?
+
+
+Cheers!
+
+
+-- Tom
+
+
+
+
+
+
+
+
+
+
+    [ Part 2, Text/PLAIN  100 lines. ]
+    [ Unable to print this part. ]
+
+
+From crispin@centtech.com Thu Jan 10 20:16:18 2008
+Date: Thu, 10 Jan 2008 19:16:08 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder and BITSTREAM
+
+
+If you want to install your own OS that will save us a little time. In
+terms of what we can send, we have:
+
+   C5XL  --   RNG only, vintage 2003
+   C5P   --   RNG and our HW AES  vintage 2004/5
+   C5J   --   RNG, AES, HW SHA1 and SHA256 and HW Montgomery Multiply acceleration
+
+Either the C5XP or C5P could go out the door Friday or Monday, probably
+in a shuttle case.   A C5J will take a little longer.
+
+Let me know.
+
+
+
+
+This is what FOSS is all about.  I used to find bugs in Microsoft stuff
+that I could have fixed in 30 seconds with access to the source, but would
+take years to appear in the shrinkwrap.  Sometimes I could actually patch
+the binary, but once they got anal about copy protection and anti-debugging
+that didn't work as well.
+
+
+
+
+
+
+On Thu, Jan 10, 2008 at 07:07:50PM -0500, Robert G. Brown wrote:
+> On Thu, 10 Jan 2008, Tom Crispin wrote:
+> 
+> >
+> >It looks like the Dieharder version of bitstream is not quite the same test
+> >as the Diehard version, so it isn't quite correct that Marsaglia's sigma is
+> >wrong.
+> >
+> >The original Diehard code assumes a continuous bistream, and moves a 20-bit
+> >window down the stream moving one bit at a time.  Neither of the two
+> >versions (overlap or not) of Dieharder work that way since get_bit_ntuple()
+> >wraps at the end of the 32-bit integer input as the bitstream.
+> >
+> >Isn't clear to me why this changes sigma, but it clearly does - just 
+> >compare
+> 
+> Ah.  I understand this perfectly.  Overlapping samples are not
+> independent.  Statistical analyses (e.g. the definition of sigma or
+> variance) always begin by assuming independent, identically distributed
+> (iid) samples.  If the samples are drawn from overlapping numbers, you
+> have fewer INDEPENDENT samples than you think you do.  The ratio of
+> sigma to the variance actually tells you something important about the
+> overlapping sample covariance.
+> 
+> OK, clearly I'm going to have to work on this.  There are two solutions
+> -- one is to using the sliding window scheme of Marsaglia, which is
+> actually (IMO) ugly.  The second is to just leave it as it is, and use
+> non-overlapping samples.
+> 
+> The reason for using overlapping samples is that it provides the
+> illusion of being able to run a test with a smaller sample.  But there
+> is a limit on the information you can get out of any given sample size,
+> and basically the sample autocorrelation (the ratio between the two
+> sigmas squared) is it.  This basically means that it is completely
+> pointless to use overlapping samples, especially if one is testing
+> generators capable of producing as many rands as you like in a
+> reasonable time.
+> 
+> What I'll probably do is try to fix the overlap flag so that using it
+> creates old diehard, and not using it just rips off independent samples
+> and uses the new sigma.
+> 
+> >the two versions.  I verified that the phi(x) calculation in the original
+> >diehard (and thus my copy) give the same result as the gsl to about 1 part
+> >in a 1000.
+> >
+> >I am going to tweak diehard_bitstream.c to exactly copy the original 
+> >Fortran
+> >and I anticipate that using Marsaglia's sigma of 428 that it will start 
+> >PASSING
+> >the various RNGs (and will fail with a sigma of 290)
+> >
+> >Assuming I'm right, you will want to modify the "diehard" bitstream test in
+> >Dieharder to mimic my changes, and then use your version as a newer 
+> >bitstream.  I
+> >don't know enough statistics to argue one way or the other as to which 
+> >method
+> >of calculating J "really" produces a normal distribution.
+> 
+> >BTW, on that system that we will send you: do you have a preferred distro? 
+> >We also
+> >have most flavors of BSD.
+> 
+> I'll probably put Fedora current -- 8 at the moment -- on it.  I'm
+> currently smeared out over FC6 through 8, but I'm about to move them all
+> up to 8.  I'm actually going to try to get dieharder INTO Fedora (since
+> it is debian already) soon.  If I don't go nuts first...;-)
+> 
+> You've been miraculously helpful so far, by the way.  I've had a few bug
+> reports from people in the past, but nobody has taken the time to help
+> me look over the diehard port process, which is something I actually
+> have been careful NOT to look at too closely so I can defend dieharder
+> as a "white room" port if need be.  I'll definitely acknowledge the
+> contribution in the next actual release.
+> 
+>    rgb
+> 
+> >
+> >
+> >Thanks
+> >
+> >
+> >-- Tom
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> 
+> -- 
+> Robert G. Brown                            Phone(cell): 1-919-280-8443
+> Duke University Physics Dept, Box 90305
+> Durham, N.C. 27708-0305
+> Web: http://www.phy.duke.edu/~rgb
+> Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+
+From crispin@centtech.com Fri Jan 11 15:27:38 2008
+Date: Fri, 11 Jan 2008 14:27:27 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Cc: glennh@centtech.com
+Subject: Re: Dieharder and BITSTREAM
+
+OK - the KS usage makes more sense.  I suppose I should sometime study the
+difference between Anderson-Darling and Kuiper in my copious free time.
+
+We agree on the problems with the original diehard.  In testing our HW I
+eventually gave up using it because I could detect "failure" much more
+quickly just doing a chi-sq on the distribution of byte values, which is
+an easy test even with samples of gigabyte to terabyte size.
+
+Maybe we should characterize RNG somewhat differently?  Any particular (P)RNG
+is considered "good" or "bad" only in relation to the sample size?  Isn't
+this what the KS testing of the p-values tells us?  A PRNG that is unsuitable
+for generating 10**18 bits in Monte Carlo simulation may be perfectly fine
+(especially if it's faster or you need really good entropy) if you only want
+10**6 bits and can throw the system away afterwards
+
+ -------------------
+Moving on ...
+
+If the objective on the updated bitstream test is to use an independent
+set of 20 bits for each sample, isn't it a little wasteful to get a 32-bit
+uint and the take a "random" 20 bit block?  Why not get 5 uints and construct
+8 20-bit sequences?
+
+This code should do it:  I built a modified dieharder_bitstream.c using this
+and it runs about 2x faster
+
+  [New version]
+
+[crispin@bobby.centtech.com:~/etc/dieharder-2.24.7/libdieharder]<cnb> time ../dieharder/dieharder -g 13 -d 5 -q
+Kuiper KS: p = 0.839175
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+20.995u 0.369s 0:21.69 98.4%    0+0k 0+0io 0pf+0w
+
+  [Existing version]
+
+[crispin@bobby.centtech.com:~/etc/dieharder-2.24.7/libdieharder]<cnb> time ../dieharder/dieharder -g 13 -d 5 -q
+Kuiper KS: p = 0.551964
+Assessment: PASSED at > 5% for Diehard Bitstream Test
+43.972u 0.421s 0:45.93 96.6%    0+0k 0+0io 0pf+0w
+
+
+ // Just the main loop
+ // ---------------------------------------------------
+
+   for (t = 0; t < (test[0]->tsamples >> 3); t++) {
+
+ // Get 160 bits
+        j0 = gsl_rng_get(rng);
+        j1 = gsl_rng_get(rng);
+        j2 = gsl_rng_get(rng);
+        j3 = gsl_rng_get(rng);
+        j4 = gsl_rng_get(rng);
+
+
+// Yes there are some simplifications possible but the compiler should 
+// do them just as well and this format keeps the logic cleaner
+
+// J0[1-20]
+        num = j0;
+        w[num & 0xFFFFF]++;
+
+// J0[21-32] J1[1-8]
+        num = ((j0 & 0xFFF00000)>>12) + (j1 & 0xFF);
+        w[num]++;
+
+// J1[i9-28]
+        num = (j1 >> 8);
+        w[num & 0xFFFFF]++;
+
+// J1[29-32] J2[1-16]
+        num = ((j1 & 0xF0000000)>>12) + (j2 & 0xFFFF);
+        w[num]++;
+
+// J2[17-32] J3[1-4]
+        num = ((j2 & 0xFFFF0000)>>12) + (j3 & 0xF);
+        w[num]++;
+
+// J3[5-24]
+        num = (j3 >> 4);
+        w[num & 0xFFFFF]++;
+
+// J3[25-32] J4[1-12]
+        num = ((j3 & 0xFF000000)>>12) + (j4 & 0xFFF);
+        w[num]++;
+
+// J4[13-32]
+        num = j4 >> 12;
+        w[num & 0xFFFFF]++;
+ 
+   }
+
+
+
+
+
+
+
+
+
+
+On Thu, Jan 10, 2008 at 10:41:56PM -0500, Robert G. Brown wrote:
+> On Thu, 10 Jan 2008, Tom Crispin wrote:
+> 
+> >
+> >Here's a dump from Dieharder using my implementation of the bitstream test 
+> >as written
+> >by Marsaglia, and with his original sigma of 428
+> >
+> >bash-3.00$ N=1
+> >bash-3.00$ while [ $N -lt 50 ]; do ../dieharder/dieharder -g 13 -d 5 -q; 
+> >N=$(($N+1)); done
+> >Kuiper KS: p = 0.627424
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.704822
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.995121
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.868591
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.697948
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.628187
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.099717
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.777235
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.984938
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.915350
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.324805
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.955064
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.587607
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.397027
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.047529
+> >Assessment: POSSIBLY WEAK at < 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.340336
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.403369
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.617957
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.826623
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.699357
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.153684
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.937550
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.894709
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.362704
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.592225
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.847295
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.200625
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.840599
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.574950
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.964337
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.538590
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.419873
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.323136
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.610821
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.754444
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.554404
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.929744
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.857335
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.997699
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.508341
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.380750
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.512029
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.989408
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.613946
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.882617
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.205619
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.873526
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.713346
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >Kuiper KS: p = 0.782705
+> >Assessment: PASSED at > 5% for Diehard Bitstream Test
+> >
+> >
+> >-------------------------------------------
+> >
+> >I've attached my modified version of diehard_bitstream.c
+> >
+> >
+> >-------------------------------------------
+> >
+> >
+> >Question re Kolmogorov-Smirnov:  my understanding is that we use this test
+> >when we don't have "enough" samples to do a "proper" statistical test.  
+> >Since
+> >the p-values are expected to be uniform in [0,1) and we typically use ten
+> >bins, at what point should we switch to doing a chi-square of the p-values 
+> >rather
+> >than relying on KS?
+> 
+> Actually KS is a generic test that "in principle" compares a set of
+> samples with the CONTINUOUS distribution they are supposedly drawn from
+> and produces a p-value.  The reason you can't use chisq is it can only
+> be applied to a vector of discrete values, and even then you have to
+> have the right number of degrees of freedom and all.
+> 
+> I bin the p-values strictly for display purposes -- so the eye can
+> detect systematic deviations from approximate uniformity.  If you ran
+> the old bitstream, you probably noted that there was a distinct central,
+> symmetric bulge in the distribution of p.  If the eye couldn't see that
+> this occurred systematically and in the same way for all sorts of RNGs,
+> one might be tempted to conclude that the test was "good" and that the
+> RNGs were just failing the test.
+> 
+> >And if there is no quantity of samples for which we should make the 
+> >switch, why
+> >isn't KS used in the first place?
+> 
+> KS is used in the first place, for all the tests in the dieharder suite.
+> It wasn't in diehard -- for many of the tests there one just got a p
+> value, or maybe two, or ten.  So you run a test and get a p-value of
+> 0.03. Does this mean that the RNG is bad?  Does it mean that the
+> particular stream of random numbers you got wasn't random?  Not at all.
+> It actually means almost nothing BY ITSELF.  If you run the same test on
+> a perfect random number generator 100 million times, you'd expect
+> roughly 3 million outcomes to have p-values less than or equal to 0.03.
+> 
+> The primary reason that dieharder is "better" than diehard is that for
+> many tests, this is precisely where it left you.  The test produced only
+> a few p-values, or a cumulated p-value.  Sometimes it would be 0.357 and
+> you'd say "ah, the rng passes this test".  Sometimes it would be 0.03
+> and you'd say "ah, it fails this test".  Neither is true.  If you run
+> the test 100 times and always get p-values between 0.3 and 0.7, the rng
+> fails badly and the final KS test should be absurdly small, 0.000001 or
+> the like, and you really are fairly well justified in failing the test.
+> If you run the test 100 times and the 0.03 happens to be one of three or
+> four results in that range, and the rest of the distribution is
+> otherwise roughly uniform (so it gets a reasonable number on the final
+> KS test) it doesn't "pass" (nothing ever "passes";-) but you can say
+> that the results you get are consistent with the generator being a
+> "good" one.
+> 
+> But with dieharder you aren't limited to 100.  Some generators will
+> produce a really low, suspiciously low KS result, say 0.001 from time to
+> time if you run it but otherwise it looks OK.  To find out if there is a
+> real problem, you can crank up the number of p-values you accumulate for
+> the final KS test to 1000, or 3000, or whatever.  If there is a real
+> systematic bias in the generator, at some point the final KS p-value
+> will go down to the no question about it <0.00001 level.
+> 
+> Does that make sense?  Can't use chisq (although of course you COULD)
+> use chisq on ten bins and should get an asymptotically equivalent result
+> for enough p-values EXCEPT that certain exceptions could fool it
+> (consider a sawtooth distribution with period 10, e.g.).
+> 
+>    rgb
+> 
+> >
+> >
+> >Cheers!
+> >
+> >
+> >-- Tom
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> 
+> -- 
+> Robert G. Brown                            Phone(cell): 1-919-280-8443
+> Duke University Physics Dept, Box 90305
+> Durham, N.C. 27708-0305
+> Web: http://www.phy.duke.edu/~rgb
+> Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+
+From crispin@centtech.com Fri Jan 11 16:19:41 2008
+Date: Fri, 11 Jan 2008 15:19:33 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Cc: glennh@centtech.com
+Subject: VIA HW for dieharder
+
+I will prep a C5P over the weekend, probably in a shuttle case.  I will
+check around for a C5J, but can't make any promises.
+
+FWIW, I've been using our CPU at home exclusively since I joined Centaur
+in 2001, and the only times I sometimes wish I had a little more CPU
+horsepower is when I've re-compiled GCC itself in the middle of the day *grin*
+
+
+The montgomery acceleration in C5J has been discontinued in our latest
+parts (they've been announced so I can talk about 'em).  We've gone from
+32-bit to 64-bit multiplication which is an inherent 4x speedup, which
+is about the acceleration we get on C5J compared to the best bigint
+libraries.  But the C5J acceleration is based on some internal
+datapath tricks which are no faster in the new part -- which means
+the effective acceleration is gone.  Plus it's a pain to verify
+
+
+What I will also do is try to get your name on the list for an early
+engineering sample of CN.   For some beowulf uses our current parts (and
+the new CN) would be spectacular because of our small form factor and
+extremely low power.
+
+The floating point improvement of C5J over C5P is nowhere near as great
+as the improvement of CN over C5J; I think it will be worth your wait.
+
+ -- Tom
+
+
+On Thu, Jan 10, 2008 at 11:01:38PM -0500, Robert G. Brown wrote:
+> On Thu, 10 Jan 2008, Tom Crispin wrote:
+> 
+> >
+> >If you want to install your own OS that will save us a little time. In
+> >terms of what we can send, we have:
+> >
+> >  C5XL  --   RNG only, vintage 2003
+> >  C5P   --   RNG and our HW AES  vintage 2004/5
+> >  C5J   --   RNG, AES, HW SHA1 and SHA256 and HW Montgomery Multiply 
+> >  acceleration
+> >
+> >Either the C5XP or C5P could go out the door Friday or Monday, probably
+> >in a shuttle case.   A C5J will take a little longer.
+> 
+> Well, I don't know that I'm going to branch out into proper
+> cryptography.  I am interested in numerical speeds of processors (I'm on
+> the beowulf list as a longtime contributor, and your processor has been
+> mentioned several times recently as a candidate for certain kinds of
+> clusters, but I don't think people have a good idea of its speed at
+> floating point.  So one part of me wants to hold out for a C5J to test
+> the multiplication accelerator.  However, practically speaking, a C5P
+> would probably be just fine, certainly from the point of view of testing
+> random number generators.
+> 
+> >Let me know.
+> 
+> If "a little longer" is order weeks, the C5J would be ideal so I could
+> run its floating point numbers as well as play with the RNG.  If it is
+> order months, perhaps the C5P.
+> 
+> >This is what FOSS is all about.  I used to find bugs in Microsoft stuff
+> >that I could have fixed in 30 seconds with access to the source, but would
+> >take years to appear in the shrinkwrap.  Sometimes I could actually patch
+> >the binary, but once they got anal about copy protection and anti-debugging
+> >that didn't work as well.
+> 
+> I agree, of course.  In fact, I write fairly rabidly about it on
+> occasion on various lists...;-)
+> 
+>    rgb
+> 
+
+From crispin@centtech.com Fri Jan 11 17:42:32 2008
+Date: Fri, 11 Jan 2008 16:42:23 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: VIA HW for dieharder
+
+I remember seeing Jim Lux's name wrt miniclusters; it's been a while.  We're
+looking for a C5J (or C5R - same cpu but from a different fab) mobo.  I know
+that we don't have any of the super-small form factor cases but we do have a
+bunch of shuttle cases and I think that we will be able to scrounge a C5J.
+
+Nobody makes the motherboard we really want: the pico-itx (10cm x 7.2cm - I think)
+is still a full commerical product, with all the U/I and A/V and other crap.
+
+We do have an announced mobo the size of a business card (?) 3" x 1.8" which
+is getting closer to what I want.  I've actually seen one of the prototypes 
+
+  http://www.windowsfordevices.com/news/NS6249674338.html
+
+This is close: it's still got a little more than we want for a compute node
+but it's not too bad.
+
+
+We think it's kind of funny: we've been making in-order, lower power X86
+compatibles for years (Glenn calls our [his] design a 486 on steroids) and are
+finally building an out-of-order 64-bit CPU --- and Intel is coming out
+with the in-order Silverthorne.
+
+Only the paranoid survive, and all that.
+
+
+-- Tom
+
+
+
+BTW - If Jim Lux would like to talk with us directly to experiment with
+our parts, or has some specific design requirements, please have him get
+in touch with us. [I can be first contact]   I'm sure that we can send
+him some stuff to play with.
+
+We have people dabbling in motherboard design since VIA is focused on
+a different market (mass communication, mostly)
+
+
+
+
+
+
+
+
+
+
+On Fri, Jan 11, 2008 at 05:07:16PM -0500, Robert G. Brown wrote:
+> On Fri, 11 Jan 2008, Tom Crispin wrote:
+> 
+> >What I will also do is try to get your name on the list for an early
+> >engineering sample of CN.   For some beowulf uses our current parts (and
+> >the new CN) would be spectacular because of our small form factor and
+> >extremely low power.
+> >
+> >The floating point improvement of C5J over C5P is nowhere near as great
+> >as the improvement of CN over C5J; I think it will be worth your wait.
+> 
+> That's fine.  The discussion on-list has indeed primarily focussed on
+> low power, small form factor applications.  Jim Lux of nasa in
+> particular is constantly trying to build miniclusters that might fit
+> onto shuttle missions -- light, reliable, fast, low power, small, etc.
+> But others are are as well.
+> 
+>    rgb
+> 
+> >
+> >-- Tom
+> >
+> >
+> >On Thu, Jan 10, 2008 at 11:01:38PM -0500, Robert G. Brown wrote:
+> >>On Thu, 10 Jan 2008, Tom Crispin wrote:
+> >>
+> >>>
+> >>>If you want to install your own OS that will save us a little time. In
+> >>>terms of what we can send, we have:
+> >>>
+> >>> C5XL  --   RNG only, vintage 2003
+> >>> C5P   --   RNG and our HW AES  vintage 2004/5
+> >>> C5J   --   RNG, AES, HW SHA1 and SHA256 and HW Montgomery Multiply
+> >>> acceleration
+> >>>
+> >>>Either the C5XP or C5P could go out the door Friday or Monday, probably
+> >>>in a shuttle case.   A C5J will take a little longer.
+> >>
+> >>Well, I don't know that I'm going to branch out into proper
+> >>cryptography.  I am interested in numerical speeds of processors (I'm on
+> >>the beowulf list as a longtime contributor, and your processor has been
+> >>mentioned several times recently as a candidate for certain kinds of
+> >>clusters, but I don't think people have a good idea of its speed at
+> >>floating point.  So one part of me wants to hold out for a C5J to test
+> >>the multiplication accelerator.  However, practically speaking, a C5P
+> >>would probably be just fine, certainly from the point of view of testing
+> >>random number generators.
+> >>
+> >>>Let me know.
+> >>
+> >>If "a little longer" is order weeks, the C5J would be ideal so I could
+> >>run its floating point numbers as well as play with the RNG.  If it is
+> >>order months, perhaps the C5P.
+> >>
+> >>>This is what FOSS is all about.  I used to find bugs in Microsoft stuff
+> >>>that I could have fixed in 30 seconds with access to the source, but 
+> >>>would
+> >>>take years to appear in the shrinkwrap.  Sometimes I could actually patch
+> >>>the binary, but once they got anal about copy protection and 
+> >>>anti-debugging
+> >>>that didn't work as well.
+> >>
+> >>I agree, of course.  In fact, I write fairly rabidly about it on
+> >>occasion on various lists...;-)
+> >>
+> >>   rgb
+> >>
+> >
+> 
+> -- 
+> Robert G. Brown                            Phone(cell): 1-919-280-8443
+> Duke University Physics Dept, Box 90305
+> Durham, N.C. 27708-0305
+> Web: http://www.phy.duke.edu/~rgb
+> Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+
+From crispin@centtech.com Mon Jan 14 11:11:33 2008
+Date: Mon, 14 Jan 2008 10:11:24 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: VIA HW for dieharder
+
+
+I brought in case with a C5P; I'm told we have some C5R (that's the low
+power version of the C5J) motherboards available.  If that's correct our
+labs will put the newer mobo into the case and expect will install
+something more current than RedHat 7.3 (which is what's on the drive
+now).  Probably a current Fedora Core.
+
+Will let you know.
+
+ -- Tom
+
+
+
+
+On Fri, Jan 11, 2008 at 05:07:16PM -0500, Robert G. Brown wrote:
+> On Fri, 11 Jan 2008, Tom Crispin wrote:
+> 
+> >What I will also do is try to get your name on the list for an early
+> >engineering sample of CN.   For some beowulf uses our current parts (and
+> >the new CN) would be spectacular because of our small form factor and
+> >extremely low power.
+> >
+> >The floating point improvement of C5J over C5P is nowhere near as great
+> >as the improvement of CN over C5J; I think it will be worth your wait.
+> 
+> That's fine.  The discussion on-list has indeed primarily focussed on
+> low power, small form factor applications.  Jim Lux of nasa in
+> particular is constantly trying to build miniclusters that might fit
+> onto shuttle missions -- light, reliable, fast, low power, small, etc.
+> But others are are as well.
+> 
+>    rgb
+> 
+> >
+> >-- Tom
+> >
+> >
+> >On Thu, Jan 10, 2008 at 11:01:38PM -0500, Robert G. Brown wrote:
+> >>On Thu, 10 Jan 2008, Tom Crispin wrote:
+> >>
+> >>>
+> >>>If you want to install your own OS that will save us a little time. In
+> >>>terms of what we can send, we have:
+> >>>
+> >>> C5XL  --   RNG only, vintage 2003
+> >>> C5P   --   RNG and our HW AES  vintage 2004/5
+> >>> C5J   --   RNG, AES, HW SHA1 and SHA256 and HW Montgomery Multiply
+> >>> acceleration
+> >>>
+> >>>Either the C5XP or C5P could go out the door Friday or Monday, probably
+> >>>in a shuttle case.   A C5J will take a little longer.
+> >>
+> >>Well, I don't know that I'm going to branch out into proper
+> >>cryptography.  I am interested in numerical speeds of processors (I'm on
+> >>the beowulf list as a longtime contributor, and your processor has been
+> >>mentioned several times recently as a candidate for certain kinds of
+> >>clusters, but I don't think people have a good idea of its speed at
+> >>floating point.  So one part of me wants to hold out for a C5J to test
+> >>the multiplication accelerator.  However, practically speaking, a C5P
+> >>would probably be just fine, certainly from the point of view of testing
+> >>random number generators.
+> >>
+> >>>Let me know.
+> >>
+> >>If "a little longer" is order weeks, the C5J would be ideal so I could
+> >>run its floating point numbers as well as play with the RNG.  If it is
+> >>order months, perhaps the C5P.
+> >>
+> >>>This is what FOSS is all about.  I used to find bugs in Microsoft stuff
+> >>>that I could have fixed in 30 seconds with access to the source, but 
+> >>>would
+> >>>take years to appear in the shrinkwrap.  Sometimes I could actually patch
+> >>>the binary, but once they got anal about copy protection and 
+> >>>anti-debugging
+> >>>that didn't work as well.
+> >>
+> >>I agree, of course.  In fact, I write fairly rabidly about it on
+> >>occasion on various lists...;-)
+> >>
+> >>   rgb
+> >>
+> >
+> 
+> -- 
+> Robert G. Brown                            Phone(cell): 1-919-280-8443
+> Duke University Physics Dept, Box 90305
+> Durham, N.C. 27708-0305
+> Web: http://www.phy.duke.edu/~rgb
+> Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+
+From crispin@centtech.com Mon Jan 14 11:15:55 2008
+Date: Mon, 14 Jan 2008 10:15:45 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: VIA HW for dieharder
+
+I have a quick delete key in my mailbox and managed to delete your
+home address.  Please re-send unless you would rather have us ship
+the box to your office at Duke.
+
+Thanks
+
+- Tom
+
+
+
+On Fri, Jan 11, 2008 at 05:07:16PM -0500, Robert G. Brown wrote:
+> On Fri, 11 Jan 2008, Tom Crispin wrote:
+> 
+> >What I will also do is try to get your name on the list for an early
+> >engineering sample of CN.   For some beowulf uses our current parts (and
+> >the new CN) would be spectacular because of our small form factor and
+> >extremely low power.
+> >
+> >The floating point improvement of C5J over C5P is nowhere near as great
+> >as the improvement of CN over C5J; I think it will be worth your wait.
+> 
+> That's fine.  The discussion on-list has indeed primarily focussed on
+> low power, small form factor applications.  Jim Lux of nasa in
+> particular is constantly trying to build miniclusters that might fit
+> onto shuttle missions -- light, reliable, fast, low power, small, etc.
+> But others are are as well.
+> 
+>    rgb
+> 
+> >
+> >-- Tom
+> >
+> >
+> >On Thu, Jan 10, 2008 at 11:01:38PM -0500, Robert G. Brown wrote:
+> >>On Thu, 10 Jan 2008, Tom Crispin wrote:
+> >>
+> >>>
+> >>>If you want to install your own OS that will save us a little time. In
+> >>>terms of what we can send, we have:
+> >>>
+> >>> C5XL  --   RNG only, vintage 2003
+> >>> C5P   --   RNG and our HW AES  vintage 2004/5
+> >>> C5J   --   RNG, AES, HW SHA1 and SHA256 and HW Montgomery Multiply
+> >>> acceleration
+> >>>
+> >>>Either the C5XP or C5P could go out the door Friday or Monday, probably
+> >>>in a shuttle case.   A C5J will take a little longer.
+> >>
+> >>Well, I don't know that I'm going to branch out into proper
+> >>cryptography.  I am interested in numerical speeds of processors (I'm on
+> >>the beowulf list as a longtime contributor, and your processor has been
+> >>mentioned several times recently as a candidate for certain kinds of
+> >>clusters, but I don't think people have a good idea of its speed at
+> >>floating point.  So one part of me wants to hold out for a C5J to test
+> >>the multiplication accelerator.  However, practically speaking, a C5P
+> >>would probably be just fine, certainly from the point of view of testing
+> >>random number generators.
+> >>
+> >>>Let me know.
+> >>
+> >>If "a little longer" is order weeks, the C5J would be ideal so I could
+> >>run its floating point numbers as well as play with the RNG.  If it is
+> >>order months, perhaps the C5P.
+> >>
+> >>>This is what FOSS is all about.  I used to find bugs in Microsoft stuff
+> >>>that I could have fixed in 30 seconds with access to the source, but 
+> >>>would
+> >>>take years to appear in the shrinkwrap.  Sometimes I could actually patch
+> >>>the binary, but once they got anal about copy protection and 
+> >>>anti-debugging
+> >>>that didn't work as well.
+> >>
+> >>I agree, of course.  In fact, I write fairly rabidly about it on
+> >>occasion on various lists...;-)
+> >>
+> >>   rgb
+> >>
+> >
+> 
+> -- 
+> Robert G. Brown                            Phone(cell): 1-919-280-8443
+> Duke University Physics Dept, Box 90305
+> Durham, N.C. 27708-0305
+> Web: http://www.phy.duke.edu/~rgb
+> Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+
+From crispin@centtech.com Tue Jan 15 14:43:57 2008
+Date: Tue, 15 Jan 2008 13:43:45 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: VIA HW for dieharder
+
+
+With new silicon in the lab we're a little overwhelmed.  Do you need
+a full system (case/drive/etc) or will just a motherboard with ram be
+good enough?  We can get the latter out the door tonight or tomorrow
+but a full system will next week.
+
+I'm testing my rng_via.c in dieharded; it seems correct and gracefully
+exits with non-VIA CPU.  One option I wanted to have available was the
+ability to look at the "raw" bits coming from the hardware.  So what
+I have done so far is create a special "seed" value of -1 which sets
+the rng to deliver bits directly rather than filtered.  (Which is of
+course what other vendors like idQuantique do -- but I don't know if
+they let you see the raw stream)
+
+But I noticed that the speed test ignores the seed.  Would there be
+a better way to do this?
+
+Thanks
+
+-- Tom
+
+
+
+
+
+On Mon, Jan 14, 2008 at 11:46:39AM -0500, Robert G. Brown wrote:
+> On Mon, 14 Jan 2008, Tom Crispin wrote:
+> 
+> >I have a quick delete key in my mailbox and managed to delete your
+> >home address.  Please re-send unless you would rather have us ship
+> >the box to your office at Duke.
+> 
+> 3209 Annandale Road
+> Durham, NC 27705
+> 
+> (I'd e-chat more, but I've got class in 9 minutes and have to think,
+> sorry).
+> 
+> Thanks,
+> 
+>    rgb
+> 
+> >
+> >Thanks
+> >
+> >- Tom
+> >
+> >
+> >
+> >On Fri, Jan 11, 2008 at 05:07:16PM -0500, Robert G. Brown wrote:
+> >>On Fri, 11 Jan 2008, Tom Crispin wrote:
+> >>
+> >>>What I will also do is try to get your name on the list for an early
+> >>>engineering sample of CN.   For some beowulf uses our current parts (and
+> >>>the new CN) would be spectacular because of our small form factor and
+> >>>extremely low power.
+> >>>
+> >>>The floating point improvement of C5J over C5P is nowhere near as great
+> >>>as the improvement of CN over C5J; I think it will be worth your wait.
+> >>
+> >>That's fine.  The discussion on-list has indeed primarily focussed on
+> >>low power, small form factor applications.  Jim Lux of nasa in
+> >>particular is constantly trying to build miniclusters that might fit
+> >>onto shuttle missions -- light, reliable, fast, low power, small, etc.
+> >>But others are are as well.
+> >>
+> >>   rgb
+> >>
+> >>>
+> >>>-- Tom
+> >>>
+> >>>
+> >>>On Thu, Jan 10, 2008 at 11:01:38PM -0500, Robert G. Brown wrote:
+> >>>>On Thu, 10 Jan 2008, Tom Crispin wrote:
+> >>>>
+> >>>>>
+> >>>>>If you want to install your own OS that will save us a little time. In
+> >>>>>terms of what we can send, we have:
+> >>>>>
+> >>>>>C5XL  --   RNG only, vintage 2003
+> >>>>>C5P   --   RNG and our HW AES  vintage 2004/5
+> >>>>>C5J   --   RNG, AES, HW SHA1 and SHA256 and HW Montgomery Multiply
+> >>>>>acceleration
+> >>>>>
+> >>>>>Either the C5XP or C5P could go out the door Friday or Monday, probably
+> >>>>>in a shuttle case.   A C5J will take a little longer.
+> >>>>
+> >>>>Well, I don't know that I'm going to branch out into proper
+> >>>>cryptography.  I am interested in numerical speeds of processors (I'm on
+> >>>>the beowulf list as a longtime contributor, and your processor has been
+> >>>>mentioned several times recently as a candidate for certain kinds of
+> >>>>clusters, but I don't think people have a good idea of its speed at
+> >>>>floating point.  So one part of me wants to hold out for a C5J to test
+> >>>>the multiplication accelerator.  However, practically speaking, a C5P
+> >>>>would probably be just fine, certainly from the point of view of testing
+> >>>>random number generators.
+> >>>>
+> >>>>>Let me know.
+> >>>>
+> >>>>If "a little longer" is order weeks, the C5J would be ideal so I could
+> >>>>run its floating point numbers as well as play with the RNG.  If it is
+> >>>>order months, perhaps the C5P.
+> >>>>
+> >>>>>This is what FOSS is all about.  I used to find bugs in Microsoft stuff
+> >>>>>that I could have fixed in 30 seconds with access to the source, but
+> >>>>>would
+> >>>>>take years to appear in the shrinkwrap.  Sometimes I could actually 
+> >>>>>patch
+> >>>>>the binary, but once they got anal about copy protection and
+> >>>>>anti-debugging
+> >>>>>that didn't work as well.
+> >>>>
+> >>>>I agree, of course.  In fact, I write fairly rabidly about it on
+> >>>>occasion on various lists...;-)
+> >>>>
+> >>>>  rgb
+> >>>>
+> >>>
+> >>
+> >>--
+> >>Robert G. Brown                            Phone(cell): 1-919-280-8443
+> >>Duke University Physics Dept, Box 90305
+> >>Durham, N.C. 27708-0305
+> >>Web: http://www.phy.duke.edu/~rgb
+> >>Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> >>Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+> >
+> 
+> -- 
+> Robert G. Brown                            Phone(cell): 1-919-280-8443
+> Duke University Physics Dept, Box 90305
+> Durham, N.C. 27708-0305
+> Web: http://www.phy.duke.edu/~rgb
+> Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+
+From crispin@centtech.com Tue Jan 15 16:47:58 2008
+Date: Tue, 15 Jan 2008 15:47:48 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: VIA HW for dieharder
+
+
+On Tue, Jan 15, 2008 at 04:11:59PM -0500, Robert G. Brown wrote:
+> On Tue, 15 Jan 2008, Tom Crispin wrote:
+> 
+> >
+> >With new silicon in the lab we're a little overwhelmed.  Do you need
+> >a full system (case/drive/etc) or will just a motherboard with ram be
+> >good enough?  We can get the latter out the door tonight or tomorrow
+> >but a full system will next week.
+> 
+> I've got piles of cases in my garage and office both, including some
+> really nice ones.  Power supply compatibility is a possible issue -- I'm
+> guessing that my cases have plenty of power total but I'm not sure about
+> the connectors (they are different ages and I'm not sure what a
+> micro-ATX needs).  I even have an original IBM PC sitting upstairs that
+> I've been planning on gutting (it still has the original guts and 5.25"
+> 360K floppies and everything) and rebuilding it into my personal desktop
+> -- a small motherboard would be perfect for this purpose as it takes up
+> less space.  So motherboard and ram is fine.  I have network cards (if
+> it doesn't have something built in) and a variety of display cards and
+> even a sound card or two ditto.  I just purged my boneyard at home, but
+> I could probably build at least one or two systems out of what remains,
+> if I didn't care how old and slow they were...;-)
+
+According to my lab guy, the power supply connectors for micro-ATX
+(and I think mini-itx) are all the same; the smaller motherboards just
+usually come with smaller form factor power supplies.  So because it
+will be easier we will just send a C5R motherboard (+ram) since it's
+already conveniently boxed and that's what we normally ship out.  I haven't
+seen a motherboard bigger than micro-ATX in about 6 years. *grin*
+
+I'll send the tracking number when I get one.
+
+VIA motherboards all have integrated video and networking (and a lot
+of other A/V crap as I call it); and except for the smallest form
+factors there is usually a PCI slot.
+
+ 
+> >I'm testing my rng_via.c in dieharded; it seems correct and gracefully
+> >exits with non-VIA CPU.  One option I wanted to have available was the
+> >ability to look at the "raw" bits coming from the hardware.  So what
+> >I have done so far is create a special "seed" value of -1 which sets
+> >the rng to deliver bits directly rather than filtered.  (Which is of
+> >course what other vendors like idQuantique do -- but I don't know if
+> >they let you see the raw stream)
+> >
+> >But I noticed that the speed test ignores the seed.  Would there be
+> >a better way to do this?
+> 
+> The best way to do it is to create a second RNG -- via and via_raw.  Set
+> the seed during the initialization/creation stage of via_raw.  OR set
+> the seed to -1 by default for via and let users override it.
+> 
+> I'll look at the benchmark code and see if I can't get it to use a seed
+> as well.  Actually, I'm surprised that it doesn't.  I thought that I set
+> things up so that the initialization with a command line seed occurs at
+> startup, before any test is selected.  I'll check, though.  It should be
+> able to make one of these two approaches work if it doesn't already.
+
+
+I considerer that, but wanted to see how the "seed" worked.  generator 73
+is my via_rng -- I ssh'd to my C5J at home:
+
+[dad@xbox diehard]$ time ./dieharder -g 73 -d 9 -p 10 -q
+Kuiper KS: p = 0.909919
+Assessment: PASSED at > 5% for Diehard Count the 1s (stream) Test
+
+real    0m10.186s
+user    0m10.088s
+sys     0m0.096s
+[dad@xbox diehard]$ time ./dieharder -g 73 -d 9 -p 10 -q -S -1
+Kuiper KS: p = 0.000023
+Assessment: FAILED at < 0.01% for Diehard Count the 1s (stream) Test
+
+real    0m1.295s
+user    0m1.290s
+sys     0m0.005s
+
+
+So the "seed" works for normal tests, and on C5J the performance ratio should about 8x
+But:
+
+[dad@xbox diehard]$ ./dieharder -g 73 -r 1 -p 1 -q
+#========================================================================
+# rgb_timing() test using the VIA CPU Hardware RNG generator 
+# Average time per rand = 1.583506e+04 nsec.
+# Rands per second = 6.315103e+04.
+[dad@xbox diehard]$ ./dieharder -g 73 -r 1 -p 1 -q -S -1
+#========================================================================
+# rgb_timing() test using the VIA CPU Hardware RNG generator 
+# Average time per rand = 1.592273e+04 nsec.
+# Rands per second = 6.280332e+04.
+[dad@xbox diehard]$ 
+
+
+And since -a seems to also ignore the seed, I will create the second generator and
+send you both files.
+
+
+Interestingly, even the raw bits from our RNG will PASS about 1/3 of the diehard
+tests with P=10   That isn't too shabby for a generator used for seeding (P)RNG.
+
+Do any of the PRNG in dieharder make use of 64 (or 128) bit seeds?  Seems to me that
+a very fast generator that takes a 128 bit seed that was reseeded from our entropy
+source whenever enough bits had accumulated might be useful in those big monte
+carlo simulations.
+
+Thanks
+
+-- Tom
+
+ 
+> rgb
+> 
+> >
+> >Thanks
+> >
+> >-- Tom
+> >
+> >
+> >
+> >
+> >
+> >On Mon, Jan 14, 2008 at 11:46:39AM -0500, Robert G. Brown wrote:
+> >>On Mon, 14 Jan 2008, Tom Crispin wrote:
+> >>
+> >>>I have a quick delete key in my mailbox and managed to delete your
+> >>>home address.  Please re-send unless you would rather have us ship
+> >>>the box to your office at Duke.
+> >>
+> >>3209 Annandale Road
+> >>Durham, NC 27705
+> >>
+> >>(I'd e-chat more, but I've got class in 9 minutes and have to think,
+> >>sorry).
+> >>
+> >>Thanks,
+> >>
+> >>   rgb
+> >>
+> >>>
+> >>>Thanks
+> >>>
+> >>>- Tom
+> >>>
+> >>>
+> >>>
+> >>>On Fri, Jan 11, 2008 at 05:07:16PM -0500, Robert G. Brown wrote:
+> >>>>On Fri, 11 Jan 2008, Tom Crispin wrote:
+> >>>>
+> >>>>>What I will also do is try to get your name on the list for an early
+> >>>>>engineering sample of CN.   For some beowulf uses our current parts 
+> >>>>>(and
+> >>>>>the new CN) would be spectacular because of our small form factor and
+> >>>>>extremely low power.
+> >>>>>
+> >>>>>The floating point improvement of C5J over C5P is nowhere near as great
+> >>>>>as the improvement of CN over C5J; I think it will be worth your wait.
+> >>>>
+> >>>>That's fine.  The discussion on-list has indeed primarily focussed on
+> >>>>low power, small form factor applications.  Jim Lux of nasa in
+> >>>>particular is constantly trying to build miniclusters that might fit
+> >>>>onto shuttle missions -- light, reliable, fast, low power, small, etc.
+> >>>>But others are are as well.
+> >>>>
+> >>>>  rgb
+> >>>>
+> >>>>>
+> >>>>>-- Tom
+> >>>>>
+> >>>>>
+> >>>>>On Thu, Jan 10, 2008 at 11:01:38PM -0500, Robert G. Brown wrote:
+> >>>>>>On Thu, 10 Jan 2008, Tom Crispin wrote:
+> >>>>>>
+> >>>>>>>
+> >>>>>>>If you want to install your own OS that will save us a little time. 
+> >>>>>>>In
+> >>>>>>>terms of what we can send, we have:
+> >>>>>>>
+> >>>>>>>C5XL  --   RNG only, vintage 2003
+> >>>>>>>C5P   --   RNG and our HW AES  vintage 2004/5
+> >>>>>>>C5J   --   RNG, AES, HW SHA1 and SHA256 and HW Montgomery Multiply
+> >>>>>>>acceleration
+> >>>>>>>
+> >>>>>>>Either the C5XP or C5P could go out the door Friday or Monday, 
+> >>>>>>>probably
+> >>>>>>>in a shuttle case.   A C5J will take a little longer.
+> >>>>>>
+> >>>>>>Well, I don't know that I'm going to branch out into proper
+> >>>>>>cryptography.  I am interested in numerical speeds of processors (I'm 
+> >>>>>>on
+> >>>>>>the beowulf list as a longtime contributor, and your processor has 
+> >>>>>>been
+> >>>>>>mentioned several times recently as a candidate for certain kinds of
+> >>>>>>clusters, but I don't think people have a good idea of its speed at
+> >>>>>>floating point.  So one part of me wants to hold out for a C5J to test
+> >>>>>>the multiplication accelerator.  However, practically speaking, a C5P
+> >>>>>>would probably be just fine, certainly from the point of view of 
+> >>>>>>testing
+> >>>>>>random number generators.
+> >>>>>>
+> >>>>>>>Let me know.
+> >>>>>>
+> >>>>>>If "a little longer" is order weeks, the C5J would be ideal so I could
+> >>>>>>run its floating point numbers as well as play with the RNG.  If it is
+> >>>>>>order months, perhaps the C5P.
+> >>>>>>
+> >>>>>>>This is what FOSS is all about.  I used to find bugs in Microsoft 
+> >>>>>>>stuff
+> >>>>>>>that I could have fixed in 30 seconds with access to the source, but
+> >>>>>>>would
+> >>>>>>>take years to appear in the shrinkwrap.  Sometimes I could actually
+> >>>>>>>patch
+> >>>>>>>the binary, but once they got anal about copy protection and
+> >>>>>>>anti-debugging
+> >>>>>>>that didn't work as well.
+> >>>>>>
+> >>>>>>I agree, of course.  In fact, I write fairly rabidly about it on
+> >>>>>>occasion on various lists...;-)
+> >>>>>>
+> >>>>>> rgb
+> >>>>>>
+> >>>>>
+> >>>>
+> >>>>--
+> >>>>Robert G. Brown                            Phone(cell): 1-919-280-8443
+> >>>>Duke University Physics Dept, Box 90305
+> >>>>Durham, N.C. 27708-0305
+> >>>>Web: http://www.phy.duke.edu/~rgb
+> >>>>Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> >>>>Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+> >>>
+> >>
+> >>--
+> >>Robert G. Brown                            Phone(cell): 1-919-280-8443
+> >>Duke University Physics Dept, Box 90305
+> >>Durham, N.C. 27708-0305
+> >>Web: http://www.phy.duke.edu/~rgb
+> >>Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> >>Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+> >
+> 
+> -- 
+> Robert G. Brown                            Phone(cell): 1-919-280-8443
+> Duke University Physics Dept, Box 90305
+> Durham, N.C. 27708-0305
+> Web: http://www.phy.duke.edu/~rgb
+> Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+
+From crispin@centtech.com Wed Jan 16 17:04:41 2008
+Date: Wed, 16 Jan 2008 16:04:28 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: design question for rng_via.c
+
+(This first part is review if you have read the docs I sent -- please feel free to skip)
+
+The VIA RNG comes in 3 flavors:
+
+ C5XL		RNG HW only
+
+ C5P/C5J/C5R 	RNG HW and AES HW
+
+ CN		RNG HW and AES HW 
+
+For all parts, setting the EDX parameter = 0 results in delivery of "raw" bits at the
+maximum bit rate.  Ring zero drivers can manipulte the RNG MSR to tweak characteristics
+of this raw stream but that isn't a concern for dieharder
+
+Some quirks of the HW for C5P/C5J/C5R make it impossible for the microcode to access the
+AES hardware "internally", encryption and decryption are possible only from x86 source.  So
+for these parts (and C5XL) and the best statistical quality is produced by setting the
+EDX divider to the maximum recognized value of 3.   In this case, the bits produced should
+pass dieharder up to sample sizes of 50MB - 1GB, depending on the part.
+
+So we recommend that for larger samples the bits should be further mixed using either our
+HW AES engine or (for C5J/C5R) the HW SHA1 which is also available.
+
+For CN, we access the AES HW directly and mix the bits to produce the highest statistical
+quality unless the user expressly requests raw bits with EDX = 0.
+
+ ----------------------------------------------------------------------------------------
+
+So the question is: for C5P/C5R/C5J what should the via_rng in dieharder (and presumably
+the gsl) do?  Should it simply return the bits according to the divider setting, or should
+it within the driver use the further AES mixing so that almost all (C5XL had a short production
+run and is not widely found) VIA parts produce comparable results?
+
+FWIW, the AES mixed bits will be delivered 4x faster than if we have to use only the EDX divider
+
+
+There is a kicker: for C5P/C5R/C5J the pointers specifying the plaintext/ciphertext/key/aes-
+control-word are required to be 16-byte aligned or the instruciton will segfault.  I think
+that I have that working, but some of my earlier tests had intermittent segfaults, as though
+the library sometimes loaded with my data aligned and sometimes not.
+
+It's tricky enough working around the requirements of the library of EBX as a global pointer,
+defining our instructions so that gcc doesn't barf with the assembly, and the fact that
+the AES instruction (XCRYPT) requires that EBX contain a pointer to the AES key.
+
+
+What I think I will do is add a compile-time switch to select the AES mixing for C5P/C5J/C5R
+and you can decide for yourself.
+
+Thoughts?
+
+
+Thanks
+
+-- Tom
+
+
+
+
+
+From crispin@centtech.com Sat Jan 19 23:15:04 2008
+Date: Sat, 19 Jan 2008 22:14:55 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Dieharder anamoly?
+
+I was running final tests on my dieharder drivers for our HW RNG, using the
+birthday test since it's fairly fast.  I noticed that the p-values from the
+Kuiper KS test were clustering above 0.5, and there was a particular excess
+above 0.9
+
+So I ran this a bunch of times on a few different machines, using one of
+the RNG generators that is both well-thought of and fast.
+
+  N=0; while [ $N -lt 100 ]; do ./dieharder -g 13 -d 1 -q | grep "0\.9" ; N=$(($N+1)); done
+
+
+The results are attached as kuiper.txt.gz
+
+
+I'm consistently getting 12%-15% of the Kuiper-KS p-values above 95%.  My
+understanding is that if the Kuiper KS test produces a p-value, then those
+p-values should be uniformly distributed over [0,1)  Note that on one
+test, there were 33% of the Kuiper KS p-values above 0.9
+
+Unless I have just been unlucky, it seems to me that one or more of the
+following must be true: (in decreasing order of probability)
+
+* I don't understand the KS statistic; or the resulting "p-values" are
+  not uniform in [0,1)
+
+* There are flaws in the implementation(s) of any of the relevant
+  routines in dieharder
+
+* There is something wrong with the analysis of the diehard birthdays test
+
+* mt19937_1999 isn't as good as we think it is
+
+I will try to collect run some further samples, for each run of the above
+command line collecting all 100 KS values, and find a quick-and-dirty way
+to hook to the KS test within dieharder.  My thinking is that the second
+order KS of these results will not look very good.
+
+
+Ideas?  Thoughts?  Help?
+
+
+Thanks
+
+
+-- Tom
+
+
+BTW - the board is supposed to ship out Monday.  The lab has been assembling
+engineering samples of our new CN for Microsoft - they (sigh!) have priority
+
+Also double checked with management that I can release the driver; in the
+past we have published source code in our documents under a BSD style license.
+
+But no problem.  I will add some unusually copious notes [the shared library's
+use of EBX made my gcc macros a little more complex than usual]
+
+
+
+From crispin@centtech.com Sun Jan 20 16:54:51 2008
+Date: Sun, 20 Jan 2008 15:54:40 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder anamoly?
+
+On Sun, Jan 20, 2008 at 09:43:57AM -0500, Robert G. Brown wrote:
+> On Sat, 19 Jan 2008, Tom Crispin wrote:
+> 
+> >I was running final tests on my dieharder drivers for our HW RNG, using the
+> >birthday test since it's fairly fast.  I noticed that the p-values from the
+> >Kuiper KS test were clustering above 0.5, and there was a particular excess
+> >above 0.9
+> >
+> >So I ran this a bunch of times on a few different machines, using one of
+> >the RNG generators that is both well-thought of and fast.
+> >
+> > N=0; while [ $N -lt 100 ]; do ./dieharder -g 13 -d 1 -q | grep "0\.9" ; 
+> > N=$(($N+1)); done
+> >
+> >
+> >The results are attached as kuiper.txt.gz
+> >
+> >
+> >I'm consistently getting 12%-15% of the Kuiper-KS p-values above 95%.  My
+> >understanding is that if the Kuiper KS test produces a p-value, then those
+> >p-values should be uniformly distributed over [0,1)  Note that on one
+> >test, there were 33% of the Kuiper KS p-values above 0.9
+> >
+> >Unless I have just been unlucky, it seems to me that one or more of the
+> >following must be true: (in decreasing order of probability)
+> >
+> >* I don't understand the KS statistic; or the resulting "p-values" are
+> > not uniform in [0,1)
+> 
+> What this would be saying is that the p-values of the actual test are
+> very slightly TOO uniform.  They don't show the expected random
+> deviation from uniformity.  That would be a very subtle error.
+> 
+> One way to further explore this hypothesis is to run e.g.
+> 
+>  dieharder -g 13 -d 1 -p 10000
+> 
+> which puts all 10000 p-values generated by your run into a single KS
+> test.  The final KKS p-value should then come out very close to 1.
+> 
+
+???
+
+Why should the expectation of a p-value close to 1.00 be more likely for
+-p 10000 than -p 100
+
+In both cases, a (-p 100 and -p 10000) we would treat a p-value of say
+0.04.. as significant at the 5% level that maybe the RNG is weak, right?  So
+why should we expect the p-value to closer to 1.00 for the longer test.
+
+> >* There are flaws in the implementation(s) of any of the relevant
+> > routines in dieharder
+> 
+> Always possible.  Getting a result that is TOO close to random is a
+> tricky one, though.  It could again be an issue with overlap -- diehard
+> IIRC uses overlapping samples in the birthday test to conserve random
+> numbers and hence they could be slightly less random than dieharder
+> using non-overlapping samples.
+> 
+
+That make sense - this dieharder, not diehard, though.  I'll take a look
+at the source for that test Monday
+
+> >* There is something wrong with the analysis of the diehard birthdays test
+> 
+> Implementation/analysis aren't that separable.  Most of the tests use
+> the same GSL-based tools to evaluate chisq and sigma based p-values.  An
+> error down there should show up in many tests, not just one.
+
+Agreed. My original results of an abnormal number of KKS p-values above 0.5
+and 0.9 came with our HW RNG, which is why I switched to the faster software
+generator to create a larger sample
+ 
+> >* mt19937_1999 isn't as good as we think it is
+> 
+> Always possible.  After all, how would one know?  As dieharder is
+> "fixed" relative to errors or weaknesses in diehard, one expects to
+> eventually reach new ground in the testing and actually test rngs more
+> stringently than they've been tested to date.
+> 
+> However, there are two or three other "good" rngs to try as well, and an
+> interesting question is whether or not they all display this flaw on
+> this test or if it is just mt19937.  Some use quite different algorithms
+> and one would at least naively expect their failures to be different, if
+> indeed they are failing.
+> 
+> Quid custodet custodes, or something like that.  How do you test a RNG
+> tester when you don't have a perfect RNG to test with?  I'm really
+> hoping that your hardware generator turns out to be something of a "gold
+> standard" -- as I similarly hope for data from random.org.  However, the
+> problem there (that you've already encountered) is that while it is
+> pretty easy to make a noise-driven source that is unpredictable, one has
+> to worry about a) waiting out the autocorrelation time over which the
+> source is correlated, where generally such sources have multiple
+> autocorrelation timescales and where they CAN have hidden cycles with
+> long period just like software generators; b) bias in the number of 0's
+> and 1's they produce.  That is, one typically has to set a
+> discrimination threshold in the noise pattern to try to balance the
+> number of samples one pulls that are 0 vs the number that are 1 in the
+> long run.  Of course this is impossible -- in most noisy sources the
+> bias drifts with e.g. temperature, for example.  So one then applies the
+> standard transformation of bit PAIRS that throws away half the data but
+> ensures that equal numbers of 0's and 1's (on average) ensue.
+
+Make sure that you read our docs; especially the security application note
+where we talk about RNG theory and the testing we performed.  The original
+of the RNG discussion was written by our CEO/President/Chief Engineer, Glenn
+Henry.  Once he accepted that my writing skills were acceptable, he was happy
+to drop the documentation task on me, so there are "voice" changes in
+that section.
+
+ 
+> Which then leaves one worrying about whether the transformation itself
+> introduces higher order bias in the distribution of 00, 01, 10, 11 pairs
+> -- is the original bias (which is still there, after all, even if you
+> throw away information you probably don't information theoretically
+> increase the entropy to "maximum" by simply losing half the data) now
+> merely masked, waiting to bite you on just the right application?
+> 
+> Marsaglia himself noted early on that a surprising number of hardware
+> random number generators would fail his tests, not because they weren't
+> unpredictable but because they weren't "random" according to the maximum
+> entropy definition of randomness -- there existed measurable
+> correlations between samples even if any given sample couldn't be
+> correlated with anything else.  Zero first order correlation, nonzero
+> second order correlation.  Even quantum sources frequently exhibit this
+> latter kind of bias -- the time an atom driven by fluorescent radiation
+> spontaneously emts may indeed be "random", but immediately after an
+> emission there is a "hole" when a second emission is highly unlikely as
+> the atom is definitely in the ground state.  So photon distribution
+> isn't perfectly poissonian, even though it is "random".
+> 
+> So this is where I'm most interested in testing your CPU-based
+> generator, on both sides of the 0/1 bias correction.
+
+The best-known (AFAIK) of the hardware generators for PC's is from idQuantique
+in Switzerland.  They use a form quantum optics for their raw bits, and as
+they note there are definite correlations present (just as we have)
+
+So what they deliver is massaged with (IIRC) a proprietary mixing function,
+or at least they didn't document the mixing function, to produce statistically
+random bits.
+
+Last time I checked, a 16M bits/sec RNG PCI card from them was about $2500.
+
+ 
+> >I will try to collect run some further samples, for each run of the above
+> >command line collecting all 100 KS values, and find a quick-and-dirty way
+> >to hook to the KS test within dieharder.  My thinking is that the second
+> >order KS of these results will not look very good.
+> >
+> >
+> >Ideas?  Thoughts?  Help?
+> 
+> Well, not too many yet.  After all, this is the first time this sort of
+> second order examination of KSpv has even been possible.
+> 
+> I'm HOPING to be able to actually spend some time on dieharder today or
+> tomorrow -- things here are still pretty jammed with semester startup
+> duties but I may have a half day of elective time in here somewhere I
+> can divert to it.  I'll start looking at this problem at this end as
+> well.  One thing, for example, that I can fairly easily try is to
+> substitute Anderson-Darling KS for Kuiper and see if it makes a
+> difference.  It "shouldn't" -- especially in the limit of many samples
+> -- but for "smallish" numbers of samples it may.  Is 100 too small?
+> Possibly.  A lot of distributions don't achieve their asymptotic form
+> for only a few samples, and in many cases the deviations for small
+> numbers are systematic.  (imagine e.g. sampling the sum of numbers from
+> two dice for only a few throws...)
+
+Using the AES mixing function (sometimes even a weaker form, in which I
+used fewer raw than 32 bytes of raw bits to generate 16 bytes of RNG), 
+I collected a numer of 5-10 terabyte samples.
+
+Every 10 MB, I would record a chi-sq of the distribution of the 256 byte
+values.  I also calculated the chi-sq of the cumulative distribution, and
+took an A-D KS of the 10MB chi-sq.  It was interesting to watch the "drift"
+of the cumulative chi-sq and the KS over time: they didn't approach a fixed
+point but exhibited what appeared to the naked a "random walk"
+
+
+More tomorrow -- chess tournament tonight.
+
+- Tom
+
+ 
+>    rgb
+> 
+> >
+> >
+> >Thanks
+> >
+> >
+> >-- Tom
+> >
+> >
+> >BTW - the board is supposed to ship out Monday.  The lab has been 
+> >assembling
+> >engineering samples of our new CN for Microsoft - they (sigh!) have 
+> >priority
+> >
+> >Also double checked with management that I can release the driver; in the
+> >past we have published source code in our documents under a BSD style 
+> >license.
+> >
+> >But no problem.  I will add some unusually copious notes [the shared 
+> >library's
+> >use of EBX made my gcc macros a little more complex than usual]
+> 
+> Great!  I look forward to playing with it.  As I said, nothing would
+> make me happier than finding a gold standard RNG to test against.
+> 
+> 
+> >
+> >
+> >
+> 
+> -- 
+> Robert G. Brown                            Phone(cell): 1-919-280-8443
+> Duke University Physics Dept, Box 90305
+> Durham, N.C. 27708-0305
+> Web: http://www.phy.duke.edu/~rgb
+> Book of Lilith Website: http://www.phy.duke.edu/~rgb/Lilith/Lilith.php
+> Lulu Bookstore: http://stores.lulu.com/store.php?fAcctID=877977
+
+From crispin@centtech.com Mon Jan 21 02:00:21 2008
+Date: Mon, 21 Jan 2008 01:00:10 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder anamoly (!)
+
+I got a little time to run some tests; as you suggested I ran
+ dieharder -g 13 -d 1 -p 10000     a total of 17 times.  [The gzip'd results are attached]
+
+I wasn't expecting the results to be quite this dramatic, although it is
+consistent with my earlier results.  Here are the summary KKS p-values.
+
+Kuiper KS: p = 0.000646
+Kuiper KS: p = 0.005609
+Kuiper KS: p = 0.071404
+Kuiper KS: p = 0.011642
+Kuiper KS: p = 0.006300
+Kuiper KS: p = 0.015020
+Kuiper KS: p = 0.008319
+Kuiper KS: p = 0.002669
+Kuiper KS: p = 0.029822
+Kuiper KS: p = 0.230268
+Kuiper KS: p = 0.002299
+Kuiper KS: p = 0.070709
+Kuiper KS: p = 0.012297
+Kuiper KS: p = 0.076869
+Kuiper KS: p = 0.009581
+Kuiper KS: p = 0.375667
+Kuiper KS: p = 0.005510
+
+
+8 POOR, 4 WEAK, 5 PASS with the highest score 0.37
+
+
+There is defintely something going on.
+
+-- Tom
+
+
+
+
+
+
+    [ Part 2, Application/X-GZIP  2.4KB. ]
+    [ Unable to print this part. ]
+
+
+From crispin@centtech.com Mon Jan 21 15:50:45 2008
+Date: Mon, 21 Jan 2008 14:50:36 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Another dieharder bug(s) -- with fix
+
+Incidentally, what are the other "good" generators?  g69 has the same problems with the
+birthday test as g13.
+
+I've decided to try /dev/urandom.  Interestingly enough, dieharder -g 62 -d 1 -p 10000 aborted
+after a minute or so with an "unable to open /dev/urandom" error.  But dieharder -g 62 -d 1 worked
+
+After a little experimenting, what happens is that for each sample, there is a call to dev_urandom_set
+which opens (once again!) /dev/urandom and after a while the program exhausts the available file
+handles in the system.
+
+I've attached a simple fix (don't open the device more than once) which worked for the default
+case and am collecting -p 10000 data as I type.
+
+I suspect the same issue will be present in most or all rngs in dieharder that take data
+from a file or device.
+
+
+Will report on /dev/urandom after I've collected a dozen or so data sets
+
+
+Thanks
+
+
+-- Tom
+
+
+
+
+    [ Part 2, Application/X-GZIP  1.3KB. ]
+    [ Unable to print this part. ]
+
+
+From crispin@centtech.com Mon Jan 21 17:56:13 2008
+Date: Mon, 21 Jan 2008 16:56:04 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder anamoly?
+
+FWIW, /dev/urandom is so far behaving like the other RNG on the birthday test with -p 10000
+
+
+Also - the timing info may be a little misleading.  The performance (RNG/sec) of mt19937_1999 on
+Machine A is almost 100X that of the performance of the VIA_RNG on Machine B, but if I
+
+	time dieharder -gX -d1
+
+on the two machines the difference is closer to 4X.  For a lot of uses, the RNG speed may not
+be the bottleneck it would appear to be from the raw numbers.
+
+
+So am running my dieharder via_rng against the birthday test with -p 10000.  Should be about
+1/2 hour per test; so will collect a dozen and get back to you with the results.
+
+
+Thanks
+
+
+-- Tom
+
+
+
+
+From crispin@centtech.com Tue Jan 22 02:27:32 2008
+Date: Tue, 22 Jan 2008 01:27:23 -0600
+From: Tom Crispin <crispin@centtech.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder Birthdays test failures
+
+
+All the "good" RNG's are failing the birthdays test with -p 10000.  I will zip
+the results up in the morning and send it along.  Generally, tests are WEAK,
+POOR, or FAIL about 75% of the time, and the PASS p-values are mostly between
+0.05 and 0.01
+
+So far, the VIA_RNG is doing a little better; PASS about 33%-40% of the time and
+is the only test to have a generated a p-value above 0.5 (twice)
+
+I ran a couple of tests specifying different NMS values, but if anything the results got worse.
+
+
+Before we write off all the RNG's somebody else should replicate my results
+and it might be nice to recruit a statistician to make sure the test is doing
+what we want.
+
+Or maybe there are issues with the KS test when the number of p-values is that large?
+
+ -----------------------------------------------
+
+We're trying to setup a dedicated C5J test box for me to run long jobs on; but
+it will be background for a while.  Bandwidth for RNG is limited for a while.
+
+
+Thanks
+
+-- Tom
+

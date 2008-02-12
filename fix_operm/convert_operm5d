@@ -1,0 +1,48 @@
+#!/usr/bin/perl
+#========================================================================
+#
+# $Id: project.pl 2 2001-02-15 14:26:25Z rgb $
+#
+# See accompanying copyright and accompanying file COPYING
+#
+#========================================================================
+
+
+
+ use FileHandle;
+ use Getopt::Std;	# Single character options are plenty.
+
+#========================================================================
+# We parse the CL with getopt standard (single character)
+#========================================================================
+# Option list
+ getopts('hv:');
+ $verbose = 0;
+# Assignments
+ if($opt_h) {Usage();exit;}
+ if($opt_v) {$verbose = $opt_v;}
+
+# If leftovers, punt with Usage()
+ $ARGC = @ARGV;
+ if($ARGC) {
+   Usage("Incorrect number or type of arguments");
+   exit;
+ }
+
+ if($verbose){
+   print "Running template program\n";
+ }
+
+ exit;
+
+sub Usage {
+
+ my $message = shift;
+ if($message) {print STDERR "Error: $message\n";}
+ print STDERR "Usage:\n";
+ print STDERR "  template.pl [-h] [-v level]\n";
+ print STDERR "    -v level sets verbosity or selects debug targets\n";
+ print STDERR "    -h shows Usage/help (this message).\n";
+ exit;
+}
+
