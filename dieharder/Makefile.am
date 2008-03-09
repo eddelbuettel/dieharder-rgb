@@ -12,28 +12,24 @@
 # make svn      does a svn commit and creates the timestamp $(SVN)
 # make sync     does a svn commit and rsyncs to list of hosts
 #========================================================================
-PROJECT = dieharder
-PROGRAM = dieharder
-DIR = $(PROGRAM)
-
 SVNTREE = $(HOME)/Src/svn-tree
-SVNPATH = $(SVNTREE)/$(PROJECT)
-SVNTIME = $(DIR:=.svn.time)
+SVNPATH = $(SVNTREE)/dieharder
+SVNTIME = dieharder.svn.time)
 
 # This is automagically set in the toplevel build.  Do not edit by
 # hand.
 VERSION=@VERSION@
 
 #========================================================================
-# Define all sources.  Note that we choose to depend on ALL the includes
-# in the include directory, which cannot be empty or this will barf.
-# We also have dependencies that extend to the libdieharder source
-# directory, as we need to force a build if any of them change.
+# Define all sources.  Note that this little trick will get ALL
+# the source files in the working directory, which must not be empty
+# Alas, GBT complains just a bit about the shell commands...
 #========================================================================
-# SRCSOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
+# dieharder_SOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
 # SRCINCLUDES = $(shell ls *.h  2>&1 | sed -e "/\/bin\/ls:/d")
 bin_PROGRAMS = dieharder
 dieharder_LDADD = -L${libdir} -L$(top_srcdir)/libdieharder -ldieharder -lgsl -lgslcblas -lm
+man1_MANS = dieharder.1
 dieharder_SOURCES = \
 	add_ui_rngs.c \
 	dieharder.c \
@@ -78,17 +74,6 @@ dieharder_SOURCES = \
 	user_template.c \
 	work.c
 
-
-# These are important dependencies, although it isn't easy to
-# see how to force a consistent build when working on the UI
-# and library at the same time.  Maybe with particular make targets...
-# LIBINCLUDES = $(shell ls ../include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
-# PROGLIB_SONAME = $(top_srcdir)/libdieharder/libdieharder.so.$(VERSION)
-
-# SOURCES = $(LIBSOURCES) $(SRCSOURCES)
-# INCLUDES = $(LIBINCLUDES) $(SRCINCLUDES)
-# OBJECTS = $(SRCSOURCES:.c=.o)
-
 DEFINES = -DVERSION=$(VERSION)
 
 #========================================================================
@@ -101,25 +86,13 @@ DEFINES = -DVERSION=$(VERSION)
 AM_CPPFLAGS = -I ${top_srcdir}/include $(DEFINES) -I ${includedir}
 AM_CFLAGS = -O3
 
-# Libraries
-# LIBS += -L ${top_srcdir}/libdieharder -ldieharder -lgsl -lgslcblas -lm
-
-#========================================================================
-# List of variants one can make.  all is the default.  We always
-# presume the simplest of dependencies and remake if includes change
-# for example.
-#========================================================================
-# all: $(PROGRAM)
-#
-# $(PROGRAM): $(OBJECTS) $(PROGLIB_SONAME)
-# 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
-
 #========================================================================
 # This is cautiously permitted.  REALLY, though, we need a conditional
 # that punts with a warning if we try this during an rpm build and
 # the library is not found -- the right solution then is to install
 # the library first!
 #========================================================================
+# PROGLIB_SONAME = $(top_srcdir)/libdieharder/libdieharder.so.$(VERSION)
 # $(PROGLIB_SONAME):
 # 	- (cd ../libdieharder ;\
 # 	$(MAKE))
@@ -142,17 +115,8 @@ LPR = enscript -2r
 printout:
 	$(LPR) $(SRCSOURCES) $(SRCINCLUDES)
 
+# install-man:
+# 	(install -d $(DESTDIR)$(mandir)/man1; \
+# 	install -m 644 dieharder.1 $(DESTDIR)$(mandir)/man1)
 
-install : $(PROGRAM)
-	(install -d $(DESTDIR)$(bindir); \
-	install -m 755 $(PROGRAM) $(DESTDIR)$(bindir); \
-	install -d $(DESTDIR)$(mandir)/man1; \
-	install -m 644 $(PROGRAM).1 $(DESTDIR)$(mandir)/man1)
-
-#========================================================================
-# We give all generic rules below.  Currently we only need a rule for 
-# objects.
-#========================================================================
-.o:.c
-	$(CC) -c $(CFLAGS) $<
 

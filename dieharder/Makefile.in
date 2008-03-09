@@ -43,7 +43,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_dieharder_OBJECTS = add_ui_rngs.$(OBJEXT) dieharder.$(OBJEXT) \
@@ -83,6 +83,9 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(dieharder_SOURCES)
 DIST_SOURCES = $(dieharder_SOURCES)
+man1dir = $(mandir)/man1
+NROFF = nroff
+MANS = $(man1_MANS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -207,13 +210,11 @@ top_srcdir = @top_srcdir@
 # make svn      does a svn commit and creates the timestamp $(SVN)
 # make sync     does a svn commit and rsyncs to list of hosts
 #========================================================================
-PROJECT = dieharder
-PROGRAM = dieharder
-DIR = $(PROGRAM)
 SVNTREE = $(HOME)/Src/svn-tree
-SVNPATH = $(SVNTREE)/$(PROJECT)
-SVNTIME = $(DIR:=.svn.time)
+SVNPATH = $(SVNTREE)/dieharder
+SVNTIME = dieharder.svn.time)
 dieharder_LDADD = -L${libdir} -L$(top_srcdir)/libdieharder -ldieharder -lgsl -lgslcblas -lm
+man1_MANS = dieharder.1
 dieharder_SOURCES = \
 	add_ui_rngs.c \
 	dieharder.c \
@@ -258,16 +259,6 @@ dieharder_SOURCES = \
 	user_template.c \
 	work.c
 
-
-# These are important dependencies, although it isn't easy to
-# see how to force a consistent build when working on the UI
-# and library at the same time.  Maybe with particular make targets...
-# LIBINCLUDES = $(shell ls ../include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
-# PROGLIB_SONAME = $(top_srcdir)/libdieharder/libdieharder.so.$(VERSION)
-
-# SOURCES = $(LIBSOURCES) $(SRCSOURCES)
-# INCLUDES = $(LIBINCLUDES) $(SRCINCLUDES)
-# OBJECTS = $(SRCSOURCES:.c=.o)
 DEFINES = -DVERSION=$(VERSION)
 
 #========================================================================
@@ -425,6 +416,51 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-man1: $(man1_MANS) $(man_MANS)
+	@$(NORMAL_INSTALL)
+	test -z "$(man1dir)" || $(MKDIR_P) "$(DESTDIR)$(man1dir)"
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  case "$$ext" in \
+	    1*) ;; \
+	    *) ext='1' ;; \
+	  esac; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	  $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst"; \
+	done
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  case "$$ext" in \
+	    1*) ;; \
+	    *) ext='1' ;; \
+	  esac; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f '$(DESTDIR)$(man1dir)/$$inst'"; \
+	  rm -f "$(DESTDIR)$(man1dir)/$$inst"; \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -502,11 +538,12 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(PROGRAMS) $(MANS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
+install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -550,7 +587,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-man
 
 install-dvi: install-dvi-am
 
@@ -560,7 +597,7 @@ install-html: install-html-am
 
 install-info: install-info-am
 
-install-man:
+install-man: install-man1
 
 install-pdf: install-pdf-am
 
@@ -586,7 +623,9 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-man
+
+uninstall-man: uninstall-man1
 
 .MAKE: install-am install-strip
 
@@ -597,26 +636,14 @@ uninstall-am: uninstall-binPROGRAMS
 	install-binPROGRAMS install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binPROGRAMS
+	install-man1 install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-man \
+	uninstall-man1
 
-
-# Libraries
-# LIBS += -L ${top_srcdir}/libdieharder -ldieharder -lgsl -lgslcblas -lm
-
-#========================================================================
-# List of variants one can make.  all is the default.  We always
-# presume the simplest of dependencies and remake if includes change
-# for example.
-#========================================================================
-# all: $(PROGRAM)
-#
-# $(PROGRAM): $(OBJECTS) $(PROGLIB_SONAME)
-# 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
 
 #========================================================================
 # This is cautiously permitted.  REALLY, though, we need a conditional
@@ -624,6 +651,7 @@ uninstall-am: uninstall-binPROGRAMS
 # the library is not found -- the right solution then is to install
 # the library first!
 #========================================================================
+# PROGLIB_SONAME = $(top_srcdir)/libdieharder/libdieharder.so.$(VERSION)
 # $(PROGLIB_SONAME):
 # 	- (cd ../libdieharder ;\
 # 	$(MAKE))
@@ -640,18 +668,9 @@ sync:
 printout:
 	$(LPR) $(SRCSOURCES) $(SRCINCLUDES)
 
-install : $(PROGRAM)
-	(install -d $(DESTDIR)$(bindir); \
-	install -m 755 $(PROGRAM) $(DESTDIR)$(bindir); \
-	install -d $(DESTDIR)$(mandir)/man1; \
-	install -m 644 $(PROGRAM).1 $(DESTDIR)$(mandir)/man1)
-
-#========================================================================
-# We give all generic rules below.  Currently we only need a rule for 
-# objects.
-#========================================================================
-.o:.c
-	$(CC) -c $(CFLAGS) $<
+# install-man:
+# 	(install -d $(DESTDIR)$(mandir)/man1; \
+# 	install -m 644 dieharder.1 $(DESTDIR)$(mandir)/man1)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
