@@ -3,7 +3,7 @@
 Name: dieharder-src
 Summary: Dieharder is a random number generator tester and timer
 Packager: rgb@phy.duke.edu
-%define version 2.24.7
+%define version 2.24.8
 %define release 1
 Version: %{version}
 Release: %{release}

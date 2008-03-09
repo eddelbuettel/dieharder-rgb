@@ -51,16 +51,17 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+CC = @CC@
+CCDEPMODE = @CCDEPMODE@
 
 #========================================================================
 # Define parameters and directives needed in compile/link steps.
 #========================================================================
 # C Compiler
-CC = gcc
-CCDEPMODE = @CCDEPMODE@
+# CC = gcc
 
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 -I ../include $(DEFINES) 
+CFLAGS = @CFLAGS@ -I ../include $(DEFINES)
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -83,7 +84,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 
 # Linker flags
-LDFLAGS = -g -fpic -shared -Wl,-soname,$(PROGLIB_SONAME)
+LDFLAGS = @LDFLAGS@ -g -fpic -shared -Wl,-soname,$(PROGLIB_SONAME)
 LIBOBJS = @LIBOBJS@
 
 # Libraries
@@ -91,7 +92,6 @@ LIBS = -lgsl -lgslcblas -lm
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
 OBJEXT = @OBJEXT@
@@ -210,7 +210,7 @@ LPR = enscript -2r
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -235,9 +235,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 mostlyclean-libtool:
@@ -384,7 +384,7 @@ all: $(PROGLIB_SO_VERSION) # $(PROGLIB_A)
 # 	ranlib $(PROGLIB_A)
 
 $(PROGLIB_SO_VERSION): $(LIBOBJECTS) $(LIBINCLUDES)
-	gcc $(LDFLAGS) -o $(PROGLIB_SO_VERSION) $(LIBOBJECTS)
+	$(CC) $(LDFLAGS) -o $(PROGLIB_SO_VERSION) $(LIBOBJECTS)
 	ldconfig -n .
 	ln -sf $(PROGLIB_SO_VERSION) $(PROGLIB_SO)
 
@@ -414,14 +414,13 @@ clean:
 # specfile for the dieharder package, in precisely the right locations.
 #========================================================================
 install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
-	(install -d $(libdir); \
-	install -m 755 $(PROGLIB_SO_VERSION) $(libdir)/$(PROGLIB_SO_VERSION); \
-        ln -sf $(libdir)/$(PROGLIB_SO_VERSION) $(libdir)/$(PROGLIB_SO); \
-	install -d $(includedir)/dieharder; \
-	install -m 644 ../include/dieharder/*.h $(includedir)/dieharder; \
-	install -d $(prefix)/share/man/man3; \
-	gzip -c -9 $(PROGMAN) > $(PROGMAN).gz; \
-	install -m 644 $(DIR).3.gz $(prefix)/share/man/man3)
+	(install -d $(DESTDIR)$(libdir); \
+	install -m 755 $(PROGLIB_SO_VERSION) $(DESTDIR)$(libdir)/$(PROGLIB_SO_VERSION); \
+	ln -sf $(libdir)/$(PROGLIB_SO_VERSION) $(DESTDIR)$(libdir)/$(PROGLIB_SO); \
+	install -d $(DESTDIR)$(includedir)/dieharder; \
+	install -m 644 ../include/dieharder/*.h $(DESTDIR)$(includedir)/dieharder; \
+	install -d $(DESTDIR)$(mandir)/man3; \
+	install -m 644 $(DIR).3 $(DESTDIR)$(mandir)/man3)
 
 # FC requires no static lib install
 # 	install -m 755 $(PROGLIB_A) $(libdir)/$(PROGLIB_A); \

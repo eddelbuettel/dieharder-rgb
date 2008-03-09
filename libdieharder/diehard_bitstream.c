@@ -116,6 +116,14 @@ void diehard_bitstream(Test **test, int irun)
  i = gsl_rng_get(rng);
  for(t=0;t<test[0]->tsamples;t++){
    if(overlap){
+
+     /*
+      * Let's try to carefully copy Marsaglia's fortran algorithm
+      * He loads j with a urand.  He sets nint to 1024.  His ntries
+      * is the same as our psamples, and he loops that number of times.
+      * Inside this loop he generates 2^15
+      */
+
      /*
       * Let's do this the cheap/easy way first, sliding a 20 bit
       * window along each int for the 32 possible starting

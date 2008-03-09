@@ -49,16 +49,14 @@ DEFINES = -DVERSION=$(VERSION)
 # Define parameters and directives needed in compile/link steps.
 #========================================================================
 # C Compiler
-CC = gcc
+# CC = gcc
 
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 -I ../include $(DEFINES) 
-
-# Linker flags.
-LDFLAGS =
+AM_CPPFLAGS = -I ${top_srcdir}/include $(DEFINES) -I ${includedir}
+AM_CFLAGS = -O3
 
 # Libraries
-LIBS = -L ../libdieharder -ldieharder -lgsl -lgslcblas -lm
+LIBS += -L ${top_srcdir}/libdieharder -ldieharder -lgsl -lgslcblas -lm
 
 #========================================================================
 # List of variants one can make.  all is the default.  We always
@@ -98,23 +96,17 @@ LPR = enscript -2r
 printout:
 	$(LPR) $(SRCSOURCES) $(SRCINCLUDES)
 
-#========================================================================
-#  A standard cleanup target
-#========================================================================
-clean : 
-	- rm -f core $(PROGRAM) *.o $(PROGRAM).1.gz
 
 install : $(PROGRAM)
-	(install -d $(prefix)/bin; \
-	install -m 755 $(PROGRAM) $(prefix)/bin; \
-	install -d $(prefix)/share/man/man1; \
-	gzip -c -9 $(PROGRAM).1 > $(PROGRAM).1.gz; \
-	install -m 644 $(PROGRAM).1.gz $(prefix)/share/man/man1)
+	(install -d $(DESTDIR)$(bindir); \
+	install -m 755 $(PROGRAM) $(DESTDIR)$(bindir); \
+	install -d $(DESTDIR)$(mandir)/man1; \
+	install -m 644 $(PROGRAM).1 $(DESTDIR)$(mandir)/man1)
 
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.
 #========================================================================
-%.o:%.c
+.o:.c
 	$(CC) -c $(CFLAGS) $<
 

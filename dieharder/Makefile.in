@@ -50,16 +50,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-
-#========================================================================
-# Define parameters and directives needed in compile/link steps.
-#========================================================================
-# C Compiler
-CC = gcc
+CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-
-# Compile flags (use fairly standard -O3 as default)
-CFLAGS = -O3 -I ../include $(DEFINES) 
+CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -80,17 +73,15 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-
-# Linker flags.
-LDFLAGS = 
+LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 
 # Libraries
-LIBS = -L ../libdieharder -ldieharder -lgsl -lgslcblas -lm
+LIBS = @LIBS@ -L ${top_srcdir}/libdieharder -ldieharder -lgsl \
+	-lgslcblas -lm
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
 OBJEXT = @OBJEXT@
@@ -203,6 +194,16 @@ OBJECTS = $(SRCSOURCES:.c=.o)
 DEFINES = -DVERSION=$(VERSION)
 
 #========================================================================
+# Define parameters and directives needed in compile/link steps.
+#========================================================================
+# C Compiler
+# CC = gcc
+
+# Compile flags (use fairly standard -O3 as default)
+AM_CPPFLAGS = -I ${top_srcdir}/include $(DEFINES) -I ${includedir}
+AM_CFLAGS = -O3
+
+#========================================================================
 # printout makes an enscript -2r printout of SOURCES and
 # and INCLUDES.  Use lpr if you don't have enscript
 #========================================================================
@@ -210,7 +211,7 @@ LPR = enscript -2r
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -235,9 +236,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 mostlyclean-libtool:
@@ -305,6 +306,8 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+clean: clean-am
+
 clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
@@ -403,24 +406,17 @@ sync:
 printout:
 	$(LPR) $(SRCSOURCES) $(SRCINCLUDES)
 
-#========================================================================
-#  A standard cleanup target
-#========================================================================
-clean : 
-	- rm -f core $(PROGRAM) *.o $(PROGRAM).1.gz
-
 install : $(PROGRAM)
-	(install -d $(prefix)/bin; \
-	install -m 755 $(PROGRAM) $(prefix)/bin; \
-	install -d $(prefix)/share/man/man1; \
-	gzip -c -9 $(PROGRAM).1 > $(PROGRAM).1.gz; \
-	install -m 644 $(PROGRAM).1.gz $(prefix)/share/man/man1)
+	(install -d $(DESTDIR)$(bindir); \
+	install -m 755 $(PROGRAM) $(DESTDIR)$(bindir); \
+	install -d $(DESTDIR)$(mandir)/man1; \
+	install -m 644 $(PROGRAM).1 $(DESTDIR)$(mandir)/man1)
 
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.
 #========================================================================
-%.o:%.c
+.o:.c
 	$(CC) -c $(CFLAGS) $<
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
