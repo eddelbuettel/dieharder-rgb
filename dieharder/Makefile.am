@@ -30,18 +30,64 @@ VERSION=@VERSION@
 # We also have dependencies that extend to the libdieharder source
 # directory, as we need to force a build if any of them change.
 #========================================================================
-SRCSOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
-SRCINCLUDES = $(shell ls *.h  2>&1 | sed -e "/\/bin\/ls:/d")
+# SRCSOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
+# SRCINCLUDES = $(shell ls *.h  2>&1 | sed -e "/\/bin\/ls:/d")
+bin_PROGRAMS = dieharder
+dieharder_LDADD = -L${libdir} -L$(top_srcdir)/libdieharder -ldieharder -lgsl -lgslcblas -lm
+dieharder_SOURCES = \
+	add_ui_rngs.c \
+	dieharder.c \
+	dieharder_exit.c \
+	help.c \
+	histogram.c \
+	list_rand.c \
+	list_rngs.c \
+	output_rnds.c \
+	parsecl.c \
+	rdieharder.c \
+	rng_empty_random.c \
+	run_diehard_2dsphere.c \
+	run_diehard_3dsphere.c \
+	run_diehard_birthdays.c \
+	run_diehard_bitstream.c \
+	run_diehard_count_1s_byte.c \
+	run_diehard_count_1s_stream.c \
+	run_diehard_craps.c \
+	run_diehard_dna.c \
+	run_diehard_operm5.c \
+	run_diehard_opso.c \
+	run_diehard_oqso.c \
+	run_diehard_parking_lot.c \
+	run_diehard_rank_32x32.c \
+	run_diehard_rank_6x8.c \
+	run_diehard_runs.c \
+	run_diehard_squeeze.c \
+	run_diehard_sums.c \
+	run_marsaglia_tsang_gcd.c \
+	run_rgb_bitdist.c \
+	run_rgb_minimum_distance.c \
+	run_rgb_operm.c \
+	run_rgb_persist.c \
+	run_rgb_timing.c \
+	run_sts_monobit.c \
+	run_sts_runs.c \
+	run_user_template.c \
+	startup.c \
+	test.c \
+	testbits.c \
+	user_template.c \
+	work.c
+
 
 # These are important dependencies, although it isn't easy to
 # see how to force a consistent build when working on the UI
 # and library at the same time.  Maybe with particular make targets...
-LIBINCLUDES = $(shell ls ../include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
-PROGLIB_SONAME = ../libwulf/libdieharder.so.$(VERSION)
+# LIBINCLUDES = $(shell ls ../include/dieharder/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
+# PROGLIB_SONAME = $(top_srcdir)/libdieharder/libdieharder.so.$(VERSION)
 
-SOURCES = $(LIBSOURCES) $(SRCSOURCES)
-INCLUDES = $(LIBINCLUDES) $(SRCINCLUDES)
-OBJECTS = $(SRCSOURCES:.c=.o)
+# SOURCES = $(LIBSOURCES) $(SRCSOURCES)
+# INCLUDES = $(LIBINCLUDES) $(SRCINCLUDES)
+# OBJECTS = $(SRCSOURCES:.c=.o)
 
 DEFINES = -DVERSION=$(VERSION)
 
@@ -56,17 +102,17 @@ AM_CPPFLAGS = -I ${top_srcdir}/include $(DEFINES) -I ${includedir}
 AM_CFLAGS = -O3
 
 # Libraries
-LIBS += -L ${top_srcdir}/libdieharder -ldieharder -lgsl -lgslcblas -lm
+# LIBS += -L ${top_srcdir}/libdieharder -ldieharder -lgsl -lgslcblas -lm
 
 #========================================================================
 # List of variants one can make.  all is the default.  We always
 # presume the simplest of dependencies and remake if includes change
 # for example.
 #========================================================================
-all: $(PROGRAM)
-
-$(PROGRAM): $(OBJECTS) $(PROGLIB_SONAME)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
+# all: $(PROGRAM)
+#
+# $(PROGRAM): $(OBJECTS) $(PROGLIB_SONAME)
+# 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
 
 #========================================================================
 # This is cautiously permitted.  REALLY, though, we need a conditional
@@ -74,9 +120,9 @@ $(PROGRAM): $(OBJECTS) $(PROGLIB_SONAME)
 # the library is not found -- the right solution then is to install
 # the library first!
 #========================================================================
-$(PROGLIB_SONAME):
-	- (cd ../libdieharder ;\
-	 $(MAKE))
+# $(PROGLIB_SONAME):
+# 	- (cd ../libdieharder ;\
+# 	$(MAKE))
 
 #========================================================================
 # The only safe place to do commits is in the toplevel directory

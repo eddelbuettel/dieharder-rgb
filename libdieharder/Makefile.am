@@ -51,7 +51,9 @@ DEFINES = -DVERSION=$(VERSION)
 # CC = gcc
 
 # Compile flags (use fairly standard -O3 as default)
-CFLAGS += -I ../include $(DEFINES) 
+AM_CPPFLAGS = $(DEFINES) -I ${top_srcdir}/include -I ${includedir}
+AM_CFLAGS = -O3
+# CFLAGS += -I ../include $(DEFINES) 
 
 # Linker flags
 LDFLAGS += -g -fpic -shared -Wl,-soname,$(PROGLIB_SONAME)
@@ -64,12 +66,7 @@ LIBS = -lgsl -lgslcblas -lm
 # presume the simplest of dependencies and remake if includes change
 # for example.
 #========================================================================
-all: $(PROGLIB_SO_VERSION) # $(PROGLIB_A)
-
-# FC "requires" no static lib build/install	
-# $(PROGLIB_A): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
-# 	ar r $(PROGLIB_A) $(LIBOBJECTS)
-# 	ranlib $(PROGLIB_A)
+all: $(PROGLIB_SO_VERSION)
 
 $(PROGLIB_SO_VERSION): $(LIBOBJECTS) $(LIBINCLUDES)
 	$(CC) $(LDFLAGS) -o $(PROGLIB_SO_VERSION) $(LIBOBJECTS)
@@ -95,12 +92,6 @@ printout:
 	$(LPR) $(LIBSOURCES) $(LIBINCLUDES)
 
 #========================================================================
-#  A standard cleanup target
-#========================================================================
-clean:
-	rm -f core $(PROGLIB_SO)* $(LIBOBJECTS) $(PROGMAN).gz
-
-#========================================================================
 # This is critical.  For the toplevel rpm build to succeed,
 #  make prefix=/usr install
 # (run by rpmbuild from the specfile) has to work, in the right order.
@@ -116,12 +107,9 @@ install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
 	install -d $(DESTDIR)$(mandir)/man3; \
 	install -m 644 $(DIR).3 $(DESTDIR)$(mandir)/man3)
 
-# FC requires no static lib install
-# 	install -m 755 $(PROGLIB_A) $(libdir)/$(PROGLIB_A); \
-# ldconfig -n $(libdir); \
 #========================================================================
 # We give all generic rules below.  Currently we only need a rule for 
 # objects.
 #========================================================================
-%.o:%.c $(LIBINCLUDES) Makefile
+.o:.c $(LIBINCLUDES) Makefile
 	$(CC) -fpic -c $(CFLAGS) $<
