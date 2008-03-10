@@ -25,6 +25,7 @@
  /* #define GSL_VAR */
  /* List new rng types to be added. */
  GSL_VAR const gsl_rng_type *gsl_rng_dev_random;
+ GSL_VAR const gsl_rng_type *gsl_rng_dev_arandom;
  GSL_VAR const gsl_rng_type *gsl_rng_dev_urandom;
  GSL_VAR const gsl_rng_type *gsl_rng_empty_random;
  GSL_VAR const gsl_rng_type *gsl_rng_file_input;

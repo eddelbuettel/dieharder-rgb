@@ -26,6 +26,9 @@ void add_lib_rngs()
  types[i] = (gsl_rng_dev_random);
  if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
  i++;
+ types[i] = (gsl_rng_dev_arandom);
+ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ i++;
  types[i] = (gsl_rng_dev_urandom);
  if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
  i++;

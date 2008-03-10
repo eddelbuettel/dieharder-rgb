@@ -12,9 +12,6 @@
 # make svn      does a svn commit and creates the timestamp $(SVN)
 # make sync     does a svn commit and rsyncs to list of hosts
 #========================================================================
-SVNTREE = $(HOME)/Src/svn-tree
-SVNPATH = $(SVNTREE)/dieharder
-SVNTIME = dieharder.svn.time)
 
 # This is automagically set in the toplevel build.  Do not edit by
 # hand.
@@ -28,8 +25,8 @@ VERSION=@VERSION@
 # dieharder_SOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
 # SRCINCLUDES = $(shell ls *.h  2>&1 | sed -e "/\/bin\/ls:/d")
 bin_PROGRAMS = dieharder
-dieharder_LDADD = -L${libdir} -L$(top_srcdir)/libdieharder -ldieharder -lgsl -lgslcblas -lm
 man1_MANS = dieharder.1
+dieharder_LDADD = -L$(top_srcdir)/libdieharder -ldieharder -lgsl -lgslcblas -lm
 dieharder_SOURCES = \
 	add_ui_rngs.c \
 	dieharder.c \
@@ -87,36 +84,13 @@ AM_CPPFLAGS = -I ${top_srcdir}/include $(DEFINES) -I ${includedir}
 AM_CFLAGS = -O3
 
 #========================================================================
-# This is cautiously permitted.  REALLY, though, we need a conditional
-# that punts with a warning if we try this during an rpm build and
-# the library is not found -- the right solution then is to install
-# the library first!
+# The only safe place to do svn commits is in the toplevel directory
 #========================================================================
-# PROGLIB_SONAME = $(top_srcdir)/libdieharder/libdieharder.so.$(VERSION)
-# $(PROGLIB_SONAME):
-# 	- (cd ../libdieharder ;\
-# 	$(MAKE))
-
-#========================================================================
-# The only safe place to do commits is in the toplevel directory
-#========================================================================
+SVNTREE = $(HOME)/Src/svn-tree
+SVNPATH = $(SVNTREE)/dieharder
+SVNTIME = dieharder.svn.time)
 svn:
 	(cd ..;make svn)
 
 sync:
 	(cd ..;make sync)
-
-#========================================================================
-# printout makes an enscript -2r printout of SOURCES and
-# and INCLUDES.  Use lpr if you don't have enscript
-#========================================================================
-LPR = enscript -2r
-# LPR = lpr
-printout:
-	$(LPR) $(SRCSOURCES) $(SRCINCLUDES)
-
-# install-man:
-# 	(install -d $(DESTDIR)$(mandir)/man1; \
-# 	install -m 644 dieharder.1 $(DESTDIR)$(mandir)/man1)
-
-
