@@ -15,7 +15,12 @@ toplevel build directory and enter:
 
  ./autogen.sh
 
-which should set up the GBT build.  Then:
+which should set up the GBT build.  If you skip this step, you may not
+have the right/current versions of some of the files required by e.g.
+automake, but on most systems just using the "usual" build starting
+with the configure step will work.
+
+Next, run
 
  ./configure --prefix=/usr
 
@@ -24,16 +29,9 @@ such as:
 
  ./configure --prefix=$(HOME)/usr
 
+for an alternative install into your own home directory.  
 
-for an alternative install into your own home directory.  Be aware that
-the application is dynamically linked and will not work unless the
-libdieharder library is installed and made available to the dynamic
-linker by running ldconfig (for the FHS install) or the use of 
-
- LD_LIBRARY_PATH=$(HOME)/usr/lib
- export LD_LIBRARY_PATH
-
-for a private one.  Finally, to just build the software in place, enter:
+Finally, to just build the software in place, enter:
 
  make
 
@@ -46,6 +44,19 @@ This last step will need to be done as root if the install is into a
 root-owned directory such as /usr and followed as noted by rerunning
 ldconfig.
 
+NOTE WELL:  Be aware that the application is DYNAMICALLY LINKED and will
+not work unless the libdieharder library is installed and made available
+to the dynamic linker by running ldconfig (for the FHS install) or the
+use of
+
+ LD_LIBRARY_PATH=$(HOME)/usr/lib
+ export LD_LIBRARY_PATH
+
+for a private one.  These commands are included in the file
+set_ld_library_path in the tarball -- this should be sourced from your
+bash via e.g. "source set_ld_library_path".  If you just build in the
+source directory and try to run dieharder/dieharder it will not work
+unless/until you set up the library path as noted.
 
                         RPM BUILD INSTRUCTIONS
 
