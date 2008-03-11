@@ -9,7 +9,7 @@ autoheader
 aclocal
 rm -f Makefile Makefile.in dieharder/Makefile dieharder/Makefile.in \
    libdieharder/Makefile libdieharder/Makefile.in
-automake --add-missing --gnu
+automake --add-missing --copy --gnu
 autoconf
 
 # Might as well run this
