@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 # These are made, in order presented, from the toplevel make
-SUBDIRS = libdieharder dieharder
+SUBDIRS = libdieharder dieharder include
 
 # These are automagically included in the make dist rule.  I
 # do believe that I'm going to have to eliminate my own version
@@ -33,6 +33,7 @@ EXTRA_DIST = autogen.sh set_ld_library_path Copyright
 PROJECT = dieharder
 LIBRARY = libdieharder
 LIBTIME = libwulf.time
+INCTIME = include.time
 PROGRAM = dieharder
 PROGTIME = dieharder.time
 MANUAL = manual
@@ -72,7 +73,7 @@ SPEC = $(PROJECT).spec
 # presume the simplest of dependencies and remake if includes change
 # for example.
 #========================================================================
-all: $(LIBTIME) $(PROGTIME)
+all: $(LIBTIME) $(PROGTIME) $(INCTIME)
 
 # This is not, actually, a particularly useful toplevel target.  To
 # work correctly it also would require a full parsing of all
@@ -80,6 +81,10 @@ all: $(LIBTIME) $(PROGTIME)
 # to have a default target at the toplevel that CAN be used to test.
 $(LIBTIME):
 	(cd $(LIBRARY); \
+	make)
+
+$(INCTIME):
+	(cd include; \
 	make)
 
 $(PROGTIME):

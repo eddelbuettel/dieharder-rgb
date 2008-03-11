@@ -10963,7 +10963,7 @@ _ACEOF
 fi
 
 
-ac_config_files="$ac_config_files dieharder_version.h dieharder.spec dieharder/Makefile libdieharder/Makefile RDieHarder/DESCRIPTION Makefile"
+ac_config_files="$ac_config_files dieharder_version.h dieharder.spec dieharder/Makefile include/Makefile libdieharder/Makefile RDieHarder/DESCRIPTION Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -11548,6 +11548,7 @@ do
     "dieharder_version.h") CONFIG_FILES="$CONFIG_FILES dieharder_version.h" ;;
     "dieharder.spec") CONFIG_FILES="$CONFIG_FILES dieharder.spec" ;;
     "dieharder/Makefile") CONFIG_FILES="$CONFIG_FILES dieharder/Makefile" ;;
+    "include/Makefile") CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
     "libdieharder/Makefile") CONFIG_FILES="$CONFIG_FILES libdieharder/Makefile" ;;
     "RDieHarder/DESCRIPTION") CONFIG_FILES="$CONFIG_FILES RDieHarder/DESCRIPTION" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;

@@ -75,6 +75,7 @@ AC_CONFIG_FILES([
  dieharder_version.h 
  dieharder.spec
  dieharder/Makefile 
+ include/Makefile
  libdieharder/Makefile 
  RDieHarder/DESCRIPTION
  Makefile])

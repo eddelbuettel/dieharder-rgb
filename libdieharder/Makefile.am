@@ -11,8 +11,8 @@
 # This is automagically set in the toplevel build.  Do not edit by
 # hand.
 VERSION=@VERSION@
-VERSION_MAJOR = $(shell expr $(VERSION) : '\(.*\)\..*\..*' \| $(VERSION))
-RELEASE=0
+# VERSION_MAJOR = $(shell expr $(VERSION) : '\(.*\)\..*\..*' \| $(VERSION))
+# RELEASE=0
 
 # Man page
 man3_MANS = libdieharder.3
