@@ -27,6 +27,8 @@
 
 
 #include <dieharder/libdieharder.h>
+#include "static_get_bits.c"
+static uint mask;
 
 void diehard_dna(Test **test, int irun)
 {
@@ -93,6 +95,8 @@ void diehard_dna(Test **test, int irun)
   * therefore have to "seed" the process with a random l
   */
  q = gsl_rng_get(rng);
+ /* mask = ((2 << 1)-1); */
+ mask = 0x3;
  for(t=0;t<test[0]->tsamples;t++){
    if(overlap){
      /*
@@ -119,16 +123,16 @@ void diehard_dna(Test **test, int irun)
      /*
       * Get four "letters" (indices into w)
       */
-     i = get_bit_ntuple(&i0,1,2,boffset);
-     j = get_bit_ntuple(&j0,1,2,boffset);
-     k = get_bit_ntuple(&k0,1,2,boffset);
-     l = get_bit_ntuple(&l0,1,2,boffset);
-     m = get_bit_ntuple(&m0,1,2,boffset);
-     n = get_bit_ntuple(&n0,1,2,boffset);
-     o = get_bit_ntuple(&o0,1,2,boffset);
-     p = get_bit_ntuple(&p0,1,2,boffset);
-     q = get_bit_ntuple(&q0,1,2,boffset);
-     r = get_bit_ntuple(&r0,1,2,boffset);
+     i = get_bit_ntuple_from_uint(i0,2,mask,boffset);
+     j = get_bit_ntuple_from_uint(j0,2,mask,boffset);
+     k = get_bit_ntuple_from_uint(k0,2,mask,boffset);
+     l = get_bit_ntuple_from_uint(l0,2,mask,boffset);
+     m = get_bit_ntuple_from_uint(m0,2,mask,boffset);
+     n = get_bit_ntuple_from_uint(n0,2,mask,boffset);
+     o = get_bit_ntuple_from_uint(o0,2,mask,boffset);
+     p = get_bit_ntuple_from_uint(p0,2,mask,boffset);
+     q = get_bit_ntuple_from_uint(q0,2,mask,boffset);
+     r = get_bit_ntuple_from_uint(r0,2,mask,boffset);
      /* printf("%u:   %u  %u  %u  %u  %u\n",t,i,j,k,l,boffset); */
      w[i][j][k][l][m][n][o][p][q][r]++;
      boffset++;
@@ -139,34 +143,34 @@ void diehard_dna(Test **test, int irun)
       */
      boffset = q%32;
      i = gsl_rng_get(rng);
-     i = get_bit_ntuple(&i,1,2,boffset);
+     i = get_bit_ntuple_from_uint(i,2,mask,boffset);
      boffset = i%32;
      j = gsl_rng_get(rng);
-     j = get_bit_ntuple(&j,1,2,boffset);
+     j = get_bit_ntuple_from_uint(j,2,mask,boffset);
      boffset = j%32;
      k = gsl_rng_get(rng);
-     k = get_bit_ntuple(&k,1,2,boffset);
+     k = get_bit_ntuple_from_uint(k,2,mask,boffset);
      boffset = k%32;
      l = gsl_rng_get(rng);
-     l = get_bit_ntuple(&l,1,2,boffset);
+     l = get_bit_ntuple_from_uint(l,2,mask,boffset);
      boffset = l%32;
      m = gsl_rng_get(rng);
-     m = get_bit_ntuple(&m,1,2,boffset);
+     m = get_bit_ntuple_from_uint(m,2,mask,boffset);
      boffset = m%32;
      n = gsl_rng_get(rng);
-     n = get_bit_ntuple(&n,1,2,boffset);
+     n = get_bit_ntuple_from_uint(n,2,mask,boffset);
      boffset = n%32;
      o = gsl_rng_get(rng);
-     o = get_bit_ntuple(&o,1,2,boffset);
+     o = get_bit_ntuple_from_uint(o,2,mask,boffset);
      boffset = o%32;
      p = gsl_rng_get(rng);
-     p = get_bit_ntuple(&p,1,2,boffset);
+     p = get_bit_ntuple_from_uint(p,2,mask,boffset);
      boffset = p%32;
      q = gsl_rng_get(rng);
-     q = get_bit_ntuple(&q,1,2,boffset);
+     q = get_bit_ntuple_from_uint(q,2,mask,boffset);
      boffset = q%32;
      r = gsl_rng_get(rng);
-     r = get_bit_ntuple(&r,1,2,boffset);
+     r = get_bit_ntuple_from_uint(r,2,mask,boffset);
      w[i][j][k][l][m][n][o][p][q][r]++;
    }
  }
