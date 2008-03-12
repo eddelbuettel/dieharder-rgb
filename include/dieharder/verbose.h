@@ -48,7 +48,7 @@
    D_SAMPLE,
    D_CHISQ,
    D_KSTEST,
-   D_BTEST,
+   D_VTEST,
    D_XTEST,
    D_BRANK,
    D_FILE_INPUT,

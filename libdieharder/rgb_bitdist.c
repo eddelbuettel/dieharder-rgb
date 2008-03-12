@@ -138,6 +138,21 @@ void rgb_bitdist(Test **test,int irun)
  }
    
  tsamples = test[0]->tsamples;
+
+ /*
+  * Set the mask for bits to be returned.  I think that I want to
+  * change routines here over to the sliding window routine.
+  *
+  * The following mask will work OK, but John says that it won't
+  * work unless nb != CHAR_BIT*sizeof(uint), so the loop is a bit
+  * more robust.
+  *
+  *  mask = ((1u << nb) - 1);
+  */
+ mask = 0;
+ for(i = 0; i < nb; i++){
+   mask |= (1u << nb);
+ }
  mask = ((1u << nb) - 1);
 
  for(i=0;i<value_max;i++){

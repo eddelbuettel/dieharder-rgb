@@ -23,7 +23,7 @@ void Vtest_create(Vtest *vtest, unsigned int nvec)
 {
 
  int i;
- MYDEBUG(D_BTEST){
+ MYDEBUG(D_VTEST){
    printf("#==================================================================\n");
    printf("# Vtest_create(): Creating test struct for %u nvec.\n",nvec);
  }
@@ -35,9 +35,10 @@ void Vtest_create(Vtest *vtest, unsigned int nvec)
    vtest->y[i] = 0.0;
  }
  vtest->nvec = nvec;
+ vtest->ndof = nvec-1;  /* override this if another value is known */
  vtest->chisq = 0.0;
  vtest->pvalue = 0.0;
- MYDEBUG(D_BTEST){
+ MYDEBUG(D_VTEST){
    printf("# Vtest_create(): Done.\n");
  }
 
@@ -55,7 +56,7 @@ void Vtest_destroy(Vtest *vtest)
 void Vtest_eval(Vtest *vtest)
 {
 
- uint i,ndof;
+ uint i;
  double delchisq,chisq;
  double x_tot,y_tot;
 
@@ -66,29 +67,31 @@ void Vtest_eval(Vtest *vtest)
   * vtest->y is the exact vector
   * vtest->sigma is the vector of expected error for y
   *              (for the exact/true distribution)
-  * nvec is the vector length(s).
+  * vtest->nvec is the vector length(s).
+  * vtest->ndof is the number of degrees of freedom (default nvec-1)
   *
-  * x, y, sigma all must be filled in my the calling routine.
+  * x, y, sigma, nvec all must be filled in my the calling routine.
+  * Be sure to override the default value of ndof if it is known to
+  * the caller.
   *
   * We'll have to see how this handles sigma[i] = 0.0.  Probably badly
   * but smoothly.
   */
  /* verbose=1; */
- if(verbose == D_BTEST || verbose == D_ALL){
+ if(verbose == D_VTEST || verbose == D_ALL){
    printf("Evaluating chisq and pvalue for %d points\n",vtest->nvec);
  }
 
  chisq = 0.0;
  x_tot = 0.0;
  y_tot = 0.0;
- ndof = 0;
- if(verbose == D_BTEST || verbose == D_ALL){
+ if(verbose == D_VTEST || verbose == D_ALL){
    printf("# %7s   %3s      %3s %10s      %10s %10s %9s\n",
            "bit/bin","DoF","X","Y","sigma","del-chisq","chisq");
    printf("#==================================================================\n");
  }
  for (i=0;i<vtest->nvec;i++) {
-   if(vtest->x[i] > 10.0){
+  /* if(vtest->x[i] > 10.0){ */
      x_tot += vtest->x[i];
      y_tot += vtest->y[i];
      delchisq = (vtest->x[i] - vtest->y[i])*(vtest->x[i] - vtest->y[i])/vtest->y[i];
@@ -97,18 +100,17 @@ void Vtest_eval(Vtest *vtest)
      delchisq *= delchisq;
      */
      chisq += delchisq;
-     if(verbose == D_BTEST || verbose == D_ALL){
+     if(verbose == D_VTEST || verbose == D_ALL){
        printf("# %5u\t%3u\t%12.4f\t%12.4f\t%8.4f\t%10.4f\n",
-                  i,ndof,vtest->x[i],vtest->y[i],delchisq,chisq);
+                  i,vtest->ndof,vtest->x[i],vtest->y[i],delchisq,chisq);
      }
-     ndof++;
-   }
+  /* } */
  }
 
- if(verbose == D_BTEST || verbose == D_ALL){
+ if(verbose == D_VTEST || verbose == D_ALL){
    printf("Total:  %10.4f  %10.4f\n",x_tot,y_tot);
    printf("#==================================================================\n");
-   printf("Evaluated chisq = %f for %u degrees of freedom\n",chisq,ndof);
+   printf("Evaluated chisq = %f for %u degrees of freedom\n",chisq,vtest->ndof);
  }
  vtest->chisq = chisq;
 
@@ -118,9 +120,8 @@ void Vtest_eval(Vtest *vtest)
   * did use a constraint when we set expected = binomial*nsamp, so we'll
   * go for ndof (count of nvec tallied) - 1.
   */
- ndof--;
- vtest->pvalue = gsl_sf_gamma_inc_Q((double)(ndof)/2.0,chisq/2.0);
- if(verbose == D_BTEST || verbose == D_ALL){
+ vtest->pvalue = gsl_sf_gamma_inc_Q((double)(vtest->ndof)/2.0,chisq/2.0);
+ if(verbose == D_VTEST || verbose == D_ALL){
    printf("Evaluted pvalue = %6.4f in Vtest_eval().\n",vtest->pvalue);
  }
  /* verbose=0; */
