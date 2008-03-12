@@ -53,5 +53,6 @@
    D_BRANK,
    D_FILE_INPUT,
    D_FILE_INPUT_RAW,
+   D_ADD_MY_TYPES,
    N_DEBUG
  } Debug;
