@@ -64,6 +64,7 @@ dieharder_SOURCES = \
 	run_rgb_timing.c \
 	run_sts_monobit.c \
 	run_sts_runs.c \
+	run_sts_serial.c \
 	run_user_template.c \
 	startup.c \
 	test.c \

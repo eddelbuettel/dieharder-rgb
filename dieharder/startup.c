@@ -71,6 +71,7 @@ reasonable amount of time).\n\
       Statistical Test Suite (STS)\n\
    -s 1 STS Monobit test\n\
    -s 2 STS Runs test\n\
+   -s 3 STS Serial test\n\
 \n\
             User Tests\n\
    -u 1 User Template (Lagged Sum Test)\n\

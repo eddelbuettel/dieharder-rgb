@@ -76,8 +76,8 @@ am_libdieharder_la_OBJECTS = add_lib_rngs.lo bits.lo chisq.lo \
 	rgb_timing.lo rngav.lo rng_ca.lo rng_dev_random.lo \
 	rng_dev_arandom.lo rng_dev_urandom.lo rng_file_input.lo \
 	rng_file_input_raw.lo rng_kiss.lo rngs_gnu_r.lo rng_uvag.lo \
-	sample.lo std_test.lo sts_monobit.lo sts_runs.lo timing.lo \
-	Vtest.lo Xtest.lo
+	sample.lo std_test.lo sts_monobit.lo sts_runs.lo sts_serial.lo \
+	timing.lo Vtest.lo Xtest.lo
 libdieharder_la_OBJECTS = $(am_libdieharder_la_OBJECTS)
 libdieharder_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -272,6 +272,7 @@ libdieharder_la_SOURCES = \
 	std_test.c \
 	sts_monobit.c \
 	sts_runs.c \
+	sts_serial.c \
 	timing.c \
 	Vtest.c \
 	Xtest.c
@@ -416,6 +417,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/std_test.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sts_monobit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sts_runs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sts_serial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timing.Plo@am__quote@
 
 .c.o:

@@ -66,6 +66,8 @@ void help()
    fflush(stdout);
    printf("%s",sts_runs_dtest.description);
    fflush(stdout);
+   printf("%s",sts_serial_dtest.description);
+   fflush(stdout);
    help_user_template();
    fflush(stdout);
    exit(0);
@@ -181,6 +183,10 @@ void help()
      break;
    case STS_RUNS:
      printf("%s",sts_runs_dtest.description);
+     fflush(stdout);
+     break;
+   case STS_SERIAL:
+     printf("%s",sts_serial_dtest.description);
      fflush(stdout);
      break;
    default:

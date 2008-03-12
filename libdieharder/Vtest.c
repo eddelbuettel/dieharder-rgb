@@ -85,6 +85,7 @@ void Vtest_eval(Vtest *vtest)
  chisq = 0.0;
  x_tot = 0.0;
  y_tot = 0.0;
+ ndof = 0;
  MYDEBUG(D_VTEST){
    printf("# %7s   %3s      %3s %10s      %10s %10s %9s\n",
            "bit/bin","DoF","X","Y","sigma","del-chisq","chisq");
@@ -95,31 +96,23 @@ void Vtest_eval(Vtest *vtest)
   * try to estimate it based on a cutoff that is pretty arbitrary.  So
   * set it to what it should be, if you know.
   */
- ndof = 0;
  for (i=0;i<vtest->nvec;i++) {
-   /*
-    * This really won't do.  I'm computing the number of degrees
-    * of freedom in situ, which is clearly just wrong.  I need to
-    * KNOW the number of degrees of freedom, not guess it.  In
-    * fact, what I need to do is convert Xtest and Vtest to be named
-    * something like "phitest()" and "chisqtest()" or "Ntest" (normal)
-    * and "X2test" (chisq).  Things are currently too opaque in the
-    * code.
-    */
-   x_tot += vtest->x[i];
-   y_tot += vtest->y[i];
-   delchisq = (vtest->x[i] - vtest->y[i])*(vtest->x[i] - vtest->y[i])/vtest->y[i];
-   /*  Alternative way of evaluating chisq for binomial only.
-   delchisq = (vtest->x[i] - vtest->y[i])/vtest->sigma[i];
-   delchisq *= delchisq;
-   */
-   chisq += delchisq;
-   MYDEBUG(D_VTEST){
-     printf("# %5u\t%3u\t%12.4f\t%12.4f\t%8.4f\t%10.4f\n",
-                i,vtest->ndof,vtest->x[i],vtest->y[i],delchisq,chisq);
+   if(vtest->x[i] > 1.0){
+     x_tot += vtest->x[i];
+     y_tot += vtest->y[i];
+     delchisq = (vtest->x[i] - vtest->y[i])*(vtest->x[i] - vtest->y[i])/vtest->y[i];
+     /*  Alternative way of evaluating chisq for binomial only.
+     delchisq = (vtest->x[i] - vtest->y[i])/vtest->sigma[i];
+     delchisq *= delchisq;
+     */
+     chisq += delchisq;
+     MYDEBUG(D_VTEST){
+       printf("# %5u\t%3u\t%12.4f\t%12.4f\t%8.4f\t%10.4f\n",
+                  i,vtest->ndof,vtest->x[i],vtest->y[i],delchisq,chisq);
+     }
+     /* increment only if the data is substantial */
+     if(vtest->ndof == 0) ndof++;
    }
-   /* increment only if the data is substantial */
-   if(vtest->ndof == 0 && vtest->x[i] > 1.0) ndof++;
 
  }
  if(vtest->ndof == 0) vtest->ndof = ndof-1;
@@ -138,7 +131,7 @@ void Vtest_eval(Vtest *vtest)
   * go for ndof (count of nvec tallied) - 1.
   */
  vtest->pvalue = gsl_sf_gamma_inc_Q((double)(vtest->ndof)/2.0,chisq/2.0);
- printf("Evaluted pvalue = %6.4f in Vtest_eval() with %u ndof.\n",vtest->pvalue,vtest->ndof);
+ /* printf("Evaluted pvalue = %6.4f in Vtest_eval() with %u ndof.\n",vtest->pvalue,vtest->ndof); */
  MYDEBUG(D_VTEST){
    printf("Evaluted pvalue = %6.4f in Vtest_eval().\n",vtest->pvalue);
  }

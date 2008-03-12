@@ -80,8 +80,9 @@ am_dieharder_OBJECTS = add_ui_rngs.$(OBJEXT) dieharder.$(OBJEXT) \
 	run_rgb_minimum_distance.$(OBJEXT) run_rgb_operm.$(OBJEXT) \
 	run_rgb_persist.$(OBJEXT) run_rgb_timing.$(OBJEXT) \
 	run_sts_monobit.$(OBJEXT) run_sts_runs.$(OBJEXT) \
-	run_user_template.$(OBJEXT) startup.$(OBJEXT) test.$(OBJEXT) \
-	testbits.$(OBJEXT) user_template.$(OBJEXT) work.$(OBJEXT)
+	run_sts_serial.$(OBJEXT) run_user_template.$(OBJEXT) \
+	startup.$(OBJEXT) test.$(OBJEXT) testbits.$(OBJEXT) \
+	user_template.$(OBJEXT) work.$(OBJEXT)
 dieharder_OBJECTS = $(am_dieharder_OBJECTS)
 dieharder_DEPENDENCIES = ../libdieharder/libdieharder.la
 DEFAULT_INCLUDES = -I. -I$(top_builddir)@am__isrc@
@@ -249,6 +250,7 @@ dieharder_SOURCES = \
 	run_rgb_timing.c \
 	run_sts_monobit.c \
 	run_sts_runs.c \
+	run_sts_serial.c \
 	run_user_template.c \
 	startup.c \
 	test.c \
@@ -381,6 +383,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_timing.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_sts_monobit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_sts_runs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_sts_serial.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_user_template.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/startup.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test.Po@am__quote@

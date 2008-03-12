@@ -52,6 +52,7 @@ void work()
    /* marsaglia_tsang_gorilla(); */
    run_sts_monobit();
    run_sts_runs();
+   run_sts_serial();
    run_user_template();
    Exit(0);
  }
@@ -173,6 +174,10 @@ void work()
      break;
    case STS_RUNS:
      run_sts_runs();
+     Exit(0);
+     break;
+   case STS_SERIAL:
+     run_sts_serial();
      Exit(0);
      break;
    default:

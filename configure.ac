@@ -2,7 +2,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([dieharder], [2.24.8])
+AC_INIT([dieharder], [2.25.8])
 AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_SRCDIR([dieharder.abs])
 RELEASE=1
@@ -18,7 +18,7 @@ dnl See the libtool manual for an explanation of the numbers
 dnl
 dnl dieharder-1.0    libdieharder 0:0:0
 
-DIEHARDER_LT_VERSION="2:24:8"
+DIEHARDER_LT_VERSION="2:25:8"
 AC_SUBST(DIEHARDER_LT_VERSION)
 
 

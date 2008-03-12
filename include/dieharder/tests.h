@@ -30,6 +30,7 @@
 #include <dieharder/marsaglia_tsang_gcd.h>
 #include <dieharder/sts_monobit.h>
 #include <dieharder/sts_runs.h>
+#include <dieharder/sts_serial.h>
 
 /*
 #include <dieharder/marsaglia_tsang_gorilla.h>
@@ -77,7 +78,7 @@
    STS_NONE,
    STS_MONOBIT,
    STS_RUNS,
-   STS_BLOCK,
+   STS_SERIAL,
    N_STS_TESTS
  } Sts_Tests;
 

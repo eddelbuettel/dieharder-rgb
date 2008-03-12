@@ -23,8 +23,8 @@ static Dtest sts_serial_dtest = {
 #\n\
 # With overlap the test is more difficult to construct.  For example,\n\
 # given a bit string such as 0110100111000110 without overlap, it becomes\n\
-# 01|10|10|01|11|00|01|10 and we count 1 00, 3 01s, 3 10s, and 1 11.
-# WITH overlap we get all of these patterns as well as (with cyclic wrap):
+# 01|10|10|01|11|00|01|10 and we count 1 00, 3 01s, 3 10s, and 1 11.\n\
+# WITH overlap we get all of these patterns as well as (with cyclic wrap):\n\
 # 0|11|01|00|11|10|00|11|0 and we count 4 00s, 4 01s, 4 10s, and 3 11s.\n\
 # There is considerable covariance in the bit frequencies and a simple\n\
 # chisq test no longer suffices.  It is not clear that testing a\n\
@@ -44,3 +44,7 @@ static Dtest sts_serial_dtest = {
   1        /* We magically make all the bit tests return a single histogram */
 };
 
+/*
+ * Global variables, each with a "locally identifiable" name.
+ */
+uint sts_serial_ntuple;

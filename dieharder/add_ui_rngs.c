@@ -42,8 +42,11 @@ void add_ui_rngs()
  /*
   * and add the new ones.  Just clone these triplets as needed.
   */
+ /* gsl_rng_empty_random */
  types[i] = (gsl_rng_empty_random);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
 
 }
