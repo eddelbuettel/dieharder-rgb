@@ -1,5 +1,5 @@
 /*
- * $Id: rgb_bitdist.c 252 2006-10-10 13:17:36Z rgb $
+ * $Id: rgb_bitdist.c 248 2006-10-09 17:59:54Z rgb $
  *
  * See copyright in copyright.h and the accompanying file COPYING
  *
@@ -57,8 +57,6 @@
 
 #include <dieharder/libdieharder.h>
 
-#include "static_get_bits.c"
-
 void rgb_bitdist(Test **test,int irun)
 {
 
@@ -66,8 +64,9 @@ void rgb_bitdist(Test **test,int irun)
  uint nb;          /* number of bits in a tested ntuple */
  uint value_max;   /* 2^{nb}, basically (max size of nb bit word + 1) */
  uint bsamples;    /* The number of non-overlapping samples in buffer */
+ uint boffset;     /* The offset of the current/next sample */
  uint value;       /* value of sampled ntuple (as a uint) */
- uint mask;
+ uint randbuf[4];  /* A 128 bit space for rng samples */
 
  /* Look for cruft below */
 
@@ -80,11 +79,17 @@ void rgb_bitdist(Test **test,int irun)
  Vtest *vtest;               /* A reusable vector of binomial test bins */
 
  /*
+  * This is the size of the allocated sample buffer, in bits.
+  */
+ bsize = sizeof(randbuf)*CHAR_BIT;
+
+ /*
   * Sample a bitstring of rgb_bitstring_ntuple in length (exactly).
   */
  if(rgb_bitdist_ntuple>0){
    nb = rgb_bitdist_ntuple;
-   MYDEBUG(D_RGB_BITDIST){
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+     printf("# rgb_bitdist: Buffer size is %d\n",bsize);
      printf("# rgb_bitdist: Testing ntuple = %u\n",nb);
    }
  } else {
@@ -92,28 +97,22 @@ void rgb_bitdist(Test **test,int irun)
    exit(0);
  }
 
+
+ /*
+  * The number of nb-bit numbers we can pull from a single sample
+  * of bit length bsize, without overlap.
+  */
+ bsamples = bsize/nb;
+
  /*
   * The largest integer for this ntuple is 2^nb-1 (they range from 0 to
   * 2^nb - 1).  However, this is used to size count and limit loops, so
   * we use 2^nb and start indices from 0 as usual.
   */
  value_max = (uint) pow(2,nb);
- MYDEBUG(D_RGB_BITDIST){
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
    printf("# rgb_bitdist(): value_max = %u\n",value_max);
  }
-
- /*
-  * This is the number of bit samples we wish to accumulate per tsample.
-  * It basically determines the length of the bit string we chop up into
-  * ntuples.   There is no compelling reason for it to be a power of two,
-  * but why not?  Note that in the Old Days (where bsamples came from a
-  * fixed string size) its value was typically e.g. 128/8 = 16 or even less.
-  * We will assume the usual rule of thumb -- there need to be at least
-  * 30 objects in a sample for it to "behave".  We'll double this to 64
-  * as this still leaves us with "reasonable" run times.  With nb = 8 (one
-  * byte) this samples 64 byte chunks of the bitstream.
-  */
- bsamples = 64;
 
  /*
   * Allocate memory for value_max vector of Vtest structs and counts,
@@ -129,52 +128,30 @@ void rgb_bitdist(Test **test,int irun)
   * with probability 1/8.
   */
  ntuple_prob = 1.0/(double)value_max;
- MYDEBUG(D_RGB_BITDIST){
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
    printf("# rgb_bitdist(): ntuple_prob = %f\n",ntuple_prob);
    printf("# rgb_bitdist(): Testing %u samples of %u bit strings\n",test[0]->tsamples,bits);
    printf("# rgb_bitdist():=====================================================\n");
    printf("# rgb_bitdist():            vtest table\n");
    printf("# rgb_bitdist(): Outcome   bit          x           y       sigma\n");
  }
-   
- tsamples = test[0]->tsamples;
-
- /*
-  * Set the mask for bits to be returned.  I think that I want to
-  * change routines here over to the sliding window routine.
-  *
-  * The following mask will work OK, but John says that it won't
-  * work unless nb != CHAR_BIT*sizeof(uint), so the loop is a bit
-  * more robust.
-  *
-  *  mask = ((1u << nb) - 1);
-  */
- mask = 0;
- for(i = 0; i < nb; i++){
-   mask |= (1u << nb);
- }
- mask = ((1u << nb) - 1);
-
  for(i=0;i<value_max;i++){
    Vtest_create(&vtest[i],bsamples+1,"rgb_bitdist",gsl_rng_name(rng));
-   /* We'll assume that we have this many degrees of freedom */
-   vtest[i].ndof = pow(2,nb) - 1;
    for(b=0;b<=bsamples;b++){
      if(i==0){
        pbin = gsl_ran_binomial_pdf(b,ntuple_prob,bsamples);
        vtest[i].x[b] = 0.0;
-       vtest[i].y[b] = tsamples*pbin;
+       vtest[i].y[b] = test[0]->tsamples*pbin;
      } else {
        vtest[i].x[b] = 0.0;
        vtest[i].y[b] = vtest[0].y[b];
      }
-     MYDEBUG(D_RGB_BITDIST){
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("# rgb_bitdist():  %3u     %3u   %10.5f  %10.5f\n",
          i,b,vtest[i].x[b],vtest[i].y[b]);
      }
-     vtest[i].x[0] = tsamples;
    }
-   MYDEBUG(D_RGB_BITDIST){
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
      printf("# rgb_bitdist():=====================================================\n");
    }
  }
@@ -185,49 +162,79 @@ void rgb_bitdist(Test **test,int irun)
   * with the bitcount as an index as a trial that generated that
   * bitcount.
   */
- memset(count,0,value_max*sizeof(uint));
- for(t=0;t<tsamples;t++){
+ for(t=0;t<test[0]->tsamples;t++){
+
+   /*
+    * This safely fills the buffer even if the generator returns
+    * less than 32 bits.  Note that fill_uint_buffer requires the
+    * LENGTH of the uint vector in uints, not in bytes...
+   fill_uint_buffer(randbuf,sizeof(randbuf)/sizeof(uint));
+    *
+    * CRUFT.
+    */
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+      printf("# rgb_bitdist(): randbuf = %10u = ",randbuf[0]);
+      dumpbits(&randbuf[0],CHAR_BIT*sizeof(uint));
+   }
 
    /*
     * Clear the count vector for this sample.
     */
-    
+   memset(count,0,value_max*sizeof(uint));
+
+   /*
+    * Rotate starting offset with t, e.g. 0,1,2,0,1,2 for nb=3
+    */
+   boffset = t%nb;
    for(b=0;b<bsamples;b++){
+     /*
+      * This gets the integer value of the ntuple of length nb, at index
+      * position boffset in the current uint randbuf[] of length 4, from a
+      * window with cyclic wraparound.
+      *
+     value = get_bit_ntuple((void *)&randbuf[0],sizeof(uint),nb,boffset);
+      *
+      * BUT it is cruft, to be used NO MORE.  THIS gets precisely THE bit
+      * ntuple of length nb that is the next available in the bitstream
+      * provided by the generator, without skipping bits.  This is clearly
+      * the right thing to use here, as we prepare to create a supertest
+      * of this test with a user-adjustable gap parameter and a fourier
+      * version of this test ditto.  Note that we don't need the rng call
+      * above any more.
+      */
+     get_rand_bits(&value,sizeof(uint),nb,rng);
 
      /*
-      * This gets the integer value of the ntuple of length nb that is the
-      * next available in the bitstream provided by the generator, without
-      * skipping bits.  Then increment the count of this ntuple value's
-      * occurrence out of bsamples tries.
+      * We increment the count of this ntuple value's occurence in this
+      * sample string of bits.
       */
-     value = get_rand_bits_uint (nb, mask, rng);
      count[value]++;
-
-     MYDEBUG(D_RGB_BITDIST) {
-       printf("# rgb_bitdist():b=%u count[%u] = %u\n",b,value,count[value]);
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("# rgb_bitdist():b=%u boffset = %u count[%u] = %u\n",b,boffset,value,count[value]);
      }
 
+     /*
+      * We increment the offset and do the next bsample
+      */
+     boffset += nb;
    }
 
    /*
-    * We now increment the CUMULATIVE counter -- vtest -- so we can
-    * compare the result to the expected value when we're done.
+    * We've finished the pattern.  count contains the number of
+    * times each possible pattern occurred in samples drawn from
+    * randbuf[].  We therefore have to increment the CUMULATIVE
+    * counter -- vtest -- so we can compare the result to the
+    * expected value when we're done.
     */
    ctotal = 0;
    for(i=0;i<value_max;i++){
-      uint count_i = count[i];
-      if (count_i)
-	{
-	   count[i] = 0;		       /* performs memset */
-	   ctotal += count_i;
-	   vtest[i].x[count_i]++;
-	   vtest[i].x[0]--;
-	}
-      MYDEBUG(D_RGB_BITDIST){
-	 printf("# rgb_bitdist(): vtest[%u].x[%u] = %u\n",i,count[i],(uint)vtest[i].x[count[i]]);
+     vtest[i].x[count[i]]++;
+     ctotal += count[i];
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
+       printf("# rgb_bitdist(): vtest[%u].x[%u] = %u\n",i,count[i],(uint)vtest[i].x[count[i]]);
      }
    }
-   MYDEBUG(D_RGB_BITDIST){
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
      printf("# rgb_bitdist(): Sample %u: total count = %u (should be %u, count of bits)\n",t,ctotal,bits);
    }
  }
@@ -238,7 +245,7 @@ void rgb_bitdist(Test **test,int irun)
   * of the two places this test may be screwing up big time.
   */
 
- MYDEBUG(D_RGB_BITDIST){
+ if(verbose == D_RGB_BITDIST || verbose == D_ALL){
    printf("# rgb_bitdist(): ntuple_prob = %f\n",ntuple_prob);
    printf("# rgb_bitdist(): Testing %u samples of %u bit strings\n",test[0]->tsamples,bits);
    printf("# rgb_bitdist():=====================================================\n");
@@ -248,31 +255,19 @@ void rgb_bitdist(Test **test,int irun)
  ri = gsl_rng_uniform_int(rng,value_max);
  for(i=0;i<value_max;i++){
    for(b=0;b<=bsamples;b++){
-     MYDEBUG(D_RGB_BITDIST){
+     if(verbose == D_RGB_BITDIST || verbose == D_ALL){
        printf("# rgb_bitdist():  %3u     %3u   %10.5f  %10.5f\n",
          i,b,vtest[i].x[b],vtest[i].y[b]);
      }
    }
-   MYDEBUG(D_RGB_BITDIST){
+   if(verbose == D_RGB_BITDIST || verbose == D_ALL){
      printf("# rgb_bitdist():=====================================================\n");
    }
    Vtest_eval(&vtest[i]);
-
    /*
-    * NOTE NOTE NOTE
-    *
     * This is a bit nasty.  We can only save ONE pvalue per call.  The
     * only way to do so without bias is to randomly select which one to
     * save from large set of possibilities.
-    *
-    * However, this sucks.  Eventually I need to figure out how to
-    * turn the whole list of pvalues into a pvalue.  They are NOT
-    * independent though, so this is too difficult to deal with just
-    * now.  Randomly sampling might miss one particular byte pattern
-    * with a consistently bad pvalue unless/until the number of psamples
-    * is high enough to resolve these deviations, but this seems
-    * relatively "unlikely" -- deviations in the expected binomial bit
-    * pattern distribution will usually be systematic.
     */
    if(i == ri ) {
      test[0]->pvalues[irun] = vtest[i].pvalue;

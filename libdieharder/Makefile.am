@@ -75,6 +75,7 @@ libdieharder_la_SOURCES = \
 	std_test.c \
 	sts_monobit.c \
 	sts_runs.c \
+	sts_serial.c \
 	timing.c \
 	Vtest.c \
 	Xtest.c

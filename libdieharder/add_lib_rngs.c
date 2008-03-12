@@ -23,44 +23,84 @@ void add_lib_rngs()
  /*
   * and add the new ones...
   */
+
+ /* gsl_rng_dev_random */
  types[i] = (gsl_rng_dev_random);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_dev_arandom */
  types[i] = (gsl_rng_dev_arandom);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_dev_urandom */
  types[i] = (gsl_rng_dev_urandom);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_file_input */
  types[i] = (gsl_rng_file_input);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_file_input_raw */
  types[i] = (gsl_rng_file_input_raw);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_ca */
  types[i] = (gsl_rng_ca);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_r_wichmann_hill */
  types[i] = (gsl_rng_r_wichmann_hill);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_r_marsaglia_mc */
  types[i] = (gsl_rng_r_marsaglia_mc);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_r_super_duper */
  types[i] = (gsl_rng_r_super_duper);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_r_mersenne_twister */
  types[i] = (gsl_rng_r_mersenne_twister);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rgb_r_knuth_taocp */
  types[i] = (gsl_rng_r_knuth_taocp);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_r_knuth_taocp2 */
  types[i] = (gsl_rng_r_knuth_taocp2);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
+ /* gsl_rng_uvag */
  types[i] = (gsl_rng_uvag);
- if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
  i++;
  
 }
