@@ -1,8 +1,5 @@
 /*
- * $Id: sts_serial.c 252 2006-10-10 13:17:36Z rgb $
- *
  * See copyright in copyright.h and the accompanying file COPYING
- *
  */
 
 /*
@@ -55,40 +52,77 @@
  *========================================================================
  */
 
+/*
+ *                      Overlapping Test
+ *==================================================================
+ * We fill input with inlen uints. The test rules are that
+ * nb < |log_2 (inlen*32) | - 2.  Or inverting (which is
+ * more useful) inlen = 2^(nb+2)/sizeof(uint).  For example, if
+ * nb=8, inlen = 1024/32 = 32.  This is obviously very convervative.
+ * Even if nb=16 (testing 65K number) it is only 2^18/2^5 = 2^13 or
+ * around 8 MB of uints.
+ *
+ * To make this test fast, we should very likely just use
+ * inlen = 2^nb UINTS, which is 8x the minimum recommended and easy
+ * to compute, e.g. for nb = 16 we have input[65536], containing
+ * 2^24 = 16 Mbits.  We then allocate one extra uint at the end,
+ * fill it, copy the 0 uint to the end for periodic wrap, and
+ * simply rip a uint window along it with the inline shift trick
+ * to generate the overlapping samples.  The code we develop can
+ * likely be backported to bits.c as being a bit more efficient.
+ */
+
 #include <dieharder/libdieharder.h>
 
 #include "static_get_bits.c"
 
+/*
+ * This is a buffer of uint length (2^nb)+1 that we will fill with rands
+ * to be tested, once per test.
+ */
+uint *uintbuf;
+char *charbuf;
+
 void sts_serial(Test **test,int irun)
 {
 
- uint bsize;       /* number of bits in the sample buffer */
+ uint bsize;       /* number of bits/samples in uintbuf */
  uint nb;          /* number of bits in a tested ntuple */
- uint value_max;   /* 2^{nb}, basically (max size of nb bit word + 1) */
- uint bsamples;    /* The number of non-overlapping samples in buffer */
+ uint value_max;   /* 2^{nb}, basically (max value of nb bit word + 1) */
  uint value;       /* value of sampled ntuple (as a uint) */
- uint mask;
+ uint mask;        /* mask in only nb bits */
+ uint bi;          /* bit offset relative to window */
 
  /* Look for cruft below */
 
- uint b,t,i;   /* loop indices? */
- uint ri;
- uint *count,ctotal; /* count of any ntuple per bitstring */
+ uint i,j,t;          /* generic loop indices */
+ uint *count,ctotal;  /* count of any ntuple per bitstring */
+ uint window;  /* uint window into uintbuf, slide along a byte at at time. */
 
- uint size;
- double pvalue,ntuple_prob,pbin;  /* probabilities */
- Vtest *vtest;               /* A reusable vector of binomial test bins */
+ double pvalue; /* standard return */
 
  /*
-  * Sample a bitstring of rgb_bitstring_ntuple in length (exactly).
+  * Sample a bitstring of rgb_bitstring_ntuple in length (exactly).  Note
+  * that I'm going to force nb>=2, nb<=16 for the moment.  The routine
+  * might "work" for nb up to 24 or even (on a really big memory machine)
+  * 32, but memory requirements in uints are around 2^(nb+1) + n where n
+  * is order unity, maybe worse, so I think it would take a 12 to 16 GB
+  * machine to be able to just hold the memory, and then it would take a
+  * very long time.  However, the testing process might parallelize
+  * decently if we could farm out the blocks of bits to be run efficiently
+  * over a network relative to the time required to generate them.
   */
- if(sts_serial_ntuple>0){
-   nb = sts_serial_ntuple;
-   MYDEBUG(D_RGB_BITDIST){
+ if(sts_serial_ntuple > 1 && sts_serial_ntuple < 17){
+   nb = sts_serial_ntuple;   /* To save typing, mostly... */
+   MYDEBUG(D_STS_SERIAL){
+     printf("#==================================================================\n");
+     printf("# Starting sts_serial.\n");
      printf("# sts_serial: Testing ntuple = %u\n",nb);
    }
  } else {
-   printf("Error:  sts_serial_ntuple must be a positive integer.  Exiting.\n");
+   printf("#==================================================================\n");
+   printf("# Starting sts_serial.\n");
+   fprintf(stderr,"Error:  sts_serial_ntuple must be in [2,16].  Exiting.\n");
    exit(0);
  }
 
@@ -98,56 +132,57 @@ void sts_serial(Test **test,int irun)
   * we use 2^nb and start indices from 0 as usual.
   */
  value_max = (uint) pow(2,nb);
- MYDEBUG(D_RGB_BITDIST){
+ MYDEBUG(D_STS_SERIAL){
    printf("# sts_serial(): value_max = %u\n",value_max);
  }
 
  /*
-  * This is the number of bit samples we wish to accumulate per tsample.
-  * It basically determines the length of the bit string we chop up into
-  * ntuples.   There is no compelling reason for it to be a power of two,
-  * but why not?  Note that in the Old Days (where bsamples came from a
-  * fixed string size) its value was typically e.g. 128/8 = 16 or even less.
-  * We will assume the usual rule of thumb -- there need to be at least
-  * 30 objects in a sample for it to "behave".  We'll double this to 64
-  * as this still leaves us with "reasonable" run times.  With nb = 8 (one
-  * byte) this samples 64 byte chunks of the bitstream.
+  * The number of overlapping samples to be drawn from testbuf is
+  * value_max*sizeof(uint)*CHAR_BIT, (where CHAR_BIT = 8) I believe.
   */
- bsamples = 64;
-
- /*
-  * Allocate memory for value_max vector of Vtest structs and counts,
-  * PER TEST.  Note that we must free both of these when we are done
-  * or leak.
-  */
- vtest = (Vtest *)malloc(value_max*sizeof(Vtest));
- count = (uint *)malloc(value_max*sizeof(uint));
-
- /*
-  * This is the probability of getting any given ntuple.  For example,
-  * for bit triples, value_max = 2^3 = 8 and each value should occur
-  * with probability 1/8.
-  */
- ntuple_prob = 1.0/(double)value_max;
- MYDEBUG(D_RGB_BITDIST){
-   printf("# sts_serial(): ntuple_prob = %f\n",ntuple_prob);
-   printf("# sts_serial(): Testing %u samples of %u bit strings\n",test[0]->tsamples,bits);
-   printf("# sts_serial():=====================================================\n");
-   printf("# sts_serial():            vtest table\n");
-   printf("# sts_serial(): Outcome   bit          x           y       sigma\n");
+ bsize = value_max*sizeof(uint)*9;
+ MYDEBUG(D_STS_SERIAL){
+   printf("# sts_serial(): bsize = %u\n",bsize);
  }
-   
- tsamples = test[0]->tsamples;
 
  /*
-  * Set the mask for bits to be returned.  I think that I want to
-  * change routines here over to the sliding window routine.
-  *
-  * The following mask will work OK, but John says that it won't
-  * work unless nb != CHAR_BIT*sizeof(uint), so the loop is a bit
-  * more robust.
-  *
-  *  mask = ((1u << nb) - 1);
+  * Allocate memory for value_max vector of count, and testbuf PER TEST.
+  * Note that we must free both of these when we are done or leak.  Note
+  * also that we want to be able to view the testbuf as string of chars
+  * so we can easily cast out addresses a byte at a time.
+  */
+ count = (uint *)malloc(value_max*sizeof(uint));
+ uintbuf = (uint *)malloc((value_max+1)*sizeof(uint));
+
+ /*
+  * We zero the count vector.
+  */
+ memset(count,0,value_max*sizeof(uint));
+
+ /*
+  * We start by filling testbuf with rands and cloning the first into
+  * the last slot for cyclic wrap.
+  */
+ for(i=0;i<value_max;i++){
+   /* uintbuf[i] = get_rand_bits_uint(32,0xFFFFFFFF,rng); */
+   uintbuf[i] = gsl_rng_get(rng);
+   MYDEBUG(D_STS_SERIAL){
+     printf("# sts_serial(): %u:  ",i);
+     dumpuintbits(&uintbuf[i],1);
+     printf("\n");
+   }
+ }
+ uintbuf[value_max] = uintbuf[0];   /* Periodic wraparound */
+ MYDEBUG(D_STS_SERIAL){
+   printf("# sts_serial(): %u:  ",value_max);
+   dumpuintbits(&uintbuf[value_max],1);
+   printf("\n");
+ }
+
+ /*
+  * Set the mask for bits to be returned.  This will work fine for
+  * nb in the allowed range, and will fail if nb = 32 if that ever
+  * happens in the future.
   */
  mask = 0;
  for(i = 0; i < nb; i++){
@@ -155,134 +190,61 @@ void sts_serial(Test **test,int irun)
  }
  mask = ((1u << nb) - 1);
 
- for(i=0;i<value_max;i++){
-   Vtest_create(&vtest[i],bsamples+1,"sts_serial",gsl_rng_name(rng));
-   /* We'll assume that we have this many degrees of freedom */
-   vtest[i].ndof = pow(2,nb) - 1;
-   for(b=0;b<=bsamples;b++){
-     if(i==0){
-       pbin = gsl_ran_binomial_pdf(b,ntuple_prob,bsamples);
-       vtest[i].x[b] = 0.0;
-       vtest[i].y[b] = tsamples*pbin;
-     } else {
-       vtest[i].x[b] = 0.0;
-       vtest[i].y[b] = vtest[0].y[b];
+ /*
+  * Note that bsize is the number of samples.  I may convert the
+  * names of things to either better correspond to practice elsewhere
+  * in dieharder or to usage in the STS document, but for the moment
+  * I'm just going with the easy way.  We don't use t anyway, it is
+  * just a loop control.
+  */
+ j = 0;
+ ctotal = 0;
+ MYDEBUG(D_STS_SERIAL){
+   printf("looping bsize = %u times\n",bsize);
+ }
+ for(t=0;t<bsize;t++){
+   /*
+    * Offset of current sample, relative to left boundary of window.
+    */
+   if((t%32) == 0){
+     window = uintbuf[j];  /* start with window = testbuf = charbuf */
+     MYDEBUG(D_STS_SERIAL){
+       printf("uintbuf[%u] = %08x = ",j,window);
+       dumpuintbits(&window,1);
+       printf("\n");
      }
-     MYDEBUG(D_RGB_BITDIST){
-       printf("# sts_serial():  %3u     %3u   %10.5f  %10.5f\n",
-         i,b,vtest[i].x[b],vtest[i].y[b]);
-     }
-     vtest[i].x[0] = tsamples;
+     j++;
    }
-   MYDEBUG(D_RGB_BITDIST){
-     printf("# sts_serial():=====================================================\n");
+   bi = t%16;
+   value = (window >> (32 - nb - bi)) & mask;
+   MYDEBUG(D_STS_SERIAL){
+     dumpbitwin(value,nb);
+     printf("\n");
+   }
+   count[value]++;
+   ctotal++;
+   if(bi == 15){
+     window = (window << 16);
+     window += (uintbuf[j] >> 16);
+     MYDEBUG(D_STS_SERIAL){
+       printf("window[%u] = %08x = ",j,window);
+       dumpuintbits(&window,1);
+       printf("\n");
+     }
    }
  }
 
- /*
-  * Now (per ntuple) we check tsamples bitstrings of bits in length,
-  * counting the 1's.  At the end we increment the result histogram
-  * with the bitcount as an index as a trial that generated that
-  * bitcount.
-  */
- memset(count,0,value_max*sizeof(uint));
- for(t=0;t<tsamples;t++){
-
-   /*
-    * Clear the count vector for this sample.
-    */
-    
-   for(b=0;b<bsamples;b++){
-
-     /*
-      * This gets the integer value of the ntuple of length nb that is the
-      * next available in the bitstream provided by the generator, without
-      * skipping bits.  Then increment the count of this ntuple value's
-      * occurrence out of bsamples tries.
-      */
-     value = get_rand_bits_uint (nb, mask, rng);
-     count[value]++;
-
-     MYDEBUG(D_RGB_BITDIST) {
-       printf("# sts_serial():b=%u count[%u] = %u\n",b,value,count[value]);
-     }
-
-   }
-
-   /*
-    * We now increment the CUMULATIVE counter -- vtest -- so we can
-    * compare the result to the expected value when we're done.
-    */
-   ctotal = 0;
-   for(i=0;i<value_max;i++){
-      uint count_i = count[i];
-      if (count_i)
-	{
-	   count[i] = 0;		       /* performs memset */
-	   ctotal += count_i;
-	   vtest[i].x[count_i]++;
-	   vtest[i].x[0]--;
-	}
-      MYDEBUG(D_RGB_BITDIST){
-	 printf("# sts_serial(): vtest[%u].x[%u] = %u\n",i,count[i],(uint)vtest[i].x[count[i]]);
-     }
-   }
-   MYDEBUG(D_RGB_BITDIST){
-     printf("# sts_serial(): Sample %u: total count = %u (should be %u, count of bits)\n",t,ctotal,bits);
-   }
- }
-
- /*
-  * Now, finally, we need to score the vtest for this value of nb
-  * (all tsamples of it) and turn it into a p-value.  This is one
-  * of the two places this test may be screwing up big time.
-  */
-
- MYDEBUG(D_RGB_BITDIST){
-   printf("# sts_serial(): ntuple_prob = %f\n",ntuple_prob);
-   printf("# sts_serial(): Testing %u samples of %u bit strings\n",test[0]->tsamples,bits);
    printf("# sts_serial():=====================================================\n");
-   printf("# sts_serial():            vtest table\n");
-   printf("# sts_serial(): Outcome   bit          x           y       sigma\n");
+   printf("# sts_serial():                  Count table\n");
+   printf("# sts_serial(): bit pattern      value      count     prob \n");
+   for(i = 0; i<value_max; i++){
+     dumpuintbits(&i,1);
+     printf("\t%u\t%u\t%f\n",i,count[i],(double) count[i]/ctotal);
+   }
+ MYDEBUG(D_STS_SERIAL){
  }
- ri = gsl_rng_uniform_int(rng,value_max);
- for(i=0;i<value_max;i++){
-   for(b=0;b<=bsamples;b++){
-     MYDEBUG(D_RGB_BITDIST){
-       printf("# sts_serial():  %3u     %3u   %10.5f  %10.5f\n",
-         i,b,vtest[i].x[b],vtest[i].y[b]);
-     }
-   }
-   MYDEBUG(D_RGB_BITDIST){
-     printf("# sts_serial():=====================================================\n");
-   }
-   Vtest_eval(&vtest[i]);
 
-   /*
-    * NOTE NOTE NOTE
-    *
-    * This is a bit nasty.  We can only save ONE pvalue per call.  The
-    * only way to do so without bias is to randomly select which one to
-    * save from large set of possibilities.
-    *
-    * However, this sucks.  Eventually I need to figure out how to
-    * turn the whole list of pvalues into a pvalue.  They are NOT
-    * independent though, so this is too difficult to deal with just
-    * now.  Randomly sampling might miss one particular byte pattern
-    * with a consistently bad pvalue unless/until the number of psamples
-    * is high enough to resolve these deviations, but this seems
-    * relatively "unlikely" -- deviations in the expected binomial bit
-    * pattern distribution will usually be systematic.
-    */
-   if(i == ri ) {
-     test[0]->pvalues[irun] = vtest[i].pvalue;
-     MYDEBUG(D_RGB_BITDIST) {
-       printf("# sts_serial(): test[%u]->pvalues[%u] = %10.5f\n",
-          0,irun,test[0]->pvalues[irun]);
-     }
-   }
-   Vtest_destroy(&vtest[i]);
- }
+ exit(0);
 
 }
 

@@ -8,28 +8,71 @@ or running dieharder on a truly old linux (or other) distribution.  In
 practical terms, if your linux distribution is older than two years
 (say, pre-FC 4) it is unlikely to build smoothly without signicant work.
 For many of you reading this, then, my first instruction is "update to a
-relatively modern build environment that contains a contemporary GSL".
+relatively modern build environment that contains a contemporary GSL
+and GBT".  
+
+A few required components may not be installed on your system by default
+even if your system is quite modern.  The GSL is one example -- you may
+need to use yum or apt-get or whatever package manager your system uses
+to install its packages to install it, e.g. "yum install gsl\*" (to get
+both the library and its header files) or you may have to get the GSL
+sources and build/install from scratch.
+
+Also be sure your system has libtool installed and on your path or else
+the build will, of course, fail.  In particular its definition on your
+system needs to be in aclocal's search path.
 
 Once this is done, the build SHOULD proceed easily enough.  Enter the
 toplevel build directory and enter:
 
  ./autogen.sh
+ make
 
-which should set up the GBT build.  If you skip this step, you may not
-have the right/current versions of some of the files required by e.g.
-automake, but on most systems just using the "usual" build starting
-with the configure step will work.
+which should set up and perform a GBT build even if your system is quite
+different from my development/testing systems.
 
-Next, run
+If you skip this step, you may not have the right/current versions of
+some of the files required by e.g.  automake, but on many linux systems
+just using the "usual" build starting with the configure step will work:
+
+ ./configure
+ make
+
+Note that there are MANY options you may want to give configure to tune
+up a build for your particular architecture.  We will mention only two.
+The first is the --prefix option, which can be used to change the
+toplevel install path for packaging or to build and install a private
+(non-root) copy.  The default (run automatically at the end of
+./autogen.sh) is to run:
 
  ./configure --prefix=/usr
 
-for a traditional FHS-compliant build and install, or enter a full path
-such as:
+AS ROOT for a traditional FHS-compliant build and install.  However, you
+may instead with to enter some other toplevel path path such as:
 
  ./configure --prefix=$(HOME)/usr
 
-for an alternative install into your own home directory.  
+for an alternative install into your own home directory.  If you do the
+latter, you will have to make sure that ~/usr/bin is on your default
+path (set with the PATH environment variable) and ~/usr/lib is on your
+default library path (set with the LD_LIBRARY_PATH variable).
+
+dieharder uses GNU Libtool in order to automatically build against a
+shared libdieharder library on a variety of systems.  This enables one
+to build dieharder tests into your own applications, into a GUI version
+that is planned, and into existing tools such as R.  
+
+While shared libraries are very nice for making usable binaries and
+efficiently using system resources, they can be a pain when trying to
+debug a program or if you are building a single copy of dieharder for
+your personal and private use.  For that reason, compilation of shared
+libraries can be turned off by specifying the `--disable-shared' option
+to configure:
+
+ ./configure --prefix=$(HOME)/usr --disable-shared
+
+This should produce a static-linked binary of dieharder that can be run
+without the need to install the library at all.
 
 Finally, to just build the software in place, enter:
 
