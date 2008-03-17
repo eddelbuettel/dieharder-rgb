@@ -87,8 +87,7 @@ void sts_serial(Test **test,int irun)
 {
 
  uint bsize;       /* number of bits/samples in uintbuf */
- uint nb;          /* number of bits in a tested ntuple */
- uint value_max;   /* 2^{nb}, basically (max value of nb bit word + 1) */
+ uint nb,nbl;          /* number of bits in a tested ntuple */
  uint value;       /* value of sampled ntuple (as a uint) */
  uint mask;        /* mask in only nb bits */
  uint bi;          /* bit offset relative to window */
@@ -96,7 +95,8 @@ void sts_serial(Test **test,int irun)
  /* Look for cruft below */
 
  uint i,j,n,m,t;            /* generic loop indices */
- uint **freq,*psi2,ctotal;  /* count of any ntuple per bitstring */
+ uint ctotal;  /* count of any ntuple per bitstring */
+ double **freq,*psi2,*delpsi2,*del2psi2,*pvalue1,*pvalue2;
  uint window;  /* uint window into uintbuf, slide along a byte at at time. */
 
  double pvalue; /* standard return */
@@ -121,11 +121,15 @@ void sts_serial(Test **test,int irun)
      printf("# sts_serial: Testing ntuple = %u\n",nb);
    }
  } else {
-   printf("#==================================================================\n");
-   printf("# Starting sts_serial.\n");
-   fprintf(stderr,"Error:  sts_serial_ntuple must be in [2,16].  Exiting.\n");
-   exit(0);
+   nb = 16;
+   tsamples = test[0]->tsamples;  /* ditto */
+   MYDEBUG(D_STS_SERIAL){
+     printf("#==================================================================\n");
+     printf("# Starting sts_serial.\n");
+     printf("# sts_serial: Testing ntuple = %u\n",nb);
+   }
  }
+ nbl = nb+1;
 
  /*
   * We need a vector of freq vectors, and a smaller vector of psi^2
@@ -133,18 +137,24 @@ void sts_serial(Test **test,int irun)
   * frequency counter vector only as large as it needs to be.  We
   * zero each accumulator as we make it.
   */
- freq = (uint **) malloc(17*sizeof(uint *));
- for(m = 1;m < 17;m++) {
-   freq[m] = (uint *)malloc(pow(2,m)*sizeof(uint));
-   memset(freq[m],0,pow(2,m)*sizeof(uint));
+ freq = (double **) malloc(nbl*sizeof(double *));
+ for(m = 1;m < nbl;m++) {
+   freq[m] = (double *)malloc(pow(2,m)*sizeof(double));
+   memset(freq[m],0,pow(2,m)*sizeof(double));
  }
 
  /*
   * psi2 is where we accumulate the statistics when we're done.  We
   * zero it here to save time later.
   */
- psi2 = (uint *) malloc(17*sizeof(uint *));
- memset(psi2,0,17*sizeof(uint));
+ psi2 = (double *) malloc(nbl*sizeof(double *));
+ memset(psi2,0,nbl*sizeof(double));
+ delpsi2 = (double *) malloc(nbl*sizeof(double *));
+ memset(delpsi2,0,nbl*sizeof(double));
+ del2psi2 = (double *) malloc(nbl*sizeof(double *));
+ memset(del2psi2,0,nbl*sizeof(double));
+ pvalue1 = (double *) malloc(nbl*sizeof(double *));
+ pvalue2 = (double *) malloc(nbl*sizeof(double *));
 
  /*
   * uintbuf is the one true vector of rands processed during this test.
@@ -152,16 +162,6 @@ void sts_serial(Test **test,int irun)
   * We'll default this from tsamples, though.
   */
  uintbuf = (uint *)malloc((tsamples+1)*sizeof(uint));
-
- /*
-  * The largest integer for this ntuple is 2^nb-1 (they range from 0 to
-  * 2^nb - 1).  However, this is used to size count and limit loops, so
-  * we use 2^nb and start indices from 0 as usual.
-  */
- value_max = (uint) pow(2,nb);
- MYDEBUG(D_STS_SERIAL){
-   printf("# sts_serial(): value_max = %u\n",value_max);
- }
 
  /*
   * If uintbuf[test[0]->tsamples] is allocated (plus one for wraparound)
@@ -199,7 +199,7 @@ void sts_serial(Test **test,int irun)
   * We now in ONE PASS loop over all of the possible values of m from
   * 1 to 16.
   */
- for(m=1;m<17;m++){
+ for(m=1;m<nbl;m++){
  
    /*
     * Set the mask for bits to be returned.  This will work fine for
@@ -225,7 +225,7 @@ void sts_serial(Test **test,int irun)
      if((t%32) == 0){
        window = uintbuf[j];  /* start with window = testbuf = charbuf */
        MYDEBUG(D_STS_SERIAL){
-         printf("uintbuf[%u] = %08x = ",j,window);
+         printf("uint window[%u] = %08x = ",j,window);
          dumpuintbits(&window,1);
          printf("\n");
        }
@@ -243,7 +243,7 @@ void sts_serial(Test **test,int irun)
        window = (window << 16);
        window += (uintbuf[j] >> 16);
        MYDEBUG(D_STS_SERIAL){
-         printf("window[%u] = %08x = ",j,window);
+         printf("half window[%u] = %08x = ",j,window);
          dumpuintbits(&window,1);
          printf("\n");
        }
@@ -257,7 +257,7 @@ void sts_serial(Test **test,int irun)
      for(i = 0; i<pow(2,m); i++){
        printf("# sts_serial():   ");
        dumpbitwin(i,m);
-       printf("\t%u\t%u\t%f\n",i,freq[m][i],(double) freq[m][i]/ctotal);
+       printf("\t%u\t%f\t%f\n",i,freq[m][i],(double) freq[m][i]/ctotal);
      }
      printf("# sts_serial(): Total count = %u, target probability = %f\n",ctotal,1.0/pow(2,m));
    }
@@ -267,9 +267,31 @@ void sts_serial(Test **test,int irun)
  /*
   * Now it is time to implement the statistic from STS SP800 whatever.
   */
-  
+ MYDEBUG(D_STS_SERIAL){
+   printf("# sts_serial():=====================================================\n");
+ }
+ for(m=1;m<nbl;m++){
+   psi2[m] = 0.0;
+   for(i=0;i<pow(2,m);i++){
+     psi2[m] += freq[m][i]*freq[m][i];
+     /* printf("freq[%u][%u] = %f  p2 = %f \n",m,i,freq[m][i],psi2[m]); */
+   }
+   psi2[m] = pow(2,m)*psi2[m]/bsize - bsize;
+   MYDEBUG(D_STS_SERIAL){
+     printf("# sts_serial(): psi2[%u] = %f\n",m,psi2[m]);
+   }
+ }
+ for(m=2;m<nbl;m++){
+   delpsi2[m] = psi2[m] - psi2[m-1];
+   del2psi2[m] = psi2[m] - 2.0*psi2[m-1] + psi2[m-2];
+   pvalue1[m] = gsl_sf_gamma_inc_Q(pow(2,m-2),delpsi2[m]/2.0);
+   printf("pvalue1[%u] = %f\n",m,pvalue1[m]);
+   if(m>2){
+     pvalue2[m] = gsl_sf_gamma_inc_Q(pow(2,m-3),del2psi2[m]/2.0);
+     printf("pvalue2[%u] = %f\n",m,pvalue2[m]);
+   }
+ }
 
  exit(0);
 
 }
-
