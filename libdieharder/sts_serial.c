@@ -95,8 +95,8 @@ void sts_serial(Test **test,int irun)
 
  /* Look for cruft below */
 
- uint i,j,t;          /* generic loop indices */
- uint *count,ctotal;  /* count of any ntuple per bitstring */
+ uint i,j,n,m,t;            /* generic loop indices */
+ uint **freq,*psi2,ctotal;  /* count of any ntuple per bitstring */
  uint window;  /* uint window into uintbuf, slide along a byte at at time. */
 
  double pvalue; /* standard return */
@@ -113,7 +113,8 @@ void sts_serial(Test **test,int irun)
   * over a network relative to the time required to generate them.
   */
  if(sts_serial_ntuple > 1 && sts_serial_ntuple < 17){
-   nb = sts_serial_ntuple;   /* To save typing, mostly... */
+   nb = sts_serial_ntuple;        /* To save typing, mostly... */
+   tsamples = test[0]->tsamples;  /* ditto */
    MYDEBUG(D_STS_SERIAL){
      printf("#==================================================================\n");
      printf("# Starting sts_serial.\n");
@@ -127,6 +128,32 @@ void sts_serial(Test **test,int irun)
  }
 
  /*
+  * We need a vector of freq vectors, and a smaller vector of psi^2
+  * accumulators in order to implement the STS test.  We make each
+  * frequency counter vector only as large as it needs to be.  We
+  * zero each accumulator as we make it.
+  */
+ freq = (uint **) malloc(17*sizeof(uint *));
+ for(m = 1;m < 17;m++) {
+   freq[m] = (uint *)malloc(pow(2,m)*sizeof(uint));
+   memset(freq[m],0,pow(2,m)*sizeof(uint));
+ }
+
+ /*
+  * psi2 is where we accumulate the statistics when we're done.  We
+  * zero it here to save time later.
+  */
+ psi2 = (uint *) malloc(17*sizeof(uint *));
+ memset(psi2,0,17*sizeof(uint));
+
+ /*
+  * uintbuf is the one true vector of rands processed during this test.
+  * It needs to be at LEAST 2^16 uints in length, 2^20 is much better.
+  * We'll default this from tsamples, though.
+  */
+ uintbuf = (uint *)malloc((tsamples+1)*sizeof(uint));
+
+ /*
   * The largest integer for this ntuple is 2^nb-1 (they range from 0 to
   * 2^nb - 1).  However, this is used to size count and limit loops, so
   * we use 2^nb and start indices from 0 as usual.
@@ -137,112 +164,110 @@ void sts_serial(Test **test,int irun)
  }
 
  /*
-  * The number of overlapping samples to be drawn from testbuf is
-  * value_max*sizeof(uint)*CHAR_BIT, (where CHAR_BIT = 8) I believe.
+  * If uintbuf[test[0]->tsamples] is allocated (plus one for wraparound)
+  * then we need to count the number of bits, which is the number of
+  * OVERLAPPING samples we will pull.
   */
- bsize = value_max*sizeof(uint)*9;
+ bsize = tsamples*sizeof(uint)*CHAR_BIT;
  MYDEBUG(D_STS_SERIAL){
    printf("# sts_serial(): bsize = %u\n",bsize);
  }
 
  /*
-  * Allocate memory for value_max vector of count, and testbuf PER TEST.
-  * Note that we must free both of these when we are done or leak.  Note
-  * also that we want to be able to view the testbuf as string of chars
-  * so we can easily cast out addresses a byte at a time.
-  */
- count = (uint *)malloc(value_max*sizeof(uint));
- uintbuf = (uint *)malloc((value_max+1)*sizeof(uint));
-
- /*
-  * We zero the count vector.
-  */
- memset(count,0,value_max*sizeof(uint));
-
- /*
   * We start by filling testbuf with rands and cloning the first into
-  * the last slot for cyclic wrap.
+  * the last slot for cyclic wrap.  This initial effort just uses the
+  * fast gsl_rng_get() call, but we'll need to use the inline from the
+  * static_get_rng routines in production.
   */
- for(i=0;i<value_max;i++){
-   /* uintbuf[i] = get_rand_bits_uint(32,0xFFFFFFFF,rng); */
-   uintbuf[i] = gsl_rng_get(rng);
+ for(t=0;t<tsamples;t++){
+   /* uintbuf[t] = get_rand_bits_uint(32,0xFFFFFFFF,rng); */
+   uintbuf[t] = gsl_rng_get(rng);
    MYDEBUG(D_STS_SERIAL){
-     printf("# sts_serial(): %u:  ",i);
-     dumpuintbits(&uintbuf[i],1);
+     printf("# sts_serial(): %u:  ",t);
+     dumpuintbits(&uintbuf[t],1);
      printf("\n");
    }
  }
- uintbuf[value_max] = uintbuf[0];   /* Periodic wraparound */
+ uintbuf[tsamples] = uintbuf[0];   /* Periodic wraparound */
  MYDEBUG(D_STS_SERIAL){
-   printf("# sts_serial(): %u:  ",value_max);
-   dumpuintbits(&uintbuf[value_max],1);
+   printf("# sts_serial(): %u:  ",tsamples);
+   dumpuintbits(&uintbuf[tsamples],1);
    printf("\n");
  }
 
  /*
-  * Set the mask for bits to be returned.  This will work fine for
-  * nb in the allowed range, and will fail if nb = 32 if that ever
-  * happens in the future.
+  * We now in ONE PASS loop over all of the possible values of m from
+  * 1 to 16.
   */
- mask = 0;
- for(i = 0; i < nb; i++){
-   mask |= (1u << nb);
- }
- mask = ((1u << nb) - 1);
+ for(m=1;m<17;m++){
+ 
+   /*
+    * Set the mask for bits to be returned.  This will work fine for
+    * m in the allowed range, and will fail if m = 32 if that ever
+    * happens in the future.
+    */
+   mask = 0;
+   for(i = 0; i < m; i++){
+      mask |= (1u << m);
+   }
+   mask = ((1u << m) - 1);
+
+   /* Initialize index and count total */
+   j = 0;
+   ctotal = 0;
+   MYDEBUG(D_STS_SERIAL){
+     printf("looping bsize = %u times\n",bsize);
+   }
+   for(t=0;t<bsize;t++){
+     /*
+      * Offset of current sample, relative to left boundary of window.
+      */
+     if((t%32) == 0){
+       window = uintbuf[j];  /* start with window = testbuf = charbuf */
+       MYDEBUG(D_STS_SERIAL){
+         printf("uintbuf[%u] = %08x = ",j,window);
+         dumpuintbits(&window,1);
+         printf("\n");
+       }
+       j++;
+     }
+     bi = t%16;
+     value = (window >> (32 - m - bi)) & mask;
+     MYDEBUG(D_STS_SERIAL){
+       dumpbitwin(value,nb);
+       printf("\n");
+     }
+     freq[m][value]++;
+     ctotal++;
+     if(bi == 15){
+       window = (window << 16);
+       window += (uintbuf[j] >> 16);
+       MYDEBUG(D_STS_SERIAL){
+         printf("window[%u] = %08x = ",j,window);
+         dumpuintbits(&window,1);
+         printf("\n");
+       }
+     }
+   }
+
+   MYDEBUG(D_STS_SERIAL){
+     printf("# sts_serial():=====================================================\n");
+     printf("# sts_serial():                  Count table\n");
+     printf("# sts_serial():\tbits\tvalue\tcount\tprob\n");
+     for(i = 0; i<pow(2,m); i++){
+       printf("# sts_serial():   ");
+       dumpbitwin(i,m);
+       printf("\t%u\t%u\t%f\n",i,freq[m][i],(double) freq[m][i]/ctotal);
+     }
+     printf("# sts_serial(): Total count = %u, target probability = %f\n",ctotal,1.0/pow(2,m));
+   }
+
+ } /* End of m loop */
 
  /*
-  * Note that bsize is the number of samples.  I may convert the
-  * names of things to either better correspond to practice elsewhere
-  * in dieharder or to usage in the STS document, but for the moment
-  * I'm just going with the easy way.  We don't use t anyway, it is
-  * just a loop control.
+  * Now it is time to implement the statistic from STS SP800 whatever.
   */
- j = 0;
- ctotal = 0;
- MYDEBUG(D_STS_SERIAL){
-   printf("looping bsize = %u times\n",bsize);
- }
- for(t=0;t<bsize;t++){
-   /*
-    * Offset of current sample, relative to left boundary of window.
-    */
-   if((t%32) == 0){
-     window = uintbuf[j];  /* start with window = testbuf = charbuf */
-     MYDEBUG(D_STS_SERIAL){
-       printf("uintbuf[%u] = %08x = ",j,window);
-       dumpuintbits(&window,1);
-       printf("\n");
-     }
-     j++;
-   }
-   bi = t%16;
-   value = (window >> (32 - nb - bi)) & mask;
-   MYDEBUG(D_STS_SERIAL){
-     dumpbitwin(value,nb);
-     printf("\n");
-   }
-   count[value]++;
-   ctotal++;
-   if(bi == 15){
-     window = (window << 16);
-     window += (uintbuf[j] >> 16);
-     MYDEBUG(D_STS_SERIAL){
-       printf("window[%u] = %08x = ",j,window);
-       dumpuintbits(&window,1);
-       printf("\n");
-     }
-   }
- }
-
-   printf("# sts_serial():=====================================================\n");
-   printf("# sts_serial():                  Count table\n");
-   printf("# sts_serial(): bit pattern      value      count     prob \n");
-   for(i = 0; i<value_max; i++){
-     dumpuintbits(&i,1);
-     printf("\t%u\t%u\t%f\n",i,count[i],(double) count[i]/ctotal);
-   }
- MYDEBUG(D_STS_SERIAL){
- }
+  
 
  exit(0);
 
