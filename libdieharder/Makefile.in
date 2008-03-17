@@ -216,7 +216,7 @@ man3_MANS = libdieharder.3
 
 # Library definitions
 lib_LTLIBRARIES = libdieharder.la
-libdieharder_la_LIBADD = -L${libdir} -lgsl -lgslcblas -lm
+libdieharder_la_LIBADD = -lgsl -lgslcblas -lm
 libdieharder_la_LDFLAGS = -version-number @DIEHARDER_LT_VERSION@
 
 # Sources
