@@ -41,7 +41,9 @@ static Dtest sts_serial_dtest = {
 #\n",
   100,     /* Default psamples */
   100000,  /* Default tsamples */
-  1        /* We magically make all the bit tests return a single histogram */
+  32       /* As an vector, need to go from 0 to 16 */
+           /* Although we will keep 1 from m=1,2, 2 from m=[3,16] */
+	   /* no m=0 */
 };
 
 /*
