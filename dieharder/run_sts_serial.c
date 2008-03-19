@@ -46,7 +46,7 @@ void run_sts_serial()
   */
  snprintf(sts_serial_test[0]->pvlabel,LINE,"# Normal p-value for STS Serial test for n=1 bit (STS Monobit)\n");
  snprintf(sts_serial_test[1]->pvlabel,LINE,"# p-value 1 for STS Serial test for n=2 bits\n");
- for(i=0;i<13;i++){
+ for(i=0;i<14;i++){
     snprintf(sts_serial_test[2*i+2]->pvlabel,LINE,"# p-value 1 for STS Serial test for n=%u bits\n",i+3);
     snprintf(sts_serial_test[2*i+3]->pvlabel,LINE,"# p-value 2 for STS Serial test for n=%u bits\n",i+3);
  }

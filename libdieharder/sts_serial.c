@@ -99,6 +99,8 @@ void sts_serial(Test **test,int irun)
  uint *uintbuf;
  uint window;  /* uint window into uintbuf, slide along a byte at at time. */
 
+ double mono_mean,mono_sigma;  /* For single bit test */
+
  /*
   * Sample a bitstring of rgb_bitstring_ntuple in length (exactly).  Note
   * that I'm going to force nb>=2, nb<=16 for the moment.  The routine
@@ -182,8 +184,10 @@ void sts_serial(Test **test,int irun)
   * static_get_rng routines in production.
   */
  for(t=0;t<tsamples;t++){
-   /* uintbuf[t] = get_rand_bits_uint(32,0xFFFFFFFF,rng); */
-   uintbuf[t] = gsl_rng_get(rng);
+   /* A bit slower per call, but won't fail for short rngs */
+   uintbuf[t] = get_rand_bits_uint(32,0xFFFFFFFF,rng);
+   /* Fast, but deadly to rngs with less than 32 bits returned */
+   /* uintbuf[t] = gsl_rng_get(rng); */
    MYDEBUG(D_STS_SERIAL){
      printf("# sts_serial(): %u:  ",t);
      dumpuintbits(&uintbuf[t],1);
@@ -284,6 +288,14 @@ void sts_serial(Test **test,int irun)
  }
 
  j=0;
+ /*
+  * This is sts_monobit, basically.
+  */
+ mono_mean = (double) 2*freq[1][0] - bsize;   /* Should be 0.0 */
+ mono_sigma = sqrt((double)bsize);
+ /* printf("mono mean = %f   mono_sigma = %f\n",mono_mean,mono_sigma); */
+ test[j++]->pvalues[irun] = gsl_cdf_gaussian_P(mono_mean,mono_sigma);
+
  for(m=2;m<nb1;m++){
    delpsi2[m] = psi2[m] - psi2[m-1];
    del2psi2[m] = psi2[m] - 2.0*psi2[m-1] + psi2[m-2];

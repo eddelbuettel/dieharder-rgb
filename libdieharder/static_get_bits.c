@@ -58,7 +58,7 @@ Not enough:
 Bits = |00000000000000000000000000000000|
 So we refill the bit_buffer (which now has 32 bits left):
 Buff = |11110101010110110101010001110000|
-We RIGHT shift this 32-nbits, aligning it for return,
+We RIGHT shift this (32-nbits), aligning it for return,
 & with mask, and return.
 Bits = |00000000000000000000111101010101|
 Need the next one.  There are 20 bits left.  Buff is
@@ -91,6 +91,16 @@ and so on.  Very nice.
 * Therefore, this routine delivers bits in left to right bits
 * order, which is fine.
 */
+
+ /*
+  * FIRST of all, if nbits == 32 and rmax_bits == 32 we might as well just
+  * return a gsl rng.  This also avoids a nasty problem with bitshift
+  * operators, see below, under at least the most common and important
+  * case.  It remains to test other e.g. 31 bit generators.
+  */
+ if((nbits == 32) && (rmax_bits == 32)){
+   return gsl_rng_get(rng);
+ }
   
  MYDEBUG(D_BITS) {
    printf("Entering get_rand_bits_uint. nbits = %d\n",nbits);
@@ -117,9 +127,25 @@ and so on.  Very nice.
  }
 
  nbits = nbits - bits_left_in_bit_buffer;
- bits = bit_buffer << nbits;
+ /*
+  * This fixes an annoying quirk of the x86.  It only uses the bottom five
+  * bits of the shift value.  That means that if you shift right by 32 --
+  * required in this routine to return 32 bit integers from a 32 bit
+  * generator -- nothing happens as 32 is 0100000 and only the 00000 is used
+  * to shift!  What a bitch!
+  *
+  * I'm going to FIRST try this -- which should work to clear the
+  * bits register if nbits for the shift is 32 -- and then very
+  * likely alter this to just check for rmax_bits == nbits == 32
+  * and if so just shovel gsl_rng_get(rng) straight through...
+  */
+ if(nbits == 32){
+   bits = 0;
+ } else {
+   bits = (bit_buffer << nbits);
+ }
  MYDEBUG(D_BITS) {
-   printf("Not enough:\n");
+   printf("Not enough, need %u:\n",nbits);
    printf(" Bits = ");
    dumpuintbits(&bits,1);
    printf("\n");
@@ -127,6 +153,7 @@ and so on.  Very nice.
  while (1) {
    bit_buffer = gsl_rng_get (rng);
    bits_left_in_bit_buffer = rmax_bits;
+
    MYDEBUG(D_BITS) {
      printf("Refilled bit_buffer\n");
      printf("%u bits left\n",bits_left_in_bit_buffer);
@@ -134,9 +161,11 @@ and so on.  Very nice.
      dumpuintbits(&bit_buffer,1);
      printf("\n");
    }
+
    if (bits_left_in_bit_buffer >= nbits) {
      bits_left_in_bit_buffer -= nbits;
      bits |= (bit_buffer >> bits_left_in_bit_buffer);
+
      MYDEBUG(D_BITS) {
        printf("Returning:\n");
        printf(" Bits = ");
@@ -144,16 +173,19 @@ and so on.  Very nice.
        dumpuintbits(&breturn,1);
        printf("\n");
      }
+
      return bits & mask;
    }
    nbits -= bits_left_in_bit_buffer;
    bits |= (bit_buffer << nbits);
+
    MYDEBUG(D_BITS) {
      printf("This should never execute:\n");
      printf("  Bits = ");
      dumpuintbits(&bits,1);
      printf("\n");
    }
+
  }
 
 }
