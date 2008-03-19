@@ -21,6 +21,7 @@ void run_sts_serial()
   * Declare the results struct.
   */
  Test **sts_serial_test;
+ int i;
 
  /*
   * Set any GLOBAL data used by the test.  We will gradually
@@ -38,6 +39,18 @@ void run_sts_serial()
   * correctly).
   */
  sts_serial_test = create_test(&sts_serial_dtest,tsamples,psamples,&sts_serial);
+
+ /*
+  * This particular test we need to pre-initialize the pvlabel for
+  * each test, in order.
+  */
+ snprintf(sts_serial_test[0]->pvlabel,LINE,"# Normal p-value for STS Serial test for n=1 bit (STS Monobit)\n");
+ snprintf(sts_serial_test[1]->pvlabel,LINE,"# p-value 1 for STS Serial test for n=2 bits\n");
+ for(i=0;i<13;i++){
+    snprintf(sts_serial_test[2*i+2]->pvlabel,LINE,"# p-value 1 for STS Serial test for n=%u bits\n",i+3);
+    snprintf(sts_serial_test[2*i+3]->pvlabel,LINE,"# p-value 2 for STS Serial test for n=%u bits\n",i+3);
+ }
+   
 
  /*
   * Show the standard test header for this test.

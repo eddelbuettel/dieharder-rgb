@@ -16,7 +16,7 @@
 #include "dieharder.h"
 
 
-int histogram(double *input,int inum,double min,double max,int nbins,char *label)
+int histogram(double *input,char *pvlabel,int inum,double min,double max,int nbins,char *label)
 {
 
  int i,j,k,hindex;
@@ -44,6 +44,7 @@ int histogram(double *input,int inum,double min,double max,int nbins,char *label
  binmax = 0;
  printf("#==================================================================\n");
  printf("#                Histogram of %s\n",label);
+ printf("%s",pvlabel);
  printf("# Counting histogram bins, binscale = %f\n",binscale);
  for(i=0;i<inum;i++){
    hindex = (int) (input[i]/binscale);

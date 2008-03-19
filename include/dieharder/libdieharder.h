@@ -51,6 +51,7 @@
 #define NO	0
 #define PI      3.141592653589793238462643
 #define K       1024
+#define LINE    80
 #define PAGE    4096
 #define M       1048576
 #define M_2     2097152
@@ -106,14 +107,6 @@
  
  void add_lib_rngs();
     
-
- 
-
- 
- 
- 
- 
-
  /*
   *========================================================================
   *                           Global Variables

@@ -289,17 +289,19 @@ void sts_serial(Test **test,int irun)
    del2psi2[m] = psi2[m] - 2.0*psi2[m-1] + psi2[m-2];
    pvalue = gsl_sf_gamma_inc_Q(pow(2,m-2),delpsi2[m]/2.0);
    test[j++]->pvalues[irun] = pvalue;
-   printf("pvalue 1[%u] = %f\n",m,pvalue);
+   MYDEBUG(D_STS_SERIAL){
+     printf("pvalue 1[%u] = %f\n",m,pvalue);
+   }
    if(m>2){
      pvalue = gsl_sf_gamma_inc_Q(pow(2,m-3),del2psi2[m]/2.0);
      test[j++]->pvalues[irun] = pvalue;
-     printf("pvalue 2[%u] = %f\n",m,pvalue);
+     MYDEBUG(D_STS_SERIAL){
+       printf("pvalue 2[%u] = %f\n",m,pvalue);
+     }
    }
  }
 
  free(uintbuf);
- printf("uintbuf\n");
-
  free(psi2);
  free(del2psi2);
  free(delpsi2);
