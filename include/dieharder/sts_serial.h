@@ -1,5 +1,5 @@
 /*
- * rgb_bitdist test header.
+ * sts_serial test header.
  */
 
 /*

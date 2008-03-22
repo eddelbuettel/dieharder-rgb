@@ -155,6 +155,36 @@ void rgb_bitdist(Test **test,int irun)
  }
  mask = ((1u << nb) - 1);
 
+ /*
+  * OK, I'm getting to where I think I can manage to fix this test once
+  * and for all.  I want to make this test evaluate a counter:
+  *   freq[ntup][irun]
+  * that counts how many times ntup occurs in the irunth sample.  The
+  * test is then performed on the DISTRIBUTION of this count over all
+  * irun samples.  For each irun, we expect to get a binomial
+  * distribution around the expected value of tsamples*ntuple_probl.
+  *
+  * We cannot quite do a straight chisq on this, however.  For one
+  * thing, we do not know a priori what the number of degrees of
+  * freedom is for any given ntuple or number of samples.  For another,
+  * the asymptotic tails of the distribution have too few member for
+  * Pearson's chisq to be very accurate, although we have just learned
+  * of the "G-test" that is supposedly valid here if we can compute
+  * or estimate the number of degrees of freedom.  Or we can do what
+  * Marsaglia frequently does and bundle all counts outside of a
+  * suitable cutoff to be a single bin with the sum probability of the
+  * tail -- which we should be able to compute with the binomial CDF,
+  * I think -- and then either compute chisq using it as a single bin
+  * or (in the case of many of the monkey tests) make this tail the
+  * FOCUS of the test and check to see if the tail is correctly occupied
+  * as a simple normal with the binomial probability.
+  *
+  * In any of the chisq cases, though, I have to have some way of estimating
+  * or computing the number of degrees of freedom.  That's the one thing
+  * that is missing, so far.  If I get that, the rest should be pretty
+  * easy to do several ways.
+  */
+
  for(i=0;i<value_max;i++){
    Vtest_create(&vtest[i],bsamples+1,"rgb_bitdist",gsl_rng_name(rng));
    /* We'll assume that we have this many degrees of freedom */

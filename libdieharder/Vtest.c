@@ -56,7 +56,7 @@ void Vtest_destroy(Vtest *vtest)
 void Vtest_eval(Vtest *vtest)
 {
 
- uint i,ndof;
+ uint i,ndof,itail=-1;
  double delchisq,chisq;
  double x_tot,y_tot;
 
@@ -74,8 +74,14 @@ void Vtest_eval(Vtest *vtest)
   * Be sure to override the default value of ndof if it is known to
   * the caller.
   *
-  * We'll have to see how this handles sigma[i] = 0.0.  Probably badly
-  * but smoothly.
+  * Note well that chisq is KNOWN to do poorly -- sometimes very
+  * poorly -- if ndof=1 (two mutually exclusive and exhaustive parameters,
+  * e.g. a normal approximation to the binomial) or if y (the expected
+  * value) for any given cell is less than 5.  This test will therefore
+  * routinely bundle all cells with expected returns less than five
+  * AUTOMATICALLY into a single cell (itail) and use the total number of 
+  * cells EXCLUSIVE of this "garbage" cell as the number of degrees of 
+  * freedom unless ndof is overridden.
   */
  /* verbose=1; */
  MYDEBUG(D_VTEST){
@@ -86,6 +92,7 @@ void Vtest_eval(Vtest *vtest)
  x_tot = 0.0;
  y_tot = 0.0;
  ndof = 0;
+ itail = 0;
  MYDEBUG(D_VTEST){
    printf("# %7s   %3s      %3s %10s      %10s %10s %9s\n",
            "bit/bin","DoF","X","Y","sigma","del-chisq","chisq");
@@ -97,7 +104,7 @@ void Vtest_eval(Vtest *vtest)
   * set it to what it should be, if you know.
   */
  for (i=0;i<vtest->nvec;i++) {
-   if(vtest->x[i] > 1.0){
+   if(vtest->x[i] > 5.0){
      x_tot += vtest->x[i];
      y_tot += vtest->y[i];
      delchisq = (vtest->x[i] - vtest->y[i])*(vtest->x[i] - vtest->y[i])/vtest->y[i];
@@ -112,10 +119,35 @@ void Vtest_eval(Vtest *vtest)
      }
      /* increment only if the data is substantial */
      if(vtest->ndof == 0) ndof++;
+   } else {
+     if(itail == -1){
+       itail = i;  /* Do nothing; just remember the index */
+     } else {
+       /*
+        * Accumulate all the tail expectation here.
+	*/
+       vtest->y[itail] += vtest->y[i];
+       vtest->x[itail] += vtest->x[i];
+     }
    }
-
  }
- if(vtest->ndof == 0) vtest->ndof = ndof-1;
+ /*
+  * At the end, ALL the counts that are statistically weak should sum into
+  * a statistically significant count.  We do want to display it as well.
+  */
+ delchisq = (vtest->x[itail] - vtest->y[itail])*
+               (vtest->x[itail] - vtest->y[itail])/vtest->y[itail];
+ MYDEBUG(D_VTEST){
+   printf("# %5u\t%3u\t%12.4f\t%12.4f\t%8.4f\t%10.4f\n",
+              itail,vtest->ndof,vtest->x[itail],vtest->y[itail],delchisq,chisq);
+ }
+ if(vtest->ndof == 0){
+   if(itail != -1){
+    vtest->ndof = ndof;
+   } else {
+    vtest->ndof = ndof-1;
+   }
+ }
 
  MYDEBUG(D_VTEST){
    printf("Total:  %10.4f  %10.4f\n",x_tot,y_tot);

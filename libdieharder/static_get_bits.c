@@ -93,12 +93,16 @@ and so on.  Very nice.
 */
 
  /*
-  * FIRST of all, if nbits == 32 and rmax_bits == 32 we might as well just
-  * return a gsl rng.  This also avoids a nasty problem with bitshift
-  * operators, see below, under at least the most common and important
-  * case.  It remains to test other e.g. 31 bit generators.
+  * FIRST of all, if nbits == 32 and rmax_bits == 32 (or for that matter,
+  * if we ever seek nbits == rmax_bits) we might as well just return the
+  * gsl rng right away and skip all the logic below.  In the particular
+  * case of nbits == 32 == rmax_bits, this also avoids a nasty problem
+  * with bitshift operators on x86 architectures, see below.  I left a
+  * local patch in below as well just to make double-dog sure that one
+  * never does (uintvar << 32) for some uint variable; probably should
+  * do the same for (uintvar >> 32) calls below.
   */
- if((nbits == 32) && (rmax_bits == 32)){
+ if(nbits == rmax_bits){
    return gsl_rng_get(rng);
  }
   
