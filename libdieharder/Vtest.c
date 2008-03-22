@@ -56,8 +56,8 @@ void Vtest_destroy(Vtest *vtest)
 void Vtest_eval(Vtest *vtest)
 {
 
- uint i,ndof,itail=-1;
- double delchisq,chisq;
+ uint i,ndof,itail;
+ double delchisq,chisq,cutoff;
  double x_tot,y_tot;
 
 
@@ -92,19 +92,19 @@ void Vtest_eval(Vtest *vtest)
  x_tot = 0.0;
  y_tot = 0.0;
  ndof = 0;
- itail = 0;
+ itail = -1;
  MYDEBUG(D_VTEST){
    printf("# %7s   %3s      %3s %10s      %10s %10s %9s\n",
            "bit/bin","DoF","X","Y","sigma","del-chisq","chisq");
    printf("#==================================================================\n");
  }
  /*
-  * If vtest->ndof is nonzero, we use it to compute chisq.  If not, we
-  * try to estimate it based on a cutoff that is pretty arbitrary.  So
-  * set it to what it should be, if you know.
+  * If vtest->ndof is nonzero, we use it to compute chisq.  If not, we try
+  * to estimate it based on a cutoff of 5, which is from the literature.
   */
+ cutoff = 5.0;
  for (i=0;i<vtest->nvec;i++) {
-   if(vtest->x[i] > 5.0){
+   if(vtest->x[i] > cutoff) {
      x_tot += vtest->x[i];
      y_tot += vtest->y[i];
      delchisq = (vtest->x[i] - vtest->y[i])*(vtest->x[i] - vtest->y[i])/vtest->y[i];
@@ -122,6 +122,9 @@ void Vtest_eval(Vtest *vtest)
    } else {
      if(itail == -1){
        itail = i;  /* Do nothing; just remember the index */
+       MYDEBUG(D_VTEST){
+         printf("  Saving itail = %u because vtest->x[i] = %f <= 20.0\n",itail,vtest->x[i]);
+       }
      } else {
        /*
         * Accumulate all the tail expectation here.
@@ -133,19 +136,28 @@ void Vtest_eval(Vtest *vtest)
  }
  /*
   * At the end, ALL the counts that are statistically weak should sum into
-  * a statistically significant count.  We do want to display it as well.
+  * a statistically significant count, but it still has to make the cutoff!
+  * sometimes it won't!
   */
- delchisq = (vtest->x[itail] - vtest->y[itail])*
-               (vtest->x[itail] - vtest->y[itail])/vtest->y[itail];
- MYDEBUG(D_VTEST){
-   printf("# %5u\t%3u\t%12.4f\t%12.4f\t%8.4f\t%10.4f\n",
+ if(vtest->y[itail] > cutoff){
+   delchisq = (vtest->x[itail] - vtest->y[itail])*
+              (vtest->x[itail] - vtest->y[itail])/vtest->y[itail];
+   MYDEBUG(D_VTEST){
+     printf("# %5u\t%3u\t%12.4f\t%12.4f\t%8.4f\t%10.4f\n",
               itail,vtest->ndof,vtest->x[itail],vtest->y[itail],delchisq,chisq);
+   }
  }
+
+ /*
+  * If we still don't have a valid count in itail, we ignore it and
+  * subtract one from ndof.  Otherwise it counts and ndof is already
+  * one less than the count of contributions to delchisq.
+  */
  if(vtest->ndof == 0){
-   if(itail != -1){
-    vtest->ndof = ndof;
+   if(vtest->y[itail] > cutoff){
+     vtest->ndof = ndof;
    } else {
-    vtest->ndof = ndof-1;
+     vtest->ndof = ndof-1;
    }
  }
 
