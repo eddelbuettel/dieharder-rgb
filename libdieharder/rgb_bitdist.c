@@ -187,7 +187,11 @@ void rgb_bitdist(Test **test,int irun)
 
  for(i=0;i<value_max;i++){
    Vtest_create(&vtest[i],bsamples+1,"rgb_bitdist",gsl_rng_name(rng));
-   /* We'll assume that we have this many degrees of freedom */
+   /*
+    * We will experiment a bit with a cutoff that cleans up our degree of
+    * freedom problem.
+    */
+   vtest[i].cutoff = 20.0;
    for(b=0;b<=bsamples;b++){
      if(i==0){
        pbin = gsl_ran_binomial_pdf(b,ntuple_prob,bsamples);

@@ -57,7 +57,7 @@ void Vtest_eval(Vtest *vtest)
 {
 
  uint i,ndof,itail;
- double delchisq,chisq,cutoff;
+ double delchisq,chisq;
  double x_tot,y_tot;
 
 
@@ -69,6 +69,9 @@ void Vtest_eval(Vtest *vtest)
   *              (for the exact/true distribution)
   * vtest->nvec is the vector length(s).
   * vtest->ndof is the number of degrees of freedom (default nvec-1)
+  * vtest->cutoff is the minimum expected count for a cell to be
+  * included in the chisq sum (it should be at least 5, in general,
+  * probably higher in some cases).
   *
   * x, y, sigma, nvec all must be filled in my the calling routine.
   * Be sure to override the default value of ndof if it is known to
@@ -77,15 +80,17 @@ void Vtest_eval(Vtest *vtest)
   * Note well that chisq is KNOWN to do poorly -- sometimes very
   * poorly -- if ndof=1 (two mutually exclusive and exhaustive parameters,
   * e.g. a normal approximation to the binomial) or if y (the expected
-  * value) for any given cell is less than 5.  This test will therefore
-  * routinely bundle all cells with expected returns less than five
-  * AUTOMATICALLY into a single cell (itail) and use the total number of 
-  * cells EXCLUSIVE of this "garbage" cell as the number of degrees of 
-  * freedom unless ndof is overridden.
+  * value) for any given cell is less than a cutoff usually set to around
+  * 5.  This test will therefore routinely bundle all cells with expected
+  * returns less than the user-defined cutoff AUTOMATICALLY into a single
+  * cell (itail) and use the total number of cells EXCLUSIVE of this
+  * "garbage" cell as the number of degrees of freedom unless ndof is
+  * overridden.
   */
  /* verbose=1; */
  MYDEBUG(D_VTEST){
    printf("Evaluating chisq and pvalue for %d points\n",vtest->nvec);
+   printf("Using a cutoff of %f\n",vtest->cutoff);
  }
 
  chisq = 0.0;
@@ -100,11 +105,11 @@ void Vtest_eval(Vtest *vtest)
  }
  /*
   * If vtest->ndof is nonzero, we use it to compute chisq.  If not, we try
-  * to estimate it based on a cutoff of 5, which is from the literature.
+  * to estimate it based on a vtest->cutoff that can be set by the caller.
+  * If vtest->ndof is set, the cutoff should probably not be.
   */
- cutoff = 5.0;
  for (i=0;i<vtest->nvec;i++) {
-   if(vtest->x[i] > cutoff) {
+   if(vtest->y[i] >= vtest->cutoff) {
      x_tot += vtest->x[i];
      y_tot += vtest->y[i];
      delchisq = (vtest->x[i] - vtest->y[i])*(vtest->x[i] - vtest->y[i])/vtest->y[i];
@@ -123,7 +128,7 @@ void Vtest_eval(Vtest *vtest)
      if(itail == -1){
        itail = i;  /* Do nothing; just remember the index */
        MYDEBUG(D_VTEST){
-         printf("  Saving itail = %u because vtest->x[i] = %f <= 20.0\n",itail,vtest->x[i]);
+         printf("  Saving itail = %u because vtest->x[i] = %f <= %f\n",itail,vtest->x[i],vtest->cutoff);
        }
      } else {
        /*
@@ -136,12 +141,15 @@ void Vtest_eval(Vtest *vtest)
  }
  /*
   * At the end, ALL the counts that are statistically weak should sum into
-  * a statistically significant count, but it still has to make the cutoff!
-  * sometimes it won't!
+  * a statistically significant tail count, but the tail count still has
+  * to make the cutoff!  Sometimes it won't!
   */
- if(vtest->y[itail] > cutoff){
+ if(vtest->y[itail] >= vtest->cutoff){
    delchisq = (vtest->x[itail] - vtest->y[itail])*
               (vtest->x[itail] - vtest->y[itail])/vtest->y[itail];
+   chisq += delchisq;
+   /* increment only if the data is substantial */
+   if(vtest->ndof == 0) ndof++;
    MYDEBUG(D_VTEST){
      printf("# %5u\t%3u\t%12.4f\t%12.4f\t%8.4f\t%10.4f\n",
               itail,vtest->ndof,vtest->x[itail],vtest->y[itail],delchisq,chisq);
@@ -149,16 +157,14 @@ void Vtest_eval(Vtest *vtest)
  }
 
  /*
-  * If we still don't have a valid count in itail, we ignore it and
-  * subtract one from ndof.  Otherwise it counts and ndof is already
-  * one less than the count of contributions to delchisq.
+  * Interestingly, one simply cannot make the tail "work" as a
+  * contribution to the ndof.  The number of degrees of freedom is one
+  * less than the number that make the cutoff, although it does seem
+  * useful to add the last chunk from the tail before doing the
+  * computation of the chisq p-value.
   */
  if(vtest->ndof == 0){
-   if(vtest->y[itail] > cutoff){
-     vtest->ndof = ndof;
-   } else {
-     vtest->ndof = ndof-1;
-   }
+   vtest->ndof = ndof-1;
  }
 
  MYDEBUG(D_VTEST){
