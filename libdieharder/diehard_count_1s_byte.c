@@ -196,7 +196,7 @@ void diehard_count_1s_byte(Test **test, int irun)
  ptest.sigma = sqrt(5000.0);
 
  Vtest_create(&vtest4,625,"diehard_count_the_1s",gsl_rng_name(rng));
- vtest.cutoff = 5.0;
+ vtest4.cutoff = 5.0;
  for(i=0;i<625;i++){
    j = i;
    vtest4.y[i] = test[0]->tsamples;
@@ -224,7 +224,7 @@ void diehard_count_1s_byte(Test **test, int irun)
  }
 
  Vtest_create(&vtest5,3125,"diehard_count_the_1s",gsl_rng_name(rng));
- vtest.cutoff = 5.0;
+ vtest5.cutoff = 5.0;
  for(i=0;i<3125;i++){
    j = i;
    vtest5.y[i] = test[0]->tsamples;
