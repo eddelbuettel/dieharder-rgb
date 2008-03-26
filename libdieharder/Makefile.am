@@ -59,6 +59,7 @@ libdieharder_la_SOURCES = \
 	rgb_lmn.c \
 	rgb_minimum_distance.c \
 	rgb_operm.c \
+	rgb_permutations.c \
 	rgb_persist.c \
 	rgb_timing.c \
 	rngav.c \

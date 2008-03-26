@@ -78,11 +78,11 @@ am_dieharder_OBJECTS = add_ui_rngs.$(OBJEXT) dieharder.$(OBJEXT) \
 	run_diehard_squeeze.$(OBJEXT) run_diehard_sums.$(OBJEXT) \
 	run_marsaglia_tsang_gcd.$(OBJEXT) run_rgb_bitdist.$(OBJEXT) \
 	run_rgb_minimum_distance.$(OBJEXT) run_rgb_operm.$(OBJEXT) \
-	run_rgb_persist.$(OBJEXT) run_rgb_timing.$(OBJEXT) \
-	run_sts_monobit.$(OBJEXT) run_sts_runs.$(OBJEXT) \
-	run_sts_serial.$(OBJEXT) run_user_template.$(OBJEXT) \
-	startup.$(OBJEXT) test.$(OBJEXT) testbits.$(OBJEXT) \
-	user_template.$(OBJEXT) work.$(OBJEXT)
+	run_rgb_permutations.$(OBJEXT) run_rgb_persist.$(OBJEXT) \
+	run_rgb_timing.$(OBJEXT) run_sts_monobit.$(OBJEXT) \
+	run_sts_runs.$(OBJEXT) run_sts_serial.$(OBJEXT) \
+	run_user_template.$(OBJEXT) startup.$(OBJEXT) test.$(OBJEXT) \
+	testbits.$(OBJEXT) user_template.$(OBJEXT) work.$(OBJEXT)
 dieharder_OBJECTS = $(am_dieharder_OBJECTS)
 dieharder_DEPENDENCIES = ../libdieharder/libdieharder.la
 DEFAULT_INCLUDES = -I. -I$(top_builddir)@am__isrc@
@@ -246,6 +246,7 @@ dieharder_SOURCES = \
 	run_rgb_bitdist.c \
 	run_rgb_minimum_distance.c \
 	run_rgb_operm.c \
+	run_rgb_permutations.c \
 	run_rgb_persist.c \
 	run_rgb_timing.c \
 	run_sts_monobit.c \
@@ -379,6 +380,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_bitdist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_minimum_distance.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_operm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_permutations.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_persist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_timing.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_sts_monobit.Po@am__quote@

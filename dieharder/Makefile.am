@@ -60,6 +60,7 @@ dieharder_SOURCES = \
 	run_rgb_bitdist.c \
 	run_rgb_minimum_distance.c \
 	run_rgb_operm.c \
+	run_rgb_permutations.c \
 	run_rgb_persist.c \
 	run_rgb_timing.c \
 	run_sts_monobit.c \
