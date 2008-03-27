@@ -33,15 +33,22 @@ void run_rgb_permutations()
    ntmin = ntuple;
  } else {
    /*
-    * Default is to test 2 through 10 permutations
+    * Default is to test 2 through n permutations, but n > 7 is really
+    * long.  We quit at n = 7.
     */
    ntmin = 2;
-   ntmax = 10;
+   ntmax = 7;
  }
  if(all == YES) ntmin = 2;
 
  /* printf("Setting ntmin = %d ntmax = %d\n",ntmin,ntmax); */
+
+ /*
+  * We could work on speeding this up.  One round of calls and working
+  * down?
+  */
  for(rgb_permutations_k = ntmin;rgb_permutations_k<=ntmax;rgb_permutations_k++){
+
    /*
     * First we create the test (to set some values displayed in test header
     * correctly).

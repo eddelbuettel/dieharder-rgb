@@ -20,36 +20,63 @@ void rgb_permutations(Test **test,int irun)
 {
 
  uint i,j,permindex,t;
- uint *count;
- gsl_permutation *p;
  Vtest vtest;
+ double *testv;
+ size_t ps[4096];
+ gsl_permutation** lookup;
 
- /*
-  * This is the test vector.
-  */
- double testv[RGB_PERM_KMAX*2];  /* easier than malloc etc, but beware length */
- int ps[4096];
 
  MYDEBUG(D_RGB_PERMUTATIONS){
    printf("#==================================================================\n");
    printf("# rgb_permutations: Debug with %u\n",D_RGB_PERMUTATIONS);
-   printf("# rgb_permutations: doing k = %u\n",rgb_permutations_k);
- }
-
- nperms = gsl_sf_fact(rgb_permutations_k);
-
- MYDEBUG(D_RGB_PERMUTATIONS){
-   printf("# rgb_permutations: Checking frequency of %u permutations\n",nperms);
  }
 
  /*
-  * This creates a permutation MATRIX of 0,1,2,...,rgb_permutation_k
+  * Number of permutations
   */
- p = gsl_permutation_alloc(rgb_permutations_k);
+ nperms = gsl_sf_fact(rgb_permutations_k);
+
+ /*
+  * A vector to accumulate rands in some sort order
+  */
+ testv = (double *)malloc(rgb_permutations_k*sizeof(double));
+
+ MYDEBUG(D_RGB_PERMUTATIONS){
+   printf("# rgb_permutations: There are %u permutations of length k = %u\n",nperms,rgb_permutations_k);
+ }
+
+ /*
+  * Create a test, initialize it.
+  */
  Vtest_create(&vtest,nperms,"rgb_permutations",gsl_rng_name(rng));
+ vtest.cutoff = 5.0;
  for(i=0;i<nperms;i++){
    vtest.x[i] = 0.0;
    vtest.y[i] = (double) test[0]->tsamples/nperms;
+ }
+
+ MYDEBUG(D_RGB_PERMUTATIONS){
+   printf("# rgb_permutations: Allocating permutation lookup table.\n");
+ }
+ lookup = (gsl_permutation**) malloc(nperms*sizeof(gsl_permutation*));
+ for(i=0;i<nperms;i++){
+   lookup[i] = gsl_permutation_alloc(rgb_permutations_k);
+ }
+ for(i=0;i<nperms;i++){
+   if(i == 0){
+     gsl_permutation_init(lookup[i]);
+   } else {
+     gsl_permutation_memcpy(lookup[i],lookup[i-1]);
+     gsl_permutation_next(lookup[i]);
+   }
+ }
+
+ MYDEBUG(D_RGB_PERMUTATIONS){
+   for(i=0;i<nperms;i++){
+     printf("# rgb_permutations: %u => ",i);
+     gsl_permutation_fprintf(stdout,lookup[i]," %u");
+     printf("\n");
+   }
  }
 
  /*
@@ -70,16 +97,30 @@ void rgb_permutations(Test **test,int irun)
    for(i=0;i<rgb_permutations_k;i++) {
      testv[i] = (double) gsl_rng_get(rng);
      MYDEBUG(D_RGB_PERMUTATIONS){
-       printf("# rgb_permutations: testv[%u] = %u\n",i,testv[i]);
+       printf("# rgb_permutations: testv[%u] = %u\n",i,(uint) testv[i]);
      }
    }
+
    gsl_sort_index(ps,testv,1,rgb_permutations_k);
+
    MYDEBUG(D_RGB_PERMUTATIONS){
      for(i=0;i<rgb_permutations_k;i++) {
        printf("# rgb_permutations: ps[%u] = %u\n",i,ps[i]);
      }
    }
-   permindex = rgb_perm(ps,rgb_permutations_k);
+
+   for(i=0;i<nperms;i++){
+     if(memcmp(ps,lookup[i]->data,rgb_permutations_k*sizeof(uint))==0){
+       permindex = i;
+       MYDEBUG(D_RGB_PERMUTATIONS){
+         printf("# Found permutation: ");
+         gsl_permutation_fprintf(stdout,lookup[i]," %u");
+         printf(" = %u\n",i);
+       }
+       break;
+     }
+   }
+
    MYDEBUG(D_RGB_PERMUTATIONS){
      printf("# rgb_permutations: permindex = %u\n",permindex);
    }
@@ -102,6 +143,12 @@ void rgb_permutations(Test **test,int irun)
    printf("# rgb_permutations(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
 
+ for(i=0;i<nperms;i++){
+   free(lookup[i]);
+ }
+ free(lookup);
+ free(testv);
+
 }
 
 uint rgb_perm(size_t *data,int len)
@@ -111,66 +158,18 @@ uint rgb_perm(size_t *data,int len)
  uint pindex,uret,tmp;
  static gsl_permutation** lookup = 0;
 
+ MYDEBUG(D_RGB_PERMUTATIONS){
+   printf("# rgb_permutations: Entering rgb_perm.  Going to match up:\n");  
+   for(i=0;i<len;i++){
+     printf("# rgb_permutations: data[%u] = %u\n",i,data[i]);
+   }
+ }
  /*
   * Allocate space for lookup table and fill it.
   */
  if(lookup == 0){
-   lookup = (gsl_permutation**) malloc(nperms*sizeof(gsl_permutation*));
-   MYDEBUG(D_RGB_OPERM){
-     printf("# rgb_operm: Allocating piperm lookup table of perms.\n");
-   }
-   for(i=0;i<nperms;i++){
-        lookup[i] = gsl_permutation_alloc(rgb_permutations_k);
-   }
-   for(i=0;i<nperms;i++){
-     if(i == 0){
-       gsl_permutation_init(lookup[i]);
-     } else {
-       gsl_permutation_memcpy(lookup[i],lookup[i-1]);
-       gsl_permutation_next(lookup[i]);
-     }
-   }
-
-   /*
-    * This method yields a mirror symmetry in the permutations top to
-    * bottom.
-   for(i=0;i<nperms/2;i++){
-     if(i == 0){
-       gsl_permutation_init(lookup[i]);
-       for(j=0;j<rgb_permutations_k;j++){
-         lookup[nperms-i-1]->data[rgb_permutations_k-j-1] = lookup[i]->data[j];
-       }
-     } else {
-       gsl_permutation_memcpy(lookup[i],lookup[i-1]);
-       gsl_permutation_next(lookup[i]);
-       for(j=0;j<rgb_permutations_k;j++){
-         lookup[nperms-i-1]->data[rgb_permutations_k-j-1] = lookup[i]->data[j];
-       }
-     }
-   }
-   */
-   MYDEBUG(D_RGB_OPERM){
-     for(i=0;i<nperms;i++){
-       printf("# rgb_operm: %u => ",i);
-       gsl_permutation_fprintf(stdout,lookup[i]," %u");
-       printf("\n");
-     }
-   }
-
  }
 
- for(i=0;i<nperms;i++){
-   if(memcmp(data,lookup[i]->data,len*sizeof(uint))==0){
-     /* Not cruft, but off:
-     MYDEBUG(D_RGB_OPERM){
-       printf("# piperm(): ");
-       gsl_permutation_fprintf(stdout,lookup[i]," %u");
-       printf(" = %u\n",i);
-     }
-     */
-     return(i);
-   }
- }
  printf("We'd better not get here...\n");
 
 }

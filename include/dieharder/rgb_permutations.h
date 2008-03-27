@@ -8,7 +8,7 @@
 void rgb_permutations(Test **test,int irun);
 
 static Dtest rgb_permutations_dtest = {
-  "RGB Permuations Test",
+  "RGB Permutations Test",
   "\n\
 #========================================================================\n\
 #                       RGB Permutations Test\n\
