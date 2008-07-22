@@ -1,8 +1,5 @@
 /*
- * $Id: diehard_bitstream.c 185 2006-07-12 22:23:59Z rgb $
- *
  * See copyright in copyright.h and the accompanying file COPYING
- *
  */
 
 /*
@@ -29,6 +26,14 @@
  * uses fewer rands to achieve a given sensitivity. We'll
  * eventually simplify the heck out of this test in an rgb
  * version; in the meantime the test MUST use overlapping sources.
+ *
+ * Empirically, either this test reveals failures in lots of
+ * rngs thought to be good, or (more likely) the other conjunctive
+ * null hypothesis (that the rng test is "good") is the one we should
+ * reject, so that we should look for bugs in the code.  For the
+ * moment I suspect the latter and that's what I'm working on.  As
+ * is the case for all the overlapping tests, though, the statistic
+ * is nontrivial to compute from a purely theoretical point of view.
  *========================================================================
  */
 

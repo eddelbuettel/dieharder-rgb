@@ -2,7 +2,7 @@
 
 Name: dieharder-src
 Summary: Dieharder is a random number generator tester and timer
-%define version 2.26.8
+%define version 2.27.8
 %define release 1
 Version: %{version}
 Release: %{release}
@@ -86,7 +86,7 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
 %build
 ./autogen.sh
-./configure --prefix=$RPM_BUILD_ROOT%{_prefix}
+./configure --prefix=$RPM_BUILD_ROOT%{_prefix} --libdir=$RPM_BUILD_ROOT%{_libdir}
 make
 
 # Note that multipackage sources with libraries are happier with

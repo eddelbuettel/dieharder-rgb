@@ -161,6 +161,10 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	mv $(TAR).gz $(TGZ); \
 	rm -rf $(PROJECTDIR))
 
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
+
 #========================================================================
 # rpm target special stuff
 #

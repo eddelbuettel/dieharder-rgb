@@ -29,8 +29,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = i686-pc-linux-gnu
-host_triplet = i686-pc-linux-gnu
+build_triplet = x86_64-unknown-linux-gnu
+host_triplet = x86_64-unknown-linux-gnu
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
@@ -90,8 +90,8 @@ CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DIEHARDER_CFLAGS = -I${prefix}/include
-DIEHARDER_LIBS = -L${exec_prefix}/lib -ldieharder
-DIEHARDER_LT_VERSION = 2:26:8
+DIEHARDER_LIBS = -L/usr/lib64 -ldieharder
+DIEHARDER_LT_VERSION = 2:27:8
 ECHO = echo
 ECHO_C = 
 ECHO_N = -n
@@ -108,6 +108,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lgslcblas 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
+LIBTOOL_DEPS = ./ltmain.sh
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/rgb/Src/Projects/dieharder/missing --run makeinfo
@@ -116,9 +117,9 @@ OBJEXT = o
 PACKAGE = dieharder
 PACKAGE_BUGREPORT = 
 PACKAGE_NAME = dieharder
-PACKAGE_STRING = dieharder 2.26.8
+PACKAGE_STRING = dieharder 2.27.8
 PACKAGE_TARNAME = dieharder
-PACKAGE_VERSION = 2.26.8
+PACKAGE_VERSION = 2.27.8
 PATH_SEPARATOR = :
 RANLIB = ranlib
 RELEASE = 1
@@ -132,7 +133,7 @@ STRIP = strip
 # This is revision information, automagically set from autoconf.  The
 # actual version information is set ONLY in configure.ac
 #========================================================================
-VERSION = 2.26.8
+VERSION = 2.27.8
 abs_builddir = /home/rgb/Src/Projects/dieharder
 abs_srcdir = /home/rgb/Src/Projects/dieharder
 abs_top_builddir = /home/rgb/Src/Projects/dieharder
@@ -144,27 +145,27 @@ am__quote =
 am__tar = ${AMTAR} chof - "$$tardir"
 am__untar = ${AMTAR} xf -
 bindir = ${exec_prefix}/bin
-build = i686-pc-linux-gnu
+build = x86_64-unknown-linux-gnu
 build_alias = 
-build_cpu = i686
+build_cpu = x86_64
 build_os = linux-gnu
-build_vendor = pc
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = i686-pc-linux-gnu
+host = x86_64-unknown-linux-gnu
 host_alias = 
-host_cpu = i686
+host_cpu = x86_64
 host_os = linux-gnu
-host_vendor = pc
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
 install_sh = $(SHELL) /home/rgb/Src/Projects/dieharder/install-sh
-libdir = ${exec_prefix}/lib
+libdir = /usr/lib64
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
 localstatedir = ${prefix}/var
@@ -277,8 +278,8 @@ REPOPATH = /var/www/html/fc/6/local/
 #========================================================================
 # This target takes the dieharder sources and "magically" transforms
 # them into RDieHarder sources.
-RDHTAR = RDieHarder_2.26.8.tar
-RDHPKG = RDieHarder_2.26.8.tar.gz
+RDHTAR = RDieHarder_2.27.8.tar
+RDHPKG = RDieHarder_2.27.8.tar.gz
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -821,6 +822,8 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	gzip $(TAR); \
 	mv $(TAR).gz $(TGZ); \
 	rm -rf $(PROJECTDIR))
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
 
 $(TGZ): tgz
 $(SRPM): rpm

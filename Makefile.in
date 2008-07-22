@@ -108,6 +108,7 @@ LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
@@ -821,6 +822,8 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	gzip $(TAR); \
 	mv $(TAR).gz $(TGZ); \
 	rm -rf $(PROJECTDIR))
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
 
 $(TGZ): tgz
 $(SRPM): rpm
