@@ -10,7 +10,8 @@ License: Open Source (GPL)
 Group: Development/Tools
 Source: dieharder-%{version}.tgz
 URL: http://www.phy.duke.edu/~rgb/General/dieharder.php
-BuildRequires: chrpath
+Requires: gsl
+BuildRequires: chrpath gsl-devel svn2cl
 
 # Mandatory path for Fedora Core builds
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)

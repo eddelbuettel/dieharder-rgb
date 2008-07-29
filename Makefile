@@ -832,7 +832,7 @@ $(PRPM): rpm
 
 #========================================================================
 # One stop shop.  Basically we build this every time, we hope.
-rpm:	Makefile $(TGZ)
+rpm:	Makefile $(TGZ) ChangeLog
 	rm -rf /var/tmp/dieharder*
 	cp $(TGZ) $(RPM_TOPDIR)/SOURCES
 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
@@ -840,6 +840,9 @@ rpm:	Makefile $(TGZ)
 	cp $(RPM_TOPDIR)/SRPMS/$(SSRPM) $(SRPM)
 	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(LRPM) .
 	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(PRPM) .
+
+ChangeLog: $(SVNTIME)
+	svn2cl dieharder.svn.time
 
 svn:
 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
