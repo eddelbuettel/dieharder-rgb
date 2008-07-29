@@ -1,3 +1,13 @@
+2008-07-29 15:40  rgb
+
+	* .: OK, this seems to work, autobuilding ChangeLog from the svn
+	  log of my
+	  timestamp file, that basically picks up a message like this one
+	  every
+	  time I do an svn checkin. We'll see in a moment if this is
+	  reflected in
+	  ChangeLog on the next build.
+
 2008-07-29 15:26  rgb
 
 	* .: Just testing...
