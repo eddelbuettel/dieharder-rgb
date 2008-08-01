@@ -47,7 +47,7 @@ RDIEHARDER = RDieHarder
 # used as:
 #    $(HOME)/public_html/$(WDIR)
 #========================================================================
-WLOGIN = login.phy.duke.edu
+WLOGIN = ganesh.phy.duke.edu
 WDIR = General
 ABS = $(PROJECT).abs
 PHP = $(PROJECT).php
@@ -192,7 +192,7 @@ $(PRPM): rpm
 
 #========================================================================
 # One stop shop.  Basically we build this every time, we hope.
-rpm:	Makefile $(TGZ) ChangeLog
+rpm:	Makefile $(TGZ)
 	rm -rf /var/tmp/dieharder*
 	cp $(TGZ) $(RPM_TOPDIR)/SOURCES
 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
@@ -201,6 +201,9 @@ rpm:	Makefile $(TGZ) ChangeLog
 	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(LRPM) .
 	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(PRPM) .
 
+# I can leave this target in here, but I have to run it BY HAND right
+# before a release build.  Otherwise a src rpm rebuild can fail for
+# people without the svn repo in odd ways.
 ChangeLog: $(SVNTIME)
 	svn2cl dieharder.svn.time
 
@@ -222,7 +225,7 @@ svn:
 sync:
 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
 	svn commit .		# Do the commit
-	rsync -avz --delete $(SVNPATH) login.phy.duke.edu:/home/einstein/prof/rgb/Src/svn-tree
+	rsync -avz --delete $(SVNPATH) ganesh.phy.duke.edu:/home/einstein/prof/rgb/Src/svn-tree
 	rsync -avz --delete $(SVNPATH) 209.42.212.5:$(SVNTREE)
 	cat $(SVNTIME) | \
 	sed -e '/^New Checkin/d' >> $(SVNTIME).tmp

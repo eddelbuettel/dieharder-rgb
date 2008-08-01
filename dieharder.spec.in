@@ -11,7 +11,7 @@ Group: Development/Tools
 Source: dieharder-%{version}.tgz
 URL: http://www.phy.duke.edu/~rgb/General/dieharder.php
 Requires: gsl
-BuildRequires: chrpath gsl-devel svn2cl
+BuildRequires: chrpath gsl-devel
 
 # Mandatory path for Fedora Core builds
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)

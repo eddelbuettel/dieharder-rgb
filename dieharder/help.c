@@ -225,6 +225,9 @@ void Usage()
 {
 
  fprintf(stdout, "\n\
+\n\
+dieharder version %s Copyright 2003 Robert G. Brown\n\
+ \n\
 Usage:\n\
   dieharder [-a] [-b bits] [-d diehard test number] [-f filename]\n\
            [-g generator number] [-h] [-i iterations] [-l] \n\
@@ -287,7 +290,7 @@ Usage:\n\
   and may not be even approximately correct in your context.  Also, the\n\
   quality assessment(s) for the rngs may, in fact, be completely incorrect\n\
   or misleading.  Use them at your Own Risk!  Be Warned!\n\
-\n");
+\n","VERSION");
 
  exit(0);
 
