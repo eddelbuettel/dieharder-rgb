@@ -220,6 +220,8 @@ void help()
 
 }
 
+#define _QUOTEME(x) #x
+#define QUOTEME(x) _QUOTEME(x)
 
 void Usage()
 {
@@ -290,7 +292,7 @@ Usage:\n\
   and may not be even approximately correct in your context.  Also, the\n\
   quality assessment(s) for the rngs may, in fact, be completely incorrect\n\
   or misleading.  Use them at your Own Risk!  Be Warned!\n\
-\n","VERSION");
+\n",QUOTEME(VERSION));
 
  exit(0);
 

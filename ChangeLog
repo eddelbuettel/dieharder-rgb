@@ -1,3 +1,88 @@
+2008-08-01 13:11  rgb
+
+	* .: Had to back off the svn2cl in the rpm build -- it now has to
+	  be run BY
+	  HAND before just MY rpmbuild (dummy me) so that it won't fail for
+	  end
+	  users without svn2cl and an svn repo to match. It still builds
+	  perfectly, and I'll do a full rpm build cycle including this step
+	  to get
+	  this last comment into the changelog.
+
+2008-07-29 16:01  rgb
+
+	* .: ...And it is. So henceforth ALL of my svn checkins will be
+	  duly noted
+	  in the ChangeLog, which will therefore get to be very long
+	  indeed, as I
+	  check in a lot.
+	  
+	  Damn! I guess this means no more swearing, and I sure hope I
+	  haven't
+	  impugned anyone's character in the first 400 plus checkins. At
+	  least
+	  not too much. Hmmm, I wonder just what I HAVE said down there. I
+	  tend
+	  to treat SVN logs as sort of a free-association commentary about
+	  the
+	  project in addition to being a place to document changes. Some
+	  changes
+	  have "real" documentation in the form of the svn diffs, as well
+	  -- I
+	  haven't been too specific about just EXACTLY what I've changed
+	  every
+	  time.
+	  
+	  Well, better a ChangeLog up to date and verbose than one months
+	  to years
+	  old, and I'll be hogtied and hung by the nose before I write a
+	  precisely
+	  formatted description of changes day to day as I work on this --
+	  twice.
+	  So SVN it is (dating back to when it was really CVS, BTW,
+	  imported to
+	  SVN).
+	  
+	  Next, I suppose we should provide at least >>a<< fix for the
+	  problem of
+	  shifting generator numbers, and on my own I want to clean up some
+	  issues with file read -- arrange it so we can read in very large
+	  files
+	  and eliminate/document file-based usage redundancies such as
+	  needing -g
+	  65 AND -f filename. This will be a bit tricky, as dieharder can
+	  read in
+	  raw (binary) as well as ascii in many formats, and using the -g
+	  flag to
+	  differentiate at least raw vs cooked has been an easy solution.
+	  
+	  Regarding numbers, it has been suggested that we do two things:
+	  
+	  a) Take action to ensure that the numbers don't change any more,
+	  even if
+	  the gsl or I or a user add new generators. This is actually a bit
+	  of a
+	  PITA (much as I see the motivation for doing so, as moving
+	  numbers break
+	  user scripts) because the way generators are added is to run
+	  through all
+	  the supported ones of each type and just add them in gsl or call
+	  order.
+	  However, there are several ways I can do it (some requiring more
+	  programming than others) and I'll see which one looks to be
+	  easiest and
+	  most robust.
+	  
+	  b) Arrange it so we can call generators by name, not just by
+	  number.
+	  Names would presumably not change even if numbers were inserted,
+	  and
+	  many users will be interested in testing a single generator they
+	  are
+	  thinking of using by name.
+	  
+	  rgb
+
 2008-07-29 15:40  rgb
 
 	* .: OK, this seems to work, autobuilding ChangeLog from the svn
