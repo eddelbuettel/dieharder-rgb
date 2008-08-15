@@ -69,6 +69,7 @@ libdieharder_la_SOURCES = \
 	rng_dev_urandom.c \
 	rng_file_input.c \
 	rng_file_input_raw.c \
+	rng_stdin_input_raw.c \
 	rng_kiss.c \
 	rngs_gnu_r.c \
 	rng_uvag.c \

@@ -38,6 +38,7 @@
  GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp;	/* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp2;	/* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_uvag;	        /* rgb June 2007 */
+ GSL_VAR const gsl_rng_type *gsl_rng_stdin_input_raw;   /* rgb Aug 2008 */
 
  /*
   * rng global vectors and variables for setup and tests.

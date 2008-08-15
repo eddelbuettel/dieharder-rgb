@@ -63,8 +63,8 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_dieharder_OBJECTS = add_ui_rngs.$(OBJEXT) dieharder.$(OBJEXT) \
 	dieharder_exit.$(OBJEXT) help.$(OBJEXT) histogram.$(OBJEXT) \
-	list_rand.$(OBJEXT) list_rngs.$(OBJEXT) output_rnds.$(OBJEXT) \
-	parsecl.$(OBJEXT) rdieharder.$(OBJEXT) \
+	list_rand.$(OBJEXT) list_rngs.$(OBJEXT) list_tests.$(OBJEXT) \
+	output_rnds.$(OBJEXT) parsecl.$(OBJEXT) rdieharder.$(OBJEXT) \
 	rng_empty_random.$(OBJEXT) run_diehard_2dsphere.$(OBJEXT) \
 	run_diehard_3dsphere.$(OBJEXT) run_diehard_birthdays.$(OBJEXT) \
 	run_diehard_bitstream.$(OBJEXT) \
@@ -222,6 +222,7 @@ dieharder_SOURCES = \
 	histogram.c \
 	list_rand.c \
 	list_rngs.c \
+	list_tests.c \
 	output_rnds.c \
 	parsecl.c \
 	rdieharder.c \
@@ -356,6 +357,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/histogram.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_rand.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_rngs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/output_rnds.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parsecl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rdieharder.Po@am__quote@

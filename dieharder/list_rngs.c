@@ -22,7 +22,10 @@ void list_rngs()
  if(verbose){
    printf("list_rngs():\n");
  }
- printf("\n");
+ /* Version string seems like a good idea */
+ printf("\n\
+dieharder version %s Copyright 2003 Robert G. Brown\n\
+ \n",QUOTEME(VERSION));
  printf("            Listing available built-in gsl-linked generators:             |\n");
  printf("%3s %-20s|%3s %-20s|%3s %-20s|\n"," Id","Test Name",
          " Id","Test Name"," Id","Test Name");

@@ -1,6 +1,6 @@
 %define _unpackaged_files_terminate_build 0
 
-Name: dieharder-src
+Name: Dieharder
 Summary: Dieharder is a random number generator tester and timer
 %define version 2.27.9
 %define release 1

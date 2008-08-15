@@ -35,6 +35,7 @@ dieharder_SOURCES = \
 	histogram.c \
 	list_rand.c \
 	list_rngs.c \
+	list_tests.c \
 	output_rnds.c \
 	parsecl.c \
 	rdieharder.c \

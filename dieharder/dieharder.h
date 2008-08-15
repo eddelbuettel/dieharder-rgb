@@ -59,6 +59,14 @@
  */
 #define nullfree(a) {free(a);a = 0;}
 
+/*
+ * This is how one gets a macro into quotes; an important one to keep
+ * in all program templates.
+ */
+#define _QUOTEME(x) #x
+#define QUOTEME(x) _QUOTEME(x)
+
+
  /*
   *========================================================================
   * Subroutine Prototypes

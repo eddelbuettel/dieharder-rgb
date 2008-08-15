@@ -220,14 +220,10 @@ void help()
 
 }
 
-#define _QUOTEME(x) #x
-#define QUOTEME(x) _QUOTEME(x)
-
 void Usage()
 {
 
  fprintf(stdout, "\n\
-\n\
 dieharder version %s Copyright 2003 Robert G. Brown\n\
  \n\
 Usage:\n\

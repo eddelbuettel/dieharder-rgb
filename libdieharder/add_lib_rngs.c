@@ -102,5 +102,11 @@ void add_lib_rngs()
    printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
  }
  i++;
+ /* gsl_rng_stdin_input_raw */
+ types[i] = (gsl_rng_stdin_input_raw);
+ MYDEBUG(D_ADD_MY_TYPES){
+   printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+ }
+ i++;
  
 }
