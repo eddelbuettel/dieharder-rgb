@@ -22,11 +22,14 @@ string of variable length, e.g. the rgb bitdist test.
 .TP
 -d test number -  selects specific diehard test.
 .TP
--f filename will EVENTUALLY permit random strings to be tested to be
-read in from a file, but this is not yet implemented!
+-f filename - when used with -g for raw or (ascii formatted) input,
+allows random numbers to be read in from a file.  Note that
+the stdin (raw) interface does not require a -f entry, only the
+appropriate -g.
 .TP
--g generator number - selects a specific generator for testing.  Using
--1 causes all known generators to be printed out to the display.
+-g generator number - selects a specific generator for testing.  A
+generator number of -1 (or dieharder entered alone with no arguments)
+causes all known generators to be printed out to the display.
 .TP
 -h prints context-sensitive help -- usually Usage (this message) or a
 test synopsis if entered as e.g. dieharder -d 3 -h.
@@ -491,6 +494,44 @@ To sum up, use dieharder to validate your generator (via input from
 files or an embedded stream.  Then by all means use your generator to
 produce files or streams of random numbers.  Do not use dieharder as an
 accept/reject tool to validate the files themselves.
+
+.SH EXAMPLES
+
+To demonstrate all tests, run on the default GSL rng, enter:
+
+  dieharder -a
+
+To demonstrate a test of an external generator of a raw binary stream of
+bits, use the stdin (raw) interface:
+
+  cat /dev/urandom | dieharder -g 75 -a
+
+(be sure to run dieharder by itself on a line to verify that the
+number of the stdin generator is still 75).
+
+To use it with an ascii formatted file:
+
+  dieharder -g 65 -f testrands.txt -a
+
+(testrands.txt should consist of a header such as:
+
+#==================================================================
+# generator mt19937_1999  seed = 1274511046
+#==================================================================
+type: d
+count: 100000
+numbit: 32
+3129711816
+  85411969
+2545911541
+
+etc.).  
+
+To use it with a binary file
+
+  dieharder -g 66 -f testrands.bin -a
+
+(or cat testrands.bin | dieharder -g 75 -a).
 
 .SH PUBLICATION RULES
 .B DieHarder

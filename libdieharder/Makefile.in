@@ -75,10 +75,10 @@ am_libdieharder_la_OBJECTS = add_lib_rngs.lo bits.lo chisq.lo \
 	rgb_minimum_distance.lo rgb_operm.lo rgb_permutations.lo \
 	rgb_persist.lo rgb_timing.lo rngav.lo rng_ca.lo \
 	rng_dev_random.lo rng_dev_arandom.lo rng_dev_urandom.lo \
-	rng_file_input.lo rng_file_input_raw.lo rng_stdin_input_raw.lo \
-	rng_kiss.lo rngs_gnu_r.lo rng_uvag.lo sample.lo std_test.lo \
-	sts_monobit.lo sts_runs.lo sts_serial.lo timing.lo Vtest.lo \
-	Xtest.lo
+	rng_file_input.lo rng_file_input_raw.lo rngs_gnu_r.lo \
+	rng_kiss.lo rng_jenkins.lo rng_stdin_input_raw.lo rng_uvag.lo \
+	sample.lo std_test.lo sts_monobit.lo sts_runs.lo sts_serial.lo \
+	timing.lo Vtest.lo Xtest.lo
 libdieharder_la_OBJECTS = $(am_libdieharder_la_OBJECTS)
 libdieharder_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -268,9 +268,10 @@ libdieharder_la_SOURCES = \
 	rng_dev_urandom.c \
 	rng_file_input.c \
 	rng_file_input_raw.c \
-	rng_stdin_input_raw.c \
-	rng_kiss.c \
 	rngs_gnu_r.c \
+	rng_kiss.c \
+	rng_jenkins.c \
+	rng_stdin_input_raw.c \
 	rng_uvag.c \
 	sample.c \
 	std_test.c \
@@ -414,6 +415,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_dev_urandom.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_file_input.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_file_input_raw.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_jenkins.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_kiss.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_stdin_input_raw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_uvag.Plo@am__quote@

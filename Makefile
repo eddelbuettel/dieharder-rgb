@@ -91,7 +91,7 @@ DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DIEHARDER_CFLAGS = -I${prefix}/include
 DIEHARDER_LIBS = -L${exec_prefix}/lib -ldieharder
-DIEHARDER_LT_VERSION = 2:27:9
+DIEHARDER_LT_VERSION = 2:27:10
 ECHO = echo
 ECHO_C = 
 ECHO_N = -n
@@ -117,9 +117,9 @@ OBJEXT = o
 PACKAGE = dieharder
 PACKAGE_BUGREPORT = 
 PACKAGE_NAME = dieharder
-PACKAGE_STRING = dieharder 2.27.9
+PACKAGE_STRING = dieharder 2.27.10
 PACKAGE_TARNAME = dieharder
-PACKAGE_VERSION = 2.27.9
+PACKAGE_VERSION = 2.27.10
 PATH_SEPARATOR = :
 RANLIB = ranlib
 RELEASE = 1
@@ -133,7 +133,7 @@ STRIP = strip
 # This is revision information, automagically set from autoconf.  The
 # actual version information is set ONLY in configure.ac
 #========================================================================
-VERSION = 2.27.9
+VERSION = 2.27.10
 abs_builddir = /home/rgb/Src/Projects/dieharder
 abs_srcdir = /home/rgb/Src/Projects/dieharder
 abs_top_builddir = /home/rgb/Src/Projects/dieharder
@@ -278,8 +278,8 @@ REPOPATH = /var/www/html/fc/6/local/
 #========================================================================
 # This target takes the dieharder sources and "magically" transforms
 # them into RDieHarder sources.
-RDHTAR = RDieHarder_2.27.9.tar
-RDHPKG = RDieHarder_2.27.9.tar.gz
+RDHTAR = RDieHarder_2.27.10.tar
+RDHPKG = RDieHarder_2.27.10.tar.gz
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
