@@ -1,0 +1,86 @@
+diff -Nur dieharder/add_my_types.c dieharder-changed/dieharder/add_my_types.c
+--- dieharder/add_my_types.c	2007-03-12 17:38:22.000000000 +0200
++++ dieharder/add_my_types.c	2007-09-14 14:26:08.000000000 +0300
+@@ -31,6 +31,7 @@
+ GSL_VAR const gsl_rng_type *gsl_rng_file_input;
+ GSL_VAR const gsl_rng_type *gsl_rng_file_input_raw;
+ GSL_VAR const gsl_rng_type *gsl_rng_ca;
++GSL_VAR const gsl_rng_type *gsl_rng_stdin;
+
+ void add_my_types()
+ {
+@@ -64,5 +64,8 @@
+  types[i] = (gsl_rng_ca);
+  if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+  i++;
++ types[i] = (gsl_rng_stdin);
++ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
++ i++;
+  
+ }
+diff -Nur libdieharder/rng_stdin.c dieharder-changed/libdieharder/rng_stdin.c
+--- libdieharder/rng_stdin.c	1970-01-01 02:00:00.000000000 +0200
++++ libdieharder/rng_stdin.c	2007-09-14 14:25:22.000000000 +0300
+@@ -0,0 +1,62 @@
++/* stdin
++ *
++ * Based on rng_dev_urandom.c which is
++ *   Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
++ * Portions Copyright (C) 2007 Markus Laire
++ * 
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or (at
++ * your option) any later version.
++ * 
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ * 
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ */
++
++#include <dieharder/libdieharder.h>
++
++/*
++ * rng data is read from stdin
++ */
++
++static unsigned long int stdin_get(void *vstate);
++static double stdin_get_double    (void *vstate);
++static void   stdin_set           (void *vstate, unsigned long int s);
++
++typedef struct {} stdin_state_t;
++
++static unsigned long int stdin_get(void *vstate) {
++    unsigned long int j;
++    size_t r = fread(&j, sizeof(j), 1, stdin);
++    if (r != 1) {
++        fprintf(stderr, "Error while reading from stdin. Exiting.\n");
++        exit(EXIT_FAILURE);
++    }
++    return j;
++}
++
++static double stdin_get_double(void *vstate) {
++    return stdin_get(vstate) / (double)UINT_MAX;
++}
++
++static void stdin_set(void *vstate, unsigned long int s) {
++    // Nothing to do
++}
++
++static const gsl_rng_type stdin_type = {
++    "stdin",		/* name */
++     UINT_MAX,			/* RAND_MAX */
++     0,				/* RAND_MIN */
++     sizeof(stdin_state_t),
++     &stdin_set,
++     &stdin_get,
++     &stdin_get_double
++};
++
++const gsl_rng_type *gsl_rng_stdin = &stdin_type;

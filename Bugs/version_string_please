@@ -1,0 +1,89 @@
+From van.saanen@aon.at Thu Jul 31 04:04:45 2008
+Date: Thu, 31 Jul 2008 10:04:29 +0200
+From: Heinz van Saanen <van.saanen@aon.at>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: DieHarder bug?
+
+this is a service, thank you. remark: now it builds with configure && make
+straightforward on my 64-bit-box, even checkinstall works fine. with 2.47.7
+this was somehow different, but no real problem because of the src.rpm.
+
+just an idea: maybe you could spend a version string shown with the -h
+option or elsewhere:-)
+
+as old C-fan i read your C++ rant - haha! ever tried out an array of
+pointers to functions as a class member? this syntax is really braindead.
+same for clean pthread-integration.
+
+but shame on me! i have to admit that C++ has it's merits when used with
+circumspection. and after 15 years or so, even microsoft ships compilers
+with no major drawbacks. at least i have heard rumors in this direction:-)
+
+
+kind regards, heinz van saanen
+
+
+
+Robert G. Brown schrieb:
+> On Wed, 30 Jul 2008, Heinz van Saanen wrote:
+> 
+> > Hello Robert,
+> > 
+> > first, thank you for the cool DieHarder-suite! Was quite tired to
+> > compile superold 90's-code or to run Win/Dos/emulators:-)
+> > 
+> > I made some tests with 2.24.7 and found out:
+> > 
+> > > dieharder -q -d15 ...
+> > 
+> > reports on all available RNGs and some test-files of mine:
+> > 
+> > Kuiper KS: p = 0.000000
+> > Assessment: FAILED at < 0.01% for Diehard Sums Test
+> > 
+> > Hmm... Maybe all generators really fail with -d 15, but this hard to
+> > believe:-)
+> 
+> Known bug, fixed in the current snapshot (which I haven't yet
+> distributed as there are a few other bug/features I'm trying to shake
+> free time to resolve first).
+> 
+> operm5 should still fail -- it has a really deep bug and one has to read
+> 2 cm of papers to understand what it is supposed to be doing and try to
+> write a replacement (which I am doing, but it doesn't really work yet).
+> rgb_bitdist for 5-bit patterns is, actually, testing pretty much the
+> same thing though, and it can run up through 12 bit patterns or even
+> more before getting out of control timewise, without overlap alas.  In
+> principle overlap doesn't matter -- it just lets you get more "oomph"
+> out of a smaller sample rather than actually testing a distinct
+> conclusion, and messing with weak inverses of covariance matrices is
+> almost just not worth it.
+> 
+> The current snap has new tests, is MOSTLY towards where it will "just
+> build" on nearly all linux systems with a straight
+> 
+>  ./autogen.sh
+>  make
+> 
+> or even just
+> 
+>  ./configure
+>  make
+> 
+> and has a number of bug fixes that still haven't themselves been widely
+> tested.  Give it a try and keep those cards and letters coming... if
+> there are more bugs;-)
+> 
+>    rgb
+> 
+> > 
+> > 
+> > Kind regards from Vienna, Heinz van Saanen
+> > 
+> > 
+> > 
+> > 
+> > 
+> > 
+> > 
+> 

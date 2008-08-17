@@ -1,0 +1,11 @@
+From blt@webtrotter.com Fri Jul  4 19:09:36 2008
+Date: Fri, 04 Jul 2008 18:09:40 -0500
+From: Brett L. Trotter <blt@webtrotter.com>
+To: rgb@phy.duke.edu
+Subject: dieharder RPM catch-22
+
+I found when building the dieharder test RPM (2.6.24) on CentOS that compile
+would fail, not being able to link/find -ldieharder. I ended up having to
+install the pre-build libdieharder to build my own. I was building my own in
+the first place to put in a Requires: gsl and BuildRequires: gsl-devel. So
+there's two issues that might help build smoother :)

@@ -1,0 +1,20 @@
+From daran@merkey.info Mon Apr 28 03:36:06 2008
+Date: Mon, 28 Apr 2008 08:32:01 +0100
+From: Daran <daran@merkey.info>
+To: Robert Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder:  file_input and file_input_raw cannot open files 2GB or larger.
+
+On Monday 28 April 2008 06:53, Daran wrote:
+> The fix is simple with GNU libc:  Just add the following to libdieharder.h
+> before including any of the standard library headers:
+>
+> #define _FILE_OFFSET_BITS 64
+
+That's sufficient for it to compile and open the file, but there are a small 
+number of other changes that need to be made to make it actually work.  I 
+won't submit my fix because I've done the minimum kludge necessary to make it 
+work for me.  Please consider this a request, though, to make it properly 
+largefile compliant.
+
+Also can you make it so that it can open block devices as well as regular 
+files.  This is another trivial change.

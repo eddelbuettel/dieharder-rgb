@@ -1,0 +1,205 @@
+From edd@debian.org Sun May  6 23:20:30 2007
+Date: Sun, 6 May 2007 22:20:12 -0500
+From: Dirk Eddelbuettel <edd@debian.org>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Some not so bad news
+
+
+Hi Robert,
+
+Procrastinating must be fun, or I wouldn't be doing so much.  
+
+Kidding aside, I've been real busy at work, home, with Debian, ..., on a
+short vacation which threw a spanner in, ran another marathon three weeks
+ago, and what have you.  Anyway, lame excuses.  
+
+But as I am still day-dreaming of the UseR paper deadline, I pushed myself
+back to getting something done on dieharder.  So without further ado:
+
+
+1)  I had missed 2.24.3.  That one is, I'd say, basically perfect. 
+
+    I have very nice Debian packages, and it 'just works'. Split over three
+    packages: 
+
+edd@basebud:~/dieharder> dpkg -l | grep dieharder | cut -c-78
+ii  dieharder                         2.24.3-1                            Rand
+ii  libdieharder-dev                  2.24.3-1                            Rand
+ii  libdieharder2                     2.24.3-1                            Rand
+edd@basebud:~/dieharder>         
+
+    I wanted to add the R rngs back in and lo and behold, the file from
+    last year is still there as 
+	dieharder-2.24.3/dieharder/db_gnu_r_rngs.c
+    and all it takes is the simple addition to add_my_types.c and
+    they just work. The patch is simply
+-----------------------------------------------------------------------------
+--- dieharder-2.24.3.orig/dieharder/add_my_types.c
++++ dieharder-2.24.3/dieharder/add_my_types.c
+@@ -31,6 +31,12 @@
+ GSL_VAR const gsl_rng_type *gsl_rng_file_input;
+ GSL_VAR const gsl_rng_type *gsl_rng_file_input_raw;
+ GSL_VAR const gsl_rng_type *gsl_rng_ca;
++GSL_VAR const gsl_rng_type *gsl_rng_r_wichmann_hill;	/* edd May 2007 */
++GSL_VAR const gsl_rng_type *gsl_rng_r_marsaglia_mc;	/* edd May 2007 */
++GSL_VAR const gsl_rng_type *gsl_rng_r_super_duper;	/* edd May 2007 */
++GSL_VAR const gsl_rng_type *gsl_rng_r_mersenne_twister;	/* edd May 2007 */
++GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp;	/* edd May 2007 */
++GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp2;	/* edd May 2007 */
+ 
+ void add_my_types()
+ {
+@@ -64,5 +70,23 @@
+  types[i] = (gsl_rng_ca);
+  if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
+  i++;
++ types[i] = (gsl_rng_r_wichmann_hill);
++ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
++ i++;
++ types[i] = (gsl_rng_r_marsaglia_mc);
++ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
++ i++;
++ types[i] = (gsl_rng_r_super_duper);
++ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
++ i++;
++ types[i] = (gsl_rng_r_mersenne_twister);
++ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
++ i++;
++ types[i] = (gsl_rng_r_knuth_taocp);
++ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
++ i++;
++ types[i] = (gsl_rng_r_knuth_taocp2);
++ if(verbose) printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
++ i++;
+  
+ }
+-----------------------------------------------------------------------------
+
+    Then dieharder lists a few more rngs just like last summer:
+edd@basebud:~/dieharder> /usr/bin/dieharder | tail -7
+==========================================================================|
+ 62 /dev/random         | 63 /dev/urandom        |
+ 64 empty               | 65 file_input          | 66 file_input_raw      |
+ 67 ca                  | 68 R_wichmann_hill     | 69 R_marsaglia_multic. |
+ 70 R_super_duper       | 71 R_mersenne_twister  | 72 R_knuth_taocp       |
+ 73 R_knuth_taocp2      |
+
+edd@basebud:~/dieharder> 
+
+
+    Shall we enable that for good? It requires no other libs or headers,
+    besides what dieharder uses.
+
+    TODO:  I need to check the code in file db_gnu_r_rngs.c against
+           what is in the current R 2.5.0
+
+
+
+2)  R integration
+
+    Given that the main dieharder.c is so straightforward, I had no real
+    excuse.  So I just sat down and wrote the so-far mininal wrapping
+    from scratch:  A simply R function dieharder() with two argument
+    'generator' and 'test' -- which are passed to a minimal C function
+    that assigns them to 'generator' and 'diehard', set quiet to 1 and 
+    calls
+	setup()
+	work()
+
+    That works!!  See here:
+
+edd@basebud:~/dieharder> R
+
+R version 2.5.0 (2007-04-23)
+Copyright (C) 2007 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(RDieHarder)
+> dieharder(gen=22, test=1)
+Calling R function dieharder() with generator  22
+Calling R function dieharder() with generator  1
+C function dieharder called with gen=22 test=1
+Kuiper KS: p = 0.959261
+Assessment: PASSED at > 5% for Diehard(er) Birthdays Test
+
+
+    In R, argument are named, and have default values, so
+	dieharder(22, 1)
+    is equivalent, as is
+	dieharder(22)
+    as 1 is the default test value here.
+
+
+    TODO:  think about return values (p-value vector?), add
+           plotting / histogramming function etc pp
+
+           make it not call exit()  ;-)   so that I can call it
+           it twice from R.
+
+
+The only minor downside so far is that I basically need all the code from
+dieharder again:
+
+
+    edd@basebud:~/dieharder> ls RDieHarder/src/*c
+RDieHarder/src/add_my_types.c
+RDieHarder/src/db_gnu_r_rngs.c
+RDieHarder/src/dieharder.c
+RDieHarder/src/empty_random.c
+RDieHarder/src/help.c
+RDieHarder/src/histogram.c
+RDieHarder/src/list_rngs.c
+RDieHarder/src/output_rnds.c
+RDieHarder/src/parsecl.c
+RDieHarder/src/run_diehard_2dsphere.c
+RDieHarder/src/run_diehard_3dsphere.c
+RDieHarder/src/run_diehard_birthdays.c
+RDieHarder/src/run_diehard_bitstream.c
+RDieHarder/src/run_diehard_count_1s_byte.c
+RDieHarder/src/run_diehard_count_1s_stream.c
+RDieHarder/src/run_diehard_craps.c
+RDieHarder/src/run_diehard_dna.c
+RDieHarder/src/run_diehard_operm5.c
+RDieHarder/src/run_diehard_opso.c
+RDieHarder/src/run_diehard_oqso.c
+RDieHarder/src/run_diehard_parking_lot.c
+RDieHarder/src/run_diehard_rank_32x32.c
+RDieHarder/src/run_diehard_rank_6x8.c
+RDieHarder/src/run_diehard_runs.c
+RDieHarder/src/run_diehard_squeeze.c
+RDieHarder/src/run_diehard_sums.c
+RDieHarder/src/run_marsaglia_tsang_gcd.c
+RDieHarder/src/run_rgb_bitdist.c
+RDieHarder/src/run_rgb_persist.c
+RDieHarder/src/run_rgb_timing.c
+RDieHarder/src/run_sts_monobit.c
+RDieHarder/src/run_sts_runs.c
+RDieHarder/src/run_user_template.c
+RDieHarder/src/startup.c
+RDieHarder/src/test.c
+RDieHarder/src/user_template.c
+RDieHarder/src/work.c
+
+      Those are all copies.  Longer term, it may be worthwhile to just have
+      one dieharder.c and a bit of #ifdef for the few lines that are
+      different. 
+
+That's it.  Time to pack it for the day, More debugging to do at work...
+
+Dirk
+
+-- 
+Hell, there are no rules here - we're trying to accomplish something. 
+                                                  -- Thomas A. Edison

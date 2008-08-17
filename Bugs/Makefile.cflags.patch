@@ -1,0 +1,83 @@
+dieharder-2.24.7/libdieharder/Makefile.am dieharder-2.24.7-new/libdieharder/Makefile.am
+*** dieharder-2.24.7/libdieharder/Makefile.am	2007-11-13 13:10:00.000000000 -0500
+--- dieharder-2.24.7-new/libdieharder/Makefile.am	2007-11-29 11:21:21.000000000 -0500
+***************
+*** 51,60 ****
+  CC = gcc
+  
+  # Compile flags (use fairly standard -O3 as default)
+! CFLAGS = -O3 -I ../include $(DEFINES) 
+  
+  # Linker flags
+! LDFLAGS = -g -fpic -shared -Wl,-soname,$(PROGLIB_SONAME)
+  
+  # Libraries
+  LIBS = -lgsl -lgslcblas -lm
+--- 51,60 ----
+  CC = gcc
+  
+  # Compile flags (use fairly standard -O3 as default)
+! #CFLAGS = -O3 -I ../include $(DEFINES) 
+  
+  # Linker flags
+! LDFLAGS = -g $(CFLAGS) -fpic -shared -Wl,-soname,$(PROGLIB_SONAME)
+  
+  # Libraries
+  LIBS = -lgsl -lgslcblas -lm
+***************
+*** 125,128 ****
+  # objects.
+  #========================================================================
+  %.o:%.c $(LIBINCLUDES) Makefile
+! 	$(CC) -fpic -c $(CFLAGS) $<
+--- 125,128 ----
+  # objects.
+  #========================================================================
+  %.o:%.c $(LIBINCLUDES) Makefile
+! 	$(CC) -fpic -c $(CFLAGS) -I../include $(DEFINES) $<
+dieharder-2.24.7/dieharder/Makefile.am dieharder-2.24.7-new/dieharder/Makefile.am
+*** dieharder-2.24.7/dieharder/Makefile.am	2007-11-13 13:10:00.000000000 -0500
+--- dieharder-2.24.7-new/dieharder/Makefile.am	2007-11-29 11:21:22.000000000 -0500
+***************
+*** 52,64 ****
+  CC = gcc
+  
+  # Compile flags (use fairly standard -O3 as default)
+! CFLAGS = -O3 -I ../include $(DEFINES) 
+  
+  # Linker flags.
+! LDFLAGS =
+  
+  # Libraries
+! LIBS = -L ../libdieharder -ldieharder -lgsl -lgslcblas -lm
+  
+  #========================================================================
+  # List of variants one can make.  all is the default.  We always
+--- 52,64 ----
+  CC = gcc
+  
+  # Compile flags (use fairly standard -O3 as default)
+! #CFLAGS = -O3 -I ../include $(DEFINES) 
+  
+  # Linker flags.
+! #LDFLAGS =
+  
+  # Libraries
+! LIBS = -L../libdieharder -ldieharder -lgsl -lgslcblas -lm
+  
+  #========================================================================
+  # List of variants one can make.  all is the default.  We always
+***************
+*** 116,120 ****
+  # objects.
+  #========================================================================
+  %.o:%.c
+! 	$(CC) -c $(CFLAGS) $<
+  
+--- 116,120 ----
+  # objects.
+  #========================================================================
+  %.o:%.c
+! 	$(CC) -c $(CFLAGS) -I../include $(DEFINES) $<
+  
+

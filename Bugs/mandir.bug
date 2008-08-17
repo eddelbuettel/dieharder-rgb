@@ -1,0 +1,15 @@
+From asamardzic@matf.bg.ac.yu Sun May  4 13:14:09 2008
+Date: Sun, 4 May 2008 19:14:01 +0200
+From: Aleksandar Samardzic <asamardzic@matf.bg.ac.yu>
+To: rgb@phy.duke.edu
+Subject: another issue building DieHarder
+
+Seems like "make install" is not obeying to configure phase
+"--mandir=..." flag - even if I ask installing man pages to $prefix/man
+this way, these are still put to $prefix/share/man...
+
+(Am for testing some RNGs - obviously; but would like to eventually
+create Slackware package for DieHarder along the way...).
+
+Regards,
+Alex
