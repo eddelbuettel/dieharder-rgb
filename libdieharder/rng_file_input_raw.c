@@ -131,6 +131,13 @@ static void file_input_raw_set (void *vstate, unsigned long int s)
     * length.
     */
    if(S_ISREG(sbuf.st_mode)){
+     /*
+      * sbuf.st_size should be type off_t, which is automatically u_int64_t
+      * if FILE_OFFSET_BITS is set to 64, which it is.  So this should be
+      * able to manage large file sizes.   Similarly, in the struct
+      * file_input_state_t flen should be type off_t.  This means that
+      * filecount has to be off_t as well.
+      */
      state->flen = sbuf.st_size/sizeof(uint);
      filecount = state->flen;
      if (filecount < 16) {

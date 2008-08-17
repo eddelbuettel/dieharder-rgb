@@ -8,6 +8,9 @@
 
 #include "copyright.h"
 
+/* To enable large file support */
+#define _FILE_OFFSET_BITS 64
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -158,7 +161,7 @@
  int rgb;               /* rgb test number */
  int sts;               /* sts test number */
  uint Seed;             /* user selected seed.  Surpresses reseeding per sample.*/
- uint tsamples;         /* Generally should be "a lot". */
+ off_t tsamples;        /* Generally should be "a lot".  off_t is u_int64_t. */
  int user;              /* user defined test number */
  int verbose;           /* Default is not to be verbose. */
  double x_user;         /* General purpose command line inputs for use */
@@ -203,7 +206,11 @@
  char filename[K];      /* Input file name */
  int fromfile;		/* set true if file is used for rands */
  int filenumbits;	/* number of bits per integer */
- uint filecount;	/* number of rands in file */
+ /*
+  * If we have large files, we can have a lot of rands.  off_t is
+  * automagically set to u_int64_t if FILE_OFFSET_BITS is set to 64.
+  */
+ off_t filecount;	/* number of rands in file */
  char filetype;         /* file type */
 
  void show_test_header(Dtest *dtest,Test **test);

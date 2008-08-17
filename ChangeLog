@@ -1,3 +1,25 @@
+2008-08-15 23:03  rgb
+
+	* .: This is 2.27.10-1, and adds stdin support and fixes a few bugs
+	  in the
+	  specfile. I'm posting it for distribution, although it is still
+	  not
+	  "finished" -- this is very much development snapshot time.
+
+2008-08-15 18:14  rgb
+
+	* .: This adds the capability to input a binary stream into stdin.
+	  This
+	  patch is due to Paul Serice. He also included a (standalone?) rng
+	  to
+	  test with, which I'll mess with in a moment.
+
+2008-08-03 12:40  rgb
+
+	* .: Added a version string to help. Probably should add one
+	  elsewhere, e.g.
+	  at the top of rng listing and test listing.
+
 2008-08-01 13:11  rgb
 
 	* .: Had to back off the svn2cl in the rpm build -- it now has to

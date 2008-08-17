@@ -148,7 +148,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) /usr/share/man/man1/dieharder.1.gz
 
 # These are all pretty much standard.
-%doc ChangeLog Copyright README COPYING NOTES
+%doc ChangeLog Copyright README COPYING NOTES dieharder.abs
 
 ########################################################################
 # Command to execute post install or uninstall of libdieharder
