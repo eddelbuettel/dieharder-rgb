@@ -62,9 +62,10 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_dieharder_OBJECTS = add_ui_rngs.$(OBJEXT) dieharder.$(OBJEXT) \
-	dieharder_exit.$(OBJEXT) help.$(OBJEXT) histogram.$(OBJEXT) \
-	list_rand.$(OBJEXT) list_rngs.$(OBJEXT) list_tests.$(OBJEXT) \
-	output_rnds.$(OBJEXT) parsecl.$(OBJEXT) rdieharder.$(OBJEXT) \
+	dieharder_exit.$(OBJEXT) dieharder_types.$(OBJEXT) \
+	help.$(OBJEXT) histogram.$(OBJEXT) list_rand.$(OBJEXT) \
+	list_rngs.$(OBJEXT) list_tests.$(OBJEXT) output_rnds.$(OBJEXT) \
+	parsecl.$(OBJEXT) rdieharder.$(OBJEXT) \
 	rng_empty_random.$(OBJEXT) run_diehard_2dsphere.$(OBJEXT) \
 	run_diehard_3dsphere.$(OBJEXT) run_diehard_birthdays.$(OBJEXT) \
 	run_diehard_bitstream.$(OBJEXT) \
@@ -218,6 +219,7 @@ dieharder_SOURCES = \
 	add_ui_rngs.c \
 	dieharder.c \
 	dieharder_exit.c \
+	dieharder_types.c \
 	help.c \
 	histogram.c \
 	list_rand.c \
@@ -353,6 +355,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/add_ui_rngs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dieharder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dieharder_exit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dieharder_types.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/help.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/histogram.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_rand.Po@am__quote@

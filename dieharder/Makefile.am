@@ -31,6 +31,7 @@ dieharder_SOURCES = \
 	add_ui_rngs.c \
 	dieharder.c \
 	dieharder_exit.c \
+	dieharder_types.c \
 	help.c \
 	histogram.c \
 	list_rand.c \

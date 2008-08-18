@@ -84,7 +84,7 @@ void add_lib_rngs()
    printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);
  }
  i++;
- /* gsl_rgb_r_knuth_taocp */
+ /* gsl_rng_r_knuth_taocp */
  types[i] = (gsl_rng_r_knuth_taocp);
  MYDEBUG(D_ADD_MY_TYPES){
    printf("# add_my_types():  Added type %d = %s\n",i,types[i]->name);

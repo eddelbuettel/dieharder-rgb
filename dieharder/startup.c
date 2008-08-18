@@ -46,7 +46,7 @@ void startup()
   * any added generators, plus a parse routine for selecting a generator
   * from the command line.
   */
- types = gsl_rng_types_setup ();
+ types = dieharder_rng_types_setup ();
  i = 0;
  while(types[i] != NULL){
    i++;

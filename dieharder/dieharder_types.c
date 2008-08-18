@@ -1,4 +1,5 @@
-/* rng/types.c
+/*
+ * This is a hack of the GSL's rng/types.c:
  * 
  * Copyright (C) 2001 Brian Gough
  * 
@@ -36,21 +37,28 @@
  * these will suffice for now.
  */
 
-#include <config.h>
-#include <stdlib.h>
 #include <gsl/gsl_rng.h>
 
-#define N 1000
+#define NTYPES 1000
 
-const gsl_rng_type * gsl_rng_generator_types[N];
+const gsl_rng_type * dieharder_rng_generator_types[NTYPES];
 
-#define ADD(t) {if (i==N) abort(); gsl_rng_generator_types[i] = (t); i++; };
+#define ADD(t) {if (i==NTYPES) abort(); dieharder_rng_generator_types[i] = (t); i++; };
 
-const gsl_rng_type **
-gsl_rng_types_setup (void)
+const gsl_rng_type **dieharder_rng_types_setup (void)
 {
-  int i = 0;
 
+  int i;
+
+  /*
+   * Null the whole thing for starters
+   */
+  for(i=0;i<NTYPES;i++) dieharder_rng_generator_types[i] = 0;
+
+  /*
+   * Then fill it in
+   */
+  i = 0;
   ADD(gsl_rng_borosh13);
   ADD(gsl_rng_cmrg);
   ADD(gsl_rng_coveyou);
@@ -113,8 +121,27 @@ gsl_rng_types_setup (void)
   ADD(gsl_rng_vax);
   ADD(gsl_rng_waterman14);
   ADD(gsl_rng_zuf);
-  ADD(0);
 
-  return gsl_rng_generator_types;
+  i = 200;
+  ADD(gsl_rng_stdin_input_raw);
+  ADD(gsl_rng_file_input_raw);
+  ADD(gsl_rng_file_input);
+  ADD(gsl_rng_dev_random);
+  ADD(gsl_rng_dev_arandom);
+  ADD(gsl_rng_dev_urandom);
+  ADD(gsl_rng_ca);
+  ADD(gsl_rng_uvag);
+
+  i = 400;
+  ADD(gsl_rng_r_wichmann_hill);
+  ADD(gsl_rng_r_marsaglia_mc);
+  ADD(gsl_rng_r_super_duper);
+  ADD(gsl_rng_r_mersenne_twister);
+  ADD(gsl_rng_r_knuth_taocp);
+  ADD(gsl_rng_r_knuth_taocp2);
+  i = 800;
+  ADD(gsl_rng_empty_random);
+  return dieharder_rng_generator_types;
+
 }
 

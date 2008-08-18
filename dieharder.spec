@@ -133,7 +133,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) /usr/share/man/man3/libdieharder.3.gz
 
 # These are all pretty much standard.
-%doc ChangeLog Copyright README COPYING NOTES
+%doc ChangeLog Copyright README COPYING NOTES dieharder.abs
 
 ########################################################################
 # Files installed with the dieharder tty UI
