@@ -37,15 +37,9 @@
  * these will suffice for now.
  */
 
-#include <gsl/gsl_rng.h>
+#include <dieharder/libdieharder.h>
 
-#define NTYPES 1000
-
-const gsl_rng_type * dieharder_rng_generator_types[NTYPES];
-
-#define ADD(t) {if (i==NTYPES) abort(); dieharder_rng_generator_types[i] = (t); i++; };
-
-const gsl_rng_type **dieharder_rng_types_setup (void)
+gsl_rng_type **dieharder_rng_types_setup(void)
 {
 
   int i;
@@ -53,85 +47,44 @@ const gsl_rng_type **dieharder_rng_types_setup (void)
   /*
    * Null the whole thing for starters
    */
-  for(i=0;i<NTYPES;i++) dieharder_rng_generator_types[i] = 0;
+  for(i=0;i<MAXRNGS;i++) dieharder_types[i] = 0;
 
   /*
-   * Then fill it in
+   * Initialize gsl_types to fill it with the current gsl rngs.
+   */
+  gsl_types = gsl_rng_types_setup();
+
+  /*
+   * Copy its contents over into dieharder_rng_generator_types.
    */
   i = 0;
-  ADD(gsl_rng_borosh13);
-  ADD(gsl_rng_cmrg);
-  ADD(gsl_rng_coveyou);
-  ADD(gsl_rng_fishman18);
-  ADD(gsl_rng_fishman20);
-  ADD(gsl_rng_fishman2x);
-  ADD(gsl_rng_gfsr4);
-  ADD(gsl_rng_knuthran);
-  ADD(gsl_rng_knuthran2);
-  ADD(gsl_rng_knuthran2002);
-  ADD(gsl_rng_lecuyer21);
-  ADD(gsl_rng_minstd);
-  ADD(gsl_rng_mrg);
-  ADD(gsl_rng_mt19937);
-  ADD(gsl_rng_mt19937_1999);
-  ADD(gsl_rng_mt19937_1998);
-  ADD(gsl_rng_r250);
-  ADD(gsl_rng_ran0);
-  ADD(gsl_rng_ran1);
-  ADD(gsl_rng_ran2);
-  ADD(gsl_rng_ran3);
-  ADD(gsl_rng_rand);
-  ADD(gsl_rng_rand48);
-  ADD(gsl_rng_random128_bsd);
-  ADD(gsl_rng_random128_glibc2);
-  ADD(gsl_rng_random128_libc5);
-  ADD(gsl_rng_random256_bsd);
-  ADD(gsl_rng_random256_glibc2);
-  ADD(gsl_rng_random256_libc5);
-  ADD(gsl_rng_random32_bsd);
-  ADD(gsl_rng_random32_glibc2);
-  ADD(gsl_rng_random32_libc5);
-  ADD(gsl_rng_random64_bsd);
-  ADD(gsl_rng_random64_glibc2);
-  ADD(gsl_rng_random64_libc5);
-  ADD(gsl_rng_random8_bsd);
-  ADD(gsl_rng_random8_glibc2);
-  ADD(gsl_rng_random8_libc5);
-  ADD(gsl_rng_random_bsd);
-  ADD(gsl_rng_random_glibc2);
-  ADD(gsl_rng_random_libc5);
-  ADD(gsl_rng_randu);
-  ADD(gsl_rng_ranf);
-  ADD(gsl_rng_ranlux);
-  ADD(gsl_rng_ranlux389);
-  ADD(gsl_rng_ranlxd1);
-  ADD(gsl_rng_ranlxd2);
-  ADD(gsl_rng_ranlxs0);
-  ADD(gsl_rng_ranlxs1);
-  ADD(gsl_rng_ranlxs2);
-  ADD(gsl_rng_ranmar);
-  ADD(gsl_rng_slatec);
-  ADD(gsl_rng_taus);
-  ADD(gsl_rng_taus2);
-  ADD(gsl_rng_taus113);
-  ADD(gsl_rng_transputer);
-  ADD(gsl_rng_tt800);
-  ADD(gsl_rng_uni);
-  ADD(gsl_rng_uni32);
-  ADD(gsl_rng_vax);
-  ADD(gsl_rng_waterman14);
-  ADD(gsl_rng_zuf);
+  while(gsl_types[i] != NULL){
+    dieharder_types[i] = gsl_types[i];
+    i++;
+  }
 
+  /*
+   * Now add the new ones in.  These positions are to be locked in by
+   * order within the ranges, so we need to be careful to get them
+   * "right" the first time.
+   *
+   * These are the dieharder generators.  I expect many users to use
+   * stdin-based raw input since it is by far the easiest one to come up
+   * with (and actually will work with e.g. /dev/random).  The file-based
+   * inputs will also be fairly common.  The rest are there for convenience,
+   * and to expose users to some new/interesting rngs.
+   */
   i = 200;
   ADD(gsl_rng_stdin_input_raw);
   ADD(gsl_rng_file_input_raw);
   ADD(gsl_rng_file_input);
-  ADD(gsl_rng_dev_random);
-  ADD(gsl_rng_dev_arandom);
-  ADD(gsl_rng_dev_urandom);
   ADD(gsl_rng_ca);
   ADD(gsl_rng_uvag);
 
+  /*
+   * These are the R-based generators.  Honestly it would be lovely
+   * to merge them with the GSL permanently.
+   */
   i = 400;
   ADD(gsl_rng_r_wichmann_hill);
   ADD(gsl_rng_r_marsaglia_mc);
@@ -139,9 +92,25 @@ const gsl_rng_type **dieharder_rng_types_setup (void)
   ADD(gsl_rng_r_mersenne_twister);
   ADD(gsl_rng_r_knuth_taocp);
   ADD(gsl_rng_r_knuth_taocp2);
-  i = 800;
-  ADD(gsl_rng_empty_random);
-  return dieharder_rng_generator_types;
+
+  /*
+   * These are hardware/system generators.  Again, it would be lovely to
+   * merge them with the GSL permanently.  It would also be good to wrap
+   * these in conditionals so that they are added iff the hardware
+   * interface exists.  Perhaps we should try doing this -- it requires a
+   * call to stat, I believe.  But not now.
+   */
+  i = 500;
+  ADD(gsl_rng_dev_random);
+  ADD(gsl_rng_dev_urandom);
+  ADD(gsl_rng_dev_arandom);
+
+  /*
+   * This will let me change a single word in startup.c in dieharder
+   * and the program should "just work" with my custom generators and
+   * types in their new places.  We'll see, of course...
+   */
+  return (gsl_rng_type**) dieharder_types;
 
 }
 

@@ -48,6 +48,7 @@ libdieharder_la_SOURCES = \
 	diehard_runs.c \
 	diehard_squeeze.c \
 	diehard_sums.c \
+	dieharder_types.c \
 	kstest.c \
 	marsaglia_tsang_gcd.c \
 	marsaglia_tsang_gorilla.c \

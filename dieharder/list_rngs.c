@@ -23,28 +23,76 @@ void list_rngs()
    printf("list_rngs():\n");
  }
  /* Version string seems like a good idea */
- printf("\n\
-dieharder version %s Copyright 2003 Robert G. Brown\n\
- \n",QUOTEME(VERSION));
- printf("            Listing available built-in gsl-linked generators:             |\n");
+ printf("==========================================================================|\n");
+ printf("         dieharder version %s Copyright 2003 Robert G. Brown         |\n",QUOTEME(VERSION));
+ printf("==========================================================================|\n");
  printf("%3s %-20s|%3s %-20s|%3s %-20s|\n"," Id","Test Name",
          " Id","Test Name"," Id","Test Name");
  printf("==========================================================================|\n");
- for(i=0;i<num_gsl_rngs;i++){
-   printf("%3d %-20s|", i, types[i]->name);
-   if(((i+1)%3) == 0 && i>0) printf("\n");
- }
- if(j = (i%3) != 0) printf("\n");
- printf("                   Listing available non-gsl generators:                  |\n");
- printf("%3s %-20s|%3s %-20s|%3s %-20s|\n"," Id","Test Name",
-         " Id","Test Name"," Id","Test Name");
- printf("==========================================================================|\n");
+ i = 0;
+ j = 0;
  while(types[i] != NULL){
    printf("%3d %-20s|", i, types[i]->name);
-   if(((i-j)%3) == 0 && i>0) printf("\n");
+   if(((j+1)%3) == 0 && i>0) printf("\n");
    i++;
+   j++;
  }
- printf("\n\n");
+ /*
+  * Finish off each block neatly.  If j == 0, we finished the row
+  * and do nothing.  Otherwise, pad to the end of the row.
+  */
+ j = j%3;
+ if(j == 1) printf("                        |                        |\n");
+ if(j == 2) printf("                        |\n");
+ printf("==========================================================================|\n");
+ i = 200;
+ j = 0;
+ while(types[i] != NULL){
+   printf("%3d %-20s|", i, types[i]->name);
+   if(((j+1)%3) == 0 && i>200) printf("\n");
+   i++;
+   j++;
+ }
+ j = j%3;
+ if(j == 1) printf("                        |                        |\n");
+ if(j == 2) printf("                        |\n");
+ printf("==========================================================================|\n");
+ i = 400;
+ j = 0;
+ while(types[i] != NULL){
+   printf("%3d %-20s|", i, types[i]->name);
+   if(((j+1)%3) == 0 && i>400) printf("\n");
+   i++;
+   j++;
+ }
+ j = j%3;
+ if(j == 1) printf("                        |                        |\n");
+ if(j == 2) printf("                        |\n");
+ printf("==========================================================================|\n");
+ i = 500;
+ j = 0;
+ while(types[i] != NULL){
+   printf("%3d %-20s|", i, types[i]->name);
+   if(((j+1)%3) == 0 && i>500) printf("\n");
+   i++;
+   j++;
+ }
+ j = j%3;
+ if(j == 1) printf("                        |                        |\n");
+ if(j == 2) printf("                        |\n");
+ printf("==========================================================================|\n");
+ i = 600;
+ j = 0;
+ while(types[i] != NULL){
+   printf("%3d %-20s|", i, types[i]->name);
+   if(((j+1)%3) == 0 && i>600) printf("\n");
+   i++;
+   j++;
+ }
+ j = j%3;
+ if(j == 1) printf("                        |                        |\n");
+ if(j == 2) printf("                        |\n");
+ printf("==========================================================================|\n");
 
 }
 

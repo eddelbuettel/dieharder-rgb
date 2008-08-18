@@ -28,10 +28,8 @@ bin_PROGRAMS = dieharder
 man1_MANS = dieharder.1
 dieharder_LDADD = ../libdieharder/libdieharder.la -lgsl -lgslcblas -lm
 dieharder_SOURCES = \
-	add_ui_rngs.c \
 	dieharder.c \
 	dieharder_exit.c \
-	dieharder_types.c \
 	help.c \
 	histogram.c \
 	list_rand.c \

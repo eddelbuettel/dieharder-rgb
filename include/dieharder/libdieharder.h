@@ -211,7 +211,7 @@
  /*
   * rng global vectors and variables for setup and tests.
   */
- const gsl_rng_type **types;    /* where all the rng types go */
+ const gsl_rng_type **types;       /* where all the rng types go */
  gsl_rng *rng;               /* global gsl random number generator */
 
  /*
@@ -226,5 +226,4 @@
  unsigned int rmax;             /* scratch space for random_max manipulation */
  unsigned int rmax_bits;        /* Number of valid bits in rng */
  unsigned int rmax_mask;        /* Mask for valid section of uint */
- int num_gsl_rngs,num_my_rngs,num_rngs;  /* number of rng's */
  

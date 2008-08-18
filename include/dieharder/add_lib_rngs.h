@@ -1,48 +1,68 @@
 /*
  *========================================================================
- * $Id: add_lib_rngs.h 325 2007-05-22 14:04:12Z rgb $
- *
  * See copyright in copyright.h and the accompanying file COPYING
  *========================================================================
  */
 
 /*
- * This routine just adds new RNG's onto the GSL types list.
- * Apparently this is all that is needed -- they subsequently
- * just "work" in the gsl call format.  Note that there DOES
- * have to be a subroutine set with its own state and so forth just
- * like the one in dev_random.c (for the linus entropy generator).
+ *========================================================================
+ * This is being directly adapted from and modified for use in dieharder
+ * so it can maintain its own independent RNG space of types not limited
+ * by the GSL's current internal limit of 100.  To avoid collisions,
+ * we'll start our number space above 100, and extend it to 1000.
  *
- * From gsl types.c -- MAXRNGS apparently a hard-coded value.  This means
- * that we cannot CURRENTLY go over 100 generators without e.g.
- * increasing N in the gsl sources.  They do leave some room for
- * new ones, but not a lot.  Fortunately, I probably won't ever
- * fill N myself personally...
+ * To be concrete, I'm going to define the following ranges:
+ *
+ *   0-99    GSL generators, in GSL order.  If it changes, tough.
+ *   100-199 reserved for spillover if the GSL ends up with >100 generators
+ *   200-399 libdieharder generators (fixed order from now on)
+ *   400-499 R-based generators (fixed order from now on)
+ *   500-599 hardware generators (starting with /dev/random and friends)
+ *   600-699 user-defined generators (starting with dieharder example)
+ *   700-999 reserved, e.g. for future integration with R-like environments
+ *
+ * I may have to experiment some to determine if there is any problem
+ * with defining my own gsl_rng_type table of types and then filling it
+ * first with the GSL routines, then with dieharder's.
+ *========================================================================
  */
 
-#define MAXRNGS 100
+#include <gsl/gsl_rng.h>
 
  /* #define GSL_VAR */
  /* List new rng types to be added. */
+ GSL_VAR const gsl_rng_type *gsl_rng_stdin_input_raw;   /* rgb Aug 2008 */
+ GSL_VAR const gsl_rng_type *gsl_rng_file_input_raw;
+ GSL_VAR const gsl_rng_type *gsl_rng_file_input;
+
  GSL_VAR const gsl_rng_type *gsl_rng_dev_random;
  GSL_VAR const gsl_rng_type *gsl_rng_dev_arandom;
  GSL_VAR const gsl_rng_type *gsl_rng_dev_urandom;
- GSL_VAR const gsl_rng_type *gsl_rng_empty_random;
- GSL_VAR const gsl_rng_type *gsl_rng_file_input;
- GSL_VAR const gsl_rng_type *gsl_rng_file_input_raw;
- GSL_VAR const gsl_rng_type *gsl_rng_ca;
+
  GSL_VAR const gsl_rng_type *gsl_rng_r_wichmann_hill;	/* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_marsaglia_mc;	/* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_super_duper;	/* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_mersenne_twister;  /* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp;	/* edd May 2007 */
  GSL_VAR const gsl_rng_type *gsl_rng_r_knuth_taocp2;	/* edd May 2007 */
+
+ GSL_VAR const gsl_rng_type *gsl_rng_ca;
  GSL_VAR const gsl_rng_type *gsl_rng_uvag;	        /* rgb June 2007 */
- GSL_VAR const gsl_rng_type *gsl_rng_stdin_input_raw;   /* rgb Aug 2008 */
 
  /*
   * rng global vectors and variables for setup and tests.
   */
- const gsl_rng_type **types;    /* where all the rng types go */
+#define MAXRNGS 1000
+
+ const gsl_rng_type **dieharder_rng_types_setup(void);
+
+ const gsl_rng_type *dieharder_types[MAXRNGS];
+ const gsl_rng_type **gsl_types;    /* where all the rng types go */
+
+ uint num_rngs,num_gsl_rngs,num_dieharder_rngs,num_R_rngs,
+      num_hardware_rngs,num_ui_rngs;
+	    
+#define ADD(t) {if (i==MAXRNGS) abort(); dieharder_types[i] = (t); i++; };
+
  gsl_rng *rng;                  /* global gsl random number generator */
 

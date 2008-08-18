@@ -46,31 +46,84 @@ void startup()
   * any added generators, plus a parse routine for selecting a generator
   * from the command line.
   */
- types = dieharder_rng_types_setup ();
+ types = dieharder_rng_types_setup();
+
+ /*
+  * We new have to work a bit harder to determine how many
+  * generators we have of the different types because there are
+  * different ranges for different sources of generator.
+  *
+  * We start with the basic GSL generators, which start at offset 0.
+  */
  i = 0;
  while(types[i] != NULL){
    i++;
  }
  num_gsl_rngs = i;
-
- /*
-  * Now add the library gsl-wrapped generators
-  */
- add_lib_rngs();
- while(types[i] != NULL){
-   i++;
+ MYDEBUG(D_STARTUP){
+   printf("# startup:  Found %u GSL rngs.\n",num_gsl_rngs);
  }
 
  /*
-  * If there are any, we can even add generators at the UI level
+  * Next come the dieharder generators, which start at offset 200.
   */
- add_ui_rngs();
+ i = 200;
+ j = 0;
  while(types[i] != NULL){
    i++;
+   j++;
+ }
+ num_dieharder_rngs = j;
+ MYDEBUG(D_STARTUP){
+   printf("# startup:  Found %u dieharder rngs.\n",num_dieharder_rngs);
  }
 
- num_rngs = i;
- num_my_rngs = num_rngs - num_gsl_rngs;
+ /*
+  * Next come the R generators, which start at offset 400.
+  */
+ i = 400;
+ j = 0;
+ while(types[i] != NULL){
+   i++;
+   j++;
+ }
+ num_R_rngs = j;
+ MYDEBUG(D_STARTUP){
+   printf("# startup:  Found %u R rngs.\n",num_R_rngs);
+ }
+
+ /*
+  * Next come the hardware generators, which start at offset 500.
+  */
+ i = 500;
+ j = 0;
+ while(types[i] != NULL){
+   i++;
+   j++;
+ }
+ num_hardware_rngs = j;
+ MYDEBUG(D_STARTUP){
+   printf("# startup:  Found %u hardware rngs.\n",num_hardware_rngs);
+ }
+
+ /*
+  * Finally, any generators added by the user at the interface level.
+  * That is, if you are hacking dieharder to add your own rng, add it
+  * below and it should "just appear" in the dieharder list of available
+  * generators and be immediately useful.
+  */
+ i = 600;
+ j = 0;
+ types[i] = gsl_rng_empty_random;
+ i++;
+ j++;
+ num_ui_rngs = j;
+ MYDEBUG(D_STARTUP){
+   printf("# startup:  Found %u user interface generators.\n",num_ui_rngs);
+ }
+
+ num_rngs = num_gsl_rngs + num_dieharder_rngs + num_R_rngs +
+            num_hardware_rngs + num_ui_rngs;
 
  if(generator == -1){
    list_rngs();

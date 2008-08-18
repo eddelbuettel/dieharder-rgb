@@ -220,3 +220,13 @@
  void show_test_results_debut(Dtest *dtest,Test **test);
  void test_footer(Dtest *dtest, double pvalue, double *pvalues);
 
+/*
+ * List new rng types to be added in startup.c.  Use "empty" or
+ * libdieharder rng sources as template, uncomment/clone the lines that
+ * add your own type(s) in startup.c.  Consider sending "good" generators
+ * that pass all or most tests or "classic" generators good or bad that
+ * people might want to test back to me to include in libdieharder.
+ */
+ GSL_VAR const gsl_rng_type *gsl_rng_empty_random;
+ /* GSL_VAR const gsl_rng_type *gsl_rng_my_new_random; */
+
