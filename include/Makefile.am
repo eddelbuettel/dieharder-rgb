@@ -1,5 +1,5 @@
-nobase_include_HEADERS = dieharder/add_lib_rngs.h \
-	dieharder/copyright.h \
+nobase_include_HEADERS = dieharder/copyright.h \
+	dieharder/dieharder_types.h \
 	dieharder/diehard_2dsphere.h \
 	dieharder/diehard_3dsphere.h \
 	dieharder/diehard_birthdays.h \

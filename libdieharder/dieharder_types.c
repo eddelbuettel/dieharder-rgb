@@ -38,8 +38,9 @@
  */
 
 #include <dieharder/libdieharder.h>
+FILE *test_fp;
 
-gsl_rng_type **dieharder_rng_types_setup(void)
+const gsl_rng_type **dieharder_rng_types_setup(void)
 {
 
   int i;
@@ -101,16 +102,25 @@ gsl_rng_type **dieharder_rng_types_setup(void)
    * call to stat, I believe.  But not now.
    */
   i = 500;
-  ADD(gsl_rng_dev_random);
-  ADD(gsl_rng_dev_urandom);
-  ADD(gsl_rng_dev_arandom);
+  if (test_fp = fopen("/dev/random","r")) {
+    ADD(gsl_rng_dev_random);
+    fclose(test_fp);
+  }
+  if (test_fp = fopen("/dev/urandom","r")) {
+    ADD(gsl_rng_dev_urandom);
+    fclose(test_fp);
+  }
+  if (test_fp = fopen("/dev/arandom","r")) {
+    ADD(gsl_rng_dev_arandom);
+    fclose(test_fp);
+  }
 
   /*
    * This will let me change a single word in startup.c in dieharder
    * and the program should "just work" with my custom generators and
    * types in their new places.  We'll see, of course...
    */
-  return (gsl_rng_type**) dieharder_types;
+  return dieharder_types;
 
 }
 

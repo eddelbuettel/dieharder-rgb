@@ -142,19 +142,38 @@ void Vtest_eval(Vtest *vtest)
  /*
   * At the end, ALL the counts that are statistically weak should sum into
   * a statistically significant tail count, but the tail count still has
-  * to make the cutoff!  Sometimes it won't!
+  * to make the cutoff!  Sometimes it won't!  Note that the toplevel
+  * conditional guards against itail still being -1 because Vtest did nothing
+  * in its last pass through the code above.
   */
- if(vtest->y[itail] >= vtest->cutoff){
-   delchisq = (vtest->x[itail] - vtest->y[itail])*
+ if(itail != -1){
+   if(vtest->y[itail] >= vtest->cutoff){
+     delchisq = (vtest->x[itail] - vtest->y[itail])*
               (vtest->x[itail] - vtest->y[itail])/vtest->y[itail];
-   chisq += delchisq;
-   /* increment only if the data is substantial */
-   if(vtest->ndof == 0) ndof++;
-   MYDEBUG(D_VTEST){
-     printf("# %5u\t%3u\t%12.4f\t%12.4f\t%8.4f\t%10.4f\n",
+     chisq += delchisq;
+     /* increment only if the data is substantial */
+     if(vtest->ndof == 0) ndof++;
+     MYDEBUG(D_VTEST){
+       printf("# %5u\t%3u\t%12.4f\t%12.4f\t%8.4f\t%10.4f\n",
               itail,vtest->ndof,vtest->x[itail],vtest->y[itail],delchisq,chisq);
+     }
    }
  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  /*
   * Interestingly, one simply cannot make the tail "work" as a

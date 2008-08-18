@@ -130,6 +130,12 @@ void startup()
    Exit(0);
  }
 
+ if(generator < 0 || generator >= MAXRNGS){
+   fprintf(stderr,"Error:  rng %d does not exist!\n",generator);
+   list_rngs();
+   Exit(0);
+ }
+
  if(types[generator] == 0){
    fprintf(stderr,"Error:  rng %d does not exist!\n",generator);
    list_rngs();

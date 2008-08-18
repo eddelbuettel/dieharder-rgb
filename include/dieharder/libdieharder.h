@@ -39,7 +39,7 @@
 #include <dieharder/Vtest.h>
 #include <dieharder/std_test.h>
 #include <dieharder/tests.h>
-#include <dieharder/add_lib_rngs.h>
+#include <dieharder/dieharder_types.h>
 
 /*
  *========================================================================

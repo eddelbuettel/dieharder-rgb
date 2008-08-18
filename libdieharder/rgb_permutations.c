@@ -110,7 +110,7 @@ void rgb_permutations(Test **test,int irun)
    }
 
    for(i=0;i<nperms;i++){
-     if(memcmp(ps,lookup[i]->data,rgb_permutations_k*sizeof(uint))==0){
+     if(memcmp(ps,lookup[i]->data,rgb_permutations_k*sizeof(size_t))==0){
        permindex = i;
        MYDEBUG(D_RGB_PERMUTATIONS){
          printf("# Found permutation: ");
@@ -121,10 +121,10 @@ void rgb_permutations(Test **test,int irun)
      }
    }
 
-   MYDEBUG(D_RGB_PERMUTATIONS){
-     printf("# rgb_permutations: permindex = %u\n",permindex);
-   }
    vtest.x[permindex]++;
+   MYDEBUG(D_RGB_PERMUTATIONS){
+     printf("# rgb_permutations: Augmenting vtest.x[%u] = %f\n",permindex,vtest.x[permindex]);
+   }
 
  }
 
@@ -132,13 +132,12 @@ void rgb_permutations(Test **test,int irun)
    printf("# rgb_permutations:==============================\n");
    printf("# rgb_permutations: permutation count = \n");
    for(i=0;i<nperms;i++){
-     printf("# count[%u] = %u\n",i,vtest.x[i]);
+     printf("# count[%u] = %u\n",i,(uint) vtest.x[i]);
    }
  }
 
  Vtest_eval(&vtest);
  test[0]->pvalues[irun] = vtest.pvalue;
-
  MYDEBUG(D_RGB_PERMUTATIONS) {
    printf("# rgb_permutations(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }

@@ -27,7 +27,6 @@ libdieharder_la_LDFLAGS = -version-number @DIEHARDER_LT_VERSION@
 # be sufficiently portable.
 # libdieharder_la_SOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
 libdieharder_la_SOURCES = \
-	add_lib_rngs.c \
 	bits.c \
 	chisq.c \
 	countx.c \

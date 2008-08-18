@@ -51,8 +51,8 @@ in testing BEFORE using this testing tool!\n\
    -r 1 RGB Timing test (times the rng)\n\
    -r 2 RGB Bit Persistence test\n\
    -r 3 RGB Ntuple Bit Distribution test suite (-n ntuple)\n\
-   -r 4 RGB Permutations test (new, partial replacement for operm tests)\n\
-   -r 5 RGB Generalized Minimum Distance test\n\
+   -r 4 RGB Generalized Minimum Distance test\n\
+   [devel only: -r 5 RGB Permutations test (new, partial replacement for operm tests)]\n\
    [devel only: -r 6 RGB L-M-Ntuple Distribution test suite (quite long)]\n\
    [devel only: -r 7 RGB Overlapping Permutations test]\n\
 \n\

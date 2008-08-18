@@ -152,20 +152,20 @@ void work()
      run_rgb_bitdist();
      Exit(0);
      break;
-   case RGB_LMN:
-     rgb_lmn();
+   case RGB_MINIMUM_DISTANCE:
+     run_rgb_minimum_distance();
      Exit(0);
      break;
-   case RGB_OPERM:
-     run_rgb_operm();
+   case RGB_LMN:
+     rgb_lmn();
      Exit(0);
      break;
    case RGB_PERMUTATIONS:
      run_rgb_permutations();
      Exit(0);
      break;
-   case RGB_MINIMUM_DISTANCE:
-     run_rgb_minimum_distance();
+   case RGB_OPERM:
+     run_rgb_operm();
      Exit(0);
      break;
    default:
