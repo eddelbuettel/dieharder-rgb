@@ -1,3 +1,80 @@
+2008-08-18 19:50  rgb
+
+	* .: This might be ready for a production snapshot, or a testing
+	  snapshot,
+	  or something like that. At any rate, I have BOTH fixed the
+	  generator
+	  problem (where rngs have numbers that can change as new
+	  generators
+	  are added. I fixed this by significantly increasing the size of
+	  the
+	  types[] vector and working moderately hard to pack it with
+	  generators
+	  sparsely and sanely -- sparse so there is plenty of room, sane
+	  because
+	  the space is now blocked out by general category with room to
+	  grown.
+	  
+	  This will NOT GUARANTEE that the GSL will not change its internal
+	  order,
+	  and dieharder will continue to follow the GSL order where they
+	  overlap
+	  as nothing else makes sense.
+	  
+	  I >>also<< think I've fixed -r 5, rgb_permutations. This is a
+	  non-overlapping permutations test and runs to more or less
+	  arbitrary
+	  order (and seems to work quite nicely where it runs, although it
+	  gets
+	  quite slow when we get to very large permutations as one might
+	  expect).
+	  
+	  I think it is time to bump the minor-minor number to 11 and post
+	  it, for
+	  the time being with -r 5 still marked out as experimental in the
+	  help listing.
+
+2008-08-18 18:33  rgb
+
+	* .: This fixes the only real bug, I think -- dieharder now dies
+	  with a
+	  complaint if it is invoked with an invalid -g entry, sort of.
+	  Hmmm,
+	  actually I might need to tweak this fix just a bit more to check
+	  on the complete range.
+
+2008-08-18 18:29  rgb
+
+	* .: This actually works and has the number spaces previously
+	  discussed
+	  all implemented and everything.
+
+2008-08-18 00:15  rgb
+
+	* .: This is a step in the process of figuring out how to "fix" the
+	  numbers
+	  for rngs to test. I think I'm going to have to move my own setup
+	  routine to libdieharder. But I'm still trying to figure out
+	  whether or
+	  not I can or should replace the gsl code itself, or run something
+	  in
+	  parallel.
+
+2008-08-17 17:30  rgb
+
+	* .: This rearranges the Bugs stuff. I need to create a "cleared"
+	  directory
+	  in Bugs so I can see what is done, as well.
+
+2008-08-17 16:31  rgb
+
+	* .: This updates the abstract, which is also important
+	  documentation and has
+	  been added to the %doc lines in the specfile. I should really
+	  create a
+	  make installdoc target in Makefile.am that can install a bunch of
+	  documents, but that is for another day.
+
 2008-08-15 23:03  rgb
 
 	* .: This is 2.27.10-1, and adds stdin support and fixes a few bugs

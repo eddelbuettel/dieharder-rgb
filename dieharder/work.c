@@ -29,11 +29,11 @@ void work()
    run_rgb_timing();
    run_rgb_persist();
    run_rgb_bitdist();
-   /*  run_rgb_operm(); */
-   run_rgb_permutations();
    run_rgb_minimum_distance();
+   run_rgb_permutations();
+   /*  run_rgb_operm(); */
    run_diehard_birthdays();
-   run_diehard_operm5();
+   /* run_diehard_operm5(); */
    run_diehard_rank_32x32();
    run_diehard_rank_6x8();
    run_diehard_bitstream();
@@ -46,7 +46,7 @@ void work()
    run_diehard_2dsphere();
    run_diehard_3dsphere();
    run_diehard_squeeze();
-   run_diehard_sums();
+   /* run_diehard_sums(); */
    run_diehard_runs();
    run_diehard_craps();
    run_marsaglia_tsang_gcd();

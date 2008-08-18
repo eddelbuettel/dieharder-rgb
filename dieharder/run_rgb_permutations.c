@@ -33,8 +33,8 @@ void run_rgb_permutations()
    ntmin = ntuple;
  } else {
    /*
-    * Default is to test 2 through n permutations, but n > 7 is really
-    * long.  We quit at n = 7.
+    * Default ought to be to test 2 through n permutations, but n > 7 is
+    * really quite long.  We quit at n = 7.
     */
    ntmin = 2;
    ntmax = 7;
