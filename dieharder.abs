@@ -242,7 +242,7 @@ following, in rough order of importance:<p>
 
 <ul>
 
-<li> To provide a <b>readily available, rpm- or apt- installable
+<li> To provide a readily available, rpm- or apt- installable
 <b>toolset</b> so that "consumers" of random numbers (who typically use
 <i>large</i> numbers of random numbers in e.g. simulation or other
 research) can test the generator(s) they are using to verify their
@@ -288,7 +288,7 @@ their particular generator/distribution combination at the cost of
 implementing a suitable test in dieharder (using the code of existing
 tests as a template).
 
-<i> To allow dieharder to be directly interfaced with <b>other tools and
+<li> To allow dieharder to be directly interfaced with <b>other tools and
 interfaces</b>.  For example, dieharder can be directly called within
 the R interface, permitting its rngs to be tested and R-based graphics
 and tools to be used to analyze test results.  Note well, however, that
@@ -345,10 +345,9 @@ Available</h2></center>
 <p>List of GSL and user-defined random number generators that can be
 tested by dieharder:</p>
 <pre>
-
-dieharder version 2.27.10 Copyright 2003 Robert G. Brown
- 
-            Listing available built-in gsl-linked generators:             |
+==========================================================================|
+         dieharder version 2.27.11 Copyright 2003 Robert G. Brown         |
+==========================================================================|
  Id Test Name           | Id Test Name           | Id Test Name           |
 ==========================================================================|
   0 borosh13            |  1 cmrg                |  2 coveyou             |
@@ -371,24 +370,23 @@ dieharder version 2.27.10 Copyright 2003 Robert G. Brown
  51 slatec              | 52 taus                | 53 taus2               |
  54 taus113             | 55 transputer          | 56 tt800               |
  57 uni                 | 58 uni32               | 59 vax                 |
- 60 waterman14          | 61 zuf                 |
-                   Listing available non-gsl generators:                  |
- Id Test Name           | Id Test Name           | Id Test Name           |
+ 60 waterman14          | 61 zuf                 |                        |
 ==========================================================================|
- 62 /dev/random         | 63 /dev/arandom        | 64 /dev/urandom        |
- 65 file_input          | 66 file_input_raw      | 67 ca                  |
- 68 R_wichmann_hill     | 69 R_marsaglia_multic. | 70 R_super_duper       |
- 71 R_mersenne_twister  | 72 R_knuth_taocp       | 73 R_knuth_taocp2      |
- 74 uvag                | 75 stdin_input_raw     | 76 empty               |
+200 stdin_input_raw     |201 file_input_raw      |202 file_input          |
+203 ca                  |204 uvag                |                        |
+==========================================================================|
+400 R_wichmann_hill     |401 R_marsaglia_multic. |402 R_super_duper       |
+403 R_mersenne_twister  |404 R_knuth_taocp       |405 R_knuth_taocp2      |
+==========================================================================|
+500 /dev/random         |501 /dev/urandom        |                        |
+==========================================================================|
+600 empty               |                        |                        |
+==========================================================================|
 </pre>
 
-<p>As of this snapshot, these numbers can change from release to release
-as the GSL or dieharder add new rngs.  A future release will separate
-these number spaces and add support for invoking rngs by name.</p>
-
-<p>Note that the stdin_input_raw interface is a "universal" interface.
-Any generator that can produce a (continuous) stream of presumably
-random bits can be tested with dieharder.  The easiest way to
+<p>Note that the stdin_input_raw interface (-g 200) is a "universal"
+interface.  Any generator that can produce a (continuous) stream of
+presumably random bits can be tested with dieharder.  The easiest way to
 demonstrate this is by running:</p>
 
 <pre>
@@ -419,24 +417,26 @@ for the p-value histograms unless there are enough rands to run EACH
 test without repetition (it is harmless to reuse the sequence for
 different tests).  <b>Let the user beware!</b></p>
 
-<p>List of the CURRENT fully implemented tests (as of the 07/12/06
+<p>List of the CURRENT fully implemented tests (as of the 08/18/08
 snapshot):</p>
 <pre>
-rgb@lilith|B:1346>dieharder -l
-
-dieharder version 2.27.10 Copyright 2003 Robert G. Brown
- 
-                     DieHarder Test Suite
 ========================================================================
-The following tests are available. Non-devel tests d will be run when
-diehard -a is invoked, with "reasonable" default parameters.
+   Dieharder version 2.27.11 Copyright 2003 Robert G. Brown
+========================================================================
+Bug/Development Key (use at your own risk):
+   rft = ready for testing (the test may - or may not - work correctly)
+   sus = suspect test (consistently fails "good" generators)
+   dev = development only (may crash, isn't finished)
+
+Only fully reliable tests will be run when diehard -a is invoked,
+with "reasonable" default parameters.  
 
 PLEASE READ THE MAN PAGE to learn about p-values and the null hypothesis
 in testing BEFORE using this testing tool!
 
             Diehard Tests
    -d 1  Diehard Birthdays test
-   [suspect test: -d 2  Diehard Overlapping Permutations test]
+   [sus: -d 2  Diehard Overlapping Permutations test]
    -d 3  Diehard 32x32 Binary Rank test
    -d 4  Diehard 6x8 Binary Rank test
    -d 5  Diehard Bitstream test
@@ -449,25 +449,25 @@ in testing BEFORE using this testing tool!
    -d 12 Diehard Minimum Distance (2D Spheres) test
    -d 13 Diehard 3D Spheres (minimum distance) test
    -d 14 Diehard Squeeze test
-   [suspect test: -d 15 Diehard Sums test]
+   [sus: -d 15 Diehard Sums test]
    -d 16 Diehard Runs test
    -d 17 Diehard Craps test
    -d 18 Marsaglia and Tsang GCD test
-   [devel only: -d 19 Marsaglia and Tsang Gorilla test]
+   [dev: -d 19 Marsaglia and Tsang Gorilla test]
 
              RGB Tests
    -r 1 RGB Timing test (times the rng)
    -r 2 RGB Bit Persistence test
    -r 3 RGB Ntuple Bit Distribution test suite (-n ntuple)
-   -r 4 RGB Permutations test (new, partial replacement for operm tests)
-   -r 5 RGB Generalized Minimum Distance test
-   [devel only: -r 6 RGB L-M-Ntuple Distribution test suite (quite long)]
-   [devel only: -r 7 RGB Overlapping Permutations test]
+   -r 4 RGB Generalized Minimum Distance test
+   [rft: -r 5 RGB Permutations test (new, partial replacement for operm tests)]
+   [dev: -r 6 RGB L-M-Ntuple Distribution test suite (quite long)]
+   [dev: -r 7 RGB Overlapping Permutations test]
 
       Statistical Test Suite (STS)
    -s 1 STS Monobit test
    -s 2 STS Runs test
-   -s 3 STS Serial test (new, very powerful test)
+   -s 3 STS Serial test
 
             User Tests
    -u 1 User Template (Lagged Sum Test)
@@ -480,9 +480,9 @@ independently rewritten from their description, and may be functionally
 modified or extended relative to the original source code published in
 the originating suite(s).  The author (rgb) bears complete
 responsibility for these changes, subject to the standard GPL code
-disclaimer (in essence, yes it's my fault if they don't work but using
-the tool is at your own risk and you can <i>fix it</i> if it bothers you
-and/or I don't fix it first).</p>
+disclaimer that the code <i>has no warranty</i> (in essence, yes it's my
+fault if they don't work but using the tool is at your own risk and you
+can <i>fix it</i> if it bothers you and/or I don't fix it first).</p>
 
 <center><h2>Development Notes</h2></center>
 
