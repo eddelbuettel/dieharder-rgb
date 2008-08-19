@@ -132,6 +132,7 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cp missing $(PROJECTDIR); \
 	cp mkinstalldirs $(PROJECTDIR); \
 	cp ltmain.sh $(PROJECTDIR); \
+	cp install-sh $(PROJECTDIR); \
 	cp configure $(PROJECTDIR); \
 	cp configure.ac $(PROJECTDIR); \
 	cp Copyright $(PROJECTDIR); \

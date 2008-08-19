@@ -1,0 +1,64 @@
+newhist 1
+	data $1
+	read {Data 1}
+	# set Score = Score*100
+	# Note -1 pushes null samples off of graph.
+	mystats Data mean sigma skew kurtosis
+	get_hist Data S F 140000 144000 10
+	# set S=S+1
+	histogram S F
+showhist 1
+	FNbox 140000 144000 0 5000 "Cnt" "Means"
+	data $1
+	read {Data 1}
+	# set Score = Score*100
+	# Note -1 pushes null samples off of graph.
+	mystats Data mean sigma skew kurtosis
+	get_hist Data S F 140000 144000 10
+	# set S=S+1
+	histogram S F
+	# shade histogram 150 S F
+	relocate 142500 4600
+	label Mean = $mean
+	relocate 142500 4400
+	label sigma = $sigma
+	relocate 142500 4200
+	label skew = $skew
+	relocate 142500 4000
+	label kurtosis = $kurtosis
+showsmallhist 1
+	FNbox 140000 144000 0 300 "Cnt" "Means"
+	data $1
+	read {Data 1}
+	# set Score = Score*100
+	# Note -1 pushes null samples off of graph.
+	mystats Data mean sigma skew kurtosis
+	get_hist Data S F 140000 144000 10
+	# set S=S+1
+	histogram S F
+	# shade histogram 150 S F
+	relocate 142500 252
+	label Mean = $mean
+	relocate 142500 240
+	label sigma = $sigma
+	relocate 142500 228
+	label skew = $skew
+	relocate 142500 216
+	label kurtosis = $kurtosis
+FNbox	6
+	erase
+	location 5000 30000 6000 28000
+	define TeX_strings 1
+	limits $1 $2 $3 $4
+	expand 1.1
+	ltype 0
+	box
+	xlabel $6
+	ylabel $5
+mystats 5 # stats vector mean sigma skew kurtosis : calculate $mean $sigma etc
+	DEFINE _n ( DIMEN($1) )
+	DEFINE $2 ( SUM($1)/$_n ) # mean
+	DEFINE $3 ( SQRT(SUM(($1 - $$2)**2)/($_n - 1)) ) # sigma
+	DEFINE $4 ( SUM(($1 - $$2)**3)/($_n - 1)/$$3**3 ) # skew
+	DEFINE $5 ( SUM(($1 - $$2)**4)/($_n - 1)/$$3**4 - 3) # kurtosis
+	DEFINE _n DELETE
