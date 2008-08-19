@@ -780,21 +780,15 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cp -r include $(PROJECTDIR); \
 	cp $(ABS) $(PROJECTDIR); \
 	cp $(PHP) $(PROJECTDIR); \
-	cp Makefile $(PROJECTDIR); \
 	cp Makefile.am $(PROJECTDIR); \
 	cp Makefile.in $(PROJECTDIR); \
 	cp configure $(PROJECTDIR); \
-	cp config.sub $(PROJECTDIR); \
-	cp config.guess $(PROJECTDIR); \
 	cp config.h.in $(PROJECTDIR); \
 	cp $(SPEC).in $(PROJECTDIR); \
 	cp dieharder_version.h.in $(PROJECTDIR); \
 	cp autogen.sh $(PROJECTDIR); \
 	cp missing $(PROJECTDIR); \
-	cp depcomp $(PROJECTDIR); \
-	cp install-sh $(PROJECTDIR); \
 	cp mkinstalldirs $(PROJECTDIR); \
-	cp libtool $(PROJECTDIR); \
 	cp ltmain.sh $(PROJECTDIR); \
 	cp configure $(PROJECTDIR); \
 	cp configure.ac $(PROJECTDIR); \

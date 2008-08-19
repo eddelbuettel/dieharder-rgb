@@ -1,15 +1,26 @@
+========================================================================
+                      QUICK BUILD/INSTALL INSTRUCTIONS
+========================================================================
 
-                      BUILD/INSTALL INSTRUCTIONS
+Dieharder should build from the freshly unpacked tarball if you enter:
 
-First, note well that dieharder REQUIRES the Gnu Scientific Library
-(GSL) and the Gnu Build Tools (GBT) for its build, and it is strongly
-recommended that they be up to date versions.  This precludes building
-or running dieharder on a truly old linux (or other) distribution.  In
-practical terms, if your linux distribution is older than two years
-(say, pre-FC 4) it is unlikely to build smoothly without signicant work.
-For many of you reading this, then, my first instruction is "update to a
-relatively modern build environment that contains a contemporary GSL
-and GBT".  
+ ./autogen.sh
+ make
+
+from the toplevel source directory, IF you have the required libraries
+and tools installed.
+
+========================================================================
+                           BUILD REQUIREMENTS
+
+Dieharder requires the Gnu Scientific Library (GSL) and the Gnu Build
+Tools (GBT) for its build, and it is strongly recommended that they be
+up to date versions.  This precludes building or running dieharder on a
+truly old linux (or other) distribution.  In practical terms, if your
+linux distribution is older than two years (say, pre-FC 4) it is
+unlikely to build smoothly without signicant work.  For many of you
+reading this, then, my first instruction is "update to a relatively
+modern build environment that contains a contemporary GSL and GBT".
 
 A few required components may not be installed on your system by default
 even if your system is quite modern.  The GSL is one example -- you may
@@ -19,24 +30,11 @@ both the library and its header files) or you may have to get the GSL
 sources and build/install from scratch.
 
 Also be sure your system has libtool installed and on your path or else
-the build will, of course, fail.  In particular its definition on your
-system needs to be in aclocal's search path.
-
-Once this is done, the build SHOULD proceed easily enough.  Enter the
-toplevel build directory and enter:
-
- ./autogen.sh
- make
-
-which should set up and perform a GBT build even if your system is quite
-different from my development/testing systems.
-
-If you skip this step, you may not have the right/current versions of
-some of the files required by e.g.  automake, but on many linux systems
-just using the "usual" build starting with the configure step will work:
-
- ./configure
- make
+the build will fail.  In particular its definition on your system needs
+to be in aclocal's search path.  Running ./autogen.sh "should" fix all
+of that, but in an imperfect world there are probably systems missing
+this or that or configured very differently from my test/development
+systems where it doesn't.
 
 Note that there are MANY options you may want to give configure to tune
 up a build for your particular architecture.  We will mention only two.
@@ -84,8 +82,8 @@ above, enter:
  make install
 
 This last step will need to be done as root if the install is into a
-root-owned directory such as /usr and followed as noted by rerunning
-ldconfig.
+root-owned directory such as /usr and must be followed as noted by
+rerunning ldconfig.
 
 NOTE WELL:  Be aware that the application is DYNAMICALLY LINKED and will
 not work unless the libdieharder library is installed and made available
@@ -95,11 +93,7 @@ use of
  LD_LIBRARY_PATH=$(HOME)/usr/lib
  export LD_LIBRARY_PATH
 
-for a private one.  These commands are included in the file
-set_ld_library_path in the tarball -- this should be sourced from your
-bash via e.g. "source set_ld_library_path".  If you just build in the
-source directory and try to run dieharder/dieharder it will not work
-unless/until you set up the library path as noted.
+for a private one.
 
                         RPM BUILD INSTRUCTIONS
 
