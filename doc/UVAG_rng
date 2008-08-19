@@ -1,0 +1,108 @@
+From zenjew@hotmail.com Tue Jun  5 10:28:50 2007
+Date: Tue, 05 Jun 2007 14:28:43 +0000
+From: alex hay <zenjew@hotmail.com>
+To: rgb@phy.duke.edu
+Subject: using DIEHARDER
+
+Dear Dr. Brown,
+
+I have designed a pseudo-random number generator which tests well in DIEHARD
+and ENT.  I call it the Universal Virtual Array Generator (UVAG).  I
+recently discovered DIEHARDER and naturally would like to apply it to UVAG.
+My problem is that while I am slightly conversant in C (I~Rve written only
+single module pgs with void functions), I don~Rt have a clue as to how to go
+about building/compiling DIEHARDER and incorporating UVAG.
+
+UVAG is quite fast and, as you will note in the source below, is universal
+in the sense that it works with any integer data type and could be easily
+extended to 128 bits and beyond.  The virtual array is, of course, an array
+of 256 TYPE (overlapping when TYPE>char) seeds.  With slight tweaking, the
+array could be extended with an exponential increase in internal complexity
+with a linear increase in memory required.
+
+I am asking for
+1) your thoughts on UVAG
+and
+2) your help in implementing DIEHARDER with UVAG.
+
+Thanks in advance for your time and interest,
+
+Alex Hay
+
+/* UVAG.c  Copyright(c) 2004 by Alex Hay - zenjew@hotmail.com */
+
+
+#include <stdio.h>
+
+#define TYPE long long  /* || char || short || int || long */
+#define WORD sizeof(TYPE)
+#define BYTESOUT 11000000
+
+#define GETRND {rp = s + s[sindex+=1]; *rp += rndint; rndint += *rp;}
+/* provides globally as *rndint, an effectively infinite sequence of TYPEs,
+uniformly distributed (0, 2**(8*sizeof(TYPE))-1) */
+
+/* enter key, seed generator */
+void initialize(void);
+
+/* writes BYTESOUT bytes to binary file 'UVAG' */
+void put_file(void);
+
+/* external variables */
+unsigned TYPE  *rp, rndint;
+unsigned char  sindex, s[255 + WORD];  /* 256 overlapping TYPE seeds */
+
+main()
+{
+    initialize();
+    put_file();
+}
+
+
+void initialize()
+{
+    int i, array_len = 255 + WORD, tot;
+    unsigned char key[256], *kp, temp;
+
+
+    for (i=0; i<array_len; i++)
+         s[i]=i;
+    printf("Enter a seed string: ");
+    scanf("%s", key);
+    kp = key;
+    tot = 0;
+    for (i=0; i<array_len; i++) {        /* shuffle seeds */
+         tot += *kp++;
+         tot%=array_len;
+         temp = s[tot];
+         s[tot] = s[i];
+         s[i] = temp;
+         if (*kp == '\0')           /* wrap around key[] */
+              kp = key;
+    }
+    sindex = 0;
+    rndint = 0;
+}
+
+
+void put_file()
+{
+     FILE *f;
+     TYPE fbuffer[1000];
+     unsigned long i=0, count;
+
+     f=fopen("UVAG", "wb");
+     for (count=0; count<BYTESOUT/WORD; count++) {
+          GETRND
+          fbuffer[i++] = rndint;
+          if (i==1000) {
+               fwrite (fbuffer, WORD, 1000, f);
+               i=0;
+          }
+     }
+     fclose(f);
+}
+
+_________________________________________________________________
+Don~Rt miss your chance to WIN $10,000 and other great prizes from Microsoft
+Office Live http://clk.atdmt.com/MRT/go/aub0540003042mrt/direct/01/
