@@ -1,4 +1,6 @@
 %define _unpackaged_files_terminate_build 0
+%define __arch_install_post /usr/lib/rpm/check-rpaths /usr/lib/rpm/check-buildroot
+
 
 Name: dieharder-src
 Summary: Dieharder is a random number generator tester and timer
