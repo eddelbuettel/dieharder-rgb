@@ -1,0 +1,869 @@
+diff -ru dieharder-2.6.24.orig/dieharder/Makefile dieharder-2.6.24/dieharder/Makefile
+--- dieharder-2.6.24.orig/dieharder/Makefile	2007-02-19 01:07:11.000000000 -0800
++++ dieharder-2.6.24/dieharder/Makefile	2008-07-20 16:43:54.000000000 -0700
+@@ -15,6 +15,7 @@
+ PROJECT = dieharder
+ PROGRAM = dieharder
+ DIR = $(PROGRAM)
++LIBDIR = ../libdieharder
+ 
+ #========================================================================
+ # This is essential.  The rpmbuild overrides it, but we have to make
+@@ -25,10 +26,17 @@
+ # the various dieharder files will actually be assembled into an rpm
+ # with PREFIX=/usr (for example).
+ #========================================================================
+-BUILDROOT=../buildroot
+-PREFIX=$(BUILDROOT)/usr
+-LIBDIR=$(PREFIX)/lib
+-INCDIR=$(PREFIX)/include
++DESTDIR=$(abspath $(CURDIR)/../buildroot)
++PREFIX=/usr
++INSTALL_DIR=$(DESTDIR)$(PREFIX)
++INSTALL_BINDIR=$(INSTALL_DIR)/bin
++INSTALL_INCDIR=$(INSTALL_DIR)/include
++INSTALL_LIBDIR=$(INSTALL_DIR)/lib
++INSTALL_MANDIR=$(INSTALL_DIR)/share/man
++TARGET_LIBDIR=$(PREFIX)/lib
++
++PROGMAN = $(PROGRAM).1
++PROGMAN_GZ = $(PROGMAN).gz
+ 
+ SVNTREE = $(HOME)/Src/svn-tree
+ SVNPATH = $(SVNTREE)/$(PROJECT)
+@@ -46,19 +54,18 @@
+ # We also have dependencies that extend to the libdieharder source
+ # directory, as we need to force a build if any of them change.
+ #========================================================================
+-SRCSOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
+-SRCINCLUDES = $(shell ls *.h  2>&1 | sed -e "/\/bin\/ls:/d")
++SRCSOURCES = $(wildcard  *.c)
++SRCHDRS = $(wildcard *.h)
+ 
+ # These are important dependencies, although it isn't easy to
+ # see how to force a consistent build when working on the UI
+ # and library at the same time.  Maybe with particular make targets...
+-LIBINCLUDES = $(shell ls $(INCDIR)/*.h  2>&1 | sed -e "/\/bin\/ls:/d")
+-PROGLIB_SONAME = $(LIBDIR)/libdieharder.so.$(VERSION_MAJOR)
+-# PROGLIB_SO = $(LIBDIR)/libdieharder.so
++INCDIR = ../include
++LIBINCLUDES = $(wildcard $(INCDIR)/dieharder/*.h)
++PROGLIB = libdieharder.la
+ 
+-SOURCES = $(LIBSOURCES) $(SRCSOURCES)
+ INCLUDES = $(LIBINCLUDES) $(SRCINCLUDES)
+-OBJECTS = $(SRCSOURCES:.c=.o)
++OBJECTS = $(SRCSOURCES:.c=.lo)
+ 
+ DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
+           -DRELEASE=$(RELEASE)
+@@ -70,57 +77,96 @@
+ CC = gcc
+ 
+ # Compile flags (use fairly standard -O3 as default)
+-CFLAGS = -O3 -I $(INCDIR) $(DEFINES) 
++IFLAGS = -I $(INCDIR)
++DFLAGS = $(DEFINES)
++CFLAGS = -O3
+ 
+ # Linker flags.
+ LDFLAGS =
+ 
+ # Libraries
+-LIBS = -L $(LIBDIR) -ldieharder -lgsl -lgslcblas -lm
++LIBS = -L$(LIBDIR) -ldieharder -lgsl -lgslcblas -lm
++
++# Remove command
++RM = /bin/rm -f
++
++# Install command
++INSTALL = /usr/bin/install
++
++#========================================================================
++# libtool related definitions.
++#========================================================================
++LIBTOOL = libtool
++LIBTOOL_COMPILE = $(LIBTOOL) --mode=compile
++LIBTOOL_LINK    = $(LIBTOOL) --mode=link
++LIBTOOL_INSTALL = $(LIBTOOL) --mode=install
++LIBTOOL_CLEAN   = $(LIBTOOL) --mode=clean
++LIBTOOL_UNINSTALL = $(LIBTOOL) --mode=uninstall
++
++.SUFFIXES:
++.SUFFIXES: .c .lo
++
++.c.lo:
++	$(LIBTOOL_COMPILE) $(CC) -c $(CFLAGS) $(DFLAGS) $(IFLAGS) $<
+ 
+ #========================================================================
+ # List of variants one can make.  all is the default.  We always
+ # presume the simplest of dependencies and remake if includes change
+ # for example.
+ #========================================================================
++.PHONY: all clean install libdieharder printout svn sync
++
+ all: $(PROGRAM)
+ 
+-$(PROGRAM): $(OBJECTS) $(PROGLIB_SONAME)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
++$(OBJECTS): $(INCLUDES)
+ 
++$(PROGRAM): libdieharder $(OBJECTS)
++	$(LIBTOOL_LINK) $(CC) -o $@ $(OBJECTS) -rpath $(TARGET_LIBDIR) $(LDFLAGS) $(LIBS) 
++	@if echo '$(CFLAGS)' | grep -e '-g' 1>/dev/null 2>&1; then \
++		echo "***********************************************************"; \
++		echo "*"; \
++		echo "*	To debug, run: libtool --mode=execute gdb $(PROGRAM)"; \
++		echo "*"; \
++		echo "***********************************************************"; \
++	fi
++	
++
++$(PROGMAN_GZ): $(PROGMAN)
++	gzip -c $(PROGMAN) > $(PROGMAN_GZ)
++
++#========================================================================
++# This is provided for development purposes.  The top-level make
++# will always make the library first.  The downside is that this will
++# cause the program to be relinked even if nothing has changed.
++# The upside is that the program and its library will be in sync.
+ #========================================================================
+-# This is cautiously permitted.  REALLY, though, we need a conditional
+-# that punts with a warning if we try this during an rpm build and
+-# the library is not found -- the right solution then is to install
+-# the library first!
+-#========================================================================
+-$(PROGLIB_SONAME):
+-	- (cd ../libdieharder ;\
+-	 $(MAKE) install)
++libdieharder:
++	$(MAKE) -C $(LIBDIR)
+ 
+ #========================================================================
+ # The only safe place to do commits is in the toplevel directory
+ #========================================================================
+ svn:
+-	(cd ..;make svn)
++	$(MAKE) -C .. svn
+ 
+ sync:
+-	(cd ..;make sync)
++	$(MAKE) -C .. sync
+ 
+ #========================================================================
+-# printout makes an enscript -2r printout of SOURCES and
+-# and INCLUDES.  Use lpr if you don't have enscript
++# printout makes an enscript -2r printout of source and
++# and includes.  Use lpr if you don't have enscript
+ #========================================================================
+ LPR = enscript -2r
+ # LPR = lpr
+ printout:
+-	$(LPR) $(SRCSOURCES) $(SRCINCLUDES)
++	$(LPR) $(SRCSOURCES) $(SRCHDRS)
+ 
+ #========================================================================
+ #  A standard cleanup target
+ #========================================================================
+-clean : 
+-	- rm -f core $(PROGRAM) *.o $(PROGRAM).1.gz
++clean:
++	$(LIBTOOL_CLEAN) $(RM) $(OBJECTS) $(PROGRAM)
++	-$(RM) core $(PROGMAN_GZ)
+ 
+ #========================================================================
+ # This is critical.  For the toplevel rpm build to succeed,
+@@ -129,18 +175,8 @@
+ # This target has to install precisely the files required by the
+ # specfile for the dieharder package, in precisely the right locations.
+ #========================================================================
+-install : $(PROGRAM)
+-	(strip $(PROGRAM);\
+-	install -d $(PREFIX)/bin; \
+-	install -m 755 $(PROGRAM) $(PREFIX)/bin; \
+-	install -d $(PREFIX)/share/man/man1; \
+-	gzip -c $(PROGRAM).1 > $(PROGRAM).1.gz; \
+-	install -m 644 $(PROGRAM).1.gz $(PREFIX)/share/man/man1)
+-
+-#========================================================================
+-# We give all generic rules below.  Currently we only need a rule for 
+-# objects.
+-#========================================================================
+-%.o:%.c
+-	$(CC) -c $(CFLAGS) $<
+-
++install: $(PROGRAM) $(PROGMAN_GZ)
++	$(INSTALL) -d $(INSTALL_BINDIR)
++	$(LIBTOOL_INSTALL) $(INSTALL) -s -m 754 $(PROGRAM) $(INSTALL_BINDIR)
++	$(INSTALL) -d $(INSTALL_MANDIR)/man1
++	$(INSTALL) -m 644 $(PROGMAN_GZ) $(INSTALL_MANDIR)/man1
+diff -ru dieharder-2.6.24.orig/dieharder.spec dieharder-2.6.24/dieharder.spec
+--- dieharder-2.6.24.orig/dieharder.spec	2007-02-19 01:07:11.000000000 -0800
++++ dieharder-2.6.24/dieharder.spec	2008-07-20 16:43:54.000000000 -0700
+@@ -1,4 +1,4 @@
+-Name: dieharder-src
++Name: dieharder
+ Version: 2.6.24
+ Release: 1
+ Summary: Dieharder is a random number generator tester and timer
+@@ -10,7 +10,33 @@
+ # Mandatory path for Fedora Core builds
+ Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+ 
+-%description 
++BuildRequires: gsl, gsl-devel, libtool
++
++Requires: libdieharder = %{version}
++Requires: gsl
++
++%description
++
++dieharder is a fairly involved random number/uniform deviate generator
++tester.  It can either test any of its many prebuilt and linked
++generators (basically all of those in the Gnu Scientific Library plus
++others I've added) or a potentially random dataset in a file.  With file
++input, it can manage either a variety of ascii-formatted input or a raw
++binary bitstring.  It is thus suitable for use in testing both software
++RNG's and hardware RNG's.
++
++dieharder does all of its work with a standalone, extensible library,
++libdieharder.  Its tests can therefore be integrated into other
++programs, subject to the requirements of the GPL (NOT, note, the LGPL as
++it uses the GSL which is full GSL, viral).
++
++dieharder encapsulates (or will eventually encapsulate) basically all
++the random number tests I have been able to find -- George Marsaglia's
++"diehard" battery of tests, STS (v1.5) from NIST FIPS, Knuth's tests,
++and more.  Check in the man page or /usr/share documentation for a
++complete list of the tests and references where possible.  It is
++intended to be the "swiss army knife of random number testers", or "the
++last suite of random number testers you'll ever wear".
+ 
+ ########################################################################
+ # LIBRARY: This is the basic dieharder library
+@@ -18,7 +44,6 @@
+ %package -n libdieharder
+ Summary: A library of random number generator tests and timing routines
+ Group: Development/Tools
+-Provides: libdieharder.so
+ %description -n libdieharder
+ 
+ libdieharder is the core library of dieharder and friends, designed to
+@@ -38,36 +63,6 @@
+ (v1.6) from NIST FIPS, Knuth's tests, and more.  Check in the man
+ page(s) or /usr/share/dieharder*/dieharder.pdf for documentation.
+ 
+-########################################################################
+-# This is dieharder itself, the tty UI
+-########################################################################
+-%package -n dieharder
+-Summary: dieharder is a random number generator tester and timer.
+-Group: Development/Tools
+-Requires: libdieharder = %{version}
+-
+-%description -n dieharder
+-
+-dieharder is a fairly involved random number/uniform deviate generator
+-tester.  It can either test any of its many prebuilt and linked
+-generators (basically all of those in the Gnu Scientific Library plus
+-others I've added) or a potentially random dataset in a file.  With file
+-input, it can manage either a variety of ascii-formatted input or a raw
+-binary bitstring.  It is thus suitable for use in testing both software
+-RNG's and hardware RNG's.
+-
+-dieharder does all of its work with a standalone, extensible library,
+-libdieharder.  Its tests can therefore be integrated into other
+-programs, subject to the requirements of the GPL (NOT, note, the LGPL as
+-it uses the GSL which is full GSL, viral).
+-
+-dieharder encapsulates (or will eventually encapsulate) basically all
+-the random number tests I have been able to find -- George Marsaglia's
+-"diehard" battery of tests, STS (v1.5) from NIST FIPS, Knuth's tests,
+-and more.  Check in the man page or /usr/share documentation for a
+-complete list of the tests and references where possible.  It is
+-intended to be the "swiss army knife of random number testers", or "the
+-last suite of random number testers you'll ever wear".
+ 
+ ########################################################################
+ # The main section common to all builds.
+@@ -76,17 +71,18 @@
+ %setup -q -n dieharder-%{version}
+ 
+ %build
+-make clean
++make %{?_smp_mflags}
+ 
+ # Note that multipackage sources with libraries are happier with
+ # their own local buildroot to facilitate development without a
+ # full install.
+ %install
+-make BUILDROOT=%{buildroot} PREFIX=%{buildroot}/usr install
++rm -rf %{buildroot}
++make install DESTDIR=%{buildroot}
++
+ 
+ %clean
+-rm -rf $RPM_BUILD_ROOT
+-rm -rf %{builddir}
++rm -rf %{buildroot}
+ 
+ ########################################################################
+ # Files in libdieharder
+@@ -97,10 +93,10 @@
+ 
+ %dir /usr/lib
+ 
+-# The libdieharder library.  We ONLY install the primary
+-# versioned library -- ldconfig and ln are used to finish off
+-# later.
+-/usr/lib/libdieharder.so.%{version}
++/usr/lib/libdieharder.a
++/usr/lib/libdieharder.so
++/usr/lib/libdieharder.so.2
++/usr/lib/libdieharder.so.2.0.0
+ 
+ # The libdieharder include files are under here
+ %attr(644,root,root) /usr/include/dieharder
+@@ -129,16 +125,14 @@
+ ########################################################################
+ # Command to execute post install or uninstall of libdieharder
+ ########################################################################
+-%post -n libdieharder
+-
+-cd /usr/lib
+-ldconfig -n .
+-ln -sf libdieharder.so.%{version} libdieharder.so
++%post -n libdieharder -p /sbin/ldconfig
+ 
+ %postun -n libdieharder
+ 
++rm -f /usr/lib/libdieharder.a
+ rm -f /usr/lib/libdieharder.so
+-rm -f /usr/lib/libdieharder.so.%{version}
+-ldconfig
++rm -f /usr/lib/libdieharder.so.2
++rm -f /usr/lib/libdieharder.so.2.0.0
++/sbin/ldconfig
+ 
+ %changelog 
+Only in dieharder-2.6.24.orig/libdieharder: buildroot
+Only in dieharder-2.6.24.orig/libdieharder: libdieharder.a
+Only in dieharder-2.6.24.orig/libdieharder: libdieharder.so.2.5.24
+Only in dieharder-2.6.24.orig/libdieharder: libdieharder.so.2.6.24
+Only in dieharder-2.6.24.orig/libdieharder: libdieharder.svn.time
+diff -ru dieharder-2.6.24.orig/libdieharder/Makefile dieharder-2.6.24/libdieharder/Makefile
+--- dieharder-2.6.24.orig/libdieharder/Makefile	2007-02-19 01:07:10.000000000 -0800
++++ dieharder-2.6.24/libdieharder/Makefile	2008-07-20 16:43:54.000000000 -0700
+@@ -24,11 +24,14 @@
+ # the various dieharder files will actually be assembled into an rpm
+ # with PREFIX=/usr (for example).
+ #========================================================================
+-BUILDROOT=../buildroot
+-PREFIX=$(BUILDROOT)/usr
+-LIBDIR=$(PREFIX)/lib
+-INCDIR=$(PREFIX)/include
+-INCTIME=include.time
++DESTDIR=$(abspath $(CURDIR)/../buildroot)
++PREFIX=/usr
++INSTALL_DIR=$(DESTDIR)$(PREFIX)
++INSTALL_BINDIR=$(INSTALL_DIR)/bin
++INSTALL_INCDIR=$(INSTALL_DIR)/include
++INSTALL_LIBDIR=$(INSTALL_DIR)/lib
++INSTALL_MANDIR=$(INSTALL_DIR)/share/man
++TARGET_LIBDIR=$(PREFIX)/lib
+ 
+ SVNTREE = $(HOME)/Src/svn-tree
+ SVNPATH = $(SVNTREE)/$(PROJECT)
+@@ -37,11 +40,11 @@
+ # This is the library from which both wulfstat and wulflogger (and maybe
+ # other stuff in the future) is built.
+ PROGMAN = libdieharder.3
+-# (FC "requires" no static library build)
+-# PROGLIB_A = libdieharder.a
++PROGMAN_GZ = $(PROGMAN).gz
++PROGLIB = libdieharder.la
+ PROGLIB_SO = libdieharder.so
+ PROGLIB_SONAME = libdieharder.so.$(VERSION_MAJOR)
+-PROGLIB_SO_VERSION = libdieharder.so.$(VERSION_MAJOR).$(VERSION_MINOR)
++PROGLIB_SO_VERSION = libdieharder.so.$(VERSION_MAJOR).0.0
+ 
+ # This is automagically set in the toplevel build.  Do not edit by
+ # hand.
+@@ -53,8 +56,13 @@
+ # Define all sources.  Note that we choose to depend on ALL the includes
+ # in the include directory, which cannot be empty or this will barf.
+ #========================================================================
+-LIBSOURCES = $(shell ls *.c  2>&1 | sed -e "/\/bin\/ls:/d")
+-LIBOBJECTS = $(LIBSOURCES:.c=.o)
++INCDIR=../include
++LIBSOURCES = $(wildcard *.c)
++LIBHDRS = $(wildcard *.h)
++LIBOBJECTS = $(LIBSOURCES:.c=.lo)
++LIBINCLUDES = $(wildcard $(INCDIR)/dieharder/*.h)
++
++INCLUDES = $(LIBHDRS) $(LIBINCLUDES)
+ 
+ DEFINES = -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) \
+           -DRELEASE=$(RELEASE)
+@@ -66,57 +74,81 @@
+ CC = gcc
+ 
+ # Compile flags (use fairly standard -O3 as default)
+-CFLAGS = -O3 $(DEFINES) -I $(INCDIR)
++IFLAGS = -I ../include
++DFLAGS = $(DEFINES) 
++CFLAGS = -O3
+ 
+ # Linker flags
+-LDFLAGS = -g -fpic -shared -Wl,-soname,$(PROGLIB_SONAME)
++LDFLAGS =
+ 
+ # Libraries
+ LIBS = -lgsl -lgslcblas -lm
+ 
++# Remove command
++RM = /bin/rm -f
++
++# Install command
++INSTALL = /usr/bin/install
++
++#========================================================================
++# libtool related definitions.
++#========================================================================
++LIBTOOL = libtool
++LIBTOOL_COMPILE = $(LIBTOOL) --mode=compile
++LIBTOOL_LINK    = $(LIBTOOL) --mode=link
++LIBTOOL_INSTALL = $(LIBTOOL) --mode=install
++LIBTOOL_CLEAN   = $(LIBTOOL) --mode=clean
++LIBTOOL_UNINSTALL = $(LIBTOOL) --mode=uninstall
++
++.SUFFIXES:
++.SUFFIXES: .c .lo
++
++.c.lo:
++	$(LIBTOOL_COMPILE) $(CC) -c $(CFLAGS) $(DFLAGS) $(IFLAGS) $<
++
+ #========================================================================
+ # List of variants one can make.  all is the default.  We always
+ # presume the simplest of dependencies and remake if includes change
+ # for example.
+ #========================================================================
+-all: $(INCTIME) $(PROGLIB_SO_VERSION) # $(PROGLIB_A)
++.PHONY: all clean install printout svn sync
++
++all: $(PROGLIB)
++
++$(LIBOBJECTS): $(INCLUDES) Makefile
+ 
+-# This has to ALWAYS run before a build.
+-$(INCTIME):
+-	(install -d $(INCDIR)/dieharder; \
+-	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder;)
+-
+-# FC "requires" no static lib build/install	
+-# $(PROGLIB_A): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
+-# 	ar r $(PROGLIB_A) $(LIBOBJECTS)
+-# 	ranlib $(PROGLIB_A)
++$(PROGLIB): $(LIBOBJECTS)
++	$(LIBTOOL_LINK) $(CC) -o $(PROGLIB) $(LDFLAGS) $(LIBOBJECTS) \
++		-version-info $(VERSION_MAJOR):0:0 \
++		-rpath $(TARGET_LIBDIR) $(LIBS)
+ 
+-$(PROGLIB_SO_VERSION): $(INCTIME) $(LIBOBJECTS) $(LIBINCLUDES)
+-	gcc $(LDFLAGS) -o $(PROGLIB_SO_VERSION) $(LIBOBJECTS)
++$(PROGMAN_GZ): $(PROGMAN)
++	gzip -c $(PROGMAN) > $(PROGMAN_GZ)
+ 
+ #========================================================================
+ # The only safe place to do commits is in the toplevel directory
+ #========================================================================
+ svn:
+-	(cd ..;make svn)
++	$(MAKE) -C .. svn
+ 
+ sync:
+-	(cd ..;make sync)
++	$(MAKE) -C .. sync
+ 
+ #========================================================================
+-# printout makes an enscript -2r printout of SOURCES and
+-# and INCLUDES.  Use lpr if you don't have enscript
++# printout makes an enscript -2r printout of sources and
++# and includes.  Use lpr if you don't have enscript
+ #========================================================================
+ LPR = enscript -2r
+ # LPR = lpr
+ printout:
+-	$(LPR) $(LIBSOURCES) $(LIBINCLUDES)
++	$(LPR) $(LIBSOURCES) $(LIBHDRS)
+ 
+ #========================================================================
+ #  A standard cleanup target
+ #========================================================================
+ clean:
+-	rm -f core $(PROGLIB) $(PROGLIB_NAME) $(LIBOBJECTS) $(PROGMAN).gz
++	$(LIBTOOL_CLEAN) $(RM) $(LIBOBJECTS) $(PROGLIB) libtool.deb
++	$(RM) core $(PROGMAN_GZ)
+ 
+ #========================================================================
+ # This is critical.  For the toplevel rpm build to succeed,
+@@ -125,20 +157,11 @@
+ # This target has to install precisely the files required by the
+ # specfile for the dieharder package, in precisely the right locations.
+ #========================================================================
+-install: $(PROGLIB_SO_VERSION) $(PROGLIB_A) $(PROGMAN)
+-	(install -d $(LIBDIR); \
+-	install -m 755 $(PROGLIB_SO_VERSION) $(LIBDIR)/$(PROGLIB_SO_VERSION); \
+-	install -d $(INCDIR)/dieharder; \
+-	install -m 644 ../include/dieharder/*.h $(INCDIR)/dieharder; \
+-	install -d $(PREFIX)/share/man/man3; \
+-	gzip -c $(PROGMAN) > $(PROGMAN).gz; \
+-	install -m 644 $(DIR).3.gz $(PREFIX)/share/man/man3)
+-
+-# FC requires no static lib install
+-# 	install -m 755 $(PROGLIB_A) $(LIBDIR)/$(PROGLIB_A); \
+-#========================================================================
+-# We give all generic rules below.  Currently we only need a rule for 
+-# objects.
+-#========================================================================
+-%.o:%.c $(LIBINCLUDES) Makefile
+-	$(CC) -fpic -c $(CFLAGS) $<
++install: $(PROGLIB) $(PROGMAN_GZ)
++	$(INSTALL) -d $(INSTALL_LIBDIR)
++	$(LIBTOOL_INSTALL) $(INSTALL) $(PROGLIB) $(INSTALL_LIBDIR)
++	$(RM) $(INSTALL_LIBDIR)/$(PROGLIB)	# remove the .la file
++	$(INSTALL) -d $(INSTALL_INCDIR)/dieharder
++	$(INSTALL) -m 644 $(LIBINCLUDES) $(INSTALL_INCDIR)/dieharder
++	$(INSTALL) -d $(INSTALL_MANDIR)/man3
++	$(INSTALL) -m 644 $(PROGMAN_GZ) $(INSTALL_MANDIR)/man3
+Only in dieharder-2.6.24.orig/libdieharder: std_test_debug.o
+diff -ru dieharder-2.6.24.orig/Makefile dieharder-2.6.24/Makefile
+--- dieharder-2.6.24.orig/Makefile	2007-02-19 01:07:11.000000000 -0800
++++ dieharder-2.6.24/Makefile	2008-07-20 16:43:54.000000000 -0700
+@@ -31,8 +31,8 @@
+ # the various dieharder files will actually be assembled into an rpm
+ # with PREFIX=/usr (for example).
+ #========================================================================
+-BUILDROOT=$(PWD)/buildroot
+-PREFIX=$(BUILDROOT)/usr
++DESTDIR=$(CURDIR)/buildroot
++PREFIX=/usr
+ 
+ # The destination on a remote webserver, used as:
+ #    $(HOME)/public_html/$(WDIR)
+@@ -63,52 +63,58 @@
+ TGZ = $(PROJECTDIR).tgz
+ SPEC = $(PROJECT).spec
+ 
++MAKEFILES = $(wildcard */Makefile)
++
+ #========================================================================
+ # List of variants one can make.  all is the default.  We always
+ # presume the simplest of dependencies and remake if includes change
+ # for example.
+ #========================================================================
+-all: $(LIBTIME) $(PROGTIME)
++.PHONY: all clean install
++.PHONY: installlib installlib installman installman installprog
++.PHONY: installprog installrepo installrepo installweb installweb
++.PHONY: $(LIBRARY) $(LIBTIME) $(MANUAL) $(PROGRAM) $(PROGTIME)
++.PHONY: prereqs rpm svn sync tgz
++
++all: prereqs $(LIBTIME) $(PROGTIME)
++
++prereqs: $(SPEC) $(MAKEFILES)
++
++$(LIBRARY): prereqs
++	$(MAKE) -C $(LIBRARY)
++
++$(PROGRAM): prereqs $(LIBRARY)
++	$(MAKE) -C $(PROGRAM)
++
++$(MANUAL): prereqs
++	$(MAKE) -C $(MANUAL)
+ 
+ # This is not, actually, a particularly useful toplevel target.  To
+ # work correctly it also would require a full parsing of all
+ # lower level dependencies.  I'm leaving it in for the moment just
+ # to have a default target at the toplevel that CAN be used to test.
+-$(LIBTIME):
+-	(cd $(LIBRARY); \
+-	make)
+-
+-$(PROGTIME):
+-	(cd $(PROGRAM); \
+-	make)
++$(LIBTIME): $(LIBRARY)
++
++$(PROGTIME): $(PROGRAM)
+ 
+-$(SPEC): Makefile $(SPEC)
++$(SPEC): Makefile
+ 	# Version information is set ONLY in the toplevel Makefile.
+-	cat $(SPEC) | \
+ 	sed -e 's/^\(Version:\) \(.*\)/\1 $(VERSION_MAJOR).$(VERSION_MINOR)/' \
+-	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' > /tmp/$(SPEC).$$
+-	mv /tmp/$(SPEC).$$ $(SPEC)
+-	# While we're at it, update program and library Makefiles
+-	cat $(LIBRARY)/Makefile | \
+-	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
+-	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
+-	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
+-	mv /tmp/Makefile.$$ $(LIBRARY)/Makefile
+-	cat $(PROGRAM)/Makefile | \
+-	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
+-	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
+-	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
+-	mv /tmp/Makefile.$$ $(PROGRAM)/Makefile
+-	cat $(MANUAL)/Makefile | \
++	    -e 's/^\(Release:\) \(.*\)/\1 $(RELEASE)/' \
++	    $@ > $@.tmp
++	mv $@.tmp $@
++
++$(MAKEFILES): Makefile
+ 	sed -e 's/^\(VERSION_MAJOR=\)\(.*\)/\1$(VERSION_MAJOR)/' \
+ 	    -e 's/^\(VERSION_MINOR=\)\(.*\)/\1$(VERSION_MINOR)/' \
+-	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' > /tmp/Makefile.$$
+-	mv /tmp/Makefile.$$ $(MANUAL)/Makefile
++	    -e 's/^\(RELEASE=\)\(.*\)/\1$(RELEASE)/' \
++	    $@ > $@.tmp
++	mv $@.tmp $@
+ 
+ $(ABS): Makefile
+-	cat $(ABS) | \
+-	sed -e 's/^\(<center><H2>Version \)\(.*\)/\1$(VERSION_MAJOR).$(VERSION_MINOR)<\/H2><\/center>/' > /tmp/$(ABS).$$
+-	mv /tmp/$(ABS).$$ $(ABS)
++	sed -e 's/^\(<center><H2>Version \)\(.*\)/\1$(VERSION).$(RELEASE)<\/H2><\/center>/' \
++		$@ > $@.tmp
++	mv $@.tmp $@
+ 
+ #========================================================================
+ # This is a required target for both its own sake and to support the
+@@ -117,40 +123,28 @@
+ # excluding all restricted material and irrelevant data.
+ #========================================================================
+ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
+-	( rm -rf $(TAR) $(TGZ) $(PROJECTDIR); \
+-	mkdir -p $(PROJECTDIR); \
+-	cd $(LIBRARY); \
+-	make clean; \
+-	cd ..; \
+-	cp -r $(LIBRARY) $(PROJECTDIR); \
+-	cd $(PROGRAM); \
+-	make clean; \
+-	cd ..; \
+-	cp -r $(PROGRAM) $(PROJECTDIR); \
+-	cd $(MANUAL); \
+-	make clean; \
+-	cd ..; \
+-	cp -r $(MANUAL) $(PROJECTDIR); \
+-	cp -r include $(PROJECTDIR); \
+-	cp $(SPEC) $(PROJECTDIR); \
+-	cp $(ABS) $(PROJECTDIR); \
+-	cp $(PHP) $(PROJECTDIR); \
+-	cp Makefile $(PROJECTDIR); \
+-	cp Copyright $(PROJECTDIR); \
+-	cp COPYING $(PROJECTDIR); \
+-	cp README $(PROJECTDIR); \
+-	cp NOTES $(PROJECTDIR); \
++	rm -rf $(TAR) $(TGZ) $(PROJECTDIR)
++	mkdir -p $(PROJECTDIR)
++	$(MAKE) -C $(LIBRARY) clean
++	cp -r $(LIBRARY) $(PROJECTDIR)
++	$(MAKE) -C $(PROGRAM) clean
++	cp -r $(PROGRAM) $(PROJECTDIR)
++	$(MAKE) -C $(MANUAL) clean
++	cp -r $(MANUAL) $(PROJECTDIR)
++	cp -r include $(PROJECTDIR)
++	cp $(SPEC) $(ABS) $(PHP) $(PROJECTDIR)
++	cp Makefile Copyright COPYING README NOTES $(PROJECTDIR)
+ 	tar -cvpf $(TAR) \
+-            --exclude=.svn \
+-	    --exclude=Cruft \
+-	    --exclude=Exclude \
+-            --exclude=*.tar \
+-            --exclude=*.tgz \
+-            --exclude=*.rpm \
+-            ./$(PROJECTDIR); \
+-	gzip $(TAR); \
+-	mv $(TAR).gz $(TGZ); \
+-	rm -rf $(PROJECTDIR))
++		--exclude=.svn \
++		--exclude=Cruft \
++		--exclude=Exclude \
++		--exclude=*.tar \
++		--exclude=*.tgz \
++		--exclude=*.rpm \
++		./$(PROJECTDIR)
++	gzip $(TAR)
++	mv $(TAR).gz $(TGZ)
++	rm -rf $(PROJECTDIR)
+ 
+ #========================================================================
+ # rpm target special stuff
+@@ -178,7 +172,7 @@
+ 
+ #========================================================================
+ # One stop shop.  Basically we build this every time, we hope.
+-rpm:	Makefile $(TGZ)
++rpm: prereqs Makefile $(TGZ)
+ 	rm -rf /var/tmp/dieharder*
+ 	cp $(TGZ) $(RPM_TOPDIR)/SOURCES
+ 	cp $(SPEC) $(RPM_TOPDIR)/SPECS
+@@ -187,14 +181,14 @@
+ 	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(LRPM) .
+ 	cp $(RPM_TOPDIR)/RPMS/$(ARCH)/$(PRPM) .
+ 
+-svn:
++svn: prereqs
+ 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
+ 	svn commit .
+ 	cat $(SVNTIME) | \
+ 	sed -e '/^New Checkin/d' >> $(SVNTIME).tmp
+ 	mv $(SVNTIME).tmp $(SVNTIME)
+ 
+-sync:
++sync: prereqs
+ 	echo "New Checkin `date`" >> $(SVNTIME)	# Will force a commit and increment revision
+ 	svn commit .		# Do the commit
+ 	rsync -avz --delete $(SVNPATH) login.phy.duke.edu:/home/einstein/prof/rgb/Src/svn-tree
+@@ -206,68 +200,48 @@
+ #========================================================================
+ #  A standard cleanup target
+ #========================================================================
+-clean : 
+-	- (cd $(LIBRARY); \
+-	$(MAKE) clean; \
+-	cd ..; \
+-	cd $(PROGRAM); \
+-	$(MAKE) clean; \
+-	cd ..; \
+-	cd $(MANUAL); \
+-	$(MAKE) clean;)
++clean:
++	-$(MAKE) -C $(LIBRARY) clean
++	-$(MAKE) -C $(PROGRAM) clean
++	-$(MAKE) -C $(MANUAL) clean
+ 
+ #========================================================================
+ # We need two toplevel targets that have to be mirrored in $(SPEC).
+ #========================================================================
+-install:
+-	(make clean;\
+-	make installlib;\
+-	make installprog;\
+-	)
++
++install: installlib installprog
+ 
+ # Restore this here and in the specfile when we are ready to
+ # actually publish the manual, which is NOT YET.
+ #	make installman;\
+ 
++installlib: prereqs
++	$(MAKE) -C $(LIBRARY) install
+ 
+-installlib:
+-	(cd $(LIBRARY);\
+-	make BUILDROOT=$(BUILDROOT) PREFIX=$(PREFIX) install)
+-
+-installprog:
+-	(cd $(PROGRAM);\
+-	make PREFIX=$(PREFIX) install)
+-
+-installman:
+-	(cd $(MANUAL);\
+-	make PREFIX=$(PREFIX) install)
+-
+-installweb : $(TGZ) $(RPM) $(SRPM) $(LRPM) $(PRPM) $(MRPM) $(ABS) $(PHP)
+-	(ssh $(WLOGIN) mkdir -p public_html/$(WDIR)/$(PROJECT);\
+-	rsync -avz $(TGZ) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+-	rsync -avz $(SRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+-	rsync -avz $(LRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+-	rsync -avz $(PRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+-	rsync -avz $(MRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+-	rsync -avz $(ABS) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/; \
+-	rsync -avz $(PHP) $(WLOGIN):public_html/$(WDIR)/)
++installprog: prereqs installlib
++	$(MAKE) -C $(PROGRAM) install
+ 
+-REPOSERVER = uriel
+-REPOPATH = /var/www/html/fc/6/local/
+-installrepo : $(TGZ) $(RPM) $(SRPM) $(LRPM) $(PRPM) $(MRPM) $(ABS) $(PHP)
+-	(ssh $(REPOSERVER) mkdir -p $(REPOPATH);\
+-	rsync -avz $(TGZ) root@$(REPOSERVER):$(REPOPATH);\
+-	rsync -avz $(SRPM) root@$(REPOSERVER):$(REPOPATH)/SRPM;\
+-	ssh $(REPOSERVER) mkdir -p $(REPOPATH)/$(ARCH);\
+-	rsync -avz $(LRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH);\
+-	rsync -avz $(PRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH);\
+-	rsync -avz $(MRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH);\
+-	ssh root@$(REPOSERVER) "cd $(REPOPATH)/$(ARCH);createrepo .")
++installman: prereqs
++	$(MAKE) -C $(MANUAL) install
+ 
+-#========================================================================
+-# We give all generic rules below.  Currently we only need a rule for 
+-# objects.
+-#========================================================================
+-%.o:%.c $(INCLUDES)
+-	$(CC) -c $(CFLAGS) $<
++installweb : prereqs $(TGZ) $(RPM) $(SRPM) $(LRPM) $(PRPM) $(MRPM) $(ABS) $(PHP)
++	ssh $(WLOGIN) mkdir -p public_html/$(WDIR)/$(PROJECT);\
++	rsync -avz $(TGZ) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/
++	rsync -avz $(SRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/
++	rsync -avz $(LRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/
++	rsync -avz $(PRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/
++	rsync -avz $(MRPM) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/
++	rsync -avz $(ABS) $(WLOGIN):public_html/$(WDIR)/$(PROJECT)/
++	rsync -avz $(PHP) $(WLOGIN):public_html/$(WDIR)/
+ 
++REPOSERVER = uriel
++REPOPATH = /var/www/html/fc/6/local/
++installrepo : prereqs $(TGZ) $(RPM) $(SRPM) $(LRPM) $(PRPM) $(MRPM) $(ABS) $(PHP)
++	ssh $(REPOSERVER) mkdir -p $(REPOPATH)
++	rsync -avz $(TGZ) root@$(REPOSERVER):$(REPOPATH)
++	rsync -avz $(SRPM) root@$(REPOSERVER):$(REPOPATH)/SRPM
++	ssh $(REPOSERVER) mkdir -p $(REPOPATH)/$(ARCH)
++	rsync -avz $(LRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH)
++	rsync -avz $(PRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH)
++	rsync -avz $(MRPM) root@$(REPOSERVER):$(REPOPATH)/$(ARCH)
++	ssh root@$(REPOSERVER) "cd $(REPOPATH)/$(ARCH);createrepo ."
+diff -ru dieharder-2.6.24.orig/manual/Makefile dieharder-2.6.24/manual/Makefile
+--- dieharder-2.6.24.orig/manual/Makefile	2007-02-19 01:07:11.000000000 -0800
++++ dieharder-2.6.24/manual/Makefile	2008-07-20 16:43:54.000000000 -0700
+@@ -20,6 +20,7 @@
+ #=======================================================================
+ # These are quite nonstandard, as this is a latex project embedded in
+ # a C project.  Useful template, at that.
++DESTDIR=$(realpath $(CURDIR)/../buildroot)
+ SOURCE = dieharder.tex
+ VERSION = 0.1
+ RELEASE = 1
+@@ -32,7 +33,7 @@
+ 
+ # might be included .tex or .sty files, embedded .eps files, and so forth.
+ # Naturally, anything on this list should be in the SVN tree.
+-FIGS = $(shell ls *.fig 2>&1 | grep -v "No such file or directory" | sed -e "/\/bin\/ls:/d")
++FIGS = $(wildcard *.fig)
+ FEPS = $(FIGS:.fig=.eps)
+ INCLUDE = $(FIGS)
+ 
+@@ -50,6 +51,8 @@
+ HTMLDIR = $(SOURCE:.tex=)
+ 
+ # Build targets (from rules)
++.PHONY: a4pdf a4ps all clean html install pdf ps svn sync tar tgz 
++
+ all:	$(PDF)
+ ps:	$(DVI) $(PS)
+ pdf:	$(DVI) $(PS) $(PDF)
+@@ -81,8 +84,7 @@
+ 	svn commit .		# Do the commit
+ 	rsync -avz --delete $(SVNPATH) login.phy.duke.edu:/home/einstein/prof/rgb/Src/svn-tree
+ 	rsync -avz --delete $(SVNPATH) 209.42.212.5:$(SVNTREE)
+-	cat $(SVNTIME) | \
+-	sed -e '/^New Checkin/d' >> $(SVNTIME).tmp
++	sed -e '/^New Checkin/d' $(SVNTIME) >> $(SVNTIME).tmp
+ 	mv $(SVNTIME).tmp $(SVNTIME)
+ 
+ # Clean up all the junk build files and output formats to save space.

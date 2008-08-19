@@ -126,7 +126,6 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cp Makefile.am $(PROJECTDIR); \
 	cp Makefile.in $(PROJECTDIR); \
 	cp configure $(PROJECTDIR); \
-	cp config.status $(PROJECTDIR); \
 	cp config.sub $(PROJECTDIR); \
 	cp config.guess $(PROJECTDIR); \
 	cp config.h.in $(PROJECTDIR); \

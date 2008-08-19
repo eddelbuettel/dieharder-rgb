@@ -1,0 +1,6 @@
+@comment $OpenBSD$
+%%SHARED%%
+bin/dieharder
+lib/libdieharder.a
+lib/libdieharder.la
+share/nls/pl_PL.ISO_8859-2/

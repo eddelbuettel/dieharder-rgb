@@ -1,0 +1,32 @@
+$OpenBSD$
+--- libdieharder/rng_dev_random.c.orig	Mon May 21 17:34:27 2007
++++ libdieharder/rng_dev_random.c	Mon Jul 16 18:32:07 2007
+@@ -8,7 +8,7 @@
+ #include <dieharder/libdieharder.h>
+ 
+ /*
+- * This is a wrapping of the /dev/random hardware rng
++ * This is a wrapping of the /dev/arandom hardware rng
+  */
+ 
+ static unsigned long int dev_random_get (void *vstate);
+@@ -31,7 +31,7 @@ dev_random_get (void *vstate)
+     fread(&j,sizeof(j),1,state->fp);
+     return j;
+   } else {
+-    fprintf(stderr,"Error: /dev/random not open.  Exiting.\n");
++    fprintf(stderr,"Error: /dev/arandom not open.  Exiting.\n");
+     exit(0);
+   }
+ 
+@@ -48,8 +48,8 @@ dev_random_set (void *vstate, unsigned long int s)
+ {
+   dev_random_state_t *state = (dev_random_state_t *) vstate;
+ 
+- if ((state->fp = fopen("/dev/random","r")) == NULL) {
+-   fprintf(stderr,"Error: Cannot open /dev/random, exiting.\n");
++ if ((state->fp = fopen("/dev/arandom","r")) == NULL) {
++   fprintf(stderr,"Error: Cannot open /dev/arandom, exiting.\n");
+    exit(0);
+  }
+ 

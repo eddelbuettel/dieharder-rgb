@@ -35,7 +35,6 @@ subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/dieharder.spec.in $(srcdir)/dieharder_version.h.in \
-	$(top_srcdir)/RDieHarder/DESCRIPTION.in \
 	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
 	config.guess config.sub depcomp install-sh ltmain.sh missing \
 	mkinstalldirs
@@ -47,8 +46,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = dieharder_version.h dieharder.spec \
-	RDieHarder/DESCRIPTION
+CONFIG_CLEAN_FILES = dieharder_version.h dieharder.spec
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -337,8 +335,6 @@ distclean-hdr:
 dieharder_version.h: $(top_builddir)/config.status $(srcdir)/dieharder_version.h.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 dieharder.spec: $(top_builddir)/config.status $(srcdir)/dieharder.spec.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-RDieHarder/DESCRIPTION: $(top_builddir)/config.status $(top_srcdir)/RDieHarder/DESCRIPTION.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
@@ -788,7 +784,6 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cp Makefile.am $(PROJECTDIR); \
 	cp Makefile.in $(PROJECTDIR); \
 	cp configure $(PROJECTDIR); \
-	cp config.status $(PROJECTDIR); \
 	cp config.sub $(PROJECTDIR); \
 	cp config.guess $(PROJECTDIR); \
 	cp config.h.in $(PROJECTDIR); \

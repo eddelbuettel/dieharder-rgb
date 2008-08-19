@@ -1,0 +1,111 @@
+From edd@debian.org Mon Aug 18 21:33:46 2008
+Date: Mon, 18 Aug 2008 20:33:43 -0500
+From: Dirk Eddelbuettel <edd@debian.org>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: A few suggested changes
+
+
+1)  Our policy checker complains that config.status is in the tarball
+2)  Likewise, the previous mail is due to leaving 'your' Makefile in
+
+==> from 1) and 2):  augment the 'clean' or 'distclean' step before tar'ing up
+
+3)  The dieharder/dieharder.1 manual page doesn't render the 'input file'
+example. so suggested diff:
+
+--- dieharder-2.27.11.orig/dieharder/dieharder.1
++++ dieharder-2.27.11/dieharder/dieharder.1
+@@ -515,15 +515,15 @@
+ 
+ (testrands.txt should consist of a header such as:
+ 
+-#==================================================================
+-# generator mt19937_1999  seed = 1274511046
+-#==================================================================
+-type: d
+-count: 100000
+-numbit: 32
+-3129711816
+-  85411969
+-2545911541
++ #==================================================================
++ # generator mt19937_1999  seed = 1274511046
++ #==================================================================
++ type: d
++ count: 100000
++ numbit: 32
++ 3129711816
++   85411969
++ 2545911541
+ 
+ etc.).  
+
+
+4)  I see lots and lots of warnings like
+
+bits.c: In function 'get_bit':
+bits.c:292: warning: unused variable 'last_rand'
+bits.c:290: warning: unused variable 'i'
+bits.c: In function 'dumpbits_left':
+bits.c:355: warning: unused variable 'j'
+bits.c: In function 'fill_uint_buffer':
+bits.c:419: warning: unused variable 'bcnt'
+bits.c: In function 'b_window':
+bits.c:565: warning: unused variable 'b'
+bits.c: In function 'get_uint_rand':
+bits.c:947: warning: too few arguments for format
+bits.c:919: warning: unused variable 'j'
+bits.c:919: warning: unused variable 'i'
+bits.c: In function 'get_rand_bits':
+bits.c:1192: warning: format '%0x' expects type 'unsigned int', but argument 3 has type 'char *'
+bits.c:1192: warning: format '%0x' expects type 'unsigned int', but argument 4 has type 'char *'
+bits.c:1055: warning: unused variable 'j'
+bits.c: In function 'mybitadd':
+bits.c:1224: warning: unused variable 'margin'
+bits.c: In function 'get_rand_pattern':
+bits.c:1295: warning: unused variable 'output'
+bits.c: At top level:
+../include/dieharder/rgb_timing.h:14: warning: 'rgb_timing_dtest' defined but not used
+../include/dieharder/rgb_persist.h:15: warning: 'rgb_persist_dtest' defined but not used
+../include/dieharder/rgb_bitdist.h:10: warning: 'rgb_bitdist_dtest' defined but not used
+../include/dieharder/rgb_operm.h:10: warning: 'rgb_operm_dtest' defined but not used
+../include/dieharder/rgb_permutations.h:10: warning: 'rgb_permutations_dtest' defined but not used
+../include/dieharder/rgb_minimum_distance.h:10: warning: 'rgb_minimum_distance_dtest' defined but not used
+../include/dieharder/rgb_minimum_distance.h:59: warning: 'rgb_md_Q' defined but not used
+../include/dieharder/diehard_birthdays.h:10: warning: 'diehard_birthdays_dtest' defined but not used
+../include/dieharder/diehard_operm5.h:10: warning: 'diehard_operm5_dtest' defined but not used
+../include/dieharder/diehard_operm5.h:42: warning: 'r' defined but not used
+../include/dieharder/diehard_operm5.h:644: warning: 's' defined but not used
+../include/dieharder/diehard_operm5.h:1247: warning: 'map' defined but not used
+../include/dieharder/diehard_rank_32x32.h:10: warning: 'diehard_rank_32x32_dtest' defined but not used
+../include/dieharder/diehard_rank_6x8.h:10: warning: 'diehard_rank_6x8_dtest' defined but not used
+../include/dieharder/diehard_bitstream.h:10: warning: 'diehard_bitstream_dtest' defined but not used
+../include/dieharder/diehard_opso.h:10: warning: 'diehard_opso_dtest' defined but not used
+../include/dieharder/diehard_oqso.h:10: warning: 'diehard_oqso_dtest' defined but not used
+../include/dieharder/diehard_dna.h:10: warning: 'diehard_dna_dtest' defined but not used
+../include/dieharder/diehard_count_1s_stream.h:10: warning: 'diehard_count_1s_stream_dtest' defined but not used
+../include/dieharder/diehard_count_1s_byte.h:10: warning: 'diehard_count_1s_byte_dtest' defined but not used
+../include/dieharder/diehard_parking_lot.h:10: warning: 'diehard_parking_lot_dtest' defined but not used
+../include/dieharder/diehard_2dsphere.h:10: warning: 'diehard_2dsphere_dtest' defined but not used
+../include/dieharder/diehard_3dsphere.h:10: warning: 'diehard_3dsphere_dtest' defined but not used
+../include/dieharder/diehard_squeeze.h:10: warning: 'diehard_squeeze_dtest' defined but not used
+../include/dieharder/diehard_squeeze.h:28: warning: 'sdata' defined but not used
+../include/dieharder/diehard_sums.h:10: warning: 'diehard_sums_dtest' defined but not used
+../include/dieharder/diehard_runs.h:10: warning: 'diehard_runs_dtest' defined but not used
+../include/dieharder/diehard_runs.h:48: warning: 'a' defined but not used
+../include/dieharder/diehard_runs.h:60: warning: 'b' defined but not used
+../include/dieharder/diehard_craps.h:10: warning: 'diehard_craps_dtest' defined but not used
+../include/dieharder/marsaglia_tsang_gcd.h:10: warning: 'marsaglia_tsang_gcd_dtest' defined but not used
+../include/dieharder/sts_monobit.h:10: warning: 'sts_monobit_dtest' defined but not used
+../include/dieharder/sts_runs.h:10: warning: 'sts_runs_dtest' defined but not used
+../include/dieharder/sts_serial.h:10: warning: 'sts_serial_dtest' defined but not used
+bits.c:1288: warning: 'pattern_output' defined but not used
+
+so maybe I should build without -Wall  :-/  
+
+Haven't actually _run_ anything yet :)
+
+Thanks so much for the new code,  Dirk
+
+-- 
+Three out of two people have difficulties with fractions.

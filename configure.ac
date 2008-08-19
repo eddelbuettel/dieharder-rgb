@@ -105,7 +105,6 @@ AC_CONFIG_FILES([
  dieharder/Makefile 
  include/Makefile
  libdieharder/Makefile 
- RDieHarder/DESCRIPTION
  Makefile])
 
 AC_OUTPUT

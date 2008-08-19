@@ -1,0 +1,49 @@
+$OpenBSD$
+--- configure.ac.orig	Mon May 21 17:34:28 2007
++++ configure.ac	Mon Jul 16 17:34:31 2007
+@@ -3,13 +3,13 @@
+ AC_PREREQ(2.59)
+ 
+ AC_INIT([dieharder], [2.24.4])
++AM_INIT_AUTOMAKE([-Wall])
+ AC_CONFIG_SRCDIR([dieharder.abs])
+ RELEASE=0
+ AC_SUBST(RELEASE)
+ 
+-AM_INIT_AUTOMAKE
+ AC_CONFIG_HEADERS([config.h])
+-AM_MAINTAINER_MODE
++# AM_MAINTAINER_MODE
+ 
+ AC_DEFINE([RELEASED], [], [Description])
+ 
+@@ -18,7 +18,7 @@ dnl See the libtool manual for an explanation of the n
+ dnl
+ dnl dieharder-1.0    libdieharder 0:0:0
+ 
+-DIEHARDER_LT_VERSION="0:0:0"
++DIEHARDER_LT_VERSION="2:24:4"
+ AC_SUBST(DIEHARDER_LT_VERSION)
+ 
+ 
+@@ -61,14 +61,10 @@ AC_SUBST(DIEHARDER_CFLAGS)
+ AC_SUBST(DIEHARDER_LIBS)
+ 
+ # Checks for libraries.
+-# FIXME: Replace `main' with a function in `-ldieharder':
+-AC_CHECK_LIB([dieharder], [main])
+ # FIXME: Replace `main' with a function in `-lgsl':
+ AC_CHECK_LIB([gsl], [main])
+ # FIXME: Replace `main' with a function in `-lgslcblas':
+ AC_CHECK_LIB([gslcblas], [main])
+-# FIXME: Replace `main' with a function in `-lm':
+-AC_CHECK_LIB([m], [main])
+ 
+ # Checks for typedefs, structures, and compiler characteristics.
+ AC_C_CONST
+@@ -82,4 +78,5 @@ AC_CONFIG_FILES([
+  libdieharder/Makefile 
+  RDieHarder/DESCRIPTION
+  Makefile])
++
+ AC_OUTPUT
