@@ -135,6 +135,7 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cp configure $(PROJECTDIR); \
 	cp configure.ac $(PROJECTDIR); \
 	cp config.status $(PROJECTDIR); \
+	cp config.sub $(PROJECTDIR); \
 	cp Copyright $(PROJECTDIR); \
 	cp COPYING $(PROJECTDIR); \
 	cp INSTALL $(PROJECTDIR); \
