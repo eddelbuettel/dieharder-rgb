@@ -9,7 +9,7 @@ AC_PREREQ(2.59)
 # Be sure to set DIEHARDER_LT_VERSION below at the same time
 # you change this:
 #==================================================================
-AC_INIT([dieharder], [2.27.11])
+AC_INIT([dieharder], [2.27.12])
 
 AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_SRCDIR([dieharder.abs])
@@ -31,7 +31,7 @@ AC_DEFINE([RELEASED], [], [Description])
 #==================================================================
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
-DIEHARDER_LT_VERSION="2:27:11"
+DIEHARDER_LT_VERSION="2:27:12"
 AC_SUBST(DIEHARDER_LT_VERSION)
 
 case "$VERSION" in
@@ -57,6 +57,24 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+
+#==================================================================
+# OK, these five macros prevent my personal path from appearing
+# in the default Makefile, and actually should make it work to
+# rebuilt itself even if somebody completely blows off running
+# ./autogen.sh.  And it ALMOST WORKS
+#==================================================================
+ACLOCAL="${SHELL} ./missing --run aclocal"
+ACTAR="${SHELL} ./missing --run tar"
+AUTOCONF="${SHELL} ./missing --run autoconf;echo \"Run ./configure\";exit"
+AUTOHEADER="${SHELL} ./missing --run autoheader"
+AUTOMAKE="${SHELL} ./missing --run automake --add-missing --copy --gnu"
+
+AC_SUBST(ACLOCAL)
+AC_SUBST(ACTAR)
+AC_SUBST(AUTOCONF)
+AC_SUBST(AUTOHEADER)
+AC_SUBST(AUTOMAKE)
 
 #==================================================================
 # Disable unnecessary libtool tests for c++,fortran,java
@@ -102,6 +120,7 @@ AC_HEADER_TIME
 AC_CONFIG_FILES([
  dieharder_version.h 
  dieharder.spec
+ dieharder.html
  dieharder/Makefile 
  include/Makefile
  libdieharder/Makefile 

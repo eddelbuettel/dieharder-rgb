@@ -116,25 +116,25 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cd $(MANUAL); \
 	make clean; \
 	cd ..; \
-	make rdhclean; \
-	cp -r $(RDIEHARDER) $(PROJECTDIR); \
 	cp -r $(MANUAL) $(PROJECTDIR); \
 	cp -r include $(PROJECTDIR); \
 	cp $(ABS) $(PROJECTDIR); \
 	cp $(PHP) $(PROJECTDIR); \
+	cp Makefile $(PROJECTDIR); \
 	cp Makefile.am $(PROJECTDIR); \
 	cp Makefile.in $(PROJECTDIR); \
 	cp configure $(PROJECTDIR); \
 	cp config.h.in $(PROJECTDIR); \
 	cp $(SPEC).in $(PROJECTDIR); \
 	cp dieharder_version.h.in $(PROJECTDIR); \
+	cp dieharder.html.in $(PROJECTDIR); \
 	cp autogen.sh $(PROJECTDIR); \
 	cp missing $(PROJECTDIR); \
 	cp mkinstalldirs $(PROJECTDIR); \
 	cp ltmain.sh $(PROJECTDIR); \
-	cp install-sh $(PROJECTDIR); \
 	cp configure $(PROJECTDIR); \
 	cp configure.ac $(PROJECTDIR); \
+	cp config.status $(PROJECTDIR); \
 	cp Copyright $(PROJECTDIR); \
 	cp COPYING $(PROJECTDIR); \
 	cp INSTALL $(PROJECTDIR); \
