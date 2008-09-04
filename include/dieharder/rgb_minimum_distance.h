@@ -8,7 +8,7 @@
 void rgb_minimum_distance(Test **test,int irun);
 
 static Dtest rgb_minimum_distance_dtest = {
-  "Diehard Minimum Distance (2d Circle) Test",
+  "RGB Generalized Minimum Distance Test",
   "#\n\
 #            THE GENERALIZED MINIMUM DISTANCE TEST\n\
 #\n\

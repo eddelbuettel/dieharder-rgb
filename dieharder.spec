@@ -4,7 +4,7 @@
 
 Name: dieharder-src
 Summary: Dieharder is a random number generator tester and timer
-%define version 2.27.12
+%define version 2.27.13
 %define release 1
 Version: %{version}
 Release: %{release}

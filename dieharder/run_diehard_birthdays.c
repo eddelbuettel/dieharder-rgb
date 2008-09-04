@@ -25,7 +25,7 @@ void run_diehard_birthdays()
 
  /*
   * First we create the test (to set some values displayed in test header
-  * correctly).
+  * correctly).  Note that I think we must then DESTROY THE TEST ON EXIT!
   */
  diehard_birthdays_test = create_test(&diehard_birthdays_dtest,tsamples,psamples,&diehard_birthdays);
  fflush(stdout);
@@ -96,6 +96,8 @@ void run_diehard_birthdays()
  show_test_results(&diehard_birthdays_dtest,diehard_birthdays_test);
  fflush(stdout);
 
+ 
+ destroy_test(&diehard_birthdays_dtest,diehard_birthdays_test);
  free(diehard_birthdays_rand_uint);
 
 }

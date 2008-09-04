@@ -61,7 +61,7 @@ void work()
  switch(diehard){
    case DIEHARD_BDAY:
      run_diehard_birthdays();
-     Exit(0);
+     /* Exit(0); */
      break;
    case DIEHARD_OPERM5:
      run_diehard_operm5();
@@ -198,8 +198,10 @@ void work()
      break;
  }
 
+/* Cruft, I think.
 #if !defined(RDIEHARDER)
  list_rngs();
-#endif   /* !defined(RDIEHARDER */
+#endif
+*/
 
 }

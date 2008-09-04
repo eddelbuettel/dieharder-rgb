@@ -130,12 +130,16 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cp dieharder.html.in $(PROJECTDIR); \
 	cp autogen.sh $(PROJECTDIR); \
 	cp missing $(PROJECTDIR); \
+	cp aclocal.m4 $(PROJECTDIR); \
 	cp mkinstalldirs $(PROJECTDIR); \
 	cp ltmain.sh $(PROJECTDIR); \
+	cp depcomp $(PROJECTDIR); \
 	cp configure $(PROJECTDIR); \
 	cp configure.ac $(PROJECTDIR); \
-	cp config.status $(PROJECTDIR); \
+	cp config.guess $(PROJECTDIR); \
 	cp config.sub $(PROJECTDIR); \
+	cp config.status $(PROJECTDIR); \
+	cp install-sh $(PROJECTDIR); \
 	cp Copyright $(PROJECTDIR); \
 	cp COPYING $(PROJECTDIR); \
 	cp INSTALL $(PROJECTDIR); \
