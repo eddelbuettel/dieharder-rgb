@@ -63,4 +63,9 @@ void run_diehard_opso()
   */
  show_test_results(&diehard_opso_dtest,diehard_opso_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_opso_dtest,diehard_opso_test);
+
 }

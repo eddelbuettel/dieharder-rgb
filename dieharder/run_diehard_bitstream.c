@@ -63,4 +63,9 @@ void run_diehard_bitstream()
   */
  show_test_results(&diehard_bitstream_dtest,diehard_bitstream_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_bitstream_dtest,diehard_bitstream_test);
+
 }

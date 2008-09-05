@@ -78,4 +78,10 @@ void run_diehard_rank_32x32()
  }
  free(diehard_rank_32x32_mtx);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_rank_32x32_dtest,diehard_rank_32x32_test);
+
+
 }

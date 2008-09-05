@@ -69,4 +69,9 @@ void run_diehard_runs()
   */
  free(diehard_runs_rand_uint);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_runs_dtest,diehard_runs_test);
+
 }

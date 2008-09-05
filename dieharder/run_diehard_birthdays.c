@@ -96,8 +96,14 @@ void run_diehard_birthdays()
  show_test_results(&diehard_birthdays_dtest,diehard_birthdays_test);
  fflush(stdout);
 
- 
- destroy_test(&diehard_birthdays_dtest,diehard_birthdays_test);
+ /*
+  * Free any allocated globals before exit (or leak).
+  */
  free(diehard_birthdays_rand_uint);
+
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_birthdays_dtest,diehard_birthdays_test);
 
 }

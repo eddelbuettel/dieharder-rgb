@@ -63,4 +63,9 @@ void run_diehard_oqso()
   */
  show_test_results(&diehard_oqso_dtest,diehard_oqso_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_oqso_dtest,diehard_oqso_test);
+
 }

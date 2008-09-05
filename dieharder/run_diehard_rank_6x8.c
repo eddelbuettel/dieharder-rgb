@@ -73,4 +73,9 @@ void run_diehard_rank_6x8()
  free(diehard_rank_6x8_mtx);
   
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_rank_6x8_dtest,diehard_rank_6x8_test);
+
 }

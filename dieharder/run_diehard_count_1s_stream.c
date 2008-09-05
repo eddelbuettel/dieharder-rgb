@@ -63,4 +63,9 @@ void run_diehard_count_1s_stream()
   */
  show_test_results(&diehard_count_1s_stream_dtest,diehard_count_1s_stream_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_count_1s_stream_dtest,diehard_count_1s_stream_test);
+
 }

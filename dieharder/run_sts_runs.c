@@ -66,4 +66,9 @@ void run_sts_runs()
 
  free(sts_runs_rand_int);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&sts_runs_dtest,sts_runs_test);
+
 }

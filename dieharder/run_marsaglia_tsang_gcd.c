@@ -63,4 +63,9 @@ void run_marsaglia_tsang_gcd()
   */
  show_test_results(&marsaglia_tsang_gcd_dtest,marsaglia_tsang_gcd_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&marsaglia_tsang_gcd_dtest,marsaglia_tsang_gcd_test);
+
 }

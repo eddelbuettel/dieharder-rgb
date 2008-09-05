@@ -63,4 +63,9 @@ void run_diehard_2dsphere()
   */
  show_test_results(&diehard_2dsphere_dtest,diehard_2dsphere_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_2dsphere_dtest,diehard_2dsphere_test);
+
 }

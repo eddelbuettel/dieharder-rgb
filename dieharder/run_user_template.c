@@ -71,4 +71,9 @@ void run_user_template()
   */
  show_test_results(&user_template_dtest,user_template_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&user_template_dtest,user_template_test);
+
 }

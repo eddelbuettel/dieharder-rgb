@@ -94,7 +94,7 @@ void show_test_results(Dtest *dtest,Test **test)
      fflush(stdout);
    }
    if(test[i]->psamples == 1){
-     printf("Single test: p = %12.10f\n",test[i]->ks_pvalue);
+     printf("Single test: p = %10.8f\n",test[i]->ks_pvalue);
      printf("Assessment: ");
      /* Work through some ranges here */
      if(test[i]->ks_pvalue < 0.0001 || test[i]->ks_pvalue > 0.9999){
@@ -107,7 +107,7 @@ void show_test_results(Dtest *dtest,Test **test)
      }
      fflush(stdout);
    } else {
-     printf("Kuiper KS: p = %12.10f\n",test[i]->ks_pvalue);
+     printf("Kuiper KS: p = %10.8f\n",test[i]->ks_pvalue);
      printf("Assessment: ");
      /* Work through some ranges here */
      if(test[i]->ks_pvalue < 0.0001){

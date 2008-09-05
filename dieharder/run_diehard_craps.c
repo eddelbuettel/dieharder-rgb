@@ -62,4 +62,9 @@ void run_diehard_craps()
   */
  show_test_results(&diehard_craps_dtest,diehard_craps_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_craps_dtest,diehard_craps_test);
+
 }

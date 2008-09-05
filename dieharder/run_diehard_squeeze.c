@@ -63,4 +63,9 @@ void run_diehard_squeeze()
   */
  show_test_results(&diehard_squeeze_dtest,diehard_squeeze_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_squeeze_dtest,diehard_squeeze_test);
+
 }

@@ -63,4 +63,9 @@ void run_sts_monobit()
   */
  show_test_results(&sts_monobit_dtest,sts_monobit_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&sts_monobit_dtest,sts_monobit_test);
+
 }

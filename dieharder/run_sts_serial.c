@@ -86,9 +86,8 @@ void run_sts_serial()
  show_test_results(&sts_serial_dtest,sts_serial_test);
 
  /*
-  * Free any GLOBAL data used by the test.
+  * Destroy the test and free all dynamic memory it used.
   */
  destroy_test(&sts_serial_dtest,sts_serial_test);
-
 
 }

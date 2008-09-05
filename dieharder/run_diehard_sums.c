@@ -69,5 +69,10 @@ void run_diehard_sums()
   */
  free(diehard_sums_rand_dbl);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_sums_dtest,diehard_sums_test);
+
 
 }

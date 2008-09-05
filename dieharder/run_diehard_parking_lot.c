@@ -63,4 +63,9 @@ void run_diehard_parking_lot()
   */
  show_test_results(&diehard_parking_lot_dtest,diehard_parking_lot_test);
 
+ /*
+  * Destroy the test and free all dynamic memory it used.
+  */
+ destroy_test(&diehard_parking_lot_dtest,diehard_parking_lot_test);
+
 }
