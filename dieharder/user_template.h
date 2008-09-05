@@ -23,10 +23,11 @@ void user_template(Test **test,int irun);
  * this will be one but for several it is two and could be more.
  */
 static Dtest user_template_dtest = {
-  "Example Dieharder Test",
-  "\n\
+  "Lagged Sum Test",
+  "lagged_sum",
+  "\
 #==================================================================\n\
-#                   Example Dieharder Test\n\
+#                  Example Dieharder Test\n\
 #\n\
 #                     Lagged Sum Test\n\
 # This package contains many very lovely tests.  Very few of them,\n\

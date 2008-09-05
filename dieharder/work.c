@@ -25,6 +25,10 @@ void work()
  }
  */
 
+ if(table){
+   table_header();
+ }
+
  if(all == YES){
    run_rgb_timing();
    run_rgb_persist();

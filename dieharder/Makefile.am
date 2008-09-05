@@ -38,6 +38,7 @@ dieharder_SOURCES = \
 	output_rnds.c \
 	parsecl.c \
 	rdieharder.c \
+	report.c \
 	rng_empty_random.c \
 	run_diehard_2dsphere.c \
 	run_diehard_3dsphere.c \
@@ -68,7 +69,7 @@ dieharder_SOURCES = \
 	run_sts_serial.c \
 	run_user_template.c \
 	startup.c \
-	test.c \
+	table.c table.h \
 	testbits.c \
 	user_template.c \
 	work.c

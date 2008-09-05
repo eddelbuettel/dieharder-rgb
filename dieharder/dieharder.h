@@ -29,6 +29,12 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <dieharder/libdieharder.h>
+
+/*
+ * Flags to control table formatting
+ */
+#include "table.h"
+
 /*
  * user_template sources are here, not in library
  */
@@ -167,6 +173,8 @@
  int rgb;               /* rgb test number */
  int sts;               /* sts test number */
  uint Seed;             /* user selected seed.  Surpresses reseeding per sample.*/
+ uint table;            /* selects "table" output mode */
+ uint tflag;            /* binary flag(s) to control what goes in the table */
  off_t tsamples;        /* Generally should be "a lot".  off_t is u_int64_t. */
  int user;              /* user defined test number */
  int verbose;           /* Default is not to be verbose. */

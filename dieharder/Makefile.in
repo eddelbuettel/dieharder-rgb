@@ -64,7 +64,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_dieharder_OBJECTS = dieharder.$(OBJEXT) dieharder_exit.$(OBJEXT) \
 	help.$(OBJEXT) histogram.$(OBJEXT) list_rand.$(OBJEXT) \
 	list_rngs.$(OBJEXT) list_tests.$(OBJEXT) output_rnds.$(OBJEXT) \
-	parsecl.$(OBJEXT) rdieharder.$(OBJEXT) \
+	parsecl.$(OBJEXT) rdieharder.$(OBJEXT) report.$(OBJEXT) \
 	rng_empty_random.$(OBJEXT) run_diehard_2dsphere.$(OBJEXT) \
 	run_diehard_3dsphere.$(OBJEXT) run_diehard_birthdays.$(OBJEXT) \
 	run_diehard_bitstream.$(OBJEXT) \
@@ -81,7 +81,7 @@ am_dieharder_OBJECTS = dieharder.$(OBJEXT) dieharder_exit.$(OBJEXT) \
 	run_rgb_permutations.$(OBJEXT) run_rgb_persist.$(OBJEXT) \
 	run_rgb_timing.$(OBJEXT) run_sts_monobit.$(OBJEXT) \
 	run_sts_runs.$(OBJEXT) run_sts_serial.$(OBJEXT) \
-	run_user_template.$(OBJEXT) startup.$(OBJEXT) test.$(OBJEXT) \
+	run_user_template.$(OBJEXT) startup.$(OBJEXT) table.$(OBJEXT) \
 	testbits.$(OBJEXT) user_template.$(OBJEXT) work.$(OBJEXT)
 dieharder_OBJECTS = $(am_dieharder_OBJECTS)
 dieharder_DEPENDENCIES = ../libdieharder/libdieharder.la
@@ -226,6 +226,7 @@ dieharder_SOURCES = \
 	output_rnds.c \
 	parsecl.c \
 	rdieharder.c \
+	report.c \
 	rng_empty_random.c \
 	run_diehard_2dsphere.c \
 	run_diehard_3dsphere.c \
@@ -256,7 +257,7 @@ dieharder_SOURCES = \
 	run_sts_serial.c \
 	run_user_template.c \
 	startup.c \
-	test.c \
+	table.c table.h \
 	testbits.c \
 	user_template.c \
 	work.c
@@ -360,6 +361,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/output_rnds.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parsecl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rdieharder.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/report.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_empty_random.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_diehard_2dsphere.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_diehard_3dsphere.Po@am__quote@
@@ -390,7 +392,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_sts_serial.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_user_template.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/startup.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testbits.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/user_template.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/work.Po@am__quote@
