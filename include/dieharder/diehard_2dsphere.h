@@ -40,6 +40,3 @@ typedef struct {
   double x[DIM_2D];
 } C3_2D;
  
-/*
- * Global variables (none in this case)
- */

@@ -31,9 +31,9 @@
 #include <dieharder/libdieharder.h>
 
 /*
- * Flags to control table formatting
+ * Flags to control all output formatting etc.
  */
-#include "table.h"
+#include "output.h"
 
 /*
  * user_template sources are here, not in library
@@ -165,8 +165,8 @@
  int list;              /* List all tests flag */
  int List;              /* List all generators flag */
  int ntuple;            /* n-tuple size for n-tuple tests */
- int num_randoms;		/* the number of randoms stored into memory and usable */
- int output;		/* equals 1 if you output to file, otherwise 0. */
+ int num_randoms;	/* the number of randoms stored into memory and usable */
+ int output_file;	/* equals 1 if you output to file, otherwise 0. */
  int overlap;           /* equals 1 if you really want to use diehard overlap */
  int psamples;          /* Number of test runs in final KS test */
  int quiet;             /* quiet flag -- surpresses full output report */

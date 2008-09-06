@@ -54,8 +54,6 @@ typedef struct {
 /*
  * Global variables
  */
-
-uint rgb_md_dim;
 double rgb_mindist_avg;
 static double rgb_md_Q[] = {0.0,0.0,0.4135,0.5312,0.6202,1.3789};
 

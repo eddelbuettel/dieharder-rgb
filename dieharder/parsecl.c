@@ -24,7 +24,7 @@ void parsecl(int argc, char **argv)
  diehard = 0;           /* Diehard test number */
  filename[0] = (char)0; /* No input file */
  fromfile = 0;          /* Not from an input file */
- output = 0;            /* No output file */
+ output_file = 0;       /* No output file */
  overlap = 1;           /* Default is to use overlapping samples */
  generator = 13;        /* Default is mt19937 as a "good" generator */
  help_flag = NO;        /* No help requested */
@@ -99,7 +99,7 @@ void parsecl(int argc, char **argv)
        overlap = 0;
        break;
      case 'o':
-       output = 1;
+       output_file = 1;
        break;
      case 'p':
        psamples = strtol(optarg,(char **) NULL,10);

@@ -171,7 +171,7 @@ void startup()
      list_rngs();
      Exit(0);
    }
-   if(output){
+   if(output_file){
      fprintf(stderr,"Error: generator %s uses file input but output flag set.",types[generator]->name);
      Usage();
      Exit(0);
@@ -226,7 +226,7 @@ void startup()
    rmax_bits++;
  }
 
- if(output){
+ if(output_file){
    output_rnds();
    /* We'll fix it so we don't have to exit here later, maybe. */
    Exit(0);
