@@ -28,24 +28,7 @@ void run_user_template()
   * correctly).
   */
  user_template_test = create_test(&user_template_dtest,tsamples,psamples,&user_template);
-
- /*
-  * Set any GLOBAL data used by the test.  This is very test specific -- most
-  * library tests won't have any but a few do.  The data will usually be input
-  * via one of the special command line variables reserved for that purpose,
-  * and only can work if the -a(ll) flag is not set -- otherwise test specific
-  * defaults are used.
-  */
- user_template_lag = (int)x_user;
-
- /*
-  * This is where we can output any test-specific information (such as
-  * the value of the lag).   In dieharder, I tend to start each output
-  * line with an # to make things all pretty.
-  */
- if(!table && !quiet){
-   printf("# Lag used in %s test: %u\n",user_template_dtest.name,user_template_lag);
- }
+ user_template_test[0]->ntuple = ntuple;
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

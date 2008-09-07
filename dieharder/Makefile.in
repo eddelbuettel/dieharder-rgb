@@ -77,6 +77,7 @@ am_dieharder_OBJECTS = dieharder.$(OBJEXT) dieharder_exit.$(OBJEXT) \
 	run_diehard_rank_6x8.$(OBJEXT) run_diehard_runs.$(OBJEXT) \
 	run_diehard_squeeze.$(OBJEXT) run_diehard_sums.$(OBJEXT) \
 	run_marsaglia_tsang_gcd.$(OBJEXT) run_rgb_bitdist.$(OBJEXT) \
+	run_rgb_lagged_sums.$(OBJEXT) \
 	run_rgb_minimum_distance.$(OBJEXT) run_rgb_operm.$(OBJEXT) \
 	run_rgb_permutations.$(OBJEXT) run_rgb_persist.$(OBJEXT) \
 	run_rgb_timing.$(OBJEXT) run_sts_monobit.$(OBJEXT) \
@@ -247,6 +248,7 @@ dieharder_SOURCES = \
 	run_diehard_sums.c \
 	run_marsaglia_tsang_gcd.c \
 	run_rgb_bitdist.c \
+	run_rgb_lagged_sums.c \
 	run_rgb_minimum_distance.c \
 	run_rgb_operm.c \
 	run_rgb_permutations.c \
@@ -381,6 +383,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_diehard_sums.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_marsaglia_tsang_gcd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_bitdist.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_lagged_sums.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_minimum_distance.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_operm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_permutations.Po@am__quote@

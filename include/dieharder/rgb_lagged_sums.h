@@ -23,8 +23,8 @@ void rgb_lagged_sums(Test **test,int irun);
  * this will be one but for several it is two and could be more.
  */
 static Dtest rgb_lagged_sums_dtest = {
-  "Lagged Sum Test",
-  "lagged_sum",
+  "RGB Lagged Sum Test",
+  "rgb_lagged_sum",
   "\
 #==================================================================\n\
 #                     RGB Lagged Sums Test\n\

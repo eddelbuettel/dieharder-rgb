@@ -35,7 +35,7 @@
  *========================================================================
  */
 
-#include "dieharder.h"
+#include <dieharder/libdieharder.h>
 
 void rgb_lagged_sums(Test **test,int irun)
 {

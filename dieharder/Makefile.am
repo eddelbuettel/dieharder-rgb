@@ -59,6 +59,7 @@ dieharder_SOURCES = \
 	run_diehard_sums.c \
 	run_marsaglia_tsang_gcd.c \
 	run_rgb_bitdist.c \
+	run_rgb_lagged_sums.c \
 	run_rgb_minimum_distance.c \
 	run_rgb_operm.c \
 	run_rgb_permutations.c \

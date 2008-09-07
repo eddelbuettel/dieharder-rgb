@@ -28,6 +28,8 @@ void help()
    fflush(stdout);
    printf("%s",rgb_permutations_dtest.description);
    fflush(stdout);
+   printf("%s",rgb_lagged_sums_dtest.description);
+   fflush(stdout);
    printf("%s",diehard_birthdays_dtest.description);
    fflush(stdout);
    printf("%s",diehard_operm5_dtest.description);
@@ -175,6 +177,10 @@ void help()
      break;
    case RGB_PERMUTATIONS:
      printf("%s",rgb_permutations_dtest.description);
+     fflush(stdout);
+     break;
+   case RGB_LAGGED_SUMS:
+     printf("%s",rgb_lagged_sums_dtest.description);
      fflush(stdout);
      break;
    case RGB_LMN:

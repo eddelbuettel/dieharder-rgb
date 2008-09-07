@@ -35,6 +35,7 @@ void work()
    run_rgb_bitdist();
    run_rgb_minimum_distance();
    run_rgb_permutations();
+   run_rgb_lagged_sums();
    /*  run_rgb_operm(); */
    run_diehard_birthdays();
    /* run_diehard_operm5(); */
@@ -137,11 +138,14 @@ void work()
    case RGB_MINIMUM_DISTANCE:
      run_rgb_minimum_distance();
      break;
-   case RGB_LMN:
-     rgb_lmn();
-     break;
    case RGB_PERMUTATIONS:
      run_rgb_permutations();
+     break;
+   case RGB_LAGGED_SUMS:
+     run_rgb_lagged_sums();
+     break;
+   case RGB_LMN:
+     rgb_lmn();
      break;
    case RGB_OPERM:
      run_rgb_operm();
