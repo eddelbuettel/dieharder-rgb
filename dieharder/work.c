@@ -19,19 +19,24 @@
 void work()
 {
 
-/*
- if(output == YES){
+ if(output_file == YES){
    output_rnds();
  }
- */
+
+ /*
+  * Let us simply "always" check the timing of an rng -- it doesn't take
+  * and it seems like it should be part of a standard report regardless.
+  */
+ if(!fromfile){ 
+   run_rgb_timing();
+ }
 
  if(table){
    table_header();
  }
 
  if(all == YES){
-   run_rgb_timing();
-   run_rgb_persist();
+   /* run_rgb_persist(); */
    run_rgb_bitdist();
    run_rgb_minimum_distance();
    run_rgb_permutations();

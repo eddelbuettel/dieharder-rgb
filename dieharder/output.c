@@ -190,17 +190,17 @@ void table_line(Dtest *dtest,Test **test)
    if(tflag & TNAME){
      fprintf(stdout,"|");
      if(fromfile){
-       fprintf(stdout,"%30s",filename);
+       fprintf(stdout,"%-30s",filename);
      } else {
-       fprintf(stdout,"%30s",dtest->name);
+       fprintf(stdout,"%-30s",dtest->name);
      }
    }
    if(tflag & TSNAME){
      fprintf(stdout,"|");
      if(fromfile){
-       fprintf(stdout,"%20s",filename);
+       fprintf(stdout,"%-20s",filename);
      } else {
-       fprintf(stdout,"%20s",dtest->sname);
+       fprintf(stdout,"%-20s",dtest->sname);
      }
    }
    if(tflag & TNTUPLE){
@@ -257,17 +257,20 @@ void table_header()
 
  fprintf(stdout,"#==============================================================================\n");
  if(tflag & TGEN){
-   fprintf(stdout,"# Testing generator %s\n",gsl_rng_name(rng));
+   fprintf(stdout,"#| Testing generator %s",gsl_rng_name(rng));
+   if(fromfile){
+     fprintf(stdout," (from file %s)",filename);
+   } else {
+     fprintf(stdout," -- Rands per second = %e.\n",rng_rands_per_second);
+   }
  }
  
  fprintf(stdout,"#");
  if(tflag & TNAME){
-   fprintf(stdout,"|");
-   fprintf(stdout,"|%29s","Test (short) Name");
+   fprintf(stdout,"%30s","Test (short) Name");
  }
  if(tflag & TSNAME){
-   fprintf(stdout,"|");
-   fprintf(stdout,"%19s","Test (short) Name");
+   fprintf(stdout,"%20s","Test (short) Name  ");
  }
  if(tflag & TNTUPLE){
    fprintf(stdout,"|");

@@ -204,6 +204,7 @@
  double *ks_pvalue,*ks_pvalue2;
  unsigned int kspi;
  struct timeval tv_start,tv_stop;
+ double rng_avg_time_nsec,rng_rands_per_second;
  int dummy,idiot;
  FILE *fp;
 #define MAXFIELDNUMBER 8
