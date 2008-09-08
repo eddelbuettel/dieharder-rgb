@@ -27,6 +27,8 @@ void run_diehard_runs()
   * correctly).
   */
  diehard_runs_test = create_test(&diehard_runs_dtest,tsamples,psamples,&diehard_runs);
+ diehard_runs_test[0]->ntuple = 0;
+ diehard_runs_test[1]->ntuple = 0;
 
  /*
   * Set any GLOBAL data used by the test.

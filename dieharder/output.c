@@ -198,9 +198,9 @@ void table_line(Dtest *dtest,Test **test)
    if(tflag & TSNAME){
      fprintf(stdout,"|");
      if(fromfile){
-       fprintf(stdout,"%-20s",filename);
+       fprintf(stdout,"%-20.20s",filename);
      } else {
-       fprintf(stdout,"%-20s",dtest->sname);
+       fprintf(stdout,"%-20.20s",dtest->sname);
      }
    }
    if(tflag & TNTUPLE){

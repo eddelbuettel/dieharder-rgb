@@ -28,7 +28,9 @@ void run_marsaglia_tsang_gcd()
   * correctly).
   */
  marsaglia_tsang_gcd_test = create_test(&marsaglia_tsang_gcd_dtest,tsamples,psamples,&marsaglia_tsang_gcd);
-
+ marsaglia_tsang_gcd_test[0]->ntuple = 0;
+ marsaglia_tsang_gcd_test[1]->ntuple = 0;
+ 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself
   * This fills in the results in the Test struct.

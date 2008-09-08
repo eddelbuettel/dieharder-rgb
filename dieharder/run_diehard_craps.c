@@ -27,6 +27,8 @@ void run_diehard_craps()
   * correctly).
   */
  diehard_craps_test = create_test(&diehard_craps_dtest,tsamples,psamples,&diehard_craps);
+ diehard_craps_test[0]->ntuple = 0;
+ diehard_craps_test[1]->ntuple = 0;
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself
