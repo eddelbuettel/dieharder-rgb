@@ -205,7 +205,7 @@ void table_line(Dtest *dtest,Test **test)
    }
    if(tflag & TNTUPLE){
      fprintf(stdout,"|");
-     fprintf(stdout,"%6d",test[0]->ntuple);
+     fprintf(stdout,"%6d",test[i]->ntuple);
    }
    if(tflag & TTSAMPLES){
      fprintf(stdout,"|");
