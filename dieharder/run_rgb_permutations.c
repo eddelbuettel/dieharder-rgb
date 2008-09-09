@@ -20,6 +20,14 @@ void run_rgb_permutations()
  uint nt,ntmin,ntmax;
 
  /*
+  * If Seed is set use it for the entire sequence of permutations
+  * tests below (starting here).
+  */
+ if(Seed){
+   gsl_rng_set(rng,Seed);
+ }
+
+ /*
   * Set any GLOBAL data used by the test.  rgb_ntuple is the value
   * assigned by -n ntuple (max) on the command line, or default 0 which
   * means -- do all ntuples in range 1 to 8.  rgb_permutations_dtest.nkps is
@@ -48,14 +56,6 @@ void run_rgb_permutations()
   * down?
   */
  for(nt = ntmin;nt <= ntmax;nt++){
-   /*
-    * We want to use Seed for every loop through if this is a
-    * test run with fixed seed at all.
-    */
-   if(Seed){
-     gsl_rng_set(rng,Seed);
-   }
-
    /*
     * First we create the test (to set some values displayed in test header
     * correctly).

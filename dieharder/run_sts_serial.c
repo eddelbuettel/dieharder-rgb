@@ -24,6 +24,14 @@ void run_sts_serial()
  int i;
 
  /*
+  * If Seed is set use it for the entire sequence of permutations
+  * tests below (starting here).
+  */
+ if(Seed){
+   gsl_rng_set(rng,Seed);
+ }
+
+ /*
   * Set any GLOBAL data used by the test.  We will gradually
   * adjust the testing struct and sequence as needed to permit
   * a whole set of tests to be run with a single call, and be

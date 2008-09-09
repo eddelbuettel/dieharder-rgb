@@ -25,6 +25,14 @@ void run_diehard_rank_6x8()
  Test **diehard_rank_6x8_test;
 
  /*
+  * If Seed is set use it for the entire sequence of permutations
+  * tests below (starting here).
+  */
+ if(Seed){
+   gsl_rng_set(rng,Seed);
+ }
+
+ /*
   * First we create the test (to set some values displayed in test header
   * correctly).
   */

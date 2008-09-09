@@ -24,6 +24,14 @@ void run_rgb_minimum_distance()
  uint dim,mindim,maxdim;
 
  /*
+  * If Seed is set, use it for this test, but only once (here)
+  * per test, not in the loop below.
+  */
+ if(Seed){
+   gsl_rng_set(rng,Seed);
+ }
+
+ /*
   * Set any GLOBAL data used by the test.  rgb_md_dim is the value
   * assigned by -n ntuple on the command line, or default 0 which
   * means -- do all dimension in range 2 to 3.  This also sets
@@ -57,14 +65,6 @@ void run_rgb_minimum_distance()
  }
 
  for(dim = mindim;dim<=maxdim;dim++){
-   /*
-    * We want to use Seed for every loop through if this is a
-    * test run with fixed seed at all.
-    */
-   if(Seed){
-     gsl_rng_set(rng,Seed);
-   }
-
    /*
     * First we create the test (to set some values displayed in test header
     * correctly).

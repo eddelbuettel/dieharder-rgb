@@ -24,6 +24,14 @@ void run_diehard_count_1s_byte()
  Test **diehard_count_1s_byte_test;
 
  /*
+  * If Seed is set use it for the entire sequence of permutations
+  * tests below (starting here).
+  */
+ if(Seed){
+   gsl_rng_set(rng,Seed);
+ }
+
+ /*
   * First we create the test (to set some values displayed in test header
   * correctly).
   */

@@ -30,6 +30,14 @@ void run_diehard_birthdays()
  diehard_birthdays_test = create_test(&diehard_birthdays_dtest,tsamples,psamples,&diehard_birthdays);
 
  /*
+  * If Seed is set use it for the entire sequence of permutations
+  * tests below (starting here).
+  */
+ if(Seed){
+   gsl_rng_set(rng,Seed);
+ }
+
+ /*
   * Set any GLOBAL data used by the test.  From Marsaglia, nms should just
   * be "512", but this CAN be varied and all his formulae still work.
   * Similarly, nbits should be "24", but we can really make it anything we
