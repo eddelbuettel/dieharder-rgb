@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_sums(Test **test,int irun);
+int diehard_sums(Test **test,int irun);
 
 static Dtest diehard_sums_dtest = {
   "Diehard Sums Test",

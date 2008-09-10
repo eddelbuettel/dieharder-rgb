@@ -15,7 +15,7 @@
 
 #include <dieharder/libdieharder.h>
 
-void rgb_timing(Test **test, Rgb_Timing *timing)
+int rgb_timing(Test **test, Rgb_Timing *timing)
 {
 
  double total_time,avg_time;

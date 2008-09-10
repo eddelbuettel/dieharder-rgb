@@ -5,8 +5,8 @@
  */
 
 #include "dieharder.h"
-void table_line(Dtest *dtest,Test **test);
 
+void table_line(Dtest *dtest,Test **test);
 
 void output(Dtest *dtest,Test **test)
 {

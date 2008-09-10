@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_squeeze(Test **test,int irun);
+int diehard_squeeze(Test **test,int irun);
 
 static Dtest diehard_squeeze_dtest = {
   "Diehard Squeeze Test",

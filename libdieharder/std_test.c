@@ -41,7 +41,7 @@
  * the test description and default values for tsamples and psamples.
  * This should be called before a test is started in the UI.
  */
-Test **create_test(Dtest *dtest, uint tsamples,uint psamples, void (*testfunc)())
+Test **create_test(Dtest *dtest, uint tsamples,uint psamples, int (*testfunc)())
 {
 
  int i,j,k;

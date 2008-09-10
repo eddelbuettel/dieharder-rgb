@@ -9,7 +9,7 @@
  * creation/destruction/execution routines, the prototype should have
  * precisely this form.
  */
-void user_template(Test **test,int irun);
+int user_template(Test **test,int irun);
 
 /*
  * This is default data for the test at hand.  The first field is
@@ -23,8 +23,8 @@ void user_template(Test **test,int irun);
  * this will be one but for several it is two and could be more.
  */
 static Dtest user_template_dtest = {
-  "Lagged Sum Test",
-  "lagged_sum",
+  "Example User Test",
+  "user_template",
   "\
 #==================================================================\n\
 #                  Example Dieharder Test\n\

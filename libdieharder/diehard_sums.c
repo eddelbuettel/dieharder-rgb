@@ -40,7 +40,7 @@
 
 #include <dieharder/libdieharder.h>
 
-void diehard_sums(Test **test, int irun)
+int diehard_sums(Test **test, int irun)
 {
 
  int i,j,k,m,t;

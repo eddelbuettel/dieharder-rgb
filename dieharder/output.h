@@ -1,3 +1,5 @@
+uint table,tflag;
+
  /*
   * We need a set of binary flags to control table-style output
   */

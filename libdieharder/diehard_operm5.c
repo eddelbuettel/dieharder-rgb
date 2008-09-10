@@ -106,7 +106,7 @@ uint kperm(uint v[],uint voffset)
    
 }
 
-void diehard_operm5(Test **test, int irun)
+int diehard_operm5(Test **test, int irun)
 {
 
  uint i,j,k,kp,t,vind,v[5];

@@ -72,7 +72,7 @@ typedef struct {
   double y;
 } Cars;
 
-void diehard_parking_lot(Test **test, int irun)
+int diehard_parking_lot(Test **test, int irun)
 {
 
  /*

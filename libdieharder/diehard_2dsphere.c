@@ -42,7 +42,7 @@
 int compare_points(const dTuple *a,const dTuple *b);
 double distance(const dTuple a,const dTuple b,uint dim);
 
-void diehard_2dsphere(Test **test, int irun)
+int diehard_2dsphere(Test **test, int irun)
 {
 
  int i,j,d,t;

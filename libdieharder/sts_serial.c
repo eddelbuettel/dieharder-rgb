@@ -81,7 +81,7 @@
  * to be tested, once per test.
  */
 
-void sts_serial(Test **test,int irun)
+int sts_serial(Test **test,int irun)
 {
 
  uint bsize;       /* number of bits/samples in uintbuf */

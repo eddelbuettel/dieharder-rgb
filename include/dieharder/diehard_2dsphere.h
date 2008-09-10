@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_2dsphere(Test **test,int irun);
+int diehard_2dsphere(Test **test,int irun);
 
 static Dtest diehard_2dsphere_dtest = {
   "Diehard Minimum Distance (2d Circle) Test",

@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_oqso(Test **test, int irun);
+int diehard_oqso(Test **test, int irun);
 
 static Dtest diehard_oqso_dtest = {
   "Diehard OQSO Test",

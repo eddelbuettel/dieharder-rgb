@@ -22,7 +22,7 @@
 
 #include <dieharder/libdieharder.h>
 
-void diehard_3dsphere(Test **test, int irun)
+int diehard_3dsphere(Test **test, int irun)
 {
 
  int i,j,k,l,m;

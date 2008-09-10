@@ -153,7 +153,7 @@ const double pb[]={
  */
 #define LSHIFT5(old,new) (old*5 + new)
 
-void diehard_count_1s_byte(Test **test, int irun)
+int diehard_count_1s_byte(Test **test, int irun)
 {
 
  uint i,j,k,index5,index4,letter,t;

@@ -27,7 +27,7 @@
  */
 #include "static_get_bits.c"
 
-void diehard_rank_32x32(Test **test, int irun)
+int diehard_rank_32x32(Test **test, int irun)
 {
 
  int i,j,k,t,rank;

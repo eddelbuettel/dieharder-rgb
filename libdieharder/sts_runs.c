@@ -18,7 +18,7 @@
 
 #include <dieharder/libdieharder.h>
 
-void sts_runs(Test **test, int irun)
+int sts_runs(Test **test, int irun)
 {
 
  int i,b,t;

@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_birthdays(Test **test, int irun);
+int diehard_birthdays(Test **test, int irun);
 
 static Dtest diehard_birthdays_dtest = {
   "Diehard Birthdays Test",

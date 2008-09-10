@@ -28,7 +28,7 @@
 
 #include <dieharder/libdieharder.h>
 
-void diehard_oqso(Test **test, int irun)
+int diehard_oqso(Test **test, int irun)
 {
 
  uint i,j,k,l,i0,j0,k0,l0,t,boffset;

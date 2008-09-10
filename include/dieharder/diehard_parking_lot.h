@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_parking_lot(Test **test,int irun);
+int diehard_parking_lot(Test **test,int irun);
 
 static Dtest diehard_parking_lot_dtest = {
   "Diehard Parking Lot Test",

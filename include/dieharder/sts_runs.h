@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void sts_runs(Test **test,int irun);
+int sts_runs(Test **test,int irun);
 
 static Dtest sts_runs_dtest = {
   "STS Runs Test",

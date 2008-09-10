@@ -19,7 +19,7 @@
 
 #include <dieharder/libdieharder.h>
 
-void sts_monobit(Test **test, int irun)
+int sts_monobit(Test **test, int irun)
 {
 
  int i,b,bsamples,bit;

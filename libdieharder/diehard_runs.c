@@ -46,7 +46,7 @@
 
 #include <dieharder/libdieharder.h>
 
-void diehard_runs(Test **test, int irun)
+int diehard_runs(Test **test, int irun)
 {
 
  int i,j,k,t,ns;

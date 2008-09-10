@@ -59,7 +59,7 @@
 
 #include "static_get_bits.c"
 
-void rgb_bitdist(Test **test,int irun)
+int rgb_bitdist(Test **test,int irun)
 {
 
  uint bsize;       /* number of bits in the sample buffer */

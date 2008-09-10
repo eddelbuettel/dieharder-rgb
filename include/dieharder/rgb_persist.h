@@ -10,7 +10,7 @@ typedef struct {
   uint and_mask;
   uint cumulative_mask;
 } Rgb_Persist;
-void rgb_persist(Test **test, Rgb_Persist *persist);
+int rgb_persist(Test **test, Rgb_Persist *persist);
 
 static Dtest rgb_persist_dtest = {
   "RGB Bit Persistence Test",

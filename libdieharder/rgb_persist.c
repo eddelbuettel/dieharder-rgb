@@ -21,7 +21,7 @@
 
 #include <dieharder/libdieharder.h>
 
-void rgb_persist(Test **test, Rgb_Persist *persist)
+int rgb_persist(Test **test, Rgb_Persist *persist)
 {
 
  double pks;

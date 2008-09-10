@@ -1,6 +1,6 @@
 /*
  *========================================================================
- * $Id: libdieharder.h 248 2006-10-09 17:59:54Z rgb $
+ * $Id$
  *
  * See copyright in copyright.h and the accompanying file COPYING
  *========================================================================
@@ -25,21 +25,20 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_sf.h>
-#include <gsl/gsl_permutation.h>
-#include <gsl/gsl_heapsort.h>
 #include <gsl/gsl_sort.h>
-#include <gsl/gsl_blas.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
-#include <gsl/gsl_eigen.h>
-#include <dieharder/Dtest.h>
-#include <dieharder/parse.h>
-#include <dieharder/verbose.h>
-#include <dieharder/Xtest.h>
-#include <dieharder/Vtest.h>
-#include <dieharder/std_test.h>
-#include <dieharder/tests.h>
-#include <dieharder/dieharder_types.h>
+#include <dieharder/libdieharder.h>
+
+/*
+ * Flags to control all output formatting etc.
+ */
+#include "output.h"
+
+/*
+ * user_template sources are here, not in library
+ */
+#include "user_template.h"
 
 /*
  *========================================================================
@@ -54,7 +53,6 @@
 #define NO	0
 #define PI      3.141592653589793238462643
 #define K       1024
-#define LINE    80
 #define PAGE    4096
 #define M       1048576
 #define M_2     2097152
@@ -94,30 +92,61 @@
  double chisq_eval(double *x,double *y,double *sigma, unsigned int n);
  double chisq_poisson(uint *observed,double lambda,int kmax,uint nsamp);
  double chisq_binomial(double *observed,double prob,uint kmax,uint nsamp);
+ void dumpbits(unsigned int *data, unsigned int nbits);
  double sample(void *testfunc());
  double kstest(double *pvalue,int count);
  double kstest_kuiper(double *pvalue,int count);
  double q_ks(double x);
  double q_ks_kuiper(double x);
+ void Exit(int);
 
- uint get_bit_ntuple(uint *bitstring,uint bslen,uint blen,uint boffset);
- void dumpbits(unsigned int *data, unsigned int nbits);
- uint get_uint_rand(gsl_rng *gsl_rng);
- void cycle(unsigned int *data, unsigned int nbits);
- int get_bit(uint *rand_uint, unsigned int n);
- int get_int_bit(uint i, uint n);
- void fill_uint_buffer(uint *data,uint buflength);
- uint b_umask(uint bstart,uint bstop);
- uint b_window(uint input,uint bstart,uint bstop,uint boffset);
- uint b_rotate_left(uint input,uint shift);
- uint b_rotate_right(uint input, uint shift);
- void get_ntuple_cyclic(uint *input,uint ilen,
-    uint *output,uint jlen,uint ntuple,uint offset);
- uint get_uint_rand(gsl_rng *gsl_rng);
- void get_rand_bits(void *result,uint rsize,uint nbits,gsl_rng *gsl_rng);
- 
- void add_lib_rngs();
-    
+ double output_rnds(void);
+ void add_my_types(void);
+ void help_user_template(void);
+ void list_rngs(void);
+ void list_tests(void);
+ void parsecl(int argc, char **argv);
+ void run_diehard_2dsphere(void);
+ void run_diehard_3dsphere(void);
+ void run_diehard_birthdays(void);
+ void run_diehard_bitstream(void);
+ void run_diehard_count_1s_byte(void);
+ void run_diehard_count_1s_stream(void);
+ void run_diehard_craps(void);
+ void run_diehard_dna(void);
+ void run_diehard_operm5(void);
+ void run_diehard_opso(void);
+ void run_diehard_oqso(void);
+ void run_diehard_parking_lot(void);
+ void run_diehard_rank_32x32(void);
+ void run_diehard_rank_6x8(void);
+ void run_diehard_runs(void);
+ void run_diehard_squeeze(void);
+ void run_diehard_sums(void);
+ void run_marsaglia_tsang_gcd(void);
+ void run_rgb_bitdist(void);
+ void run_rgb_persist(void);
+ void run_rgb_timing(void);
+ void run_rgb_minimum_distance(void);
+ void run_rgb_permutations(void);
+ void rgb_lmn(void);
+ void run_rgb_operm(void);
+ void run_sts_monobit(void);
+ void run_sts_runs(void);
+ void run_sts_serial(void);
+ void run_user_template(void);
+ void startup(void);
+ void user_template(Test **test,int irun);
+ void work(void);
+ void Xtest_eval(Xtest *xtest);
+
+#ifdef RDIEHARDER
+ int histogram(double *input, char *pvlabel, int inum, double min, double max, int nbins, char *label);
+ Test *rdh_testptr;		/* kludge: need a global to report back to main + R */
+ Dtest *rdh_dtestptr;	/* kludge: need a global to report back to main + R */
+#endif
+
+
  /*
   *========================================================================
   *                           Global Variables
@@ -144,7 +173,9 @@
  int rgb;               /* rgb test number */
  int sts;               /* sts test number */
  uint Seed;             /* user selected seed.  Surpresses reseeding per sample.*/
- off_t tsamples;         /* Generally should be "a lot".  off_t is u_int64_t. */
+ uint table;            /* selects "table" output mode */
+ uint tflag;            /* binary flag(s) to control what goes in the table */
+ off_t tsamples;        /* Generally should be "a lot".  off_t is u_int64_t. */
  int user;              /* user defined test number */
  int verbose;           /* Default is not to be verbose. */
  double x_user;         /* General purpose command line inputs for use */
@@ -173,6 +204,7 @@
  double *ks_pvalue,*ks_pvalue2;
  unsigned int kspi;
  struct timeval tv_start,tv_stop;
+ double rng_avg_time_nsec,rng_rands_per_second;
  int dummy,idiot;
  FILE *fp;
 #define MAXFIELDNUMBER 8
@@ -191,47 +223,25 @@
  int filenumbits;	/* number of bits per integer */
  /*
   * If we have large files, we can have a lot of rands.  off_t is
-  * automagically u_int64_t if FILE_OFFSET_BITS is 64, according to
-  * legend.
+  * automagically set to u_int64_t if FILE_OFFSET_BITS is set to 64.
   */
  off_t filecount;	/* number of rands in file */
  char filetype;         /* file type */
+
+ void show_test_header(Dtest *dtest,Test **test);
+ void show_test_header_debug(Dtest *dtest,Test **test);
+ void test_header(Dtest *dtest);
+ void show_test_results(Dtest *dtest,Test **test);
+ void show_test_results_debut(Dtest *dtest,Test **test);
+ void test_footer(Dtest *dtest, double pvalue, double *pvalues);
+
 /*
- * This struct contains the data maintained on the operation of
- * the file_input rng, and can be accessed via rng->state->whatever
- *
- *  fp is the file pointer
- *  flen is the number of rands in the file (filecount)
- *  rptr is a count of rands returned since last rewind
- *  rtot is a count of rands returned since the file was opened
- *  rewind_cnt is a count of how many times the file was rewound
- *     since its last open.
+ * List new rng types to be added in startup.c.  Use "empty" or
+ * libdieharder rng sources as template, uncomment/clone the lines that
+ * add your own type(s) in startup.c.  Consider sending "good" generators
+ * that pass all or most tests or "classic" generators good or bad that
+ * people might want to test back to me to include in libdieharder.
  */
- typedef struct {
-    FILE *fp;
-    off_t flen;
-    uint rptr;
-    uint rtot;
-    uint rewind_cnt;
-  } file_input_state_t;
+ GSL_VAR const gsl_rng_type *gsl_rng_empty_random;
+ /* GSL_VAR const gsl_rng_type *gsl_rng_my_new_random; */
 
-
- /*
-  * rng global vectors and variables for setup and tests.
-  */
- const gsl_rng_type **types;       /* where all the rng types go */
- gsl_rng *rng;               /* global gsl random number generator */
-
- /*
-  * All required for GSL Singular Value Decomposition (to obtain
-  * the rank of the random matrix for diehard rank tests).
-  */
- gsl_matrix *A,*V;
- gsl_vector *S,*svdwork;
-
- unsigned long int seed;             /* rng seed of run (?) */
- unsigned int random_max;       /* maximum rng returned by generator */
- unsigned int rmax;             /* scratch space for random_max manipulation */
- unsigned int rmax_bits;        /* Number of valid bits in rng */
- unsigned int rmax_mask;        /* Mask for valid section of uint */
- 

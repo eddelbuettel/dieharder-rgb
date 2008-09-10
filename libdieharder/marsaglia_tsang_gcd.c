@@ -117,7 +117,7 @@ double kprob[41] = {
 5.23845965e-04, 1.87623133e-04, 6.08442950e-05, 1.77866925e-05, 4.65595750e-06, 1.09139000e-06, 
 2.26025000e-07, 4.06075000e-08, 6.64500000e-09, 9.07500000e-10, 9.00000000e-11 };
 
-void marsaglia_tsang_gcd(Test **test, int irun)
+int marsaglia_tsang_gcd(Test **test, int irun)
 {
 
  unsigned long long int t,ktbl[KTBLSIZE];

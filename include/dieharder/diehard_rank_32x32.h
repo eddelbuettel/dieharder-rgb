@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_rank_32x32(Test **test,int irun);
+int diehard_rank_32x32(Test **test,int irun);
 
 static Dtest diehard_rank_32x32_dtest = {
   "Diehard 32x32 Binary Rank Test",

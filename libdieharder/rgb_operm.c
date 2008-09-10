@@ -48,7 +48,7 @@ int nperms,noperms;
 double **cexact,**ceinv,**cexpt,**idty;
 double *cvexact,*cvein,*cvexpt,*vidty;
 
-void rgb_operm(Test **test,int irun)
+int rgb_operm(Test **test,int irun)
 {
 
  int i,j,n,nb,iv,s;

@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void rgb_minimum_distance(Test **test,int irun);
+int rgb_minimum_distance(Test **test,int irun);
 
 static Dtest rgb_minimum_distance_dtest = {
   "RGB Generalized Minimum Distance Test",

@@ -93,7 +93,7 @@
 #include <dieharder/libdieharder.h>
 #include <dieharder/rgb_lmn.h>
 
-double rgb_lmn()
+int rgb_lmn()
 {
 
  double pks;

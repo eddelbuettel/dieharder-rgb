@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void sts_serial(Test **test,int irun);
+int sts_serial(Test **test,int irun);
 
 static Dtest sts_serial_dtest = {
   "STS Serial Test (Generalized)",

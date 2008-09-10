@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void rgb_bitdist(Test **test,int irun);
+int rgb_bitdist(Test **test,int irun);
 
 static Dtest rgb_bitdist_dtest = {
   "RGB Bit Distribution Test",

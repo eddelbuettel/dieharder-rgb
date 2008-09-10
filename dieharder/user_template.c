@@ -73,7 +73,7 @@
 
 #include "dieharder.h"
 
-void user_template(Test **test,int irun)
+int user_template(Test **test,int irun)
 {
 
  uint t,i,lag;

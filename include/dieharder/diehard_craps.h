@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_craps(Test **test,int irun);
+int diehard_craps(Test **test,int irun);
 
 static Dtest diehard_craps_dtest = {
   "Diehard Craps Test",

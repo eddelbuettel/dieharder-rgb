@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_runs(Test **test,int irun);
+int diehard_runs(Test **test,int irun);
 
 static Dtest diehard_runs_dtest = {
   "Diehard Runs Test",

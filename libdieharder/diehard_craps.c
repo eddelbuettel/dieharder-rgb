@@ -32,7 +32,7 @@ uint roll(){
   return d;
 }
 
-void diehard_craps(Test **test, int irun)
+int diehard_craps(Test **test, int irun)
 {
 
  uint i,j;

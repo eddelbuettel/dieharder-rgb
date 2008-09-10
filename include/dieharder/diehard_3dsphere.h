@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void diehard_3dsphere(Test **test,int irun);
+int diehard_3dsphere(Test **test,int irun);
 
 static Dtest diehard_3dsphere_dtest = {
   "Diehard 3d Sphere (Minimum Distance) Test",

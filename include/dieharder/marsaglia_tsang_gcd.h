@@ -5,7 +5,7 @@
 /*
  * function prototype
  */
-void marsaglia_tsang_gcd(Test **test,int irun);
+int marsaglia_tsang_gcd(Test **test,int irun);
 
 static Dtest marsaglia_tsang_gcd_dtest = {
   "Marsaglia and Tsang GCD Test",

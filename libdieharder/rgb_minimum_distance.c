@@ -59,7 +59,7 @@ double distance(const dTuple a,const dTuple b,uint dim)
   return(distance);
 }
 
-void rgb_minimum_distance(Test **test, int irun)
+int rgb_minimum_distance(Test **test, int irun)
 {
 
  int i,j,d,t;
