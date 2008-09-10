@@ -96,7 +96,7 @@ DEFINES = -DVERSION=$(VERSION)
 
 # Compile flags (use fairly standard -O3 as default)
 AM_CPPFLAGS = $(DEFINES) -I ${top_srcdir}/include -I ${includedir}
-AM_CFLAGS = -O3
+AM_CFLAGS = -O3 -Wall -Wno-unused-variable
 
 #========================================================================
 # The only safe place to do commits is in the toplevel directory
