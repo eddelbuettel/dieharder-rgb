@@ -121,6 +121,7 @@ AC_CONFIG_FILES([
  dieharder_version.h 
  dieharder.spec
  dieharder.html
+ dieharder-config
  dieharder/Makefile 
  include/Makefile
  libdieharder/Makefile 
