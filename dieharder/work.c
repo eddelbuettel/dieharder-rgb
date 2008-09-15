@@ -19,6 +19,15 @@
 void work()
 {
 
+ /*
+  * This shouldn't go in work() as rdh will never use it and would
+  * likely break if it did.  It should be a dh-only function that is
+  * invoked by the CLI outside of work(), which I'm going to change
+  * to e.g. select_test() to make it clear what its operational
+  * boundaries are.  select_test() has to be "clean" -- no directly
+  * generated output in normal operation so it can be shared with
+  * rdh.
+  */
  if(output_file == YES){
    output_rnds();
  }
@@ -26,13 +35,13 @@ void work()
  /*
   * Let us simply "always" check the timing of an rng -- it doesn't take
   * and it seems like it should be part of a standard report regardless.
+  * I'm going to move this, in fact, to a routine that sets up an rng for
+  * use as part of a portable startup phase that can/should be called
+  * by either rdh or dh or any future dh-derived ui's any time the rng
+  * is initialized or changed.
   */
  if(!fromfile){ 
    run_rgb_timing();
- }
-
- if(table){
-   table_header();
  }
 
  if(all == YES){
