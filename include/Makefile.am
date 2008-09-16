@@ -1,5 +1,6 @@
 nobase_include_HEADERS = dieharder/copyright.h \
-	dieharder/dieharder_types.h \
+	dieharder/dieharder_rng_types.h \
+	dieharder/dieharder_test_types.h \
 	dieharder/diehard_2dsphere.h \
 	dieharder/diehard_3dsphere.h \
 	dieharder/diehard_birthdays.h \
