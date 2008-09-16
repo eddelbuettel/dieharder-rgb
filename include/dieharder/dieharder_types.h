@@ -56,13 +56,22 @@
 
  const gsl_rng_type **dieharder_rng_types_setup(void);
 
- const gsl_rng_type *dieharder_types[MAXRNGS];
+ const gsl_rng_type *dh_types[MAXRNGS];
  const gsl_rng_type **gsl_types;    /* where all the rng types go */
 
- uint num_rngs,num_gsl_rngs,num_dieharder_rngs,num_R_rngs,
-      num_hardware_rngs,num_ui_rngs;
-	    
-#define ADD(t) {if (i==MAXRNGS) abort(); dieharder_types[i] = (t); i++; };
+#define ADD(t) {if (i==MAXRNGS) abort(); dh_types[i] = (t); i++; };
+
+ /*
+  * Global shared counters for the new types of rngs in the organization
+  * defined above.
+  */
+ uint dh_num_rngs;           /* dh rngs available in dieharder */
+ uint dh_num_gsl_rngs;       /* GSL rngs available in dieharder */
+ uint dh_num_dieharder_rngs; /* dh rngs available in libdieharder */
+ uint dh_num_R_rngs;         /* R-derived rngs available in libdieharder */
+ uint dh_num_hardware_rngs;  /* hardware rngs supported in libdieharder */
+ uint dh_num_user_rngs;      /* user-added rngs */
+ uint dh_num_reserved_rngs;  /* ngs added in reserved space by new UI */
 
  gsl_rng *rng;                  /* global gsl random number generator */
 
