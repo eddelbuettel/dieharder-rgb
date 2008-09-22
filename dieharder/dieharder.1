@@ -644,6 +644,54 @@ programs or in spreadsheets, try:
 
   dieharder -a -c ',' -D default -D prefix
 
+.SH DISPLAY OPTIONS
+
+As of version 3.x.x, dieharder has a single output interface that
+produces tabular data per test, with common information in headers.  The
+display control options and flags can be used to customize the output to
+your individual specific needs.
+
+The options are controlled by binary flags.  The flags, and their text
+versions, are displayed if you enter:
+
+  dieharder -F
+
+by itself on a line.
+
+The flags can be entered all at once by adding up all the desired option
+flags.  For example, a very sparse output could be selected by adding
+the flags for the test_name (8) and the associated pvalues (128) to get
+136:
+
+  dieharder -a -D 136
+
+Since the flags are cumulated from zero (unless no flag is entered and
+the default is used) you could accomplish the same display via:
+
+  dieharder -a -D 8 -D pvalues
+
+Note that you can enter flags by value or by name, in any combination.
+Because people use dieharder to obtain values and then with to export
+them into spreadsheets (comma separated values) or into filter scripts,
+you can chance the field separator character.  For example:
+
+  dieharder -a -c ',' -D default -D -1 -D -2
+
+produces output that is ideal for importing into a spreadsheet (note
+that one can subtract field values from the base set of fields provided
+by the default option as long as it is given first).
+
+An interesting option is the -D prefix flag, which turns on a field
+identifier prefix to make it easy to filter out particular kinds of
+data.  However, it is equally easy to turn on any particular kind of
+output to the exclusion of others directly by means of the flags.
+
+Two other flags of interest to novices to random number generator
+testing are the -D histogram (turns on a histogram of the underlying
+pvalues, per test) and -D description (turns on a complete test
+description, per test).  These flags turn the output table into more of
+a series of "reports" of each test.
+
 .SH PUBLICATION RULES
 .B dieharder
 is entirely original code and can be modified and used at will by any 
