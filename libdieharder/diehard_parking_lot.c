@@ -84,6 +84,12 @@ int diehard_parking_lot(Test **test, int irun)
  Xtest ptest;
 
  /*
+  * for display only.  0 means "ignored".
+  */
+ test[0]->ntuple = 0;
+ test[0]->tsamples = 12000;
+
+ /*
   * ptest.x = (double) k
   * ptest.y = 3523.0
   * ptest.sigma = 21.9
@@ -144,6 +150,8 @@ int diehard_parking_lot(Test **test, int irun)
  MYDEBUG(D_DIEHARD_PARKING_LOT) {
    printf("# diehard_parking_lot(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
+
+ return(0);
 
 }
 

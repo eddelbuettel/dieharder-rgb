@@ -147,7 +147,7 @@ const double ps[]={
 int diehard_count_1s_stream(Test **test, int irun)
 {
 
- uint i,j,k,index5,index4,letter,t;
+ uint i,j,k,index5=0,index4,letter,t;
  uint boffset;
  uint count5[3125],count4[625];
  Vtest vtest4,vtest5;
@@ -185,6 +185,11 @@ int diehard_count_1s_stream(Test **test, int irun)
  }
 
  /*
+  * for display only.  0 means "ignored".
+  */
+ test[0]->ntuple = 0;
+
+ /*
   * This is basically a pair of parallel vtests, with a final test
   * statistic generated from their difference (somehow).  We therefore
   * create two vtests, one for four digit base 5 integers and one for
@@ -195,7 +200,7 @@ int diehard_count_1s_stream(Test **test, int irun)
  ptest.y = 2500.0;
  ptest.sigma = sqrt(5000.0);
 
- Vtest_create(&vtest4,625,"diehard_count_the_1s",gsl_rng_name(rng));
+ Vtest_create(&vtest4,625);
  vtest4.cutoff = 5.0;
  for(i=0;i<625;i++){
    j = i;
@@ -223,7 +228,7 @@ int diehard_count_1s_stream(Test **test, int irun)
    /* printf(" = %f\n",vtest4.y[i]); */
  }
 
- Vtest_create(&vtest5,3125,"diehard_count_the_1s",gsl_rng_name(rng));
+ Vtest_create(&vtest5,3125);
  vtest5.cutoff = 5.0;
  for(i=0;i<3125;i++){
    j = i;
@@ -395,6 +400,7 @@ int diehard_count_1s_stream(Test **test, int irun)
    printf("# diehard_count_1s_stream(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
 
+ return(0);
 
 }
 

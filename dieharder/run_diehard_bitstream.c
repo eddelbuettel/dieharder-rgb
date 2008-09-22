@@ -35,7 +35,7 @@ void run_diehard_bitstream()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_bitstream_test = create_test(&diehard_bitstream_dtest,tsamples,psamples,&diehard_bitstream);
+ diehard_bitstream_test = create_test(&diehard_bitstream_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

@@ -35,7 +35,7 @@ void run_diehard_sums()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_sums_test = create_test(&diehard_sums_dtest,tsamples,psamples,&diehard_sums);
+ diehard_sums_test = create_test(&diehard_sums_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself
@@ -47,11 +47,6 @@ void run_diehard_sums()
   * Output standard test results.
   */
  output(&diehard_sums_dtest,diehard_sums_test);
-
- /*
-  * Free global memory
-  */
- free(diehard_sums_rand_dbl);
 
  /*
   * Destroy the test and free all dynamic memory it used.

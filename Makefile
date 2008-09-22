@@ -34,10 +34,11 @@ host_triplet = x86_64-unknown-linux-gnu
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/dieharder.html.in $(srcdir)/dieharder.spec.in \
-	$(srcdir)/dieharder_version.h.in $(top_srcdir)/configure \
-	AUTHORS COPYING ChangeLog INSTALL NEWS config.guess config.sub \
-	depcomp install-sh ltmain.sh missing mkinstalldirs
+	$(srcdir)/dieharder-config.in $(srcdir)/dieharder.html.in \
+	$(srcdir)/dieharder.spec.in $(srcdir)/dieharder_version.h.in \
+	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
+	config.guess config.sub depcomp install-sh ltmain.sh missing \
+	mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -46,7 +47,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = dieharder_version.h dieharder.spec dieharder.html
+CONFIG_CLEAN_FILES = dieharder_version.h dieharder.spec dieharder.html \
+	dieharder-config
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -90,7 +92,7 @@ DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DIEHARDER_CFLAGS = -I${prefix}/include
 DIEHARDER_LIBS = -L${exec_prefix}/lib -ldieharder
-DIEHARDER_LT_VERSION = 2:28:1
+DIEHARDER_LT_VERSION = 3:28:0
 ECHO = echo
 ECHO_C = 
 ECHO_N = -n
@@ -116,9 +118,9 @@ OBJEXT = o
 PACKAGE = dieharder
 PACKAGE_BUGREPORT = 
 PACKAGE_NAME = dieharder
-PACKAGE_STRING = dieharder 2.28.1
+PACKAGE_STRING = dieharder 3.28.0beta
 PACKAGE_TARNAME = dieharder
-PACKAGE_VERSION = 2.28.1
+PACKAGE_VERSION = 3.28.0beta
 PATH_SEPARATOR = :
 RANLIB = ranlib
 RELEASE = 1
@@ -132,7 +134,7 @@ STRIP = strip
 # This is revision information, automagically set from autoconf.  The
 # actual version information is set ONLY in configure.ac
 #========================================================================
-VERSION = 2.28.1
+VERSION = 3.28.0beta
 abs_builddir = /home/rgb/Src/Projects/dieharder
 abs_srcdir = /home/rgb/Src/Projects/dieharder
 abs_top_builddir = /home/rgb/Src/Projects/dieharder
@@ -277,8 +279,8 @@ REPOPATH = /var/www/html/fc/6/local/
 #========================================================================
 # This target takes the dieharder sources and "magically" transforms
 # them into RDieHarder sources.
-RDHTAR = RDieHarder_2.28.1.tar
-RDHPKG = RDieHarder_2.28.1.tar.gz
+RDHTAR = RDieHarder_3.28.0beta.tar
+RDHPKG = RDieHarder_3.28.0beta.tar.gz
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -338,6 +340,8 @@ dieharder_version.h: $(top_builddir)/config.status $(srcdir)/dieharder_version.h
 dieharder.spec: $(top_builddir)/config.status $(srcdir)/dieharder.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 dieharder.html: $(top_builddir)/config.status $(srcdir)/dieharder.html.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+dieharder-config: $(top_builddir)/config.status $(srcdir)/dieharder-config.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:

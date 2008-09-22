@@ -76,6 +76,7 @@ int rgb_persist(Test **test, Rgb_Persist *persist)
    persist->cumulative_mask = persist->cumulative_mask | persist->and_mask;
  }
 
+ return(0);
 
 }
 

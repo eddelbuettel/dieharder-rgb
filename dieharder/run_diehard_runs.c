@@ -34,15 +34,8 @@ void run_diehard_runs()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_runs_test = create_test(&diehard_runs_dtest,tsamples,psamples,&diehard_runs);
- diehard_runs_test[0]->ntuple = 0;
- diehard_runs_test[1]->ntuple = 0;
+ diehard_runs_test = create_test(&diehard_runs_dtest,tsamples,psamples);
 
- /*
-  * Set any GLOBAL data used by the test.
-  */
- diehard_runs_rand_uint = (uint *)malloc(diehard_runs_test[0]->tsamples*sizeof(uint));
-   
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself
   * This fills in the results in the Test struct.
@@ -53,11 +46,6 @@ void run_diehard_runs()
   * Output standard test results.
   */
  output(&diehard_runs_dtest,diehard_runs_test);
-
- /*
-  * Free any GLOBAL data used by the test.
-  */
- free(diehard_runs_rand_uint);
 
  /*
   * Destroy the test and free all dynamic memory it used.

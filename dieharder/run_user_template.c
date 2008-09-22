@@ -35,7 +35,7 @@ void run_user_template()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- user_template_test = create_test(&user_template_dtest,tsamples,psamples,&user_template);
+ user_template_test = create_test(&user_template_dtest,tsamples,psamples);
  user_template_test[0]->ntuple = ntuple;
 
  /*

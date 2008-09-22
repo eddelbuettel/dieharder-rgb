@@ -43,6 +43,7 @@
    D_STS_RUNS,
    D_STS_SERIAL,
    D_STS_BLOCK,
+   D_TYPES,
    D_USER_TEMPLATE,
    D_MEASURE,
    D_SEED,
@@ -57,5 +58,6 @@
    D_FILE_INPUT,
    D_FILE_INPUT_RAW,
    D_ADD_MY_TYPES,
+   D_STD_TEST,
    N_DEBUG
  } Debug;

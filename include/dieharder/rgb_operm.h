@@ -24,7 +24,9 @@ static Dtest rgb_operm_dtest = {
 #\n",
   100,     /* Default psamples */
   100000,  /* Default tsamples */
-  1        /* We magically make all the bit tests return a single histogram */
+  1,       /* We magically make all the bit tests return a single histogram */
+  rgb_operm,
+  0
 };
 
 /*

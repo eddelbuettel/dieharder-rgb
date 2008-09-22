@@ -197,7 +197,7 @@ int sts_serial(Test **test,int irun)
  }
  uintbuf[tsamples] = uintbuf[0];   /* Periodic wraparound */
  MYDEBUG(D_STS_SERIAL){
-   printf("# sts_serial(): %u:  ",tsamples);
+   printf("# sts_serial(): %u:  ",(uint)tsamples);
    dumpuintbits(&uintbuf[tsamples],1);
    printf("\n");
  }
@@ -331,5 +331,7 @@ int sts_serial(Test **test,int irun)
    free(freq[m]);
  }
  free(freq);
+
+ return(0);
 
 }

@@ -39,7 +39,8 @@
 #include <dieharder/Vtest.h>
 #include <dieharder/std_test.h>
 #include <dieharder/tests.h>
-#include <dieharder/dieharder_types.h>
+#include <dieharder/dieharder_rng_types.h>
+#include <dieharder/dieharder_test_types.h>
 
 /*
  *========================================================================
@@ -100,12 +101,17 @@
  double q_ks(double x);
  double q_ks_kuiper(double x);
 
+ void histogram(double *input, char *pvlabel, int inum, double min, double max, int nbins, char *label);
+
  uint get_bit_ntuple(uint *bitstring,uint bslen,uint blen,uint boffset);
  void dumpbits(unsigned int *data, unsigned int nbits);
- uint get_uint_rand(gsl_rng *gsl_rng);
+ void dumpbitwin(uint data, uint nbits);
+ void dumpuintbits(unsigned int *data, unsigned int nbits);
  void cycle(unsigned int *data, unsigned int nbits);
  int get_bit(uint *rand_uint, unsigned int n);
- int get_int_bit(uint i, uint n);
+ int get_bit(uint *rand_uint, unsigned int n);
+ void dumpbits_left(unsigned int *data, unsigned int nbits);
+ unsigned int bit2uint(char *abit,unsigned int blen);
  void fill_uint_buffer(uint *data,uint buflength);
  uint b_umask(uint bstart,uint bstop);
  uint b_window(uint input,uint bstart,uint bstop,uint boffset);
@@ -115,8 +121,17 @@
     uint *output,uint jlen,uint ntuple,uint offset);
  uint get_uint_rand(gsl_rng *gsl_rng);
  void get_rand_bits(void *result,uint rsize,uint nbits,gsl_rng *gsl_rng);
- 
+ void mybitadd(char *dst, int doffset, char *src, int soffset, int slen);
+ void get_rand_pattern(void *result,uint rsize,int *pattern,gsl_rng *gsl_rng);
+ void reset_bit_buffers();
+
+/* Cruft
+ int get_int_bit(uint i, uint n);
+*/
+
  void add_lib_rngs();
+
+ int binary_rank(uint **mtx,int mrows,int ncols);
     
  /*
   *========================================================================
@@ -234,4 +249,16 @@
  unsigned int rmax;             /* scratch space for random_max manipulation */
  unsigned int rmax_bits;        /* Number of valid bits in rng */
  unsigned int rmax_mask;        /* Mask for valid section of uint */
+ 
+/*
+ * dTuple is used in a couple of my tests, but it seems like an
+ * accident waiting to happen with it only 5 dimensions.
+ *
+ * For the moment we'll restrict ourselves to the five dimensions
+ * for which we have Q.  To go further, we need more Q.
+ */
+#define RGB_MINIMUM_DISTANCE_MAXDIM 5
+typedef struct {
+  double c[RGB_MINIMUM_DISTANCE_MAXDIM];
+} dTuple;
  

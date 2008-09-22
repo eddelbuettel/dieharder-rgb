@@ -35,7 +35,7 @@ void run_diehard_dna()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_dna_test = create_test(&diehard_dna_dtest,tsamples,psamples,&diehard_dna);
+ diehard_dna_test = create_test(&diehard_dna_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

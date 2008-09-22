@@ -171,6 +171,7 @@ double q_ks_kuiper(double x)
  int i,sign;
  double qsum = 0;
 
+ i = 0;
  if(x<0.4){
    qsum = 1.0;
    if(verbose == D_KSTEST || verbose == D_ALL){

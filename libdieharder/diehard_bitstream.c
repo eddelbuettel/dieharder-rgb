@@ -45,7 +45,12 @@ int diehard_bitstream(Test **test, int irun)
  Xtest ptest;
  char *w;
  uint *bitstream,w20,wscratch,newbyte;
- unsigned char *cbitstream;
+ unsigned char *cbitstream = 0;
+
+ /*
+  * for display only.  0 means "ignored".
+  */
+ test[0]->ntuple = 0;
 
  /*
   * p = 141909, with sigma 428, for test[0]->tsamples = 2^21 20 bit ntuples.
@@ -264,6 +269,8 @@ int diehard_bitstream(Test **test, int irun)
   */
  nullfree(w);
  nullfree(bitstream);
+
+ return(0);
 
 }
 

@@ -4,16 +4,32 @@
  *========================================================================
  */
 
+/*
+ *========================================================================
+ * generators.c contains all the code that sets up random number
+ * generators from the GSL, from libdieharder, from R, and any "user
+ * contributed" generators so that they can easily be used.  Each routine
+ * is built to be output-free (and shareable with rdh or other UIs)
+ *========================================================================
+ */
+
 #include "dieharder.h"
 
 /*
- * ========================================================================
- * This adds JUST the one example generator included with the dieharder
- * sources.  It is provided only to give people a template to follow to
- * add their own rng inside a GSL/dieharder-compatible testing harness.
- * ========================================================================
+ * Set up the built-in GSL-wrapped generators.  We have to
+ *
+ *  a) keep the numbers the same from version to version.
+ *
+ *  b) (eventually) permit calling rngs by name.
+ *
+ * The code below loads rngs into predefined RANGES in a
+ * large types[] vector to where they can easily be selected
+ * by number or name.  Note that this load preserves the order
+ * of GSL-defined generators with the GSL numbers, which CAN
+ * CHANGE.  We can only lock down the numbers of "our own"
+ * added generators.
+ *
  */
-
 void add_ui_rngs()
 {
 
@@ -29,7 +45,7 @@ void add_ui_rngs()
  i = 600;
  dh_num_user_rngs = 0;
  /* Template from here: */
- dh_rng_types[i] = gsl_rng_empty_random;
+ types[i] = gsl_rng_empty_random;
  i++;
  dh_num_user_rngs++;
  dh_num_rngs++;

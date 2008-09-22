@@ -7,7 +7,7 @@
  * By Daniel Summerhays
  * Mar. 10, 2005
  *
- * Heavily modifed by rgb, June-July 2006
+ * Heavily modifed by rgb, June-July 2006 (and beyond)
  * 
  * See copyright in copyright.h and the accompanying file COPYING
  *========================================================================
@@ -98,7 +98,7 @@ static unsigned long int file_input_get (void *vstate)
      case 'd':
      case 'i':
      case 'u':
-       if(0 == sscanf(inbuf,"%lu",&iret)){
+       if(0 == sscanf(inbuf,"%u",&iret)){
          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
          exit(0);
        }
@@ -111,7 +111,7 @@ static unsigned long int file_input_get (void *vstate)
      case 'f':
      case 'F':
      case 'g':
-       if(0 == sscanf(inbuf,"%g",&f)){
+       if(0 == sscanf(inbuf,"%lg",&f)){
          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
          exit(0);
        }
@@ -121,7 +121,7 @@ static unsigned long int file_input_get (void *vstate)
       * OK, so octal is really pretty silly, but we got it.  Still uint.
       */
      case 'o':
-       if(0 == sscanf(inbuf,"%lo",&iret)){
+       if(0 == sscanf(inbuf,"%o",&iret)){
          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
          exit(0);
        }
@@ -130,13 +130,13 @@ static unsigned long int file_input_get (void *vstate)
       * hexadecimal is silly too, but we got it.  uint, of course.
       */
      case 'x':
-       if(0 == sscanf(inbuf,"%lx",&iret)){
+       if(0 == sscanf(inbuf,"%x",&iret)){
          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
          exit(0);
        }
        break;
      case 'X':
-       if(0 == sscanf(inbuf,"%lX",&iret)){
+       if(0 == sscanf(inbuf,"%X",&iret)){
          fprintf(stderr,"Error: converting %s failed.  Exiting.\n", inbuf);
          exit(0);
        }
@@ -162,7 +162,7 @@ static unsigned long int file_input_get (void *vstate)
    state->rptr++;
    state->rtot++;
    if(verbose){
-     fprintf(stdout,"# file_input() %u: %u/%u -> %u\n",state->rtot,state->rptr,state->flen,iret);
+     fprintf(stdout,"# file_input() %u: %u/%u -> %u\n",(uint)state->rtot,(uint)state->rptr,(uint)state->flen,(uint)iret);
    }
 
    /*
@@ -206,7 +206,7 @@ static void file_input_set (void *vstate, unsigned long int s)
 
  if(verbose == D_FILE_INPUT || verbose == D_ALL){
    fprintf(stdout,"# file_input(): entering file_input_set\n");
-   fprintf(stdout,"# file_input(): state->fp = %0x, seed = %lu\n",state->fp,s);
+   fprintf(stdout,"# file_input(): state->fp = %p, seed = %lu\n",state->fp,s);
  }
 
  /*
@@ -243,8 +243,8 @@ static void file_input_set (void *vstate, unsigned long int s)
     * OK, so if we get here, the file is open.
     */
    if(verbose == D_FILE_INPUT || verbose == D_ALL){
-     fprintf(stdout,"# file_input(): Opened %s for the first time at %x\n", filename,state->fp);
-     fprintf(stdout,"# file_input(): state->fp is %08x\n",state->fp);
+     fprintf(stdout,"# file_input(): Opened %s for the first time at %p\n", filename,state->fp);
+     fprintf(stdout,"# file_input(): state->fp is %8p\n",state->fp);
      fprintf(stdout,"# file_input(): Parsing header:\n");
    }
    state->rptr = 0;  /* No rands read yet */
@@ -270,7 +270,7 @@ static void file_input_set (void *vstate, unsigned long int s)
      state->rewind_cnt++;
      if(verbose == D_FILE_INPUT || verbose == D_ALL){
        fprintf(stderr,"# file_input(): Rewinding %s at rtot = %u\n", filename,state->rtot);
-       fprintf(stderr,"# file_input(): Rewind count = %u, resetting rptr = %lu\n",state->rewind_cnt,state->rptr);
+       fprintf(stderr,"# file_input(): Rewind count = %u, resetting rptr = %u\n",state->rewind_cnt,state->rptr);
      }
    } else {
      return;
@@ -322,7 +322,7 @@ static void file_input_set (void *vstate, unsigned long int s)
        cnt++;
        if(verbose){ 
          fprintf(stdout,"# file_input(): cnt = %d\n",cnt);
-         fprintf(stdout,"# file_input(): state->flen set to %d\n",state->flen);
+         fprintf(stdout,"# file_input(): state->flen set to %u\n",(uint)state->flen);
        }
      }
      if(strncmp(splitbuf[0],"numbit",6) == 0){

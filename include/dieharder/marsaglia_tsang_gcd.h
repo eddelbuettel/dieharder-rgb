@@ -36,6 +36,8 @@ static Dtest marsaglia_tsang_gcd_dtest = {
 #==================================================================\n",
   100,
   10000000,
-  2        /* This test returns two statistics */
+  2,       /* This test returns two statistics */
+  marsaglia_tsang_gcd,
+  0
 };
 

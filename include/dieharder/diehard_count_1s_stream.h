@@ -31,9 +31,8 @@ static Dtest diehard_count_1s_stream_dtest = {
 #==================================================================\n",
   100,
   256000,
-  1
+  1,
+  diehard_count_1s_stream,
+  0
 };
 
-/*
- * Global variables (none in this case)
- */

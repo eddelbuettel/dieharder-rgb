@@ -34,10 +34,11 @@ host_triplet = @host@
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/dieharder.html.in $(srcdir)/dieharder.spec.in \
-	$(srcdir)/dieharder_version.h.in $(top_srcdir)/configure \
-	AUTHORS COPYING ChangeLog INSTALL NEWS config.guess config.sub \
-	depcomp install-sh ltmain.sh missing mkinstalldirs
+	$(srcdir)/dieharder-config.in $(srcdir)/dieharder.html.in \
+	$(srcdir)/dieharder.spec.in $(srcdir)/dieharder_version.h.in \
+	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
+	config.guess config.sub depcomp install-sh ltmain.sh missing \
+	mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -46,7 +47,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = dieharder_version.h dieharder.spec dieharder.html
+CONFIG_CLEAN_FILES = dieharder_version.h dieharder.spec dieharder.html \
+	dieharder-config
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -338,6 +340,8 @@ dieharder_version.h: $(top_builddir)/config.status $(srcdir)/dieharder_version.h
 dieharder.spec: $(top_builddir)/config.status $(srcdir)/dieharder.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 dieharder.html: $(top_builddir)/config.status $(srcdir)/dieharder.html.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+dieharder-config: $(top_builddir)/config.status $(srcdir)/dieharder-config.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:

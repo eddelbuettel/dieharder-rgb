@@ -50,6 +50,11 @@ int diehard_sums(Test **test, int irun)
  double a,b,qq,p,h;
 
  /*
+  * for display only.  0 means "ignored".
+  */
+ test[0]->ntuple = 0;
+
+ /*
   * SUMS requires that we evaluate y[i] = \sum_i^{100+i} u[i].  Naturally,
   * the sum (or mean, if you prefer) is supposedly normally distributed
   * according to the central limit theorem.  So each number has an
@@ -264,7 +269,7 @@ int diehard_sums(Test **test, int irun)
   * its distribution.
   */
  if(verbose == D_DIEHARD_SUMS || verbose == D_ALL){
-   histogram(x,m,0.0,1.0,10,"x-values");
+   histogram(x,"pvalues",m,0.0,1.0,10,"x-values");
  }
  /*  Choose one.  They should give about the same answer, but
   * maybe not for only 100 tsamples.
@@ -278,6 +283,8 @@ int diehard_sums(Test **test, int irun)
  free(x);
  free(y);
  free(rand_list);
+
+ return(0);
 
 }
 

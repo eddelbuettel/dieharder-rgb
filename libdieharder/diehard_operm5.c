@@ -135,6 +135,11 @@ int diehard_operm5(Test **test, int irun)
  }
 
  /*
+  * for display only.  5 flags the size of the permutation set.
+  */
+ test[0]->ntuple = 5;
+
+ /*
   * Zero count vector, was t(120) in diehard.f90.
   */
  for(i=0;i<120;i++) {
@@ -144,16 +149,12 @@ int diehard_operm5(Test **test, int irun)
      tflag = 1;
    }
  }
- if(overlap){
-   for(i=0;i<5;i++){
-     v[i] = gsl_rng_get(rng);
-   }
-   vind = 0;
- } else {
-   for(i=0;i<5;i++){
-     v[i] = gsl_rng_get(rng);
-   }
+
+ for(i=0;i<5;i++){
+   v[i] = gsl_rng_get(rng);
  }
+ vind = 0;
+
  for(t=0;t<test[0]->tsamples;t++){
 
    /*
@@ -163,29 +164,11 @@ int diehard_operm5(Test **test, int irun)
     * determine whether or not to refill the entire v vector or just
     * rotate bytes.
     */
-   if(overlap){
-     kp = kperm(v,vind);
-     /* printf("kp = %u\n",kp); */
-     count[kp]++;
-     v[vind] = gsl_rng_get(rng);
-     vind = (vind+1)%5;
-   } else {
-     for(i=0;i<5;i++){
-       v[i] = gsl_rng_get(rng);
-     }
-     kp = kperm(v,0);
-     count[kp]++;
-     /*
-      * This is the other way to get the same result as above.  It
-      * yields the exact same numbers.  This strongly suggests that
-      * there is nothing wrong with the code, overlapping or not,
-      * relative to diehard.
-     for(i=0;i<4;i++){
-       v[i] = v[i+1];
-     }
-     v[4] = gsl_rng_get(rng);
-      */
-   }
+   kp = kperm(v,vind);
+   /* printf("kp = %u\n",kp); */
+   count[kp]++;
+   v[vind] = gsl_rng_get(rng);
+   vind = (vind+1)%5;
  }
 
  MYDEBUG(D_DIEHARD_OPERM5){
@@ -248,6 +231,8 @@ int diehard_operm5(Test **test, int irun)
  }
 
  kspi++;
+
+ return(0);
 
 }
 

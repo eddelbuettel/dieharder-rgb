@@ -1,45 +1,33 @@
 /*
- * This is a hack of the GSL's rng/types.c:
- * 
- * Copyright (C) 2001 Brian Gough
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * $Id: sts_runs.c 237 2006-08-23 01:33:46Z rgb $
  *
- *******************************************************************
- * This is being directly adapted from and modified for use in dieharder
- * so it can maintain its own independent RNG space of types not limited
- * by its internal limit of 100.  To avoid collisions, we'll start our number
- * space above 100, and extend it to 1000.
+ * See copyright in copyright.h and the accompanying file COPYING
+ */
+
+/* 
+ * ========================================================================
+ * This program initializes a permanent internal vector of pointers to all
+ * the tests known to dieharder that generate a pvalue or vector of
+ * pvalues.  With it we abandon our former addressing of tests by source
+ * (the -d, -r, -s testnumber invocation) in favor of a segmented single
+ * number.  There is initial room for up to 1000 tests, but this can easily
+ * be increased.
  *
- * While we're at it, let's define the ranges:
+ * We define the ranges:
  *
- *   0-199 gsl generators (fixed order from now on with room for growth)
- *   200-399 libdieharder generators (fixed order from now on)
- *   400-499 R-based generators (fixed order from now on)
- *   500-599 hardware generators (e.g. /dev/random and friends)
- *   600-699 user-defined generators (starting with dieharder example)
- *   700-999 reserved for future integration with R-like environments
+ *   0-99    diehard (or Marsaglia & Tsang) based tests.
+ *   100-199 the NIST STS
+ *   200-499 everything else.
+ *   500-999 reserved for future sets of "named" tests if it seems
+ *           reasonable to use it that way, or straight expansion
+ *           space otherwise.  500 tests will hold us for a while...
  *
- * Naturally, we can simply bump MAXRNGS and add more, but 1000 seems
- * likely to last for "a while" and maybe "forever".
+ * ========================================================================
  */
 
 #include <dieharder/libdieharder.h>
-FILE *test_fp;
 
-const gsl_rng_type **dieharder_rng_types_setup(void)
+void dieharder_test_types()
 {
 
  int i;
@@ -47,117 +35,124 @@ const gsl_rng_type **dieharder_rng_types_setup(void)
  /*
   * Null the whole thing for starters
   */
- for(i=0;i<MAXRNGS;i++) dh_types[i] = 0;
-
- /*
-  * Initialize gsl_types to fill it with the current gsl rngs.
-  */
- gsl_types = gsl_rng_types_setup();
+ for(i=0;i<MAXTESTS;i++) dh_test_types[i] = 0;
 
  /*
   * Copy its contents over into dieharder_rng_generator_types.
   */
  i = 0;
- while(gsl_types[i] != NULL){
-   dh_types[i] = gsl_types[i];
-   i++;
- }
- dh_num_gsl_rngs = i;
+ dh_num_diehard_tests = 0;
+
+ ADD_TEST(&diehard_birthdays_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_operm5_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_rank_32x32_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_rank_6x8_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_bitstream_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_opso_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_oqso_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_dna_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_count_1s_stream_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_count_1s_byte_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_parking_lot_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_2dsphere_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_3dsphere_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_squeeze_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_sums_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_runs_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&diehard_craps_dtest);
+ dh_num_diehard_tests++;
+
+ ADD_TEST(&marsaglia_tsang_gcd_dtest);
+ dh_num_diehard_tests++;
+
  MYDEBUG(D_TYPES){
-   printf("# startup:  Found %u GSL rngs.\n",dh_num_gsl_rngs);
+   printf("# dieharder_test_types():  Found %u diehard tests.\n",dh_num_diehard_tests);
  }
 
  /*
-  * Now add the new ones in.  These positions are to be locked in by
-  * order within the ranges, so we need to be careful to get them
-  * "right" the first time.
-  *
-  * These are the dieharder generators.  I expect many users to use
-  * stdin-based raw input since it is by far the easiest one to come up
-  * with (and actually will work with e.g. /dev/random).  The file-based
-  * inputs will also be fairly common.  The rest are there for convenience,
-  * and to expose users to some new/interesting rngs.
+  * Next, it is about time to add the first sts tests.
+  */
+ i = 100;
+ ADD_TEST(&sts_monobit_dtest);
+ dh_num_sts_tests++;
+
+ ADD_TEST(&sts_runs_dtest);
+ dh_num_sts_tests++;
+
+ ADD_TEST(&sts_serial_dtest);
+ dh_num_sts_tests++;
+
+ /*
+  * Finally, from here on we add the "rgb" tests, only they aren't,
+  * really -- this is where all new non-diehard, non-sts tests will
+  * go.  So we call them "other" tests.
   */
  i = 200;
- dh_num_dieharder_rngs = 0; 
- ADD(gsl_rng_stdin_input_raw);
- dh_num_dieharder_rngs++;
- ADD(gsl_rng_file_input_raw);
- dh_num_dieharder_rngs++;
- ADD(gsl_rng_file_input);
- dh_num_dieharder_rngs++;
- ADD(gsl_rng_ca);
- dh_num_dieharder_rngs++;
- ADD(gsl_rng_uvag);
- dh_num_dieharder_rngs++;
- MYDEBUG(D_TYPES){
-   printf("# startup:  Found %u dieharder rngs.\n",dh_num_dieharder_rngs);
- }
+ ADD_TEST(&rgb_bitdist_dtest);
+ dh_num_other_tests++;
 
+ ADD_TEST(&rgb_minimum_distance_dtest);
+ dh_num_other_tests++;
+
+ ADD_TEST(&rgb_permutations_dtest);
+ dh_num_other_tests++;
+
+ ADD_TEST(&rgb_lagged_sums_dtest);
+ dh_num_other_tests++;
 
  /*
-  * These are the R-based generators.  Honestly it would be lovely
-  * to merge them with the GSL permanently.
+  * This is the total number of DOCUMENTED tests reported back to the
+  * UIs.
   */
- i = 400;
- dh_num_R_rngs = 0;
- ADD(gsl_rng_r_wichmann_hill);
- dh_num_R_rngs++;
- ADD(gsl_rng_r_marsaglia_mc);
- dh_num_R_rngs++;
- ADD(gsl_rng_r_super_duper);
- dh_num_R_rngs++;
- ADD(gsl_rng_r_mersenne_twister);
- dh_num_R_rngs++;
- ADD(gsl_rng_r_knuth_taocp);
- dh_num_R_rngs++;
- ADD(gsl_rng_r_knuth_taocp2);
- dh_num_R_rngs++;
- MYDEBUG(D_TYPES){
-   printf("# startup:  Found %u R rngs.\n",dh_num_R_rngs);
- }
+ dh_num_tests = dh_num_diehard_tests + dh_num_sts_tests + dh_num_other_tests;
 
  /*
-  * These are hardware/system generators.  Again, it would be lovely to
-  * merge them with the GSL permanently.  It would also be good to wrap
-  * these in conditionals so that they are added iff the hardware
-  * interface exists.  Perhaps we should try doing this -- it requires a
-  * call to stat, I believe.  But not now.
+  * Except that clever old me will put an undocumented test range out here
+  * at 900 reserved for development!  We move them back down to 200+
+  * if/when we are ready to release them.  They are not looped over by
+  * run_all_tests() but can of course be directly invoked by hand.
   */
- i = 500;
- dh_num_hardware_rngs = 0;
- if (test_fp = fopen("/dev/random","r")) {
-   ADD(gsl_rng_dev_random);
-   fclose(test_fp);
-   dh_num_hardware_rngs++;
- }
- if (test_fp = fopen("/dev/urandom","r")) {
-   ADD(gsl_rng_dev_urandom);
-   fclose(test_fp);
-   dh_num_hardware_rngs++;
- }
- if (test_fp = fopen("/dev/arandom","r")) {
-   ADD(gsl_rng_dev_arandom);
-   fclose(test_fp);
-   dh_num_hardware_rngs++;
- }
- MYDEBUG(D_TYPES){
-   printf("# startup:  Found %u hardware rngs.\n",dh_num_hardware_rngs);
- }
+ i = 900;
 
- /*
-  * Tally up all the generators we found.
-  */
- dh_num_rngs = dh_num_gsl_rngs + dh_num_dieharder_rngs + dh_num_R_rngs +
-            dh_num_hardware_rngs;
+ /* ADD_TEST(&rgb_operm_dtest); */
+ /* dh_num_other_tests++; */
 
- /*
-  * dh_types[] is "permanent" memory and doesn't have to be freed.
-  * This is possibly stupid; one "could" run dieharder_rng_types_setup()
-  * twice and THINK you are getting two distinct vectors of rngs, but
-  * you aren't.  OTOH, you won't leak memory...
-  */
- return dh_types;
+ /* ADD_TEST(&rgb_lmn_dtest); */
+ /* dh_num_other_tests++; */
+
+ 
 
 }
 

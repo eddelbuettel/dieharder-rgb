@@ -35,7 +35,7 @@ void run_diehard_parking_lot()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_parking_lot_test = create_test(&diehard_parking_lot_dtest,tsamples,psamples,&diehard_parking_lot);
+ diehard_parking_lot_test = create_test(&diehard_parking_lot_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

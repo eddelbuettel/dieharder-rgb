@@ -57,10 +57,8 @@ static Dtest sts_serial_dtest = {
 #\n",
   100,     /* Default psamples */
   100000,  /* Default tsamples */
-  30       /* We make 1 pvalue from m=1,2, 2 from m=[3,16] */
+  30,      /* We make 1 pvalue from m=1,2, 2 from m=[3,16] */
+  sts_serial,
+  0
 };
 
-/*
- * Global variables, each with a "locally identifiable" name.
- */
-uint sts_serial_ntuple;

@@ -35,7 +35,7 @@ void run_diehard_opso()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_opso_test = create_test(&diehard_opso_dtest,tsamples,psamples,&diehard_opso);
+ diehard_opso_test = create_test(&diehard_opso_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

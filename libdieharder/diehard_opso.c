@@ -1,12 +1,13 @@
 /*
+ * ========================================================================
  * $Id: diehard_opso.c 231 2006-08-22 16:18:05Z rgb $
  *
  * See copyright in copyright.h and the accompanying file COPYING
- *
+ * ========================================================================
  */
 
 /*
- *========================================================================
+ * ========================================================================
  * This is the Diehard OPSO test, rewritten from the description
  * in tests.txt on George Marsaglia's diehard site.
  *
@@ -24,16 +25,8 @@
  * consecutive bits. It then restarts the file for the next de-  ::
  * signated 10 bits, and so on.                                  ::
  *
- *                         Comment
- * Damn good test.  Very few generators in the GSL survive it,
- * not even the various glibc generators.  Pretty much mt1997,
- * ranldx, rand48 -- nearly everything else I tried in a very
- * non-exhaustive trial failed -- all the NR generators, R250,
- * and more.  It appears to be related (I think) to Knuth's
- * hyperplanar distribution tests -- a matter for future research --
- * when you code it (as I did) thinking of it as a kind of really
- * big "parking lot" test or as generating a pixel graph in 2d.
- *
+ * Note: Overlapping samples must be used to get the right
+ * sigma.
  * The tests BITSTREAM, OPSO, OQSO and DNA are all closely related.
  *========================================================================
  */
@@ -47,6 +40,11 @@ int diehard_opso(Test **test, int irun)
  uint i,j0,k0,j,k,boffset,t;
  Xtest ptest;
  char **w;
+
+ /*
+  * for display only.  0 means "ignored".
+  */
+ test[0]->ntuple = 0;
 
  /*
   * p = 141909, with sigma 290, FOR test[0]->tsamples 2^21+1 2 letter words.
@@ -98,43 +96,29 @@ int diehard_opso(Test **test, int irun)
   */
  k = gsl_rng_get(rng);
  for(t=0;t<test[0]->tsamples;t++){
-   if(overlap){
-     /*
-      * Let's do this the cheap/easy way first, sliding a 20 bit
-      * window along each int for the 32 possible starting
-      * positions a la birthdays, before trying to slide it all
-      * the way down the whole random bitstring implicit in a
-      * long sequence of random ints.  That way we can exit
-      * the test[0]->tsamples loop at test[0]->tsamples = 2^15...
-      */
-     if(t%32 == 0) {
-       j0 = gsl_rng_get(rng);
-       k0 = gsl_rng_get(rng);
-       boffset = 0;
-     }
-     /*
-      * Get two "letters" (indices into w)
-      */
-     j = get_bit_ntuple(&j0,1,10,boffset);
-     k = get_bit_ntuple(&k0,1,10,boffset);
-     /* printf("%u:   %u  %u  %u\n",t,j,k,boffset); */
-     w[j][k]++;
-     boffset++;
-
-   } else {
-     /*
-      * Get two "letters" (indices into w).  Here we use
-      * what is basically a random offset sample to sample
-      */
-     boffset = k%32;
-     j = gsl_rng_get(rng);
-     j = get_bit_ntuple(&j,1,10,boffset);
-     boffset = j%32;
-     k = gsl_rng_get(rng);
-     k = get_bit_ntuple(&k,1,10,boffset);
-     w[j][k]++;
+   /*
+    * Let's do this the cheap/easy way first, sliding a 20 bit
+    * window along each int for the 32 possible starting
+    * positions a la birthdays, before trying to slide it all
+    * the way down the whole random bitstring implicit in a
+    * long sequence of random ints.  That way we can exit
+    * the test[0]->tsamples loop at test[0]->tsamples = 2^15...
+    */
+   if(t%32 == 0) {
+     j0 = gsl_rng_get(rng);
+     k0 = gsl_rng_get(rng);
+     boffset = 0;
    }
+   /*
+    * Get two "letters" (indices into w)
+    */
+   j = get_bit_ntuple(&j0,1,10,boffset);
+   k = get_bit_ntuple(&k0,1,10,boffset);
+   /* printf("%u:   %u  %u  %u\n",t,j,k,boffset); */
+   w[j][k]++;
+   boffset++;
  }
+ 
  /*
   * Now we count the holes, so to speak
   */
@@ -162,6 +146,8 @@ int diehard_opso(Test **test, int irun)
    free(w[i]);
  }
  free(w);
+
+ return(0);
 
 }
 

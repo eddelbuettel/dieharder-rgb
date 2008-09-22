@@ -47,7 +47,9 @@ libdieharder_la_SOURCES = \
 	diehard_runs.c \
 	diehard_squeeze.c \
 	diehard_sums.c \
-	dieharder_types.c \
+	dieharder_rng_types.c \
+	dieharder_test_types.c \
+	histogram.c \
 	kstest.c \
 	marsaglia_tsang_gcd.c \
 	marsaglia_tsang_gorilla.c \
@@ -57,9 +59,7 @@ libdieharder_la_SOURCES = \
 	rank.c \
 	rgb_bitdist.c \
 	rgb_lagged_sums.c \
-	rgb_lmn.c \
 	rgb_minimum_distance.c \
-	rgb_operm.c \
 	rgb_permutations.c \
 	rgb_persist.c \
 	rgb_timing.c \
@@ -82,7 +82,11 @@ libdieharder_la_SOURCES = \
 	sts_serial.c \
 	timing.c \
 	Vtest.c \
+	version.c \
 	Xtest.c
+
+#	rgb_operm.c
+#	rgb_lmn.c
 
 # The program/library may need to know what version it is, define
 # the VERSION macro.

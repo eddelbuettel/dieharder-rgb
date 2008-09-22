@@ -1,12 +1,13 @@
 /*
+ * ========================================================================
  * $Id: diehard_oqso.c 228 2006-08-19 05:20:16Z rgb $
  *
  * See copyright in copyright.h and the accompanying file COPYING
- *
+ * ========================================================================
  */
 
 /*
- *========================================================================
+ * ========================================================================
  * This is the Diehard QPSO test, rewritten from the description
  * in tests.txt on George Marsaglia's diehard site.
  *
@@ -20,9 +21,10 @@
  * sigma = 295.  The mean is based on theory; sigma comes from   ::
  * extensive simulation.                                         ::
  *
- * Note 2^21 = 2097152
+ * Note: 2^21 = 2097152
+ * Note: One must use overlapping samples to get the right sigma.
  * The tests BITSTREAM, OPSO, OQSO and DNA are all closely related.
- *========================================================================
+ * ========================================================================
  */
 
 
@@ -31,9 +33,14 @@
 int diehard_oqso(Test **test, int irun)
 {
 
- uint i,j,k,l,i0,j0,k0,l0,t,boffset;
+ uint i,j,k,l,i0=0,j0=0,k0=0,l0=0,t,boffset=0;
  Xtest ptest;
  char ****w;
+
+ /*
+  * for display only.  0 means "ignored".
+  */
+ test[0]->ntuple = 0;
 
  /*
   * p = 141909, with sigma 295, FOR tsamples 2^21 2 letter words.
@@ -82,52 +89,34 @@ int diehard_oqso(Test **test, int irun)
   */
  l = gsl_rng_get(rng);
  for(t=0;t<test[0]->tsamples;t++){
-   if(overlap){
-     /*
-      * Let's do this the cheap/easy way first, sliding a 20 bit
-      * window along each int for the 32 possible starting
-      * positions a la birthdays, before trying to slide it all
-      * the way down the whole random bitstring implicit in a
-      * long sequence of random ints.  That way we can exit
-      * the tsamples loop at tsamples = 2^15...
-      */
-     if(t%32 == 0) {
-       i0 = gsl_rng_get(rng);
-       j0 = gsl_rng_get(rng);
-       k0 = gsl_rng_get(rng);
-       l0 = gsl_rng_get(rng);
-       boffset = 0;
-     }
-     /*
-      * Get four "letters" (indices into w)
-      */
-     i = get_bit_ntuple(&i0,1,5,boffset);
-     j = get_bit_ntuple(&j0,1,5,boffset);
-     k = get_bit_ntuple(&k0,1,5,boffset);
-     l = get_bit_ntuple(&l0,1,5,boffset);
-     /* printf("%u:   %u  %u  %u  %u  %u\n",t,i,j,k,l,boffset); */
-     w[i][j][k][l]++;
-     boffset++;
-
-   } else {
-     /*
-      * Get four "letters" (indices into w)
-      */
-     boffset = l%32;
-     i = gsl_rng_get(rng);
-     i = get_bit_ntuple(&i,1,5,boffset);
-     boffset = i%32;
-     j = gsl_rng_get(rng);
-     j = get_bit_ntuple(&j,1,5,boffset);
-     boffset = j%32;
-     k = gsl_rng_get(rng);
-     k = get_bit_ntuple(&k,1,5,boffset);
-     boffset = k%32;
-     l = gsl_rng_get(rng);
-     l = get_bit_ntuple(&l,1,5,boffset);
-     w[i][j][k][l]++;
+   /*
+    * Let's do this the cheap/easy way first, sliding a 20 bit
+    * window along each int for the 32 possible starting
+    * positions a la birthdays, before trying to slide it all
+    * the way down the whole random bitstring implicit in a
+    * long sequence of random ints.  That way we can exit
+    * the tsamples loop at tsamples = 2^15...
+    */
+   if(t%32 == 0) {
+     i0 = gsl_rng_get(rng);
+     j0 = gsl_rng_get(rng);
+     k0 = gsl_rng_get(rng);
+     l0 = gsl_rng_get(rng);
+     boffset = 0;
    }
+   /*
+    * Get four "letters" (indices into w)
+    */
+   i = get_bit_ntuple(&i0,1,5,boffset);
+   j = get_bit_ntuple(&j0,1,5,boffset);
+   k = get_bit_ntuple(&k0,1,5,boffset);
+   l = get_bit_ntuple(&l0,1,5,boffset);
+   /* printf("%u:   %u  %u  %u  %u  %u\n",t,i,j,k,l,boffset); */
+   w[i][j][k][l]++;
+   boffset++;
+
  }
+ 
  /*
   * Now we count the holes, so to speak
   */
@@ -168,6 +157,8 @@ int diehard_oqso(Test **test, int irun)
    free(w[i]);
  }
  free(w);
+
+ return(0);
 
 }
 

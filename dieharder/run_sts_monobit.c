@@ -35,7 +35,7 @@ void run_sts_monobit()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- sts_monobit_test = create_test(&sts_monobit_dtest,tsamples,psamples,&sts_monobit);
+ sts_monobit_test = create_test(&sts_monobit_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

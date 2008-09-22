@@ -1,12 +1,13 @@
 /*
- * $Id: rgb_bitdist.c 252 2006-10-10 13:17:36Z rgb $
+ * ========================================================================
+ * $Id: diehard_birthdays.c 250 2006-10-10 05:02:26Z rgb $
  *
  * See copyright in copyright.h and the accompanying file COPYING
- *
+ * ========================================================================
  */
 
 /*
- *========================================================================
+ * ========================================================================
  * This is a test that checks to see if the rng generates bit patterns
  * (n-tuples) that are distributed correctly (binomially).  For example,
  * for 2-tuples (bit pairs) there are four possibilities: 00, 01, 10, 11.
@@ -52,7 +53,7 @@
  * the value set in the global variable rgb_bitdist_ntuple which must
  * be a positive integer.  The calling program is responsible for e.g.
  * testing a range of ntuples.
- *========================================================================
+ * ========================================================================
  */
 
 #include <dieharder/libdieharder.h>
@@ -80,10 +81,14 @@ int rgb_bitdist(Test **test,int irun)
  Vtest *vtest;               /* A reusable vector of binomial test bins */
 
  /*
-  * Sample a bitstring test[0]->ntuple in length (exactly).
+  * Sample a bitstring ntuple in length (exactly).
   */
- if(test[0]->ntuple>0){
-   nb = test[0]->ntuple;
+ if(ntuple>0){
+   /*
+    * Set test[0]->ntuple to pass back to output()
+    */
+   test[0]->ntuple = ntuple;
+   nb = ntuple;
    MYDEBUG(D_RGB_BITDIST){
      printf("# rgb_bitdist: Testing ntuple = %u\n",nb);
    }
@@ -186,7 +191,7 @@ int rgb_bitdist(Test **test,int irun)
   */
 
  for(i=0;i<value_max;i++){
-   Vtest_create(&vtest[i],bsamples+1,"rgb_bitdist",gsl_rng_name(rng));
+   Vtest_create(&vtest[i],bsamples+1);
    /*
     * We will experiment a bit with a cutoff that cleans up our degree of
     * freedom problem.
@@ -316,6 +321,11 @@ int rgb_bitdist(Test **test,int irun)
    }
    Vtest_destroy(&vtest[i]);
  }
+
+ free(count);
+ free(vtest);
+ 
+ return(0);
 
 }
 

@@ -160,7 +160,7 @@ static void chi( u8 *data, u8 len, u4 terms)
       if (temp > 20.0) {
 	k = i;
 	for (j=0; j<terms; ++j) {
-	  printf("%2d ", k&(BUCKETS-1));
+	  printf("%2d ", (int) k&(BUCKETS-1));
 	  k >>= LOGBUCKETS;
 	}
 	printf("%14.4f %14.4f %14.4f\n",

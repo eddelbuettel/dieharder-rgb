@@ -13,10 +13,10 @@
  */
 
 
-#include "dieharder.h"
+#include<dieharder/libdieharder.h>
 
 
-int histogram(double *input,char *pvlabel,int inum,double min,double max,int nbins,char *label)
+void histogram(double *input,char *pvlabel,int inum,double min,double max,int nbins,char *label)
 {
 
  int i,j,k,hindex;

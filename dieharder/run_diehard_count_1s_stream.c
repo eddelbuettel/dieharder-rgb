@@ -35,7 +35,7 @@ void run_diehard_count_1s_stream()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_count_1s_stream_test = create_test(&diehard_count_1s_stream_dtest,tsamples,psamples,&diehard_count_1s_stream);
+ diehard_count_1s_stream_test = create_test(&diehard_count_1s_stream_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

@@ -27,7 +27,7 @@ void run_rgb_persist()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- rgb_persist_test = create_test(&rgb_persist_dtest,tsamples,psamples,&rgb_persist);
+ rgb_persist_test = create_test(&rgb_persist_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.
@@ -40,11 +40,6 @@ void run_rgb_persist()
   * months at a time (yes, a dumb idea).
   */
  rgb_persist_rand_uint = (unsigned int*)malloc(256 * sizeof(unsigned int));
-
- /*
-  * Show the standard test header for this test.
-  */
- show_test_header(&rgb_persist_dtest,rgb_persist_test);
 
  /*
   * Call the actual test that fills in the results struct.

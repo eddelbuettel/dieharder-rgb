@@ -26,6 +26,8 @@ static Dtest diehard_craps_dtest = {
 #==================================================================\n",
   100,     /* Default psamples */
   200000,  /* Default tsamples */
-  2        /* This test returns two statistics */
+  2,       /* This test returns two statistics */
+  diehard_craps,
+  0
 };
 

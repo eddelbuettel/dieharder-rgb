@@ -97,7 +97,7 @@ int rgb_lmn()
 {
 
  double pks;
- uint ps_save,ts_save;
+ uint ps_save=0,ts_save=0;
 
  /*
   * Do a standard test if -a(ll) is selected.
@@ -159,7 +159,7 @@ int rgb_lmn()
 
  if(ks_pvalue) nullfree(ks_pvalue);
 
- return(pks);
+ return(0);
 
 }
 

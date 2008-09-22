@@ -46,6 +46,8 @@ int rgb_timing(Test **test, Rgb_Timing *timing)
  timing->rands_per_sec = 1.0/avg_time;
 
  free(rand_uint);
+
+ return(0);
  
 }
 

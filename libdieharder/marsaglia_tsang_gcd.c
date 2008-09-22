@@ -127,6 +127,12 @@ int marsaglia_tsang_gcd(Test **test, int irun)
  static uint gtblsize = 0;
  Vtest vtest_k,vtest_u;
 
+ /*
+  * For output only
+  */
+ test[0]->ntuple = 0;
+ test[1]->ntuple = 0;
+
  /* Make data tables for one-time entry -- do not delete.
  uint nbin = 50;
  double pbin = 0.376;
@@ -288,10 +294,12 @@ int marsaglia_tsang_gcd(Test **test, int irun)
  Vtest_destroy(&vtest_k);
  Vtest_destroy(&vtest_u);
 
- if(verbose == D_USER_TEMPLATE || verbose == D_ALL){
-   printf("# user_marsaglia_tsang_gcd(): ks_pvalue_k[%u] = %10.5f  ks_pvalue_w[%u] = %10.5f\n",kspi,ks_pvalue[kspi],ks_pvalue2[kspi]);
+ MYDEBUG(D_MARSAGLIA_TSANG_GCD){
+   printf("# marsaglia_tsang_gcd(): ks_pvalue_k[%u] = %10.5f  ks_pvalue_w[%u] = %10.5f\n",kspi,ks_pvalue[kspi],kspi,ks_pvalue2[kspi]);
  }
 
  kspi++;
+
+ return(0);
 
 }

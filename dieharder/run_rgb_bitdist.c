@@ -63,7 +63,7 @@ void run_rgb_bitdist()
     * First we create the test (to set some values displayed in test header
     * correctly).
     */
-   rgb_bitdist_test = create_test(&rgb_bitdist_dtest,tsamples,psamples,&rgb_bitdist);
+   rgb_bitdist_test = create_test(&rgb_bitdist_dtest,tsamples,psamples);
    /*
     * Set this to pass it into the test and on to report() or table().
     */

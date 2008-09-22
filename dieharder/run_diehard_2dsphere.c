@@ -35,7 +35,7 @@ void run_diehard_2dsphere()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_2dsphere_test = create_test(&diehard_2dsphere_dtest,tsamples,psamples,&diehard_2dsphere);
+ diehard_2dsphere_test = create_test(&diehard_2dsphere_dtest,tsamples,psamples);
  diehard_2dsphere_test[0]->ntuple = ntuple;
 
  /*

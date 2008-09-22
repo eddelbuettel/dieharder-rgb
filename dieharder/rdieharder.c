@@ -135,14 +135,14 @@ SEXP dieharderGenerators(void) {
     /* from startup.c */
     /*
      * We new have to work a bit harder to determine how many
-     * generators we have of the different types because there are
+     * generators we have of the different dh_types because there are
      * different ranges for different sources of generator.
      *
      * We start with the basic GSL generators, which start at offset 0.
      */
-    types = dieharder_rng_types_setup ();
+    dh_types = dieharder_rng_dh_types_setup ();
     i = 0;
-    while(types[i] != NULL){
+    while(dh_types[i] != NULL){
 	i++;
 	j++;
     }
@@ -153,7 +153,7 @@ SEXP dieharderGenerators(void) {
      */
     i = 200;
     j = 0;
-    while(types[i] != NULL){
+    while(dh_types[i] != NULL){
 	i++;
 	j++;
     }
@@ -164,7 +164,7 @@ SEXP dieharderGenerators(void) {
      */
     i = 400;
     j = 0;
-    while(types[i] != NULL){
+    while(dh_types[i] != NULL){
 	i++;
 	j++;
     }
@@ -175,7 +175,7 @@ SEXP dieharderGenerators(void) {
      */
     i = 500;
     j = 0;
-    while(types[i] != NULL){
+    while(dh_types[i] != NULL){
 	i++;
 	j++;
     }
@@ -189,16 +189,16 @@ SEXP dieharderGenerators(void) {
      */
     i = 600;
     j = 0;
-    types[i] = gsl_rng_empty_random;  
+    dh_types[i] = gsl_rng_empty_random;  
     i++;
     j++;
     num_ui_rngs = j;
 
     /* /\* */
-    /*  * Now add my own types and count THEM. */
+    /*  * Now add my own dh_types and count THEM. */
     /*  *\/ */
     /* add_ui_rngs(); */
-    /* while(types[i] != NULL){ */
+    /* while(dh_types[i] != NULL){ */
     /* 	i++; */
     /* } */
 
@@ -212,23 +212,23 @@ SEXP dieharderGenerators(void) {
 
     j = 0;
     for (i = 0; i < num_gsl_rngs; i++) {
-	SET_STRING_ELT(gens,  j,   mkChar(types[i]->name));
+	SET_STRING_ELT(gens,  j,   mkChar(dh_types[i]->name));
 	INTEGER(genid)[j++] = i;
     }
     for (i = 200; i < 200 + num_dieharder_rngs; i++) {
-	SET_STRING_ELT(gens,  j,   mkChar(types[i]->name));
+	SET_STRING_ELT(gens,  j,   mkChar(dh_types[i]->name));
 	INTEGER(genid)[j++] = i;
     }
     for (i = 400; i < 400 + num_R_rngs; i++) {
-	SET_STRING_ELT(gens,  j,   mkChar(types[i]->name));
+	SET_STRING_ELT(gens,  j,   mkChar(dh_types[i]->name));
 	INTEGER(genid)[j++] = i;
     }
     for (i = 500; i < 500 + num_hardware_rngs; i++) {
-	SET_STRING_ELT(gens,  j,   mkChar(types[i]->name));
+	SET_STRING_ELT(gens,  j,   mkChar(dh_types[i]->name));
 	INTEGER(genid)[j++] = i;
     }
     for (i = 600; i < 600 + num_ui_rngs; i++) {
-	SET_STRING_ELT(gens,  j,   mkChar(types[i]->name));
+	SET_STRING_ELT(gens,  j,   mkChar(dh_types[i]->name));
 	INTEGER(genid)[j++] = i;
     }
     SET_VECTOR_ELT(result, 0, gens);

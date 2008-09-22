@@ -35,7 +35,7 @@ void run_diehard_squeeze()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_squeeze_test = create_test(&diehard_squeeze_dtest,tsamples,psamples,&diehard_squeeze);
+ diehard_squeeze_test = create_test(&diehard_squeeze_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

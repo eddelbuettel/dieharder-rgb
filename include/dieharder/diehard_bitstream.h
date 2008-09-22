@@ -39,9 +39,8 @@ static Dtest diehard_bitstream_dtest = {
 #==================================================================\n",
   100,
   2097152,
-  1
+  1,
+  diehard_bitstream,
+  0
 };
 
-/*
- * Global variables (none in this case)
- */

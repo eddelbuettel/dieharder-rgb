@@ -21,6 +21,7 @@
  * we make the return a void pointer whose size is specified by the
  * caller (and guaranteed to be big enough to hold the result).
  */
+
 inline static uint get_rand_bits_uint (uint nbits, uint mask, gsl_rng *rng)
 {
 
@@ -44,7 +45,7 @@ inline static uint get_rand_bits_uint (uint nbits, uint mask, gsl_rng *rng)
  }
  if(nbits > 32){
    fprintf(stderr,"Warning!  dieharder cannot yet work with\b");
-   fprintf(stderr,"           %u > 32 bit chunks.  Exiting!\n\n");
+   fprintf(stderr,"           %u > 32 bit chunks.  Exiting!\n\n",nbits);
    exit(0);
  }
 

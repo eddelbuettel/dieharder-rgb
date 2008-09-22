@@ -69,7 +69,7 @@ void run_rgb_minimum_distance()
     * First we create the test (to set some values displayed in test header
     * correctly).
     */
-   rgb_minimum_distance_test = create_test(&rgb_minimum_distance_dtest,tsamples,psamples,&rgb_minimum_distance);
+   rgb_minimum_distance_test = create_test(&rgb_minimum_distance_dtest,tsamples,psamples);
    rgb_minimum_distance_test[0]->ntuple = dim;
    
    /*

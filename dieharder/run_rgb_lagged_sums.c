@@ -52,7 +52,7 @@ void run_rgb_lagged_sums()
     * First we create the test (to set some values displayed in test header
     * correctly).
     */
-   rgb_lagged_sums_test = create_test(&rgb_lagged_sums_dtest,tsamples,psamples,&rgb_lagged_sums);
+   rgb_lagged_sums_test = create_test(&rgb_lagged_sums_dtest,tsamples,psamples);
    /*
     * Set this to pass it into the test and on to report() or table().
     */

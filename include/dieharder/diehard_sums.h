@@ -28,11 +28,8 @@ static Dtest diehard_sums_dtest = {
 #==================================================================\n",
   100,
   100,
-  1
+  1,
+  diehard_sums,
+  0
 };
-
-/*
- * Global memory
- */
-double *diehard_sums_rand_dbl;
 

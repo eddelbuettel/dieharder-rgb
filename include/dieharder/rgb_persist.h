@@ -1,5 +1,6 @@
 /*
- * diehard_rgb_persist test header.
+ * diehard_rgb_persist test header.  This test needs to just go
+ * away...
  */
 
 /*
@@ -36,7 +37,9 @@ static Dtest rgb_persist_dtest = {
 ",
   1,
   256,
-  1
+  1,
+  rgb_persist,
+  0
 };
 
 uint *rgb_persist_rand_uint;

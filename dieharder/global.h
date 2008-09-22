@@ -172,6 +172,7 @@
  int quiet;             /* quiet flag -- surpresses full output report */
  int rgb;               /* rgb test number */
  int sts;               /* sts test number */
+ uint strategy;         /* rng seeding strategy.  0 means from beginning.  1 means per test */
  uint Seed;             /* user selected seed.  Surpresses reseeding per sample.*/
  uint table;            /* selects "table" output mode */
  uint tflag;            /* binary flag(s) to control what goes in the table */

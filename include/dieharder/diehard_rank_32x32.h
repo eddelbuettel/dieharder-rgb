@@ -26,10 +26,8 @@ static Dtest diehard_rank_32x32_dtest = {
 #==================================================================\n",
   100,
   40000,
-  1
+  1,
+  diehard_rank_32x32,
+  0
 };
 
-/*
- * Global variables
- */
-uint **diehard_rank_32x32_mtx;

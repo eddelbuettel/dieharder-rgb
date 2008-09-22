@@ -13,13 +13,13 @@
 
 #define RGB_PERM_KMAX 10
 uint nperms;
-uint rgb_perm(size_t *data,int len);
 double fpipi(int pi1,int pi2,int nkp);
+uint rgb_permutations_k;
 
 int rgb_permutations(Test **test,int irun)
 {
 
- uint i,j,k,permindex,t;
+ uint i,j,k,permindex=0,t;
  Vtest vtest;
  double *testv;
  size_t ps[4096];
@@ -32,8 +32,15 @@ int rgb_permutations(Test **test,int irun)
  }
 
  /*
-  * Number of permutations
+  * Number of permutations.  Note that the minimum ntuple value for a
+  * valid test is 2.  If ntuple is less than 2, we choose the default
+  * test size as 5 (like operm5).
   */
+ if(ntuple<2){
+   test[0]->ntuple = 5;
+ } else {
+   test[0]->ntuple = ntuple;
+ }
  k = test[0]->ntuple;
  nperms = gsl_sf_fact(k);
 
@@ -49,7 +56,7 @@ int rgb_permutations(Test **test,int irun)
  /*
   * Create a test, initialize it.
   */
- Vtest_create(&vtest,nperms,"rgb_permutations",gsl_rng_name(rng));
+ Vtest_create(&vtest,nperms);
  vtest.cutoff = 5.0;
  for(i=0;i<nperms;i++){
    vtest.x[i] = 0.0;
@@ -106,7 +113,7 @@ int rgb_permutations(Test **test,int irun)
 
    MYDEBUG(D_RGB_PERMUTATIONS){
      for(i=0;i<k;i++) {
-       printf("# rgb_permutations: ps[%u] = %u\n",i,ps[i]);
+       printf("# rgb_permutations: ps[%u] = %lu\n",i,ps[i]);
      }
    }
 
@@ -149,28 +156,7 @@ int rgb_permutations(Test **test,int irun)
  free(lookup);
  free(testv);
 
-}
-
-uint rgb_perm(size_t *data,int len)
-{
-
- uint i,j,k,max,min;
- uint pindex,uret,tmp;
- static gsl_permutation** lookup = 0;
-
- MYDEBUG(D_RGB_PERMUTATIONS){
-   printf("# rgb_permutations: Entering rgb_perm.  Going to match up:\n");  
-   for(i=0;i<len;i++){
-     printf("# rgb_permutations: data[%u] = %u\n",i,data[i]);
-   }
- }
- /*
-  * Allocate space for lookup table and fill it.
-  */
- if(lookup == 0){
- }
-
- printf("We'd better not get here...\n");
+ return(0);
 
 }
 

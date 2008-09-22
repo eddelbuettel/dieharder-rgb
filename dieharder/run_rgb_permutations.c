@@ -60,7 +60,7 @@ void run_rgb_permutations()
     * First we create the test (to set some values displayed in test header
     * correctly).
     */
-   rgb_permutations_test = create_test(&rgb_permutations_dtest,tsamples,psamples,&rgb_permutations);
+   rgb_permutations_test = create_test(&rgb_permutations_dtest,tsamples,psamples);
    /*
     * Set this to pass it into the test and on to report() or table().
     */

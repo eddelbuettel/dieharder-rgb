@@ -35,7 +35,7 @@ void run_diehard_operm5()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_operm5_test = create_test(&diehard_operm5_dtest,tsamples,psamples,&diehard_operm5);
+ diehard_operm5_test = create_test(&diehard_operm5_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

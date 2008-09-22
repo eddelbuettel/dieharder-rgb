@@ -34,14 +34,8 @@ void run_diehard_craps()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_craps_test = create_test(&diehard_craps_dtest,tsamples,psamples,&diehard_craps);
- diehard_craps_test[0]->ntuple = 0;
- diehard_craps_test[1]->ntuple = 0;
+ diehard_craps_test = create_test(&diehard_craps_dtest,tsamples,psamples);
 
- /*
-  * Set any GLOBAL data used by the test.  Then call the test itself
-  * This fills in the results in the Test struct.
-  */
  std_test(&diehard_craps_dtest,diehard_craps_test);
 
  /*

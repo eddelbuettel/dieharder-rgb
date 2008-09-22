@@ -47,6 +47,7 @@ int rgb_lagged_sums(Test **test,int irun)
   * Get the lag from ntuple.  Note that a lag of zero means
   * "don't throw any away".
   */
+ test[0]->ntuple = ntuple;
  lag = test[0]->ntuple;
 
  /*
@@ -83,6 +84,8 @@ int rgb_lagged_sums(Test **test,int irun)
  if(verbose == D_RGB_LAGGED_SUMS || verbose == D_ALL){
    printf("# rgb_lagged_sums(): ks_pvalue[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
+
+ return(0);
 
 }
 

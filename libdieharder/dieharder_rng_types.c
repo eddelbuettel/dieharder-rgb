@@ -39,7 +39,7 @@
 #include <dieharder/libdieharder.h>
 FILE *test_fp;
 
-const gsl_rng_type **dieharder_rng_types_setup(void)
+void dieharder_rng_types()
 {
 
  int i;
@@ -47,7 +47,7 @@ const gsl_rng_type **dieharder_rng_types_setup(void)
  /*
   * Null the whole thing for starters
   */
- for(i=0;i<MAXRNGS;i++) dh_types[i] = 0;
+ for(i=0;i<MAXRNGS;i++) dh_rng_types[i] = 0;
 
  /*
   * Initialize gsl_types to fill it with the current gsl rngs.
@@ -59,7 +59,7 @@ const gsl_rng_type **dieharder_rng_types_setup(void)
   */
  i = 0;
  while(gsl_types[i] != NULL){
-   dh_types[i] = gsl_types[i];
+   dh_rng_types[i] = gsl_types[i];
    i++;
  }
  dh_num_gsl_rngs = i;
@@ -126,17 +126,17 @@ const gsl_rng_type **dieharder_rng_types_setup(void)
   */
  i = 500;
  dh_num_hardware_rngs = 0;
- if (test_fp = fopen("/dev/random","r")) {
+ if ((test_fp = fopen("/dev/random","r"))) {
    ADD(gsl_rng_dev_random);
    fclose(test_fp);
    dh_num_hardware_rngs++;
  }
- if (test_fp = fopen("/dev/urandom","r")) {
+ if ((test_fp = fopen("/dev/urandom","r"))) {
    ADD(gsl_rng_dev_urandom);
    fclose(test_fp);
    dh_num_hardware_rngs++;
  }
- if (test_fp = fopen("/dev/arandom","r")) {
+ if ((test_fp = fopen("/dev/arandom","r"))) {
    ADD(gsl_rng_dev_arandom);
    fclose(test_fp);
    dh_num_hardware_rngs++;
@@ -150,14 +150,6 @@ const gsl_rng_type **dieharder_rng_types_setup(void)
   */
  dh_num_rngs = dh_num_gsl_rngs + dh_num_dieharder_rngs + dh_num_R_rngs +
             dh_num_hardware_rngs;
-
- /*
-  * dh_types[] is "permanent" memory and doesn't have to be freed.
-  * This is possibly stupid; one "could" run dieharder_rng_types_setup()
-  * twice and THINK you are getting two distinct vectors of rngs, but
-  * you aren't.  OTOH, you won't leak memory...
-  */
- return dh_types;
 
 }
 

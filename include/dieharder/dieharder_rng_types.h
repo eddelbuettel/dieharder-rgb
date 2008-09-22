@@ -54,12 +54,12 @@
   */
 #define MAXRNGS 1000
 
- const gsl_rng_type **dieharder_rng_types_setup(void);
+ void dieharder_rng_types();
 
- const gsl_rng_type *dh_types[MAXRNGS];
+ const gsl_rng_type *dh_rng_types[MAXRNGS];
  const gsl_rng_type **gsl_types;    /* where all the rng types go */
 
-#define ADD(t) {if (i==MAXRNGS) abort(); dh_types[i] = (t); i++; };
+#define ADD(t) {if (i==MAXRNGS) abort(); dh_rng_types[i] = (t); i++; };
 
  /*
   * Global shared counters for the new types of rngs in the organization

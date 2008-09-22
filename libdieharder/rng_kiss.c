@@ -41,6 +41,7 @@ static unsigned long int
 kiss_get (void *vstate)
 {
 
+ return(0);
 
 }
 

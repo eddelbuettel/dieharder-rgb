@@ -1,20 +1,20 @@
+/*
+ * ========================================================================
+ * $Id: sts_monobit.c 237 2006-08-23 01:33:46Z rgb $
+ *
+ * See copyright in copyright.h and the accompanying file COPYING
+ * See also accompanying file STS.COPYING
+ * ========================================================================
+ */
 
 /*
-* $Id: sts_monobit.c 237 2006-08-23 01:33:46Z rgb $
-*
-* See copyright in copyright.h and the accompanying file COPYING
-* See also accompanying file STS.COPYING
-*
-*/
-
-/*
- *========================================================================
+ * ========================================================================
  * This is a the monobit test, rewritten from the description in the
  * STS suite.
  *
  * Rewriting means that I can standardize the interface to gsl-encapsulated
  * routines more easily.  It also makes this my own code.
- *========================================================================
+ * ========================================================================
  */
 
 #include <dieharder/libdieharder.h>
@@ -25,6 +25,11 @@ int sts_monobit(Test **test, int irun)
  int i,b,bsamples,bit;
  uint bitstring,blens,nbits;
  Xtest ptest;
+
+ /*
+  * for display only.  1 means monobit tests 1-tuples.
+  */
+ test[0]->ntuple = 1;
 
  /*
   * ptest.x contains n_1's - n_0's = n_1's - (nbits - n_1's)
@@ -54,7 +59,7 @@ int sts_monobit(Test **test, int irun)
   * that if -b bits is specified, size will be "more than enough".
   */
  MYDEBUG(D_STS_MONOBIT) {
-   printf("# rgb_bitdist(): Generating %u bits in bitstring",test[0]->tsamples*sizeof(uint)*8);
+   printf("# rgb_bitdist(): Generating %lu bits in bitstring",test[0]->tsamples*sizeof(uint)*8);
  }
  ptest.x = 0;
  for(i=0;i<test[0]->tsamples;i++) {
@@ -83,6 +88,8 @@ int sts_monobit(Test **test, int irun)
  MYDEBUG(D_STS_MONOBIT) {
    printf("# sts_monobit(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
+
+ return(0);
 
 }
 

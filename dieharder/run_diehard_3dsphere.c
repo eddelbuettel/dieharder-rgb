@@ -35,7 +35,7 @@ void run_diehard_3dsphere()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- diehard_3dsphere_test = create_test(&diehard_3dsphere_dtest,tsamples,psamples,&diehard_3dsphere);
+ diehard_3dsphere_test = create_test(&diehard_3dsphere_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself

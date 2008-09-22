@@ -35,12 +35,7 @@ void run_sts_runs()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- sts_runs_test = create_test(&sts_runs_dtest,tsamples,psamples,&sts_runs);
-
- /*
-  * Set any GLOBAL data used by the test.
-  */
- sts_runs_rand_int = (uint *)malloc(sts_runs_test[0]->tsamples*sizeof(uint));
+ sts_runs_test = create_test(&sts_runs_dtest,tsamples,psamples);
 
  /*
   * Set any GLOBAL data used by the test.  Then call the test itself
@@ -52,8 +47,6 @@ void run_sts_runs()
   * Output standard test results.
   */
  output(&sts_runs_dtest,sts_runs_test);
-
- free(sts_runs_rand_int);
 
  /*
   * Destroy the test and free all dynamic memory it used.

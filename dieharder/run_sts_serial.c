@@ -46,7 +46,7 @@ void run_sts_serial()
   * First we create the test (to set some values displayed in test header
   * correctly).
   */
- sts_serial_test = create_test(&sts_serial_dtest,tsamples,psamples,&sts_serial);
+ sts_serial_test = create_test(&sts_serial_dtest,tsamples,psamples);
 
  /*
   * This particular test we need to pre-initialize the pvlabel for

@@ -69,17 +69,17 @@ am_libdieharder_la_OBJECTS = bits.lo chisq.lo countx.lo \
 	diehard_operm5.lo diehard_opso.lo diehard_oqso.lo \
 	diehard_parking_lot.lo diehard_rank_32x32.lo \
 	diehard_rank_6x8.lo diehard_runs.lo diehard_squeeze.lo \
-	diehard_sums.lo dieharder_types.lo kstest.lo \
-	marsaglia_tsang_gcd.lo marsaglia_tsang_gorilla.lo parse.lo \
-	prob.lo random_seed.lo rank.lo rgb_bitdist.lo \
-	rgb_lagged_sums.lo rgb_lmn.lo rgb_minimum_distance.lo \
-	rgb_operm.lo rgb_permutations.lo rgb_persist.lo rgb_timing.lo \
-	rngav.lo rng_ca.lo rng_dev_random.lo rng_dev_arandom.lo \
-	rng_dev_urandom.lo rng_file_input.lo rng_file_input_raw.lo \
-	rngs_gnu_r.lo rng_kiss.lo rng_jenkins.lo \
+	diehard_sums.lo dieharder_rng_types.lo dieharder_test_types.lo \
+	histogram.lo kstest.lo marsaglia_tsang_gcd.lo \
+	marsaglia_tsang_gorilla.lo parse.lo prob.lo random_seed.lo \
+	rank.lo rgb_bitdist.lo rgb_lagged_sums.lo \
+	rgb_minimum_distance.lo rgb_permutations.lo rgb_persist.lo \
+	rgb_timing.lo rngav.lo rng_ca.lo rng_dev_random.lo \
+	rng_dev_arandom.lo rng_dev_urandom.lo rng_file_input.lo \
+	rng_file_input_raw.lo rngs_gnu_r.lo rng_kiss.lo rng_jenkins.lo \
 	rng_stdin_input_raw.lo rng_uvag.lo sample.lo std_test.lo \
 	sts_monobit.lo sts_runs.lo sts_serial.lo timing.lo Vtest.lo \
-	Xtest.lo
+	version.lo Xtest.lo
 libdieharder_la_OBJECTS = $(am_libdieharder_la_OBJECTS)
 libdieharder_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -248,7 +248,9 @@ libdieharder_la_SOURCES = \
 	diehard_runs.c \
 	diehard_squeeze.c \
 	diehard_sums.c \
-	dieharder_types.c \
+	dieharder_rng_types.c \
+	dieharder_test_types.c \
+	histogram.c \
 	kstest.c \
 	marsaglia_tsang_gcd.c \
 	marsaglia_tsang_gorilla.c \
@@ -258,9 +260,7 @@ libdieharder_la_SOURCES = \
 	rank.c \
 	rgb_bitdist.c \
 	rgb_lagged_sums.c \
-	rgb_lmn.c \
 	rgb_minimum_distance.c \
-	rgb_operm.c \
 	rgb_permutations.c \
 	rgb_persist.c \
 	rgb_timing.c \
@@ -283,8 +283,12 @@ libdieharder_la_SOURCES = \
 	sts_serial.c \
 	timing.c \
 	Vtest.c \
+	version.c \
 	Xtest.c
 
+
+#	rgb_operm.c
+#	rgb_lmn.c
 
 # The program/library may need to know what version it is, define
 # the VERSION macro.
@@ -298,7 +302,7 @@ DEFINES = -DVERSION=$(VERSION)
 
 # Compile flags (use fairly standard -O3 as default)
 AM_CPPFLAGS = $(DEFINES) -I ${top_srcdir}/include -I ${includedir}
-AM_CFLAGS = -O3
+AM_CFLAGS = -O3 -Wall -Wno-unused-variable
 
 #========================================================================
 # The only safe place to do commits is in the toplevel directory
@@ -397,7 +401,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diehard_runs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diehard_squeeze.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diehard_sums.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dieharder_types.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dieharder_rng_types.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dieharder_test_types.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/histogram.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kstest.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/marsaglia_tsang_gcd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/marsaglia_tsang_gorilla.Plo@am__quote@
@@ -407,9 +413,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rank.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_bitdist.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_lagged_sums.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_lmn.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_minimum_distance.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_operm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_permutations.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_persist.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_timing.Plo@am__quote@
@@ -431,6 +435,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sts_runs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sts_serial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timing.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
