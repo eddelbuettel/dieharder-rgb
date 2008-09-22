@@ -51,17 +51,18 @@ void Usage()
 Usage:\n\
 \n\
   dieharder [-a] [-d dieharder test number] [-f filename]\n\
-           [-D output flag [-D output flag] ... ] [-F] [-c separator] \n\
+           [-D output flag [-D output flag] ... ] [-F] [-c separator]\n\
            [-g generator number or -1] [-h] [-l] \n\
            [-n ntuple] [-p number of p samples] [-o filename] \n\
            [-s seed strategy] [-S random number seed]\n\
 	   [-t number of test samples] [-v verbose flag]\n\
 	   [-x xvalue] [-y yvalue] [-z zvalue] \n\
 \n\
-  -a Runs all the tests with standard/default options to create a report\n\
+  -a - runs all the tests with standard/default options to create a report\n\
   -d test number -  selects specific diehard test.\n\
-  -f filename - two generators permit either formatted ASCII numbers\n\
-     or raw binary numbers to be read in from a file for testing.\n\
+  -f filename - generators 201 or 202 permit either raw binary or \n\
+     formatted ASCII numbers to be read in from a file for testing.\n\
+     generator 200 reads in raw binary numbers from stdin.\n\
      Note well: many tests with default parameters require a lot of rands!\n\
      To see a sample of the (required) header for ASCII formatted input, run\n\
 \n\
@@ -70,11 +71,11 @@ Usage:\n\
      and then examine the contents of example.input.\n\
      Raw binary input reads 32 bit increments of the specified data stream.\n\
      stdin_input_raw accepts a pipe from a raw binary stream.\n\
-  -D output flag permits fields to be selected for inclusion in dieharder\n\
+  -D output flag - permits fields to be selected for inclusion in dieharder\n\
      output.  Each flag can be entered as a binary number that turns\n\
      on a specific output field or header or by flag name; flags are\n\
-     aggregated.  To see all currently known flags enter:\n\
-  -F which lists all known flags by name and number.\n\
+     aggregated.  To see all currently known flags use the -F command.\n\
+  -F - lists all known flags by name and number.\n\
   -c table separator - where separator is e.g. ',' (CSV) or ' ' (whitespace).\n\
   -g generator number - selects a specific generator for testing.  Using\n\
      -1 causes all known generators to be printed out to the display.\n\
@@ -83,7 +84,7 @@ Usage:\n\
   -l list all known tests.\n\
   -n ntuple - set ntuple length for tests on short bit strings that permit\n\
      the length to be varied (e.g. rgb bitdist).\n\
-  -o filename - output -t count random numbers to file.\n\
+  -o filename - output -t count random numbers from current generator to file.\n\
   -p count - sets the number of p-value samples per test (default 100).\n\
   -S seed - where seed is a uint.  Overrides the default random seed\n\
      selection.  Ignored for file or stdin input.\n\

@@ -38,7 +38,7 @@ void parsecl(int argc, char **argv)
   */
 
  int imax,i,c,errflg=0;
- int tflag_tmp = 0,dtest_tmp;
+ int tflag_tmp = 0,dtest_tmp,gen_tmp;
  extern char *optarg;
  extern int optind, opterr, optopt;
  char *endptr;
@@ -139,7 +139,13 @@ void parsecl(int argc, char **argv)
        fromfile = 1;
        break;
      case 'g':
-       generator = strtol(optarg,(char **) NULL,10);
+       gen_tmp =  strtol(optarg,&endptr,10);
+       /* printf("optarg = %s, dtest_tmp = %d endptr = %s\n",optarg,dtest_tmp,endptr); */
+       if(strncmp(optarg,endptr,1) == 0){
+         strncpy(generator_name,optarg,128);
+       } else {
+         generator = gen_tmp;
+       }
        break;
      case 'h':
        help_flag = YES;

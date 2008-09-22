@@ -56,7 +56,7 @@ void choose_rng()
   * interactive UI, I imagine that one would get an error message
   * and a chance to try again.
   */
- if(select_rng(generator,(char *)NULL,Seed)){
+ if(select_rng(generator,generator_name,Seed)){
    fprintf(stderr,"Error: generator %d not found.\n",generator);
    list_rngs();
    Exit(0);
@@ -99,29 +99,38 @@ void choose_rng()
 int select_rng(int gennum,char *genname,uint initial_seed)
 {
 
+ int i;
+
  /*
   * REALLY out of bounds we can just test for and return an error.
   */
- if(generator < 0 || generator >= MAXRNGS){
+ if(gennum < 0 || gennum >= MAXRNGS){
    return(-1);
  }
 
  /*
-  * See if a generator name has been set (genname not null).  If
-  * so, loop through all the generators in dh_rng_types looking for a
+  * See if a gennum name has been set (genname not null).  If
+  * so, loop through all the gennums in dh_rng_types looking for a
   * match and return a hit if there is one.  Note that this
   * routine just sets gennum and passes a (presumed valid)
   * gennum on for further processing, hence it has to be first.
   */
- if(genname){
-   /* Not yet implemented (so any call an error)! */
-   /* return -1 if non-null and no match found */
-   return(-1);
+ if(genname[0] != 0){
+   gennum = -1;
+   for(i=0;i<1000;i++){
+     if(dh_rng_types[i]){
+       if(strncmp(dh_rng_types[i]->name,genname,20) == 0){
+         gennum = i;
+         break;
+       }
+     }
+   }
+   if(gennum == -1) return(-1);
  }
 
  /*
-  * If we get here, then we are entering a generator type by number.
-  * We check to be sure there is a generator with the given
+  * If we get here, then we are entering a gennum type by number.
+  * We check to be sure there is a gennum with the given
   * number that CAN be used and return an error if there isn't.
   */
  if(dh_rng_types[gennum] == 0){
@@ -131,8 +140,8 @@ int select_rng(int gennum,char *genname,uint initial_seed)
  /*
   * We need a sanity check for file input.  File input is permitted
   * iff we have a file name, if the output flag is not set, AND if
-  * generator is either file_input or file_input_raw.  Otherwise
-  * IF generator is a file input type (primary condition) we punt.
+  * gennum is either file_input or file_input_raw.  Otherwise
+  * IF gennum is a file input type (primary condition) we punt.
   *
   * For the moment we actually return an error message, but we may
   * want to pass the message back in a shared error buffer that
@@ -140,13 +149,13 @@ int select_rng(int gennum,char *genname,uint initial_seed)
   */
  if(strncmp("file_input",dh_rng_types[gennum]->name,10) == 0){
    if(fromfile != 1){
-     fprintf(stderr,"Error: generator %s uses file input but no filename has been specified",dh_rng_types[gennum]->name);
+     fprintf(stderr,"Error: gennum %s uses file input but no filename has been specified",dh_rng_types[gennum]->name);
      return(-1);
    }
  }
 
  /*
-  * If we get here, in principle the generator is valid and the right
+  * If we get here, in principle the gennum is valid and the right
   * inputs are defined to run it (in the case of file_input). We therefore
   * allocate the selected rng.  However, we FIRST check to see if rng is
   * not 0, and if it isn't 0 we assume that we're in a UI, that the user
@@ -155,18 +164,18 @@ int select_rng(int gennum,char *genname,uint initial_seed)
   */
  if(rng){
    MYDEBUG(D_SEED){
-     fprintf(stdout,"# choose_rng(): freeing old generator %s\n",gsl_rng_name(rng));
+     fprintf(stdout,"# choose_rng(): freeing old gennum %s\n",gsl_rng_name(rng));
    }
    gsl_rng_free(rng);
    reset_bit_buffers();
  }
 
  /*
-  * We should now be "certain" that it is safe to allocate a new generator
+  * We should now be "certain" that it is safe to allocate a new gennum
   * without leaking memory.
   */
  MYDEBUG(D_SEED){
-   fprintf(stdout,"# choose_rng(): Creating and seeding generator %s\n",dh_rng_types[gennum]->name);
+   fprintf(stdout,"# choose_rng(): Creating and seeding gennum %s\n",dh_rng_types[gennum]->name);
  }
  rng = gsl_rng_alloc(dh_rng_types[gennum]);
 
@@ -228,7 +237,7 @@ int select_rng(int gennum,char *genname,uint initial_seed)
   * Here we evaluate the speed of the generator if the rate flag is set.
   */
  if(tflag & TRATE){
-   run_rgb_timing();
+   time_rng();
  }
 
  /*

@@ -8,13 +8,16 @@
 
 /*
  *========================================================================
- *  run_rgb_timing()
+ * time_rng() times the CURRENT random number generator specified by
+ * the global rng.  Truthfully, most of the stuff below is unnecessary,
+ * as rgb_timing() isn't a pvalue-generating test.  I'll rewrite it
+ * eventually, but it works fine as is for now.
  *========================================================================
  */
 
 #include "dieharder.h"
 
-void run_rgb_timing()
+void time_rng()
 {
 
  /*

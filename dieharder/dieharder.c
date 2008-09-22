@@ -69,21 +69,10 @@ int main(int argc, char *argv[])
 
    /*
     * Pick a rng, establish a seed based on how things were initialized
-    * in parsecl() or elsewhere.
+    * in parsecl() or elsewhere.  Note that choose_rng() times the selected
+    * rng as a matter of course now.
     */
    choose_rng();
-
-   /*
-    * Let us simply "always" check the timing of an rng -- it doesn't take
-    * and it seems like it should be part of a standard report regardless.
-    * I'm going to move this, in fact, to a routine that sets up an rng for
-    * use as part of a portable startup phase that can/should be called
-    * by either rdh or dh or any future dh-derived ui's any time the rng
-    * is initialized or changed.
-    */
-   if(!fromfile){ 
-     /* run_rgb_timing(); */
-   }
 
    /*
     * At this point, a valid rng should be selected, allocated, and

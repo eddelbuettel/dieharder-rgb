@@ -20,6 +20,7 @@ void set_globals()
  output_file = 0;       /* No output file */
  overlap = 1;           /* Default is to use overlapping samples */
  generator = 13;        /* Default is mt19937 as a "good" generator */
+ generator_name[0] = (char)0; /* empty generator name is default */
  help_flag = NO;        /* No help requested */
  iterations = -1;	/* For timing loop, set iterations to be timed */
  list = NO;             /* List all generators */

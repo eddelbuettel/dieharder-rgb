@@ -35,6 +35,7 @@ char table_separator;
  */
 int dtest_num;
 char dtest_name[128];
+char generator_name[128];
 
 /*
  * user_template sources are here, not in library

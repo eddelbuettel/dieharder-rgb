@@ -66,9 +66,8 @@ am_dieharder_OBJECTS = add_ui_rngs.$(OBJEXT) choose_rng.$(OBJEXT) \
 	list_rngs.$(OBJEXT) list_tests.$(OBJEXT) output.$(OBJEXT) \
 	output_rnds.$(OBJEXT) parsecl.$(OBJEXT) rdieharder.$(OBJEXT) \
 	rng_empty_random.$(OBJEXT) run_all_tests.$(OBJEXT) \
-	run_rgb_timing.$(OBJEXT) run_test.$(OBJEXT) \
-	run_user_template.$(OBJEXT) set_globals.$(OBJEXT) \
-	testbits.$(OBJEXT) user_template.$(OBJEXT)
+	run_test.$(OBJEXT) set_globals.$(OBJEXT) testbits.$(OBJEXT) \
+	time_rng.$(OBJEXT) user_template.$(OBJEXT)
 dieharder_OBJECTS = $(am_dieharder_OBJECTS)
 dieharder_DEPENDENCIES = ../libdieharder/libdieharder.la
 DEFAULT_INCLUDES = -I. -I$(top_builddir)@am__isrc@
@@ -215,11 +214,10 @@ dieharder_SOURCES = \
 	rdieharder.c \
 	rng_empty_random.c \
 	run_all_tests.c \
-	run_rgb_timing.c \
 	run_test.c \
-	run_user_template.c \
 	set_globals.c \
 	testbits.c \
+	time_rng.c \
 	user_template.c
 
 
@@ -331,11 +329,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rdieharder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_empty_random.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_all_tests.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_rgb_timing.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/run_user_template.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/set_globals.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testbits.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/time_rng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/user_template.Po@am__quote@
 
 .c.o:

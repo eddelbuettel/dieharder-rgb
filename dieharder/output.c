@@ -364,7 +364,7 @@ void output_table_line(Dtest *dtest,Test **test)
   * pvalue histogram below.
   */
  if(tflag & TDESCRIPTION){
-   /* Dummy section that will output test description, per test */
+   fprintf(stdout,"%s",dtest->description);
  }
  
  /*
@@ -401,11 +401,7 @@ void output_table_line(Dtest *dtest,Test **test)
      if(field != 0){
        fprintf(stdout,"%c",table_separator);
      }
-     if(fromfile){
-       fprintf(stdout,"%20.20s",filename);
-     } else {
-       fprintf(stdout,"%20.20s",dtest->sname);
-     }
+     fprintf(stdout,"%20.20s",dtest->sname);
      field++;
    }
 
