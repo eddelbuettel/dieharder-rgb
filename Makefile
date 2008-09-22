@@ -92,6 +92,7 @@ DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DIEHARDER_CFLAGS = -I${prefix}/include
 DIEHARDER_LIBS = -L${exec_prefix}/lib -ldieharder
+DIEHARDER_LIB_VERSION = 3.28.0
 DIEHARDER_LT_VERSION = 3:28:0
 ECHO = echo
 ECHO_C = 
@@ -793,6 +794,7 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cp $(SPEC).in $(PROJECTDIR); \
 	cp dieharder_version.h.in $(PROJECTDIR); \
 	cp dieharder.html.in $(PROJECTDIR); \
+	cp dieharder-config.in $(PROJECTDIR); \
 	cp autogen.sh $(PROJECTDIR); \
 	cp missing $(PROJECTDIR); \
 	cp aclocal.m4 $(PROJECTDIR); \

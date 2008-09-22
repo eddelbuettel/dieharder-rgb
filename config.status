@@ -564,6 +564,7 @@ s,@am__untar@,|#_!!_#|${AMTAR} xf -,g
 s,@RELEASE@,|#_!!_#|1,g
 s,@LIBTOOL_DEPS@,|#_!!_#|./ltmain.sh,g
 s,@DIEHARDER_LT_VERSION@,|#_!!_#|3:28:0,g
+s,@DIEHARDER_LIB_VERSION@,|#_!!_#|3.28.0,g
 s,@RELEASED@,|#_!!_#|,g
 s,@build@,|#_!!_#|x86_64-unknown-linux-gnu,g
 s,@build_cpu@,|#_!!_#|x86_64,g
@@ -598,10 +599,10 @@ s,@LN_S@,|#_!!_#|ln -s,g
 s,@ECHO@,|#_!!_#|echo,g
 s,@AR@,|#_!!_#|ar,g
 s,@CPP@,|#_!!_#|gcc -E,g
-s,@LIBTOOL@,|#_!!_#|$(SHELL) $(top_builddir)/libtool,g
 CEOF
 cat >"$tmp/subs-2.sed" <<\CEOF
 /@[a-zA-Z_][a-zA-Z_0-9]*@/!b end
+s,@LIBTOOL@,|#_!!_#|$(SHELL) $(top_builddir)/libtool,g
 s,@DIEHARDER_CFLAGS@,|#_!!_#|-I${prefix}/include,g
 s,@DIEHARDER_LIBS@,|#_!!_#|-L${exec_prefix}/lib -ldieharder,g
 s,@LIBOBJS@,|#_!!_#|,g
