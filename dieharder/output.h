@@ -19,10 +19,12 @@
    TDESCRIPTION = 1024,
    THISTOGRAM = 2048,
    TSEED = 4096,
-   TRATE = 8192
+   TRATE = 8192,
+   TNUM = 16384,
+   TNO_WHITE = 32768
  } Table;
 
-#define TCNT 14
+#define TCNT 17
 
  /*
   * These should have a maximum length one can use in strncmp().
@@ -45,5 +47,7 @@
  "description",
  "histogram",
  "seed",
- "rate"
+ "rate",
+ "show_num",
+ "no_whitespace"
  };

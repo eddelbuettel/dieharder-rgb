@@ -93,7 +93,9 @@ int rgb_bitdist(Test **test,int irun)
      printf("# rgb_bitdist: Testing ntuple = %u\n",nb);
    }
  } else {
-   printf("Error:  test->ntuple must be a positive integer.  Exiting.\n");
+   fprintf(stderr,"Error:  Can only test distribution of positive ntuples.\n");
+   fprintf(stderr,"        Use -n ntuple for 0 < ntuple.\n");
+   fprintf(stderr,"        Read test description with dieharder -d 200 -h.\n");
    exit(0);
  }
 

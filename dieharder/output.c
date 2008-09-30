@@ -141,28 +141,75 @@ void rdh_get_pvalues(Dtest *dtest,Test **test)
 void output_rng_info()
 {
 
- if(tflag & TSHOW_RNG){
-
+ if(tflag & TLINE_HEADER){
    if(tflag & TPREFIX){
      fprintf(stdout,"0%c",table_separator);
    }
-
-   fprintf(stdout,"rng\t%c %s",table_separator,gsl_rng_name(rng));
-   if(fromfile){
-     fprintf(stdout," (from file %s)\n",filename);
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%s%c%","rng_name",table_separator);
    } else {
-     fprintf(stdout,"\n");
-     if(tflag & TPREFIX){
-       fprintf(stdout,"0%c",table_separator);
-     }
-     if(tflag & TRATE){
-       fprintf(stdout,"rnd/sec\t%c %8.2e\n",table_separator,rng_rands_per_second);
-     }
-     if(tflag & TSEED && strategy == 0){
-       fprintf(stdout,"seed\t%c %10u\n",table_separator,seed);
+     fprintf(stdout,"%15s%c%","rng_name    ",table_separator);
+   }
+   if(tflag & TNUM){
+     fprintf(stdout,"%3s%c","num",table_separator);
+   }
+   if(fromfile){
+     if(tflag & TNO_WHITE){
+       fprintf(stdout,"%s%c","filename",table_separator);
+     } else {
+       fprintf(stdout,"%32s%c","filename             ",table_separator);
      }
    }
+   if(tflag & TRATE){
+     fprintf(stdout,"%12s%c","rands/second",table_separator);
+   }
+   if(tflag & TSEED && strategy == 0 && !fromfile){
+     if(tflag & TNO_WHITE){
+       fprintf(stdout,"%s%c","Seed",table_separator);
+     } else {
+       fprintf(stdout,"%10s%c","Seed   ",table_separator);
+     }
+   }
+   fprintf(stdout,"\n");
  }
+
+ if(tflag & TPREFIX){
+   fprintf(stdout,"1%c",table_separator);
+ }
+ if(tflag & TNO_WHITE){
+   fprintf(stdout,"%s%c",gsl_rng_name(rng),table_separator);
+ } else {
+   fprintf(stdout,"%15s%c",gsl_rng_name(rng),table_separator);
+ }
+ if(tflag & TNUM){
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%d%c",generator,table_separator);
+   } else {
+     fprintf(stdout,"%3d%c",generator,table_separator);
+   }
+ }
+ if(fromfile){
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%s%c",filename,table_separator);
+   } else {
+     fprintf(stdout,"%32s%c",filename,table_separator);
+   }
+ }
+ if(tflag & TRATE){
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%.2e%c",rng_rands_per_second,table_separator);
+   } else {
+     fprintf(stdout,"%10.2e  %c",rng_rands_per_second,table_separator);
+   }
+ }
+ if(tflag & TSEED && strategy == 0 && !fromfile){
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%u%c",seed,table_separator);
+   } else {
+     fprintf(stdout,"%10u%c",seed,table_separator);
+   }
+ }
+ fprintf(stdout,"\n");
  
 }
 
@@ -182,7 +229,7 @@ void output_table_line_header()
  }
 
  if(tflag & TPREFIX){
-   fprintf(stdout,"1");
+   fprintf(stdout,"0");
    field++;
  }
 
@@ -190,7 +237,23 @@ void output_table_line_header()
    if(field){
      fprintf(stdout,"%c",table_separator);
    }
-   fprintf(stdout,"%20s","test_name   ");
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%s","test_name");
+   } else {
+     fprintf(stdout,"%20s","test_name   ");
+   }
+   field++;
+ }
+
+ if(tflag & TNUM){
+   if(field){
+     fprintf(stdout,"%c",table_separator);
+   }
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%s","num");
+   } else {
+     fprintf(stdout,"%s","num");
+   }
    field++;
  }
 
@@ -206,7 +269,11 @@ void output_table_line_header()
    if(field){
      fprintf(stdout,"%c",table_separator);
    }
-   fprintf(stdout,"%10s"," tsamples ");
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%s","tsamples");
+   } else {
+     fprintf(stdout,"%10s"," tsamples ");
+   }
    field++;
  }
  if(tflag & TPSAMPLES){
@@ -221,7 +288,11 @@ void output_table_line_header()
    if(field){
      fprintf(stdout,"%c",table_separator);
    }
-   fprintf(stdout,"%10s","p-value ");
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%s","p-value");
+   } else {
+     fprintf(stdout,"%10s","p-value ");
+   }
    field++;
  }
  
@@ -229,7 +300,11 @@ void output_table_line_header()
    if(field){
      fprintf(stdout,"%c",table_separator);
    }
-   fprintf(stdout,"%10s","Assessment");
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%s","Assessment");
+   } else {
+     fprintf(stdout,"%10s","Assessment");
+   }
    field++;
  }
 
@@ -237,7 +312,11 @@ void output_table_line_header()
    if(field){
      fprintf(stdout,"%c",table_separator);
    }
-   fprintf(stdout,"%10s","Seed  ");
+   if(tflag & TNO_WHITE){
+     fprintf(stdout,"%s","Seed");
+   } else {
+     fprintf(stdout,"%10s","Seed  ");
+   }
    field++;
  }
 
@@ -248,6 +327,193 @@ void output_table_line_header()
 
 }
 
+
+/*
+ * Print out all per-test results in a table format where users
+ * can select table columns (fields) and can also select whether or
+ * not to output one-per-test stuff or one-per-pvalue stuff like
+ * the test description or pvalue histogram.
+ */
+void output_table_line(Dtest *dtest,Test **test)
+{
+
+ uint i;
+ uint field;
+
+ /*
+  * IF a user wants something like the old-style "report", they
+  * can toggle on the per-test description and the per pvalue
+  * pvalue histogram below.
+  */
+ if(tflag & TDESCRIPTION){
+   fprintf(stdout,"%s",dtest->description);
+ }
+ 
+ /*
+  * There may be more than one statistic (final p-value) generated by
+  * this test; we loop over all of them.
+  */
+ for(i=0;i<dtest->nkps;i++){
+   /*
+    * Don't put a separator in slot for the first field, period.
+    */
+   field = 0;
+
+   /*
+    * If a user wants a per-test histogram, here it is.  Note that it
+    * will probably be difficult to parse, but that won't matter as it
+    * can trivially be turned off.
+    */
+   if(tflag & THISTOGRAM){
+     output_histogram(test[i]->pvalues,test[i]->pvlabel,test[i]->psamples,0.0,1.0,10,"p-values");
+     if(tflag & TLINE_HEADER){
+       output_table_line_header();
+     }
+   }
+
+   /*
+    * This must be first if it is turned on.
+    */
+   if(tflag & TPREFIX){
+     fprintf(stdout,"2");
+     field++;
+   }
+
+   if(tflag & TTEST_NAME){
+     if(field != 0){
+       fprintf(stdout,"%c",table_separator);
+     }
+     if(tflag & TNO_WHITE){
+       fprintf(stdout,"%s",dtest->sname);
+     } else {
+       fprintf(stdout,"%20.20s",dtest->sname);
+     }
+     field++;
+   }
+
+   if(tflag & TNUM){
+     if(field != 0){
+       fprintf(stdout,"%c",table_separator);
+     }
+     if(tflag & TNO_WHITE){
+       fprintf(stdout,"%d",dtest_num);
+     } else {
+       fprintf(stdout,"%3d",dtest_num);
+     }
+     field++;
+   }
+
+   if(tflag & TNTUPLE){
+     if(field != 0){
+       fprintf(stdout,"%c",table_separator);
+     }
+     if(tflag & TNO_WHITE){
+       fprintf(stdout,"%d",test[i]->ntuple);
+     } else {
+       fprintf(stdout,"%4d",test[i]->ntuple);
+     }
+     field++;
+   }
+   
+   if(tflag & TTSAMPLES){
+     if(field != 0){
+       fprintf(stdout,"%c",table_separator);
+     }
+     if(tflag & TNO_WHITE){
+       fprintf(stdout,"%u",test[0]->tsamples);
+     } else {
+       fprintf(stdout,"%10u",test[0]->tsamples);
+     }
+     field++;
+   }
+   
+   if(tflag & TPSAMPLES){
+     if(field != 0){
+       fprintf(stdout,"%c",table_separator);
+     }
+     if(tflag & TNO_WHITE){
+       fprintf(stdout,"%u",test[0]->psamples);
+     } else {
+       fprintf(stdout,"%8u",test[0]->psamples);
+     }
+     field++;
+   }
+
+   if(tflag & TPVALUES){
+     if(field != 0){
+       fprintf(stdout,"%c",table_separator);
+     }
+     fprintf(stdout,"%10.8f",test[i]->ks_pvalue);
+     field++;
+   }
+
+   /*
+    * Here is where dieharder sets is assessment.  Note that the
+    * assessment MUST be correctly interpreted.  Basically, we set things
+    * so that a test is judged weak if its final outcome pvalue occurs
+    * less than 1% of the time symmetrically split on BOTH ends -- less
+    * than 0.005 or greater than 0.995.  Failure is a pvalue occurring
+    * less than 0.1% of the time (<0.0005 or >0.9995).  Weak results
+    * SHOULD occur (therefore) one time in 100 on average or once every
+    * run or two of dieharder -a.  Failure should also be carefully
+    * judged -- a rng SHOULD generate a pvalue that "fails" one time in
+    * every 30 runs of dieharder -a.
+    *
+    * The point is that both of these WILL HAPPEN FROM TIME TO TIME and
+    * NOT mean that the generator is "bad" or "weak".  If a generator
+    * shows up as "weak" on three results in one -a(ll) run, though,
+    * quite frequently (as one tests different seeds) that's a problem!
+    * In fact, it is failure!  Just remember that p should be uniformly
+    * distributed on [0,1), and so judging failure on any particular
+    * range only makes sense if it occurs systematically, indicating that
+    * p is NOT uniform on [0,1).
+    */
+   if(tflag & TASSESSMENT){
+     if(field != 0){
+       fprintf(stdout,"%c",table_separator);
+     }
+     if(test[i]->ks_pvalue < 0.0005 || test[i]->ks_pvalue > 0.9995){
+       if(tflag & TNO_WHITE){
+         fprintf(stdout,"%s","FAILED");
+       } else {
+         fprintf(stdout,"%10s","FAILED  ");
+       }
+     } else if(test[i]->ks_pvalue < 0.005 || test[i]->ks_pvalue > 0.995){
+       if(tflag & TNO_WHITE){
+         fprintf(stdout,"%s","WEAK");
+       } else {
+         fprintf(stdout,"%10s","WEAK   ");
+       }
+     } else {
+       if(tflag & TNO_WHITE){
+         fprintf(stdout,"%s","PASSED");
+       } else {
+         fprintf(stdout,"%10s","PASSED  ");
+       }
+     }
+     field++;
+   }
+
+   if(tflag & TSEED && strategy){
+     if(field != 0){
+       fprintf(stdout,"%c",table_separator);
+     }
+     if(tflag & TNO_WHITE){
+       fprintf(stdout,"%u",seed);
+     } else {
+       fprintf(stdout,"%10u",seed);
+     }
+     field++;
+   }
+
+   /*
+    * No separator at the end, just EOL
+    */
+   fprintf(stdout,"\n");
+
+ }
+
+}
 
 /*
  *========================================================================
@@ -343,149 +609,6 @@ int output_histogram(double *input,char *pvlabel,int inum,double min,double max,
  for(i=0;i<nbins;i++) printf("%4.1f|",(i+1)*binscale);
  printf("\n");
  printf("#=============================================================================#\n");
-
-}
-
-/*
- * Print out all per-test results in a table format where users
- * can select table columns (fields) and can also select whether or
- * not to output one-per-test stuff or one-per-pvalue stuff like
- * the test description or pvalue histogram.
- */
-void output_table_line(Dtest *dtest,Test **test)
-{
-
- uint i;
- uint field;
-
- /*
-  * IF a user wants something like the old-style "report", they
-  * can toggle on the per-test description and the per pvalue
-  * pvalue histogram below.
-  */
- if(tflag & TDESCRIPTION){
-   fprintf(stdout,"%s",dtest->description);
- }
- 
- /*
-  * There may be more than one statistic (final p-value) generated by
-  * this test; we loop over all of them.
-  */
- for(i=0;i<dtest->nkps;i++){
-   /*
-    * Don't put a separator in slot for the first field, period.
-    */
-   field = 0;
-
-   /*
-    * If a user wants a per-test histogram, here it is.  Note that it
-    * will probably be difficult to parse, but that won't matter as it
-    * can trivially be turned off.
-    */
-   if(tflag & THISTOGRAM){
-     output_histogram(test[i]->pvalues,test[i]->pvlabel,test[i]->psamples,0.0,1.0,10,"p-values");
-     if(tflag & TLINE_HEADER){
-       output_table_line_header();
-     }
-   }
-
-   /*
-    * This must be first if it is turned on.
-    */
-   if(tflag & TPREFIX){
-     fprintf(stdout,"2");
-     field++;
-   }
-
-   if(tflag & TTEST_NAME){
-     if(field != 0){
-       fprintf(stdout,"%c",table_separator);
-     }
-     fprintf(stdout,"%20.20s",dtest->sname);
-     field++;
-   }
-
-   if(tflag & TNTUPLE){
-     if(field != 0){
-       fprintf(stdout,"%c",table_separator);
-     }
-     fprintf(stdout,"%4d",test[i]->ntuple);
-     field++;
-   }
-   
-   if(tflag & TTSAMPLES){
-     if(field != 0){
-       fprintf(stdout,"%c",table_separator);
-     }
-     fprintf(stdout,"%10u",test[0]->tsamples);
-     field++;
-   }
-   
-   if(tflag & TPSAMPLES){
-     if(field != 0){
-       fprintf(stdout,"%c",table_separator);
-     }
-     fprintf(stdout,"%8u",test[0]->psamples);
-     field++;
-   }
-
-   if(tflag & TPVALUES){
-     if(field != 0){
-       fprintf(stdout,"%c",table_separator);
-     }
-     fprintf(stdout,"%10.8f",test[i]->ks_pvalue);
-     field++;
-   }
-
-   /*
-    * Here is where dieharder sets is assessment.  Note that the
-    * assessment MUST be correctly interpreted.  Basically, we set things
-    * so that a test is judged weak if its final outcome pvalue occurs
-    * less than 1% of the time symmetrically split on BOTH ends -- less
-    * than 0.005 or greater than 0.995.  Failure is a pvalue occurring
-    * less than 0.1% of the time (<0.0005 or >0.9995).  Weak results
-    * SHOULD occur (therefore) one time in 100 on average or once every
-    * run or two of dieharder -a.  Failure should also be carefully
-    * judged -- a rng SHOULD generate a pvalue that "fails" one time in
-    * every 30 runs of dieharder -a.
-    *
-    * The point is that both of these WILL HAPPEN FROM TIME TO TIME and
-    * NOT mean that the generator is "bad" or "weak".  If a generator
-    * shows up as "weak" on three results in one -a(ll) run, though,
-    * quite frequently (as one tests different seeds) that's a problem!
-    * In fact, it is failure!  Just remember that p should be uniformly
-    * distributed on [0,1), and so judging failure on any particular
-    * range only makes sense if it occurs systematically, indicating that
-    * p is NOT uniform on [0,1).
-    */
-   if(tflag & TASSESSMENT){
-     if(field != 0){
-       fprintf(stdout,"%c",table_separator);
-     }
-     if(test[i]->ks_pvalue < 0.0005 || test[i]->ks_pvalue > 0.9995){
-       fprintf(stdout,"%10s","FAILED  ");
-     } else if(test[i]->ks_pvalue < 0.005 || test[i]->ks_pvalue > 0.995){
-       fprintf(stdout,"%10s","WEAK   ");
-     } else {
-       fprintf(stdout,"%10s","PASSED  ");
-     }
-     field++;
-   }
-
-   if(tflag & TSEED && strategy){
-     if(field != 0){
-       fprintf(stdout,"%c",table_separator);
-     }
-     fprintf(stdout,"%10u",seed);
-     field++;
-   }
-
-   /*
-    * No separator at the end, just EOL
-    */
-   fprintf(stdout,"\n");
-
- }
 
 }
 

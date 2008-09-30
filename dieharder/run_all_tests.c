@@ -34,18 +34,18 @@ void run_all_tests()
  /*
   * No special ntuple tests in diehard
   */
- for(i=0;i<dh_num_diehard_tests;i++){
-   if(dh_test_types[i]){
-     execute_test(i);
+ for(dtest_num=0;dtest_num<dh_num_diehard_tests;dtest_num++){
+   if(dh_test_types[dtest_num]){
+     execute_test(dtest_num);
    }
  }
 
  /*
   * No special ntuple tests in sts (yet)
   */
- for(i=100;i<100+dh_num_sts_tests;i++){
-   if(dh_test_types[i]){
-     execute_test(i);
+ for(dtest_num=100;dtest_num<100+dh_num_sts_tests;dtest_num++){
+   if(dh_test_types[dtest_num]){
+     execute_test(dtest_num);
    }
  }
 
@@ -56,16 +56,16 @@ void run_all_tests()
   * we take the trouble to count the three categories of test, might as
   * well use them.
   */
- for(i=200;i<200+dh_num_other_tests;i++){
+ for(dtest_num=200;dtest_num<200+dh_num_other_tests;dtest_num++){
 
-   switch(i){
+   switch(dtest_num){
 
      /*
       * Test 200 is rgb_bitdist, and needs an ntuple set/loop.
       */
      case 200:
 
-       if(dh_test_types[i]){
+       if(dh_test_types[dtest_num]){
 
          if(ntuple){
            /*
@@ -73,7 +73,7 @@ void run_all_tests()
 	    * We might need to check to be sure it is "doable", but probably
 	    * not...
             */
-           execute_test(i);
+           execute_test(dtest_num);
          } else {
            /*
             * Default is to test 1 through 8 bits, which takes a while on my
@@ -85,7 +85,7 @@ void run_all_tests()
            /* ntmax = 8; */
            /* printf("Setting ntmin = %d ntmax = %d\n",ntmin,ntmax); */
            for(ntuple = ntmin;ntuple <= ntmax;ntuple++){
-             execute_test(i);
+             execute_test(dtest_num);
            }
            /*
             * This RESTORES ntuple = 0, which is the only way we could have
@@ -102,7 +102,7 @@ void run_all_tests()
       */
      case 201:
 
-       if(dh_test_types[i]){
+       if(dh_test_types[dtest_num]){
 
          if(ntuple){
            /*
@@ -112,10 +112,10 @@ void run_all_tests()
            if(ntuple < 2 || ntuple > 5){
              ntsave = ntuple;
              ntuple = 5;  /* This is the hardest test anyway */
-             execute_test(i);
+             execute_test(dtest_num);
              ntuple = ntsave;
            } else {
-             execute_test(i);
+             execute_test(dtest_num);
            }
          } else {
            /*
@@ -126,7 +126,7 @@ void run_all_tests()
            ntmax = 5;
            /* printf("Setting ntmin = %d ntmax = %d\n",ntmin,ntmax); */
            for(ntuple = ntmin;ntuple <= ntmax;ntuple++){
-	     execute_test(i);
+	     execute_test(dtest_num);
 	   }
            /*
             * This RESTORES ntuple = 0, which is the only way we could have
@@ -144,7 +144,7 @@ void run_all_tests()
       */
      case 202:
 
-       if(dh_test_types[i]){
+       if(dh_test_types[dtest_num]){
 
          if(ntuple){
            /*
@@ -154,10 +154,10 @@ void run_all_tests()
            if(ntuple < 2){
              ntsave = ntuple;
              ntuple = 5;  /* This is the default operm5 value */
-             execute_test(i);
+             execute_test(dtest_num);
              ntuple = ntsave;
            } else {
-             execute_test(i);
+             execute_test(dtest_num);
            }
          } else {
            /*
@@ -168,7 +168,7 @@ void run_all_tests()
            ntmax = 5;
            /* printf("Setting ntmin = %d ntmax = %d\n",ntmin,ntmax); */
            for(ntuple = ntmin;ntuple <= ntmax;ntuple++){
-	     execute_test(i);
+	     execute_test(dtest_num);
 	   }
            /*
             * This RESTORES ntuple = 0, which is the only way we could have
@@ -186,13 +186,13 @@ void run_all_tests()
       */
      case 203:
 
-       if(dh_test_types[i]){
+       if(dh_test_types[dtest_num]){
 
          if(ntuple){
            /*
             * If ntuple is set to be nonzero, just use that value in "all".
             */
-           execute_test(i);
+           execute_test(dtest_num);
          } else {
            /*
             * Do all lags from 0 to 32.
@@ -201,7 +201,7 @@ void run_all_tests()
            ntmax = 32;
            /* printf("Setting ntmin = %d ntmax = %d\n",ntmin,ntmax); */
            for(ntuple = ntmin;ntuple <= ntmax;ntuple++){
-	     execute_test(i);
+	     execute_test(dtest_num);
 	   }
            /*
             * This RESTORES ntuple = 0, which is the only way we could have
@@ -215,9 +215,9 @@ void run_all_tests()
        break;
 
      default:
-       printf("Preparing to run test %d.  ntuple = %d\n",i,ntuple);
-       if(dh_test_types[i]){   /* This is the fallback to normal tests */
-         execute_test(i);
+       printf("Preparing to run test %d.  ntuple = %d\n",dtest_num,ntuple);
+       if(dh_test_types[dtest_num]){   /* This is the fallback to normal tests */
+         execute_test(dtest_num);
        }
        break;
 
