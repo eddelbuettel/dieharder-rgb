@@ -38,6 +38,8 @@ void parsecl(int argc, char **argv)
   */
 
  int imax,i,c,errflg=0;
+ int itmp;
+ uint utmp;
  int tflag_tmp = 0,dtest_tmp,gen_tmp;
  extern char *optarg;
  extern int optind, opterr, optopt;
@@ -172,7 +174,20 @@ void parsecl(int argc, char **argv)
        strategy = strtol(optarg,(char **) NULL,10);
        break;
      case 't':
-       tsamples = strtol(optarg,(char **) NULL,10);
+       itmp = strtol(optarg,(char **) NULL,10);
+       /*
+        * For a variety of reasons, we can't yet manage a full uint here,
+        * nor can we deal with a negative number.  HOWEVER, we DO have
+	* a really big ull tsamples, and we really SHOULD do our checking
+	* for excessive size elsewhere.
+        */
+       if(itmp>=0){
+         tsamples = itmp;
+       } else {
+         fprintf(stderr,"Warning!  tsamples cannot be negative = %d\n",itmp);
+	 fprintf(stderr,"          using default tsamples value(s).\n");
+	 fflush(stderr);
+       }
        break;
      case 'V':
        dh_version();

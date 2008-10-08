@@ -24,7 +24,7 @@
    TNO_WHITE = 32768
  } Table;
 
-#define TCNT 17
+#define TCNT 16
 
  /*
   * These should have a maximum length one can use in strncmp().

@@ -85,6 +85,7 @@ void output(Dtest *dtest,Test **test)
     * This needs its own output flag and field.  I'm losing it for now.
    if(!quiet){
      fprintf(stdout,"# %u rands were used in this test\n",file_input_get_rtot(rng));
+     fflush(stdout);
    }
     */
    if(file_input_get_rewind_cnt(rng) != 0){
@@ -210,6 +211,7 @@ void output_rng_info()
    }
  }
  fprintf(stdout,"\n");
+ fflush(stdout);
  
 }
 
@@ -324,6 +326,7 @@ void output_table_line_header()
  if(tflag & THEADER){
    fprintf(stdout,"#=============================================================================#\n");
  }
+ fflush(stdout);
 
 }
 
@@ -510,6 +513,7 @@ void output_table_line(Dtest *dtest,Test **test)
     * No separator at the end, just EOL
     */
    fprintf(stdout,"\n");
+   fflush(stdout);
 
  }
 
@@ -609,6 +613,7 @@ int output_histogram(double *input,char *pvlabel,int inum,double min,double max,
  for(i=0;i<nbins;i++) printf("%4.1f|",(i+1)*binscale);
  printf("\n");
  printf("#=============================================================================#\n");
+ fflush(stdout);
 
 }
 

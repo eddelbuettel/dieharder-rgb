@@ -66,6 +66,11 @@ DEFINES = -DVERSION=$(VERSION)
 AM_CPPFLAGS = -I ${top_srcdir}/include $(DEFINES) -I ${includedir}
 AM_CFLAGS = -O3
 
+# Load flags (optional)
+# To build a completely static dieharder, uncomment the following line.
+# AM_LDFLAGS = -all-static
+AM_LDFLAGS =
+
 #========================================================================
 # The only safe place to do svn commits is in the toplevel directory
 #========================================================================
