@@ -225,5 +225,14 @@ void run_all_tests()
 
  }
 
+ /*
+  * Future expansion in -a tests...
+ for(dtest_num=600;dtest_num<600+dh_num_user_tests;dtest_num++){
+   if(dh_test_types[dtest_num]){
+     execute_test(dtest_num);
+   }
+ }
+  */
+
 }
 

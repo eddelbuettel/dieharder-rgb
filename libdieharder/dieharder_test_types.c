@@ -134,9 +134,12 @@ void dieharder_test_types()
 
  /*
   * This is the total number of DOCUMENTED tests reported back to the
-  * UIs.
+  * UIs.  Note that dh_num_user_tests is counted up by add_ui_tests(),
+  * which also sets this variable (so they can be called in either
+  * order).
   */
- dh_num_tests = dh_num_diehard_tests + dh_num_sts_tests + dh_num_other_tests;
+ dh_num_tests = dh_num_diehard_tests + dh_num_sts_tests + dh_num_other_tests
+                + dh_num_user_tests;
 
  /*
   * Except that clever old me will put an undocumented test range out here

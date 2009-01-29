@@ -47,6 +47,7 @@
  uint dh_num_diehard_tests;  /* diehard tests available in dieharder */
  uint dh_num_sts_tests;      /* STS tests available in dieharder */
  uint dh_num_other_tests;    /* other tests available in dieharder */
+ uint dh_num_user_tests;     /* user tests added in ui segment */
  uint dh_num_tests;          /* total tests available in dieharder */
 
 

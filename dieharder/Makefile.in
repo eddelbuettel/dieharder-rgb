@@ -61,10 +61,11 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_dieharder_OBJECTS = add_ui_rngs.$(OBJEXT) choose_rng.$(OBJEXT) \
-	dieharder.$(OBJEXT) dieharder_exit.$(OBJEXT) help.$(OBJEXT) \
-	list_rngs.$(OBJEXT) list_tests.$(OBJEXT) output.$(OBJEXT) \
-	output_rnds.$(OBJEXT) parsecl.$(OBJEXT) rdieharder.$(OBJEXT) \
+am_dieharder_OBJECTS = add_ui_rngs.$(OBJEXT) add_ui_tests.$(OBJEXT) \
+	choose_rng.$(OBJEXT) dieharder.$(OBJEXT) \
+	dieharder_exit.$(OBJEXT) help.$(OBJEXT) list_rngs.$(OBJEXT) \
+	list_tests.$(OBJEXT) output.$(OBJEXT) output_rnds.$(OBJEXT) \
+	parsecl.$(OBJEXT) rdieharder.$(OBJEXT) \
 	rng_empty_random.$(OBJEXT) run_all_tests.$(OBJEXT) \
 	run_test.$(OBJEXT) set_globals.$(OBJEXT) testbits.$(OBJEXT) \
 	time_rng.$(OBJEXT) user_template.$(OBJEXT)
@@ -203,6 +204,7 @@ man1_MANS = dieharder.1
 dieharder_LDADD = ../libdieharder/libdieharder.la -lgsl -lgslcblas -lm
 dieharder_SOURCES = \
 	add_ui_rngs.c \
+	add_ui_tests.c \
 	choose_rng.c \
 	dieharder.c \
 	dieharder_exit.c \
@@ -239,6 +241,11 @@ DEFINES = -DVERSION=$(VERSION)
 # Compile flags (use fairly standard -O3 as default)
 AM_CPPFLAGS = -I ${top_srcdir}/include $(DEFINES) -I ${includedir}
 AM_CFLAGS = -O3
+
+# Load flags (optional)
+# To build a completely static dieharder, uncomment the following line.
+# AM_LDFLAGS = -all-static
+AM_LDFLAGS = 
 
 #========================================================================
 # The only safe place to do svn commits is in the toplevel directory
@@ -318,6 +325,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/add_ui_rngs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/add_ui_tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/choose_rng.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dieharder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dieharder_exit.Po@am__quote@

@@ -1,0 +1,208 @@
+N. Altman: Bit-wise behaviour of random number generators.
+SIAM J. Statist. Comp. 9 (1988), 941-949.
+
+A. Atkinson: Tests of pseudo-random numbers.
+Appl. Statist. 29 (1980), 164-171.
+
+T. Auer/Peter Hellekalek: Independence of uniform pseudorandom
+numbers I-II. In Vajtersic/Zinterhof 1994, 44-58, 59-73.
+
+M. Bar-Hillel/W. Wagenaar: The perception of randomness.
+Adv. Applied Math. 12 (1991), 428-454.
+
+8691 D. Barton/C. Mallows: Some aspects of the random sequence.
+Ann. Math. Stat. 36 (1965), 236-260.
+
+H. Bu''ning: Tests auf Gleichverteilung - ein Gu''tevergleich.
+In Bu''ning/Naeve 1981, 35-53.
+
+H. Bu''ning/P. Naeve (ed.): Computational statistics. De Gruyter 1981.
+
+N. Chan/L. Tran: Nonparametric tests for serial dependence.
+J. Time Series Analysis 13 (1992), 19-28.
+
+K. Chung: An estimate concerning the Kolmogorov limit distribution.
+Trans. AMS 67 (1949), 36-50.
+
+R. Clark: Statistical tests of a random number generator.
+Simulation 47/2 (1986), 72-74.
+
+Aaldert Comagner: Definitions of randomness.
+Am. J. Physics 59 (1991), 700-705.
+
+Aaldert Compagner: The hierarchy of correlations in random binary sequences.
+J. Statistical Physics 63 (1991), 883-896.
+
+Aaldert Compagner: Operational conditions for random number generation.
+Physical Rev. E 52 (1995), 5634-5645.
+
+R. Coveyou/R. MacPherson: Fourier analysis of uniform random number
+generators. J. ACM 14 (1967), 100-119.
+
+R. D'Agostino/M. Stephens: Goodness-of-fit techniques. Dekker 1986.
+
+8690 D. Darling: The Kolmogorov-Smirnov and Cramer-von-Mises tests.
+Ann. Math. Stat. 28 (1957), 823-838.
+
+J. De Armon: Randomness of low-order bits in random number generators.
+Simulation 62/6 (1994), 373-377.
+
+A. De Matteis/S. Pagnutti: Parallelization of random number generators
+and long-range correlations. Num. Math. 53 (1988), 595-608.
+
+7626 Ulrich Dieter: Pseudo-random numbers: The exact distribution of pairs.
+Math. Comp. 25 (1971), 855-883.
+
+E. Dudewicz/E. van der Meulen: Entropy-based tests of uniformity.
+J. Am. Stat. Assoc. 76/376 (1981), 967-974.
+
+E. Dudewicz/E. van der Meulen/M. Sri-Ram/N. Teoh: Entropy-based random
+number evaluation. Am. J. Math. Management Sci. 15 (1995), 115-153.
+
+E. Dudewicz/T. Ralley: The handbook of random number generation and testing
+with TESTRAND computer code. American Sciences 1981.
+
+7627 Juergen Eichenauer-Herrmann/Harald Niederreiter: On Marsaglia's lattice
+test for pseudorandom numbers. Manuscripta Math. 62 (1988), 245-248.
+
+M. Fushimi/S. Tezuka: The k-distribution of generalized feedback shift
+register pseudorandom numbers. Comm. ACM 26/7 (1983), 516-523.
+
+M. Goldstern: The complexity of uniform distribution.
+Math. Slovaca 44 (1994), 491-500.
+
+K. Grill: A note on randomness. 
+Statistics and Prob. Letters 14 (1992), 229-233.
+
+W. Grossmann/G. Pflug/W. Wertz (ed.): Probability and statistica inference.
+Reidel 1982.
+
+M. Hallin/G. Melard: Rank-based tests for randomness against first-order
+serial dependence. J. Am. Stat. Ass. 83 (1988), 1117-1128.
+
+M. Hallin/G. Melard/X. Milhaud: Permutational extreme values of autocorrelation
+coefficients and a pitman test against serial dependence.
+Annals of Statistics 20 (1992), 523-534.
+
+D. Jagerman: Some theorems concerning pseudo-random numbers.
+Math. Comp. 19 (1965), 418-426.
+
+8692 J. Kiefer: On large deviations of the empiric distribution function of
+vector chance variables and a law of the iterated logarithm.
+Pacific J. Math. 11 (1961), 649-660.
+
+A. Kolmogorov: Determinazione empirica di una legge di distribuzione.
+Giornale Ist. Ital. Attuari 4 (1933), 83-...
+
+A. Kucera: On relative randomness. 
+Annals Pure and Appl. Logic 63 (1992), 61-67.
+
+7238 Pierre L'Ecuyer: Testing random number generators.
+Proc. 1992 Winter Simulation Conf. 1992, 305-313.
+
+Pierre L'Ecuyer: Tests based on sum-functions of spacings for uniform
+random numbers. ..., (1996), ...
+
+8736 Pierre L'Ecuyer/Aaldert Compagner/Jean-Francois Cordeau: Entropy tests
+for random number generators. Internet 1996, 20p.
+
+Pierre L'Ecuyer/Jean-Francois Cordeau: Close-neighbour tests for random
+number generators. ... (1996), ...
+
+8734 Pierre L'Ecuyer/Raymond Couture: An implementation of the lattice and
+spectral tests for multiple recursive linear random number generators.
+INFORMS J. Computing, ... (ca. 1997), ...
+
+7459 Hannes Leeb: On the digit test. Internet, 13p.
+[Published in Tagungsband zum 1. Salzburger Minisymposium ueber
+Pseudozufallszahlen und Quasi-Monte-Carlo-Methoden am 18.11.1994.]
+
+George Marsaglia: Diehard - a battery of tests of randomness.
+ftp://stat.fsu.edu/pub/diehard.
+
+George Marsaglia/A. Zaman: Monkey tests for random number generators.
+Comp. and Math. with Appl. 26 (1993), 1-10.
+
+U. Maurer: A universal statistical test for random bit generators.
+Adv. Cryptology CRYPTO '90, 409-420.
+
+D. Modianos/R. Scott/L. Cornwell: Testing intrinsic random number
+generators. Byte January 1987, 175-178.
+
+J. Montes: A definition of randomness and a model of a nonlocal real world.
+Physics Essays 5/2 (1992), 180-183.
+
+7665 Harald Niederreiter: Metric theorems on the distribution of
+sequences. Proc. Symp. Pure Math. AMS 24 (1973), 195-212.
+
+Harald Niederreiter: The serial test for linear congruential pseudo-random
+numbers. Bull. AMS 84 (1978), 273-274.
+
+Harald Niederreiter: Statistical tests for Tausworthe pseudo-random numbers.
+In Grossmann/ 1982, 265-274.
+
+10218 Harald Niederreiter: The serial test for pseudo-random numbers generated
+by the linear congruential method. Num. Math. 46 (1985), 51-68.
+
+Harald Niederreiter: Statistical independence properties of pseudorandom
+vectors generated by matrix generators.
+J. Comp. Appl. Math. 31 (1990), 139-151.
+
+J. Olucha/F. Ruis: Software to test the hypothesis of normal distribution
+of data according to Kolmogorov's test. 
+Trends Analytical Chem. 9/3 (1990), 77-79.
+
+D. Ornstein: Ergodic theory, randomness and chaos. Science 243 (1989), 182-187.
+
+10215 Steven Pincus: Approximate entropy as a measure of system complexity.
+Proc. Nat. Ac. Sci. USA 88 (1991), 2297-2301.
+
+10213 Steven Pincus/Burton Singer: Randomness and degrees of irregularity.
+Proc. Nat. Ac. Sci. USA 93 (1996), 2083-2088.
+
+10214 Steven Pincus a.o.: Older males secrete luteinizing hormone and
+testosterone more irregularly, and jointly more asynchronously, than
+younger males. Proc. Nat. Ac. Sci. USA 93 (1996), 14100-14105.
+
+10186 Steven Pincus/Rudolf Kalman: Not all (possibly) random sequences
+are created equal. Proc. Nat. Ac. Sci. USA 94 (1997), 3513-3518.
+
+A. Schrift/A. Shamir: On the universality of the next bit test.
+Adv. Cryptology CRYPTO '90, 394-408.
+
+10142 Charles Seife: New test sizes up randomness.
+Science 25 April 1997, 532. The Pincus-Singer entropy test.
+
+I. Shparlinski: The distribution of the fractional parts of recurrent
+sequences. Zh. Vych. Mat. i Mat. Fiz. 21 (1981), 1588-1591 (Russian).
+
+E. Sowey: A chronological and classified bibliography on random number
+generation and testing. Int. Statist. Rev. 40 (1972), 355-371.
+
+M. Stephens: Tests for the uniform distribution.
+In D'Agostino/Stephens 1986, 331-366.
+
+R. Tarone: Testing for non-randomness of events in sparse data situations.
+Annals Human Genetics 53 (1989), 381-387.
+
+V. Uspenskii/A. Semenov/A. Shen: Can an individual sequence of zeros and ones
+be random. Russ. Math. Surveys 45 (1990), 121-189.
+
+M. Vajtersic/P. Zinterhof (ed.): Proc. Int. Workshop Parallel Numerics '94.
+Slovak Academy of Sciences, Bratislava 1994.
+
+O. Vasicek: A test for normality based on sample entropy.
+J. Royal Stat. Soc. B 38 (1976), 54-59.
+
+M. Wand/L. Devroye: How easy is a given density to estimate?
+Comp. Stat. and Data Analysis 16 (1993), 311-323.
+
+7384 Stefan Wegenkittl: On empirical testing of pseudorandom number generators.
+Parallel Numerics, Sorrento September 1995, ...
+
+R. Winkler: Some remarks on pseudorandom sequences.
+Math. Slovaca 43 (1993), 493-512.
+
+W. Zurek: Algorithmic randomness and physical entropy.
+Physical Review A 40 (1989), 4731-4751.
+

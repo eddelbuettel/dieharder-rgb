@@ -25,7 +25,7 @@ int user_template(Test **test,int irun);
 static Dtest user_template_dtest = {
   "Example User Test",
   "user_template",
-  "\
+  "\n\
 #==================================================================\n\
 #                  Example Dieharder Test\n\
 #\n\
@@ -44,6 +44,8 @@ static Dtest user_template_dtest = {
 #==================================================================\n",
   100,
   100000,
-  1
+  1,
+  user_template,
+  0
 };
 

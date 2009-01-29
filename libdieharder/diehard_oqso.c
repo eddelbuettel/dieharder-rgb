@@ -24,6 +24,12 @@
  * Note: 2^21 = 2097152
  * Note: One must use overlapping samples to get the right sigma.
  * The tests BITSTREAM, OPSO, OQSO and DNA are all closely related.
+ *
+ * This test is now CORRECTED on the basis of a private communication
+ * from Paul Leopardi (MCQMC-2008 presentation) and Noonan and Zeilberger
+ * (1999), Rivals and Rahmann (2003), and Rahmann and Rivals (2003).
+ * The "exact" target statistic (to many places) is:
+ * \mu = 141909.6005321316,  \sigma = 294.6558723658
  * ========================================================================
  */
 
@@ -48,12 +54,12 @@ int diehard_oqso(Test **test, int irun)
   * expected "missing works" count as a function of sample size.  SO:
   *
   * ptest.x = number of "missing words" given 2^21 trials
-  * ptest.y = 141909
-  * ptest.sigma = 295
+  * ptest.y = 141909.6005321316
+  * ptest.sigma = 294.6558723658
   */
  ptest.x = 0.0;  /* Initial value */
- ptest.y = 141909.0;
- ptest.sigma = 295.0;
+ ptest.y = 141909.6005321316;
+ ptest.sigma = 294.6558723658;
 
  /*
   * We now make tsamples measurements, as usual, to generate the

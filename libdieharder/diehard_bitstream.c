@@ -21,9 +21,12 @@
  *  (j-141909)/428 should be a standard normal variate (z score) ::
  * that leads to a uniform [0,1) p value.  The test is repeated  ::
  * twenty times.                                                 ::
+ *
+ * Except that in dieharder, the test is not run 20 times, it is
+ * run a user-selectable number of times, default 100.
  *========================================================================
  *                       NOTE WELL!
- * If you use non-overlapping samples, sigma is 288, not 428.  This
+ * If you use non-overlapping samples, sigma is 290, not 428.  This
  * makes sense -- overlapping samples aren't independent and so you
  * have fewer "independent" samples than you think you do, and
  * the variance is consequently larger.

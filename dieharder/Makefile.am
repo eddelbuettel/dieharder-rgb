@@ -29,6 +29,7 @@ man1_MANS = dieharder.1
 dieharder_LDADD = ../libdieharder/libdieharder.la -lgsl -lgslcblas -lm
 dieharder_SOURCES = \
 	add_ui_rngs.c \
+	add_ui_tests.c \
 	choose_rng.c \
 	dieharder.c \
 	dieharder_exit.c \

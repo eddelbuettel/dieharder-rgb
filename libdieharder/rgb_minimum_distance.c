@@ -11,10 +11,10 @@
  *
  *            THE GENERALIZED MINIMUM DISTANCE TEST
  *
- * This is the generalized minimum distance test, based on the paper of M.
- * Fischler in the doc directory and private communications.  This test
- * utilizes correction terms that are essential in order for the test not
- * to fail for large numbers of trials.  It replaces both
+ * This is the generalized minimum distance test, based on the paper of 
+ * Mark Fischler in the doc directory and private communications.  This
+ * test utilizes correction terms that are essential in order for the
+ * test not to fail for large numbers of trials.  It replaces both
  * diehard_2dsphere.c and diehard_3dsphere.c, and generalizes the test
  * itself so that it can be run for any d = 2,3,4,5.  There is no
  * fundamental obstacle to running it for d = 1 or d>5, but one would need
