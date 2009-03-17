@@ -154,15 +154,23 @@ static void aes_set (void *vstate, unsigned long int s) {
 
  int bits;
 
+ MYDEBUG(D_RNGS){
+   fprintf(stdout,"# rng_aes %d:  Initializing rng_aes\n",D_RNGS);
+ }
+
  /*
   * We use mt19937_1999
   */
- seed_rng = gsl_rng_alloc(types[14]);
+ seed_rng = gsl_rng_alloc(dh_rng_types[14]);
  gsl_rng_set(seed_rng,s);
  for(i=0;i<AES_KEY_LENGTH;i++){
-   get_rand_bits(&tmp8,sizeof(uint),8,seed_rng);
+   get_rand_bits(&tmp8,sizeof(char),8,seed_rng);
    key[i] = tmp8;
+   MYDEBUG(D_RNGS){
+     fprintf(stdout,"# rng_aes %d:  key[%d] = %d\n",D_RNGS,i,key[i]);
+   }
  }
+ 
  bits = 256;
  sha512_hash_buffer(key,AES_KEY_LENGTH,&hbu.hb[0],32);
  aes_set_key(&ctx, &hbu.hb[0], bits, 0);

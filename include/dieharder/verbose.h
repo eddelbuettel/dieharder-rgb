@@ -59,5 +59,6 @@
    D_FILE_INPUT_RAW,
    D_ADD_MY_TYPES,
    D_STD_TEST,
+   D_RNGS,
    N_DEBUG
  } Debug;
