@@ -129,8 +129,8 @@ double kstest_kuiper(double *pvalue,int count)
  if(verbose == D_KSTEST || verbose == D_ALL){
    printf("    obs       exp           v        vmin         vmax\n");
  }
- vmin = pvalue[0];
- vmax = pvalue[0];
+ vmin = 0.0;
+ vmax = 0.0;
  for(i=0;i<count;i++){
    y = (double) i/count;
    v = pvalue[i] - y;
@@ -150,7 +150,7 @@ double kstest_kuiper(double *pvalue,int count)
  if(verbose == D_KSTEST || verbose == D_ALL){
    printf("Kuiper's V = %8.3f, evaluating q_ks_kuiper(%6.2f)\n",v,x);
  }
- p = q_ks_kuiper(x);
+ p = q_ks_kuiper(x,count);
 
  if(verbose == D_KSTEST || verbose == D_ALL){
    if(p < 0.0001){
@@ -165,31 +165,50 @@ double kstest_kuiper(double *pvalue,int count)
 
 }
 
-double q_ks_kuiper(double x)
+double q_ks_kuiper(double x,int count)
 {
 
- int i,sign;
- double qsum = 0;
+ uint m,msq;
+ double xsq,preturn,q,q_last,p,p_last;
 
- i = 0;
- if(x<0.4){
-   qsum = 1.0;
-   if(verbose == D_KSTEST || verbose == D_ALL){
-     printf("(cutoff): Q_ks %d: %f\n",i,qsum);
-   }
- } else {
-   for(i=1;i<100;i++){
-     qsum += (4.0*i*i*x*x - 1.0)*exp(-2.0*i*i*x*x);
-     if(verbose == D_KSTEST || verbose == D_ALL){
-       printf("Q_ks %d: %f\n",i,2.0*qsum);
-     }
-   }
+ /*
+  * OK, Numerical Recipes screwed us even in terms of the algorithm.
+  * This one includes BOTH terms.
+  *   Q = 2\sum_{m=1}^\infty (4m^2x^2 - 1)exp(-2m^2x^2)
+  *   P = 8x/3\sqrt{N}\sum_{m=i}^\infty m^2(4m^2x^2 - 3)
+  *   Q = Q - P (and leaving off P has consistently biased us HIGH!
+  * To get the infinite sum, we simply sum to double precision convergence.
+  */
+ m = 0;
+ q = 0.0;
+ q_last = -1.0;
+ while(q != q_last){
+   m++;
+   msq = m*m;
+   xsq = x*x;
+   q_last = q;
+   q += (4.0*msq*xsq - 1.0)*exp(-2.0*msq*xsq);
  }
+ q = 2.0*q;
+
+ m = 0;
+ p = 0.0;
+ p_last = -1.0;
+ while(p != p_last){
+   m++;
+   msq = m*m;
+   xsq = x*x;
+   p_last = p;
+   p += msq*(4.0*msq*xsq - 3.0)*exp(-2.0*msq*xsq);
+ }
+ p = (8.0*x*p)/(3.0*sqrt(count));
+
+ preturn = q - p;
 
  if(verbose == D_KSTEST || verbose == D_ALL){
-   printf("Q_ks returning %f\n",2.0*qsum);
+   printf("Q_ks yields preturn = %f:  q = %f  p = %f\n",preturn,q,p);
  }
- return(2.0*qsum);
+ return(preturn);
 
 }
 

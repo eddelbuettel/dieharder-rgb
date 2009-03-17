@@ -14,6 +14,7 @@ AC_PROG_INSTALL
 # Checks for libraries.
 AC_CHECK_LIB([gsl], [gsl_error])
 AC_CHECK_LIB([gslcblas], [cblas_ddot])
+AC_CHECK_LIB([aes], [aes_enable])
 
 # Checks for header files.
 AC_HEADER_STDC

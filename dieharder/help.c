@@ -52,7 +52,7 @@ Usage:\n\
 \n\
   dieharder [-a] [-d dieharder test number] [-f filename]\n\
            [-D output flag [-D output flag] ... ] [-F] [-c separator]\n\
-           [-g generator number or -1] [-h] [-l] \n\
+           [-g generator number or -1] [-h] [-k ks_flag] [-l] \n\
            [-n ntuple] [-p number of p samples] [-o filename] \n\
            [-s seed strategy] [-S random number seed]\n\
 	   [-t number of test samples] [-v verbose flag]\n\
@@ -81,6 +81,8 @@ Usage:\n\
      -1 causes all known generators to be printed out to the display.\n\
   -h prints context-sensitive help -- usually Usage (this message) or a\n\
      test synopsis if entered as e.g. dieharder -D 3 -h.\n\
+  -k ks_flag - selects either Kuiper KS test (ks_flag = 0, default) or\n\
+     Anderson-Darling KS test (ks_flag = 1) to generate final test p-value.\n\
   -l list all known tests.\n\
   -n ntuple - set ntuple length for tests on short bit strings that permit\n\
      the length to be varied (e.g. rgb bitdist).\n\

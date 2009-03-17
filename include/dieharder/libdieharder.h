@@ -99,7 +99,7 @@
  double kstest(double *pvalue,int count);
  double kstest_kuiper(double *pvalue,int count);
  double q_ks(double x);
- double q_ks_kuiper(double x);
+ double q_ks_kuiper(double x,int count);
 
  void histogram(double *input, char *pvlabel, int inum, double min, double max, int nbins, char *label);
 
@@ -148,6 +148,7 @@
  int help_flag;         /* Help flag */
  int hist_flag;         /* Histogram display flag */
  int iterations;	/* For timing loop, set iterations to be timed */
+ int ks_test;           /* Selects the KS test to be used, 0 = Kuiper 1 = Anderson-Darling */
  int list;              /* List all tests flag */
  int List;              /* List all generators flag */
  int ntuple;            /* n-tuple size for n-tuple tests */

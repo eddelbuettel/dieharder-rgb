@@ -55,7 +55,7 @@ void parsecl(int argc, char **argv)
     exit(1); /* count this as an error */
  }
 
- while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:ln:op:S:s:t:Vv:x:y:z:")) != EOF){
+ while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:ln:op:S:s:t:Vv:x:y:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
@@ -154,6 +154,9 @@ void parsecl(int argc, char **argv)
        break;
      case 'i':
        iterations = strtol(optarg,(char **) NULL,10);
+       break;
+     case 'k':
+       ks_test = strtol(optarg,(char **) NULL,10);
        break;
      case 'l':
        list = YES;

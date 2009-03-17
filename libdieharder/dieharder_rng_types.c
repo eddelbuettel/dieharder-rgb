@@ -90,6 +90,8 @@ void dieharder_rng_types()
  dh_num_dieharder_rngs++;
  ADD(gsl_rng_uvag);
  dh_num_dieharder_rngs++;
+ ADD(gsl_rng_aes);
+ dh_num_dieharder_rngs++;
  MYDEBUG(D_TYPES){
    printf("# startup:  Found %u dieharder rngs.\n",dh_num_dieharder_rngs);
  }

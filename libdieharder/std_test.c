@@ -165,7 +165,13 @@ void std_test(Dtest *dtest, Test **test)
   * other with a flag.
   */
  for(j = 0;j < dtest->nkps;j++){
-   test[j]->ks_pvalue = kstest_kuiper(test[j]->pvalues,test[j]->psamples);
+   if(ks_test == 1){
+     /* This can be selected with -k 1 from the command line */
+     test[j]->ks_pvalue = kstest(test[j]->pvalues,test[j]->psamples);
+   } else {
+     /* This is default */
+     test[j]->ks_pvalue = kstest_kuiper(test[j]->pvalues,test[j]->psamples);
+   }
  }
 
 }

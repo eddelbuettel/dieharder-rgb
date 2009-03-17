@@ -107,6 +107,7 @@ AC_SUBST(DIEHARDER_LIBS)
 AC_CHECK_LIB([gsl], [main])
 # FIXME: Replace `main' with a function in `-lgslcblas':
 AC_CHECK_LIB([gslcblas], [main])
+AC_CHECK_LIB([aes], [aes_encrypt])
 
 #==================================================================
 # Checks for typedefs, structures, and compiler characteristics.
