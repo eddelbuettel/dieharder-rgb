@@ -46,7 +46,15 @@ double kstest(double *pvalue,int count)
  }
  for(i=0;i<count;i++){
    y = (double) i/count;
-   d = fabs(pvalue[i] - y);
+   /*
+    * d = fabs(pvalue[i] - y);
+    *
+    * Correction by David Bauer, pulled from R code for KS.
+    * Apparently the above line is right/left biased and this
+    * handles the position symmetrically.
+    */
+   d = fmax(pvalue[i] - y, (1.0/count) - (pvalue[i] - y));
+
    if(verbose == D_KSTEST || verbose == D_ALL){
      printf("%8.3f   %8.3f    %8.3f   %8.3f\n",pvalue[i],y,d,dmax);
    }
