@@ -58,6 +58,7 @@ libdieharder_la_SOURCES = \
 	random_seed.c \
 	rank.c \
 	rgb_bitdist.c \
+	rgb_kstest_test.c \
 	rgb_lagged_sums.c \
 	rgb_minimum_distance.c \
 	rgb_permutations.c \
