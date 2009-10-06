@@ -22,15 +22,17 @@ static Dtest rgb_kstest_test_dtest = {
 # what is in R (thanks to a correction sent in by David Bauer).\n\
 # As always, the test is run pvalues times and the (same) KS test is then\n\
 # used to generate a final test pvalue, but the real purpose of this test\n\
-# is to test ADKS and KKS, not to test rngs.  There is reason to believe\n\
-# that they are are returning high-biased final pvalues for the default\n\
-# 100 test pvalues in a standard test run, and this test will allow this\n\
-# hypothesis to be directly tested.  It may prove useful to detect\n\
-# extremely weak rngs as well (for large tsamples) but I somewhat doubt\n\
-# it.\n\
+# is to test ADKS and KKS, not to test rngs.  This test clearly reveals\n\
+# that kstests run on only 100 test values (tsamples, herein) are only\n\
+# approximately accurate; their pvalues are distinctly high-biased (but\n\
+# less so than Kuiper or KS before the fix).  This bias is hardly visible\n\
+# for less than 1000 trivals (psamples, herein) but will constently cause\n\
+# failure for -t 100, -p 10000 or higher.  For -t 1000, it is much more\n\
+# difficult to detect, and the final kstest is approximately valid for the\n\
+# test in question.\n\
 #\n",
-  100,
-  100,
+  1000,
+  10000,
   1,
   rgb_kstest_test,
   0

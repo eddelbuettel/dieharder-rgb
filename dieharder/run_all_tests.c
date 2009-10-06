@@ -214,6 +214,16 @@ void run_all_tests()
        }
        break;
 
+     /*
+      * Test 204 is rgb_kstest_test.
+      */
+     case 204:
+
+       if(dh_test_types[dtest_num]){
+         execute_test(dtest_num);
+       }
+       break;
+
      default:
        printf("Preparing to run test %d.  ntuple = %d\n",dtest_num,ntuple);
        if(dh_test_types[dtest_num]){   /* This is the fallback to normal tests */
