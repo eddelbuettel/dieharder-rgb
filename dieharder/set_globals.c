@@ -17,7 +17,7 @@ void set_globals()
  dtest_name[0] = (char)0; /* empty test name is also default */
  filename[0] = (char)0; /* No input file */
  fromfile = 0;          /* Not from an input file */
- ks_test = 0;           /* Default is 0, Kuiper KS test */
+ ks_test = 0;           /* Default is 0, Symmetrized KS test */
  output_file = 0;       /* No output file */
  overlap = 1;           /* Default is to use overlapping samples */
  generator = 13;        /* Default is mt19937 as a "good" generator */

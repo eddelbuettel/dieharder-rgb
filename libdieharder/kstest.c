@@ -51,7 +51,9 @@ double kstest(double *pvalue,int count)
     *
     * Correction by David Bauer, pulled from R code for KS.
     * Apparently the above line is right/left biased and this
-    * handles the position symmetrically.
+    * handles the position more symmetrically.   This fix is
+    * CRUCIAL for small sample sizes, and can be validated with:
+    *   dieharder -d 204 -t 100 -p 10000 -D default -D histogram
     */
    d = fmax(pvalue[i] - y, (1.0/count) - (pvalue[i] - y));
 

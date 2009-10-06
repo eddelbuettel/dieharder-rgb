@@ -9,7 +9,7 @@ AC_PREREQ(2.59)
 # Be sure to set DIEHARDER_LT_VERSION below at the same time
 # you change this:
 #==================================================================
-AC_INIT([dieharder], [3.29.0beta])
+AC_INIT([dieharder], [3.29.1beta])
 
 AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_SRCDIR([dieharder.abs])
@@ -29,11 +29,13 @@ AC_DEFINE([RELEASED], [], [Description])
 # 
 # dieharder-1.0    libdieharder 0:0:0
 #==================================================================
+# This command "should" keep libtool up to date.
+AC_CONFIG_MACRO_DIR([m4])
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
-DIEHARDER_LT_VERSION="3:28:0"
+DIEHARDER_LT_VERSION="3:29:1"
 AC_SUBST(DIEHARDER_LT_VERSION)
-DIEHARDER_LIB_VERSION=3.28.0
+DIEHARDER_LIB_VERSION=3.29.1
 AC_SUBST(DIEHARDER_LIB_VERSION)
 
 case "$VERSION" in
@@ -58,7 +60,6 @@ AC_LANG(C)
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 #==================================================================
 # OK, these five macros prevent my personal path from appearing

@@ -59,11 +59,11 @@ int rgb_kstest_test(Test **test, int irun)
  }
 
  if(ks_test == 1){
-   /* This can be selected with -k 1 from the command line */
-   test[0]->pvalues[irun] = kstest(testvec,tsamples);
- } else {
-   /* This is default */
+   /* This (Kuiper) can be selected with -k 1 from the command line */
    test[0]->pvalues[irun] = kstest_kuiper(testvec,tsamples);
+ } else {
+   /* This (Symmetrized KS) is -k 0 or default */
+   test[0]->pvalues[irun] = kstest(testvec,tsamples);
  }
 
  free(testvec);
