@@ -90,6 +90,7 @@ in testing BEFORE using this testing tool!\n\
          (do not use the following as tests yet)\n\
    [dev: -r 7 RGB L-M-Ntuple Distribution test suite (quite long)]\n\
    [dev: -r 8 RGB Overlapping Permutations test]\n\
+   [rft: -r 9 RGB KStest test]\n\
 \n\
       Statistical Test Suite (STS)\n\
    -s 1 STS Monobit test\n\

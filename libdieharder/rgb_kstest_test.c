@@ -58,7 +58,13 @@ int rgb_kstest_test(Test **test, int irun)
    }
  }
 
- test[0]->pvalues[irun] = kstest(testvec,tsamples);
+ if(ks_test == 1){
+   /* This can be selected with -k 1 from the command line */
+   test[0]->pvalues[irun] = kstest(testvec,tsamples);
+ } else {
+   /* This is default */
+   test[0]->pvalues[irun] = kstest_kuiper(testvec,tsamples);
+ }
 
  free(testvec);
 

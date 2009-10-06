@@ -12,7 +12,7 @@ static Dtest rgb_kstest_test_dtest = {
   "rgb_kstest_test",
   "#\n\
 #            The Kolmogorov-Smirnov Test Test\n\
-#
+#\n\
 #\n\
 # This test generates a vector of tsamples uniform deviates from the\n\
 # selected rng, then applies an Anderson-Darling or Kuiper KS test to\n\

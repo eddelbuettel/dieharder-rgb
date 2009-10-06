@@ -159,9 +159,9 @@ OTOOL64 =
 PACKAGE = dieharder
 PACKAGE_BUGREPORT = 
 PACKAGE_NAME = dieharder
-PACKAGE_STRING = dieharder 3.28.0beta
+PACKAGE_STRING = dieharder 3.29.0beta
 PACKAGE_TARNAME = dieharder
-PACKAGE_VERSION = 3.28.0beta
+PACKAGE_VERSION = 3.29.0beta
 PATH_SEPARATOR = :
 RANLIB = ranlib
 RELEASE = 1
@@ -175,7 +175,7 @@ STRIP = strip
 # This is revision information, automagically set from autoconf.  The
 # actual version information is set ONLY in configure.ac
 #========================================================================
-VERSION = 3.28.0beta
+VERSION = 3.29.0beta
 abs_builddir = /home/rgb/Src/Projects/dieharder
 abs_srcdir = /home/rgb/Src/Projects/dieharder
 abs_top_builddir = /home/rgb/Src/Projects/dieharder
@@ -323,8 +323,8 @@ REPOPATH = /var/www/html/fc/6/local/
 #========================================================================
 # This target takes the dieharder sources and "magically" transforms
 # them into RDieHarder sources.
-RDHTAR = RDieHarder_3.28.0beta.tar
-RDHPKG = RDieHarder_3.28.0beta.tar.gz
+RDHTAR = RDieHarder_3.29.0beta.tar
+RDHPKG = RDieHarder_3.29.0beta.tar.gz
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
