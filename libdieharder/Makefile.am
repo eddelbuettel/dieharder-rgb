@@ -66,6 +66,7 @@ libdieharder_la_SOURCES = \
 	rgb_timing.c \
 	rngav.c \
 	rng_aes.c \
+	rijndael-alg-fst.c \
 	rng_ca.c \
 	rng_dev_random.c \
 	rng_dev_arandom.c \

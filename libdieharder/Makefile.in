@@ -91,9 +91,10 @@ am_libdieharder_la_OBJECTS = bits.lo chisq.lo countx.lo \
 	marsaglia_tsang_gorilla.lo parse.lo prob.lo random_seed.lo \
 	rank.lo rgb_bitdist.lo rgb_kstest_test.lo rgb_lagged_sums.lo \
 	rgb_minimum_distance.lo rgb_permutations.lo rgb_persist.lo \
-	rgb_timing.lo rngav.lo rng_aes.lo rng_ca.lo rng_dev_random.lo \
-	rng_dev_arandom.lo rng_dev_urandom.lo rng_file_input.lo \
-	rng_file_input_raw.lo rngs_gnu_r.lo rng_kiss.lo rng_jenkins.lo \
+	rgb_timing.lo rngav.lo rng_aes.lo rijndael-alg-fst.lo \
+	rng_ca.lo rng_dev_random.lo rng_dev_arandom.lo \
+	rng_dev_urandom.lo rng_file_input.lo rng_file_input_raw.lo \
+	rngs_gnu_r.lo rng_kiss.lo rng_jenkins.lo \
 	rng_stdin_input_raw.lo rng_uvag.lo sample.lo std_test.lo \
 	sts_monobit.lo sts_runs.lo sts_serial.lo timing.lo Vtest.lo \
 	version.lo Xtest.lo
@@ -298,6 +299,7 @@ libdieharder_la_SOURCES = \
 	rgb_timing.c \
 	rngav.c \
 	rng_aes.c \
+	rijndael-alg-fst.c \
 	rng_ca.c \
 	rng_dev_random.c \
 	rng_dev_arandom.c \
@@ -456,6 +458,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_permutations.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_persist.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_timing.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rijndael-alg-fst.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_aes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_ca.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_dev_arandom.Plo@am__quote@
