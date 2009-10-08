@@ -48,7 +48,8 @@
 
  GSL_VAR const gsl_rng_type *gsl_rng_ca;
  GSL_VAR const gsl_rng_type *gsl_rng_uvag;	        /* rgb Jun 2007 */
- GSL_VAR const gsl_rng_type *gsl_rng_aes;	        /* rgb Mar 2009 */
+ GSL_VAR const gsl_rng_type *gsl_rng_aes;	        /* bauer Oct 2009 */
+ GSL_VAR const gsl_rng_type *gsl_rng_threefish;	        /* bauer Oct 2009 */
 
  /*
   * rng global vectors and variables for setup and tests.

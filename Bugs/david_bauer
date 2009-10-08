@@ -1,0 +1,573 @@
+From astgtciv2009@gatech.edu Mon Mar  9 14:54:47 2009
+Date: Mon, 9 Mar 2009 14:54:43 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder-devel post from astgtciv2009@gatech.edu requires approval (fwd)
+
+> Sorry, my bad, I have the list set to members only to help hold down
+> SPAM and must have missed the first round.
+
+Actually, I subscribed to the list, but then sent the e-mail from the wrong alias.
+(I changed both the address I was subscribed with and the address my mail client was set to use before sending the second e-mail, but my mail client didn't cooperate.)
+
+
+> Which version of dieharder are you using?
+
+2.28.1
+
+
+>   * This test is now CORRECTED on the basis of a private communication
+>   * from Paul Leopardi (MCQMC-2008 presentation) and Noonan and Zeilberger
+>   * (1999), Rivals and Rahmann (2003), and Rahmann and Rivals (2003).
+>   * The "exact" target statistic (to many places) is:
+>   * \mu  = 141909.3299550069,  \sigma = 290.4622634038
+> 
+> The test is very definitely an overlapping samples test, and you'll get
+> the wrong answer with a non-overlapping run.
+
+How do I tell dieharder to do overlapping samples then?  I only see the -N option (which I've not been using) to force non-overlapping samples.
+
+
+> What I need is a real "gold standard" source of random numbers, but alas
+> there is no such beast.  I tend to use a series of runs using mt19937,
+> gfsr4, taus, and rndlx2 and hope that these are between them "pretty
+> darn good".  If I get two or three of them to pass and one to fail, it
+> suggests that the test might be good and the failing generator is
+> actually failing, but of course this is far from certain.
+<And much later>
+> I don't know about the Java crypto generator -- crypto
+> generators tend to be pretty good but I'm very, very cynical about the
+> testing and validation of RNGs.  The most common error my bit
+> distribution and permutations tests pick up -- errors that I really do
+> believe at this point as I derive the test targets myself and understand
+> them -- is that most "good" rngs are TOO "random" to pass the test.  They
+> systematically produce p-values that are too high (until one runs large
+> enough samples that the final ks test fails egregiously and goes to
+> zero).
+
+Which test or tests do you get this result from?
+For example, if you can get that result from 'cat /dev/zero | aespipe | diehard -g 200', that should be headline news.
+
+
+> Anyway, if you aren't using 3.28.0beta, I'd be happy to send you a copy.
+
+Yes, please.
+
+
+David Bauer
+
+From astgtciv2009@gatech.edu Wed Mar 11 09:40:05 2009
+Date: Wed, 11 Mar 2009 09:39:59 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder-devel post from astgtciv2009@gatech.edu requires approval (fwd)
+
+> Nine weak assessments if a bad fail, given < 0.01 probability and less
+> than 100 tests.  Note also (at a glance) far more scores >0.5 than less
+> than.  I'll try turning on AD KS and rerun, see if that matters.
+
+Sorry for taking so long to reply.
+Is there any reasonable way to construct a (software) PRNG of reasonable speed that you would expect to be beyond reproach?
+I figured encrypting the output of MT with AES should eliminate any questions about the output of AES having enough entropy.
+I modified dieharder such that doing -o -t 0 would be interpreted as infinite output, not zero, to use it as the MT generator.
+I also changed it so that doing all tests (-a) doesn't override the -p setting.
+I've finished a run of:
+./dieharder -g 13 -B -o -t 0 | aespipe -P password.txt | ./dieharder -a -p 1000 -g 200
+and I'm in rgb_bitdist for a run of:
+./dieharder -g 13 -B -o -t 0 | aespipe -P password.txt | ./dieharder -a -p 10000 -g 200
+
+For the 10k, I have gotten the following failures:
+diehard_operm5|   5|   1000000|   10000|0.00000000|  FAILED
+diehard_opso|   0|   2097152|   10000|0.00000000|  FAILED
+diehard_dna|   0|   2097152|   10000|0.00000000|  FAILED
+diehard_parking_lot|   0|     12000|   10000|0.00001684|  FAILED
+diehard_sums|   0|       100|   10000|0.00000000|  FAILED
+diehard_runs|   0|    100000|   10000|0.00000028|  FAILED
+(None in STS or rgb so far; no weak or poor scores reported.)
+
+For the 1k (ignoring the diehard tests), I got the following listed as weak:
+sts_serial 4 (first one), 15 (first one), 16 (second one)
+rgb_minimum_distance 2
+
+For just AES, with -p 100, I got failures in:  (ignoring diehard tests)
+sts_serial 2  (p=0.99979391)
+rgb_permutations 5  (p=0.99999306)
+
+and weak in:
+rgb_bitdist 4 and 5
+rgb_lagged_sum 8
+
+I retested rgb_permutations 5 with 10k p-values and it passed.
+I retested all of sts_serial with 10k p-values and they all passed.
+
+So, except for some of the diehard tests, I haven't gotten any tests to return weak consistently on a PRNG I trust.
+However, within my understanding of the probabilities (I haven't tried to calculate things for myself), the results are still statistically improbable.
+
+
+David Bauer
+
+From astgtciv2009@gatech.edu Fri Mar 13 16:12:59 2009
+Date: Fri, 13 Mar 2009 16:12:50 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder-devel post from astgtciv2009@gatech.edu requires approval (fwd)
+
+> Second:  Some part of the problem -- especially the "weak" returns in
+> the good/reliable bitlevel tests -- COULD be because either these tests
+> are picking out second-order correlations and the generators really
+> AREN'T truly random in these limits or the underlying final KS tests
+> (plural since I just fixed dieharder to add a -k flag so one can freely
+> test with Kuiper or Anderson-Darling KS as one pleases) are both
+> "broken" in some way.
+
+How do the two values compare?
+
+I've started printing out the p-values and using R's ks.test() method to check the p-values.  (R doesn't have the Kuiper version of KS, unfortunately.)
+I haven't compared enough of them yet to say there is a problem for reasonable numbers of p-values, but generally it seems that dieharder's test returns values further from the middle for modest distributions, and closer to the middle for bad distributions.
+The second one is really obvious with a small number of p-values.  Try "cat /dev/zero | ./dieharder -p 5", and most tests suceed with a p-value of 0.01015359.
+
+
+> What do you think?  I've been wanting to write a real paper on dieharder
+> and its application to a range of RNGs for a while now, and getting a
+> paper out of it would give me a bit of incentive to spend the time.  It
+> still will TAKE a lot of time, unfortunately.
+
+Well, unfortunately, I'm probably the wrong person for paper writing.  I'm behind on paper writing in my research area (especially this big paper called a thesis), and I don't have a background in statistics.  However, I'll continue playing around with dieharder to see if I can get better results.  At the moment, I think the problem is in the final Kuiper test.
+
+
+David Bauer
+
+From astgtciv2009@gatech.edu Mon Mar 16 08:51:25 2009
+Date: Mon, 16 Mar 2009 08:51:19 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder-devel post from astgtciv2009@gatech.edu requires approval (fwd)
+
+> The term is positive definite and is subtracted,
+> and is order 1/\sqrt{N} (roughly) compared to the first
+> term, making it a roughly 10% correction.
+
+Or much larger for N = 5.  :-)
+
+
+> But this at least has the right "feel"
+> for a problem that would cause consistently
+> high returns of p from the final KKS test.
+
+That is good to hear.
+(Although I actually get "weak" p-value reports for both high and low p-values.)
+
+
+> It is thus arguably "better" (symmetry seems
+> to be good) but either way if the two tests yield different asymptotic
+> p-values for (say) 10^6 samples there is a serious problem.
+
+Converging at 10^6 is nice, except the default is only 10^2 samples.
+The largest test I've done was 10^5 samples.
+
+
+> > The second one is really obvious with a small number of p-values.  Try
+> > "cat /dev/zero | ./dieharder -p 5", and most tests suceed with a p-value
+> > of 0.01015359.
+> 
+> Sure, but that doesn't mean anything.  Most statistical tests are
+> useless for less than around 30 samples, because the central limit
+> theorem only guarantees the ASYMPTOTIC distribution of the means.
+
+But it really made me question the implementation.
+My understanding of the test was that it would produce a D = 1.0, and then translate that D value to a p-value.
+I found a table for the plain KS test that said that a D of 1.0 would give a p-value under 0.01 for a single sample.
+(I don't think I found such a table for the Kuiper variant, nor code for computing an exact value.  I didn't look at NR because my PDF reader doesn't like their DRM.)
+
+
+> What's your dissertation on?
+
+"The Generalization and Distribution of Identity Agents and Minimal Information Disclosure Credentials"
+My research area is official "identity management", with the actual work being software engineering, cryptography, and networking.
+
+And I appologize in advance, but my response time to e-mails will probably be even worse than it has been after Tuesday, since I'll be away for a week with limited internet access.
+
+
+David Bauer
+
+From astgtciv2009@gatech.edu Mon Mar 16 11:27:50 2009
+Date: Mon, 16 Mar 2009 11:27:44 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder-devel post from astgtciv2009@gatech.edu requires approval (fwd)
+
+*Sigh*  More fun with R.
+I was trying to test how sensitive the ks test in R was, and I found that taking a ks of p-values failed when the p-values were taken from a small sample.  However, upon further investigation, it turned out that the problem was that I was using an initial sample size of 100, and R switches from an exact value to a heuristic at that point.
+(Putting in "exact=TRUE" eliminated the problem.)
+
+So I'm hopeful that improving the calculation of the ks test may have an impact much bigger than 10%.
+
+
+David Bauer
+
+From astgtciv2009@gatech.edu Mon Mar 30 15:35:44 2009
+Date: Mon, 30 Mar 2009 15:35:38 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Dieharder-devel post from astgtciv2009@gatech.edu requires approval (fwd)
+
+I think I found the original problem with OPSO and OQSO: they don't actually use overlapping inputs.
+(I actually found this by accident, since I implemented a variation on OPSO, but used strictly non-overlapping values.)
+
+In the paper ("Monkey tests for random number generators"), it is noted that only a small number of bits from each input word are used (and so separate tests were done over different bit ranges), and there is no discussion of overlapping samples or a sliding window over the bits.
+
+I've started long runs to confirm this, but short, initial runs look right (for OPSO).
+
+
+David Bauer
+
+From astgtciv2009@gatech.edu Thu Oct  1 22:44:19 2009
+Date: Thu, 01 Oct 2009 22:46:00 -0400
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Correction to kstest calculation in Dieharder
+
+After *way* too much time spent on it, I finally figured out the problem 
+with the ks test in Dieharder.
+
+The one line fix is:
+The calculation of the distance should be:
+d = fmax(pvalue[i] - y, (1.0/count) - (pvalue[i] - y));
+and not
+d = fabs(pvalue[i] - y)
+
+My initial testing showed this made it work, even with a small number of 
+samples.
+(Quick test: 10,000 tests, 5 samples each. 76 weak and 11 failed reported.)
+
+Unfortunately, I haven't yet found the corresponding fix for the Kuiper 
+version.  (I just found the fix late tonight, and I've only tried one 
+obvious translation to the Kuiper version, though.)
+
+
+David Bauer
+
+From astgtciv2009@gatech.edu Fri Oct  2 09:42:55 2009
+Date: Fri, 2 Oct 2009 09:44:45 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharder
+
+> Is there documentation I should read (or should have read) on why this
+> is needed?
+
+Unfortunately, no.  I figured it out by looking at R's implementation.
+
+I can guess, based on an observation: that change is equivalent to doing two lines, one which is left-biased (start at 0) and the other of which is right-biased (start at 1).  I was concerned about the left-bias of the implementation, but my original attempts at fixing it (starting at 0.5, for example) didn't work.  (I'd looked at R's implementation before, but missed it, because it was mixed in with handling greater and less than options.)
+
+To clarify:
+The vector of differences = max( values - (0 to n-1)/n, (1 to n)/n - values )
+So, it looks at the distance above the left line or below the right line, instead of a absolute distance to a single line.
+As n increases, the two lines effectively merge.
+
+
+David Bauer
+
+From astgtciv2009@gatech.edu Fri Oct  2 15:49:33 2009
+Date: Fri, 2 Oct 2009 15:51:26 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharder
+
+> It might inspire me to spend some more time on the tests themselves (I
+> have a fairly ambitious roadmap for adding more tests) and to work once
+> again on a "gold standard" RNG to use to test the tests.  Who will guard
+> the guardians and all that...;-)
+
+I've actually done a lot of work on the tests (speedups, fixing memory leaks, and fixing cases where tests didn't pay attention to rmax_bits); I meant to cleanup my changes and submit them a while back.
+My changes are unfortunately not complete, by any means.  In particular, I don't think there is a good global way to handle generators returning values that are only 24-31 bits.  (Treating the output of the generator as just a bitstream hides information: the natural word boundaries.)
+
+I can also send you the code for the generator I've been treating as a known-good generator (based on the Threefish cipher).
+
+
+David
+
+From astgtciv2009@gatech.edu Fri Oct  2 16:55:48 2009
+Date: Fri, 02 Oct 2009 16:57:35 -0400
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharder
+
+> Well, I just concluded a test run with the new kstest (and my laptop is
+> still hot enough to burn my wrists:-), and (sigh) mt19937 still has the
+> same subtle problem.  The pvalues are, on average, too good (especially
+> for the diehard tests).  It does seem to do a bit better on the bitlevel
+> tests though -- p eyeballs out on not too badly distributed.
+
+Don't eyeball it.  If you want to test kstest, run something fast for a 
+small number of p values, many times.  Thus, I ran dieharder 10,000 
+times with a test with -p 5, and then grep'ed for weak and failed. 
+Under the old test, there were *way* too many failed.  (There were even 
+too many fails at 100 p-values per run, I found back in the summer.)
+
+Unless you make a test that points the random samples straight through 
+to kstest (which I haven't yet done), it will take a while to test.  (I 
+leave my computer on 24/7, so I have no problems running week+ long tests.)
+
+
+> mt19937 might NOT be properly random -- time to crank out aespipe and do
+> some more tests on an input stream...
+
+Previously, I thought I'd found a problem with MT, but it was at the 
+level of several hundred thousand p values and OPSO.  However, when last 
+I checked, my assumed good generator failed at that level too.  So, I 
+don't think I've gotten MT to fail on something that any other generator 
+can pass.
+
+Back in the spring when I first started messing with Dieharder, I was 
+expecting all of the RNGs to fail when pushed.  (After all, none of them 
+were cryptographic generators.)  However, my experience has been rather 
+that the tests fail before the best generators.
+
+
+David
+
+From astgtciv2009@gatech.edu Fri Oct  2 20:55:51 2009
+Date: Fri, 02 Oct 2009 20:57:41 -0400
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharder
+
+> Truthfully, it might be a very useful test in and of itself, in addition
+> to telling me some things I don't know, like how many samples one needs
+> for kstest to start itself to yield a uniform distribution of pvalues.
+> It may be that it just needs a lot more samples than 100, and is biased
+> in some systematic way when run on too few.
+
+Okay, I checked for tests that already called kstest.
+I actually have a very convenient one, which while it does some other 
+stuff, is still fast enough.  By its nature, it already does kstest's 
+over a set of pvalues, and then another kstest across those resulting 
+values.  (Default p-value as set by the command line is 1, because I'd 
+found previously that doing more samples is better than more test levels.)
+I checked it with sets going up to a million sets of 30 values each, 30 
+sets of a million values each, and other more balance variants.
+
+(Note: my code is slightly different, in that if the number of values is 
+  <= 500, it uses different code for calculating the p value from the D 
+value.  I had thought that that part of the calculation was the problem, 
+so I found different code for doing the calculation that I could trust 
+more.  The differences are small (although not that small).)
+
+Update:  Okay, I checked, and it does make a difference.  It succeeds 
+with the alternate code, and fails with the old code.
+I can send you my code for that, but unfortunately it isn't GPL 
+compatible.  So, we will have to find or write a new version.
+(I'd considered taking code from R for a while, which is GPL.  Except 
+now I think the alternate code I have is better than R's.) Experimenting 
+more....
+
+My alternate code is taken from Algorithm 519 (Durbin's method) and 
+verified against a high-precision version of Algorithm 487 (which I 
+didn't realize before was written by Durbin as welll...).  The original 
+Fortran code for both are available from: http://www.netlib.org/toms/
+
+
+David
+
+From astgtciv2009@gatech.edu Sun Oct  4 21:59:35 2009
+Date: Sun, 04 Oct 2009 21:59:25 -0400
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharder
+
+Okay, I got the "better" algorithm from 519 ("rakk") working.
+It is faster, and I can get answers from it for 10,000 samples (haven't
+tried more).  The worst computation time is close to 1 second, but only
+for very specific numbers. Most cases are much faster.  (*Sigh* And now 
+I seem to have broken it again.)
+
+And, I got the original note from where it was proposed:
+http://projecteuclid.org/DPubS/Repository/1.0/Disseminate?handle=euclid.aoms/1177729891&view=body&content-type=pdf_1
+
+Unfortunately, difference equations were barely included in my math 
+education.  I'm not sure how to go about making my own implementation of 
+this.
+
+
+David
+
+
+From astgtciv2009@gatech.edu Mon Oct  5 09:25:34 2009
+Date: Mon, 5 Oct 2009 09:25:31 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharder
+
+> I'm going to have to read this a few dozen times to completely
+> understand what he's trying to do.  Is this an alternative way of
+> evaluating q_ks() for KS?
+
+Yes, although it took me a bit to figure out too.
+D = k/n, and k is an integer in the described method, so I'm unsure of how to best use it.
+The note says k can be a rational number (and on the last page, a hint is given as to how), and the table indeed includes some fractional values.
+I checked a few of the values in Table 1.  For example, k=1.0, n=5 shows 0.0384, which matches the value I get for 1-q_ks(D=0.2, n=5).  (Yes, your code doesn't actually pass two parameters to q_ks; D=dmax, n=count.)
+
+
+> This is one of the places where I confess to not fully understanding the
+> idea of "confidence" in the test results.
+
+My understanding is that the p-values are based entirely upon the false positive rate.
+This may make no sense mathematically, but it works well in practice.
+The distribution of p values given a true distribution must be correct, so that sets the confidence curve.
+The distribution of p values given a bad distribution will depend both on the details of the test and the details of how the distribution is bad.  I don't think there is any universal "bad distribution" test.  (See below for further comment.)
+
+
+> my computer decided to yum upgrade libtool since my
+> last library build and now my makefile doesn't work
+> as some feature seems to have changed.
+
+Oh, yeah, I had to fix that in the build files.
+I think the problem may have been something like the capitilization of "echo" vs "ECHO".
+(I added the line "echo=$ECHO" on line 157 of libtool.  I don't know if I made other changes.)
+
+
+> I'm going to have to screw around with
+> that for a while before I can get a simple build to work.  It's Duke's
+> fall break, though, so I can work on this around half of the day; maybe
+> by this afternoon sometime I'll know if this is even approximately true.
+> I've tested it the hard way for up to 1000 samples and it certainly
+> wasn't true up to there, but maybe it becomes true at 10^6 or something
+> like that.
+
+I suspect it isn't true, even in the limit, because the tests are testing different hypotheses.  You can't just ask "is this curve like that curve", but have to define a more specific/technical question.  And the different tests have different specifications.
+
+
+David
+
+From astgtciv2009@gatech.edu Tue Oct  6 10:57:53 2009
+Date: Tue, 6 Oct 2009 10:57:50 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharder
+
+> which corresponds to pretty much what I said above.  How can the
+> probability of an excursion greater than whatever from an expected value
+> with a known distribution depend on the method used to compute it?
+
+Okay, after talking with some other students (bio-chem and physics/materials science; I hoped that they'd had more education on p-values than me), I think I figured out one of the problems.
+
+If this was a simple test, then we could just say, we expect a normally distributed value.  We can calculate *exactly and easily* the mean and standard deviation of our samples.  From that, the p-value is easy to calculate and easy to understand.
+But, this isn't a very powerful test.
+
+Instead we are asking whether the whole distribution of values we are getting matches an expected distribution.  And there is no set definition for how well one distribution matches another distribution.
+
+The standard KS test is to take the CDF of the expected distribution and then draw two other curves, a top curve (F(x) + delta) and a bottom curve (F(x) - delta), and then ask how often a random sample from the expected distribution will go outside the bounding curves.
+
+The Kuiper KS test is trickier, because instead of using a fixed delta below and above, it considers a top curve (F(x) + delta1) and a bottom curve (F(x) - delta2), such that delta1 + delta2 = delta.  It effectively says to choose the values delta1 and delta2 so as to best fit a given sample.
+
+These two hypotheses are different.  For example, consider a distribution that is a high-frequency sinusoid, instead of uniform.  I'd guess that the Kuiper test is more sensitive to this, as it sees both the lowest and the highest deviations. The plain KS test will only see the extreme, either low or high.  (It may turn out that I'm wrong due to other facators; I haven't tried testing.)
+
+I'm sorry to get distracted by this issue.  I don't think that the interpretation matters so much in implementation.
+
+
+David
+
+From astgtciv2009@gatech.edu Tue Oct  6 11:03:24 2009
+Date: Tue, 6 Oct 2009 11:03:22 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharder
+
+> Anyway, looks like a few days of playing with kstests, which is time
+> well spent as this is the most worrisome aspect of dieharder at this
+> point, outside of possible bugs in a few specific tests.  And at some
+> point I'll see if rgb_kstest_test is a good test of any of the "known
+> bad" rngs or if it is really just a validation tool for dieharder itself.
+> 
+> If you want to play with the new in-place test, grab:
+> 
+>    http://www.phy.duke.edu/~rgb/dieharder-3.29.0beta.tgz
+
+*Sigh*  I really need to get my side cleaned up and start sending you patches, before the code bases diverge too much.  Sorry for not getting it done sooner.  (And, unfortunately, today I'm preparing for a demonstration tomorrow, so I don't know when I'll get it done.)
+(I actually just this weekend added a new feature that uses the -k (actually both -k and -K) command line option.)
+
+
+David
+
+From astgtciv2009@gatech.edu Tue Oct  6 11:22:56 2009
+Date: Tue, 6 Oct 2009 11:22:54 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharderes
+
+> It is VERY INTERESTING that Kuiper, which should be symmetric from the
+> beginning, produces the same sort of error as kstest without the fix --
+> clear high bias for small numbers of samples.
+
+To me, the change is obviously some sort of correction for the discrete nature of the samples.
+Unfortunately, none of the sources I have (which sadly doesn't include the original papers) mentions it.
+And if it was an arbitrary correction, the calculation of the p value from the D value would have to account for it in an arbitrary way.  I haven't seen evidence of such an arbitrary correction, which leads me to believe that the correction is somehow inherent in the original definition of D.  But, my understanding of D is based on a single line, not two.
+
+(I haven't gotten back to trying to fix the Kuiper version, since it would probably be just a guess and check process.)
+
+
+David
+
+From astgtciv2009@gatech.edu Tue Oct  6 11:43:07 2009
+Date: Tue, 6 Oct 2009 11:43:03 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Correction to kstest calculation in Dieharder
+
+> and as I noted before, if you're working from the 2.28 code base, there
+> are already LOTS of changes and fixes in place relative to that in 3.28.
+
+Oh, sorry for not answering that sooner, I've been working from the 3.28 codebase.
+
+
+David
+
+From astgtciv2009@gatech.edu Thu Oct  8 09:49:35 2009
+Date: Thu, 8 Oct 2009 09:49:32 -0400 (EDT)
+From: David Bauer <astgtciv2009@gatech.edu>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: Kuiper paper by Stephens...
+
+Not sure if this is going to be helpful, but....
+I'm seriously beginning to doubt the exactness of the KS test.
+I found a paper [1] that says that my first attempt to fix the dmax
+calculation of the KS code (i+0.5, i=0..N-1) is actually the original
+proposed version.  The NIST statistical handbook uses the same form I
+got from R, but it includes a note that previous versions of the
+handbook used the form you had.  It provides a quick calculation of an
+error bound between the two, but doesn't explain the source of the
+error/correction.
+
+(Alternately, I may have found another source for the dmax calculation.  Many of the papers define dmax based on distance to a step function.  The 2-line version can be seen as taking the (minimum) distance to the step function, with the step function being at both the top and bottom of the step at the same time.)
+
+I'm thinking that what R and NIST call the KS test is actually some form
+of the "delta-corrected" KS test.  Unfortunately, I can't get that view
+to fit my understanding of the presentation of the delta-corrected test
+in [3]. Wait, found the original paper.... Still can't get it to fit. 
+First off, the two lines aren't quite the delta 0 and 1 lines. The 
+left/upper line is the delta 0 line, but the other line is alpha=1, 
+beta=0 from the referenced "alpha, beta-correction" (which I haven't had 
+time to lookup yet). And, they needed new tables for those versions.
+
+There is discussion in several of these about the KS test working on the 
+EDF (empirical distribution function), which they note closely 
+approximates the CDF.  Maybe it isn't close enough for small samples?  Maybe even the "exact" forms of the calculations aren't, because they mix discrete and continuous in a way that is close, but not exact?
+>From the Massey paper [4]:
+"This problem has been previously studied and a limiting distribution has been obtained and tabled.  However apparently no error terms for the limiting distribution, or practical methods of obtaining Pn(lambda) have been given.  Such a method is given here."
+A method of obtaining Pn(lambda), but not for finding the error terms for the limiting distribution?  Table 2 shows how the values approach the limiting distribution; does this mean that previously only the N=infinity case was tabled?  Or that the error terms are (were?) still unknown?
+
+Btw, not only does R's implementation fail the kstest(kstest[]) test, it fails using fewer samples than Dieharder.
+
+
+David
+
+P.S. Most of this was written last night.
+
+[1] "The Two Stage Delta-corrected Kolmogorov-Smirnov Test", H. J.
+Khamis, 2000, Journal of Applied Statistics.
+[2] http://www.itl.nist.gov/div898/handbook/eda/section3/eda35g.htm
+[3] "Generalizations of the delta-corrected Kolmogorov-Smirnov
+goodness-of-fit test". Carol J. Feltz, 1998, Australian & New Zealand
+Journal of Statistics.
+[4] "A note on the estimation of a distribution function by confidence limits", F. J. Massey, sent link previously.

@@ -1,0 +1,507 @@
+From GEmelko@aclara.com Mon Oct  5 13:21:20 2009
+Date: Mon, 5 Oct 2009 12:21:02 -0500
+From: "Emelko, Glenn" <GEmelko@aclara.com>
+To: rgb@phy.duke.edu
+Subject: Dieharder test suite results and a few bug reports
+
+Dear Dr. Brown,
+ 
+We've been running the "dieharder suite" against our random number generator
+hardware, which is entirely contained within a single programmable logic
+device.  We felt good when we got through ENT, diehard and the NIST suite,
+however after submitting a sample to CACert (search for cacert and random and
+look for the 384MB sample that we submitted... it is at the end of the list) I
+then wrote to Philipp Guehring to ask for suggestions, and he pointed me in your
+direction.  We're getting some very good results, however in the process we've
+found a few cosmetic bugs in dieharder that we'd like to report.  I'm also
+interested in "next steps" and upon reading your "Development Notes" it occurs
+to me that you might wish to validate what we've been able to accomplish in
+fairly short order.  We're developing our RNG for commercial purposes, however
+considering the complexity of this problem, I would hate to try to do it in a
+vacuum.
+ 
+Bug reports:
+ 
+(severity: cosmetic)
+The value of filecount for raw input files, when displayed, is truncated to 32
+bits and thus does not reflect files containing more than 4294967295 32-bit
+integers.  Change %u to %llu in the format string in output.c, results.c, and
+test.c.
+ 
+(severity: cosmetic)
+The value of filetype is not set when choosing raw input files.  Either
+pre-initialize it to 'd' or add an assignment in rng_file_input_raw.c at the top
+of the the function file_input_raw_set().
+ 
+(severity: suggestion)
+Add a command line option to output the value of "ntuples" to the report (or
+always add it).  We found it useful when interpreting results when the number of
+times the file was rewound gets large (thus potentially causing patterns in the
+data which do not really exist).  If you look at the output that we included,
+you will find an added line with this information.
+ 
+(severity: fatal, but may not be a dieharder error)
+When using a file larger than 17.2GB we're consistently getting the following
+error (which we have not yet traced down... it comes from rgb_file_input_raw.c
+on line 55, but that should be just reading the next 32-bit integer in the
+file).  Perhaps it is failing because we're using a remotely mounted filesystem,
+but it doesn't seem to make sense.
+    # file_input_raw(): Error.  This cannot happen.
+ 
+Please feel free to contact me at any time.
+ 
+Best regards,
+Glenn
+ 
+ 
+Glenn A. Emelko, PhD
+Executive Director of Technology
+
+Aclara RF Systems Inc.
+30400 Solon Rd.
+Solon, OH 44139
+www.Aclara.com
+
+440.528.7449
+216.408.6784 mobile
+440.528.7199 fax
+
+[IMAGE] This e-mail is intended for the addressee shown. Should you have
+received it in error, please delete this message and contact the sender. This
+e-mail and any attachments thereto may contain information that is privileged,
+confidential or proprietary. Any review, dissemination or use of this
+transmission or its contents by persons other than the addressee or authorized
+employees of the intended organizations is strictly prohibited.
+ 
+
+
+
+    [ Part 1.2, "image001.gif"  Image/GIF (Name: "image001.gif") 4.2 KB. ]
+    [ Unable to print this part. ]
+
+
+    [ Part 2, "DR32M12G.txt"  Text/PLAIN (Name: "DR32M12G.txt") ~314 KB. ]
+    [ Unable to print this part. ]
+
+From GEmelko@aclara.com Mon Oct  5 14:33:11 2009
+Date: Mon, 5 Oct 2009 13:33:00 -0500
+From: "Emelko, Glenn" <GEmelko@aclara.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: RE: Dieharder test suite results and a few bug reports
+
+Dr. Brown,
+
+Did you get a chance to look over our RNG results?  It seems to pass your "experimental tests" (which at least in your documentation you had expressed interest in RNG's that do).  I can give you lots of GB worth of data, if you're interested (we'll probably have to put them on a thumb drive or external hard drive).    And yes, please do send a link to the beta test suite - I'd love to run our generator against it!
+
+Regards,
+Glenn
+
+
+Glenn A. Emelko, PhD
+Executive Director of Technology
+
+Aclara RF Systems Inc.
+30400 Solon Rd.
+Solon, OH 44139
+www.Aclara.com 
+
+440.528.7449
+216.408.6784 mobile
+440.528.7199 fax
+
+ This e-mail is intended for the addressee shown. Should you have received it in error, please delete this message and contact the sender. This e-mail and any attachments thereto may contain information that is privileged, confidential or proprietary. Any review, dissemination or use of this transmission or its contents by persons other than the addressee or authorized employees of the intended organizations is strictly prohibited. 
+
+-----Original Message-----
+From: Robert G. Brown [mailto:rgb@phy.duke.edu] 
+Sent: Monday, October 05, 2009 2:27 PM
+To: Emelko, Glenn
+Subject: Re: Dieharder test suite results and a few bug reports
+
+On Mon, 5 Oct 2009, Emelko, Glenn wrote:
+
+> Dear Dr. Brown,
+>  
+> We've been running the "dieharder suite" against our random number 
+> generator hardware, which is entirely contained within a single 
+> programmable logic device.  We felt good when we got through ENT, 
+> diehard and the NIST suite, however after submitting a sample to 
+> CACert (search for cacert and random and look for the 384MB sample 
+> that we submitted... it is at the end of the
+> list) I then wrote to Philipp Guehring to ask for suggestions, and he 
+> pointed me in your direction.  We're getting some very good results, 
+> however in the process we've found a few cosmetic bugs in dieharder 
+> that we'd like to report.  I'm also interested in "next steps" and 
+> upon reading your "Development Notes" it occurs to me that you might 
+> wish to validate what we've been able to accomplish in fairly short 
+> order.  We're developing our RNG for commercial purposes, however 
+> considering the complexity of this problem, I would hate to try to do it in a vacuum.
+
+Thanks, I'm actually working on dieharder over the next few days so I'll try to get to your reports below.  In my latest 3.28.0beta snapshot, I think I fix at least some of this, but I'll check to make sure.  I haven't tested with files as large as those you are using so you may well have revealed some bugs -- I've added a "stdin" interface that lets one easily run dieharder in a pipe fed by an external RNG to avoid the hassles of working with very large files even when the OS nominally supports them.
+
+I'm also working very hard on the final KS or Kuiper test of the distribution of final p-values per test.  It isn't quite consistent, and another user has submitted corrections for the KS test (at least) that may improve this very soon.  The problem is that dieharder runs at very high levels where it is arguably a test of itself, so that there are two ways to "fail" the null hypothesis -- a bad RNG or pushing a possibly good RNG past the point where a test is reliable.  The latter requires very, very accurate ways of assessing test reliability, and that is hard to come by with RNG testing, given only RNGs to test WITH;-)
+
+In this current version, I'm hoping to make dieharder self-validating with one or more "gold standard" rngs, e.g. AES.  If nothing else, it will make it easier to compare results one gets in terms of a final vector of p-values for the various tests for a given test run to the results of a similar run for a gold standard rng.
+
+If you are interested in trying the new beta, I'll send you a link.  It is tarball only at this point, so you'll have to build it from scratch (which should be easy enough on a gnu system, but may take a bit of programming expertise if you encounter problems).  It has a much nicer, completely user controllable output format that e.g. has ntuple as a controllable (default present) option, and runs sts_serial on a whole range of ntuple values.
+
+    rgb
+
+>  
+> Bug reports:
+>  
+> (severity: cosmetic)
+> The value of filecount for raw input files, when displayed, is 
+> truncated to
+> 32 bits and thus does not reflect files containing more than 
+> 4294967295 32-bit integers.  Change %u to %llu in the format string in 
+> output.c, results.c, and test.c.
+>  
+> (severity: cosmetic)
+> The value of filetype is not set when choosing raw input files.  
+> Either pre-initialize it to 'd' or add an assignment in 
+> rng_file_input_raw.c at the top of the the function file_input_raw_set().
+>  
+> (severity: suggestion)
+> Add a command line option to output the value of "ntuples" to the 
+> report (or always add it).  We found it useful when interpreting 
+> results when the number of times the file was rewound gets large (thus 
+> potentially causing patterns in the data which do not really exist).  
+> If you look at the output that we included, you will find an added line with this information.
+>  
+> (severity: fatal, but may not be a dieharder error) When using a file 
+> larger than 17.2GB we're consistently getting the following error 
+> (which we have not yet traced down... it comes from 
+> rgb_file_input_raw.c on line 55, but that should be just reading the 
+> next 32-bit integer in the file).  Perhaps it is failing because we're 
+> using a remotely mounted filesystem, but it doesn't seem to make sense.
+>     # file_input_raw(): Error.  This cannot happen.
+>  
+> Please feel free to contact me at any time.
+>  
+> Best regards,
+> Glenn
+>  
+>  
+> Glenn A. Emelko, PhD
+> Executive Director of Technology
+> 
+> Aclara RF Systems Inc.
+> 30400 Solon Rd.
+> Solon, OH 44139
+> www.Aclara.com
+> 
+> 440.528.7449
+> 216.408.6784 mobile
+> 440.528.7199 fax
+> 
+> [IMAGE] This e-mail is intended for the addressee shown. Should you 
+> have received it in error, please delete this message and contact the sender.
+> This e-mail and any attachments thereto may contain information that 
+> is privileged, confidential or proprietary. Any review, dissemination 
+> or use of this transmission or its contents by persons other than the 
+> addressee or authorized employees of the intended organizations is strictly prohibited.
+>  
+> 
+>
+
+Robert G. Brown	                       http://www.phy.duke.edu/~rgb/
+Duke University Dept. of Physics, Box 90305 Durham, N.C. 27708-0305
+Phone: 1-919-660-2567  Fax: 919-660-2525     email:rgb@phy.duke.edu
+
+
+From GEmelko@aclara.com Mon Oct  5 17:08:06 2009
+Date: Mon, 5 Oct 2009 16:07:48 -0500
+From: "Emelko, Glenn" <GEmelko@aclara.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: RE: Dieharder test suite results and a few bug reports
+
+Dr. Brown,
+
+I have a little more information on the "This cannot happen" bug - the feof() function returned 1.  So somehow dieharder attempted to read beyond the end of the file, in the middle of a "RGB Lagged Sum Test" (here is the detail from the output of the run):
+
+#==================================================================
+#                        Run Details
+# Random number generator tested: file_input_raw
+# File DR32M18G.bin contains 4668276736 rands of d type.
+# Samples per test pvalue = 1000000 (test default is 1000000)
+# P-values in final KS test = 100 (test default is 100)
+# Lag Value (when appropriate) = 5
+#==================================================================
+#                Histogram of p-values
+##################################################################
+# Counting histogram bins, binscale = 0.100000
+#     20|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     18|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     16|    |    |    |    |    |    |    |    |    |    |
+#       |    |    |    |    |    |    |    |    |    |    |
+#     14|    |    |****|    |****|    |    |    |    |    |
+#       |    |    |****|    |****|    |    |    |    |    |
+#     12|    |    |****|    |****|    |    |    |    |    |
+#       |    |    |****|    |****|****|    |    |****|****|
+#     10|    |    |****|****|****|****|    |    |****|****|
+#       |    |    |****|****|****|****|    |    |****|****|
+#      8|****|    |****|****|****|****|    |    |****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      6|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      4|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#      2|****|****|****|****|****|****|****|****|****|****|
+#       |****|****|****|****|****|****|****|****|****|****|
+#       |--------------------------------------------------
+#       | 0.1| 0.2| 0.3| 0.4| 0.5| 0.6| 0.7| 0.8| 0.9| 1.0|
+#==================================================================
+# 4070001200 rands were used in this test
+# The file file_input_raw was rewound 0 times
+#                          Results
+Kuiper KS: p = 0.72468398
+Assessment: PASSED at > 5% for RGB Lagged Sum Test
+
+It got down to this assessment, then the function call to fread() in rgb_raw_input_file.c (line 54) returned 0, and feof() returned 1 (an error occurred).  The value of ferror() was 0.
+
+I suppose it probably needed to rewind the file but didn't notice that it did until too late.
+
+Thoughts?
+
+Glenn
+
+
+Glenn A. Emelko, PhD
+Executive Director of Technology
+
+Aclara RF Systems Inc.
+30400 Solon Rd.
+Solon, OH 44139
+www.Aclara.com 
+
+440.528.7449
+216.408.6784 mobile
+440.528.7199 fax
+
+ This e-mail is intended for the addressee shown. Should you have received it in error, please delete this message and contact the sender. This e-mail and any attachments thereto may contain information that is privileged, confidential or proprietary. Any review, dissemination or use of this transmission or its contents by persons other than the addressee or authorized employees of the intended organizations is strictly prohibited. 
+
+-----Original Message-----
+From: Robert G. Brown [mailto:rgb@phy.duke.edu] 
+Sent: Monday, October 05, 2009 2:27 PM
+To: Emelko, Glenn
+Subject: Re: Dieharder test suite results and a few bug reports
+
+On Mon, 5 Oct 2009, Emelko, Glenn wrote:
+
+> Dear Dr. Brown,
+>  
+> We've been running the "dieharder suite" against our random number 
+> generator hardware, which is entirely contained within a single 
+> programmable logic device.  We felt good when we got through ENT, 
+> diehard and the NIST suite, however after submitting a sample to 
+> CACert (search for cacert and random and look for the 384MB sample 
+> that we submitted... it is at the end of the
+> list) I then wrote to Philipp Guehring to ask for suggestions, and he 
+> pointed me in your direction.  We're getting some very good results, 
+> however in the process we've found a few cosmetic bugs in dieharder 
+> that we'd like to report.  I'm also interested in "next steps" and 
+> upon reading your "Development Notes" it occurs to me that you might 
+> wish to validate what we've been able to accomplish in fairly short 
+> order.  We're developing our RNG for commercial purposes, however 
+> considering the complexity of this problem, I would hate to try to do it in a vacuum.
+
+Thanks, I'm actually working on dieharder over the next few days so I'll try to get to your reports below.  In my latest 3.28.0beta snapshot, I think I fix at least some of this, but I'll check to make sure.  I haven't tested with files as large as those you are using so you may well have revealed some bugs -- I've added a "stdin" interface that lets one easily run dieharder in a pipe fed by an external RNG to avoid the hassles of working with very large files even when the OS nominally supports them.
+
+I'm also working very hard on the final KS or Kuiper test of the distribution of final p-values per test.  It isn't quite consistent, and another user has submitted corrections for the KS test (at least) that may improve this very soon.  The problem is that dieharder runs at very high levels where it is arguably a test of itself, so that there are two ways to "fail" the null hypothesis -- a bad RNG or pushing a possibly good RNG past the point where a test is reliable.  The latter requires very, very accurate ways of assessing test reliability, and that is hard to come by with RNG testing, given only RNGs to test WITH;-)
+
+In this current version, I'm hoping to make dieharder self-validating with one or more "gold standard" rngs, e.g. AES.  If nothing else, it will make it easier to compare results one gets in terms of a final vector of p-values for the various tests for a given test run to the results of a similar run for a gold standard rng.
+
+If you are interested in trying the new beta, I'll send you a link.  It is tarball only at this point, so you'll have to build it from scratch (which should be easy enough on a gnu system, but may take a bit of programming expertise if you encounter problems).  It has a much nicer, completely user controllable output format that e.g. has ntuple as a controllable (default present) option, and runs sts_serial on a whole range of ntuple values.
+
+    rgb
+
+>  
+> Bug reports:
+>  
+> (severity: cosmetic)
+> The value of filecount for raw input files, when displayed, is 
+> truncated to
+> 32 bits and thus does not reflect files containing more than 
+> 4294967295 32-bit integers.  Change %u to %llu in the format string in 
+> output.c, results.c, and test.c.
+>  
+> (severity: cosmetic)
+> The value of filetype is not set when choosing raw input files.  
+> Either pre-initialize it to 'd' or add an assignment in 
+> rng_file_input_raw.c at the top of the the function file_input_raw_set().
+>  
+> (severity: suggestion)
+> Add a command line option to output the value of "ntuples" to the 
+> report (or always add it).  We found it useful when interpreting 
+> results when the number of times the file was rewound gets large (thus 
+> potentially causing patterns in the data which do not really exist).  
+> If you look at the output that we included, you will find an added line with this information.
+>  
+> (severity: fatal, but may not be a dieharder error) When using a file 
+> larger than 17.2GB we're consistently getting the following error 
+> (which we have not yet traced down... it comes from 
+> rgb_file_input_raw.c on line 55, but that should be just reading the 
+> next 32-bit integer in the file).  Perhaps it is failing because we're 
+> using a remotely mounted filesystem, but it doesn't seem to make sense.
+>     # file_input_raw(): Error.  This cannot happen.
+>  
+> Please feel free to contact me at any time.
+>  
+> Best regards,
+> Glenn
+>  
+>  
+> Glenn A. Emelko, PhD
+> Executive Director of Technology
+> 
+> Aclara RF Systems Inc.
+> 30400 Solon Rd.
+> Solon, OH 44139
+> www.Aclara.com
+> 
+> 440.528.7449
+> 216.408.6784 mobile
+> 440.528.7199 fax
+> 
+> [IMAGE] This e-mail is intended for the addressee shown. Should you 
+> have received it in error, please delete this message and contact the sender.
+> This e-mail and any attachments thereto may contain information that 
+> is privileged, confidential or proprietary. Any review, dissemination 
+> or use of this transmission or its contents by persons other than the 
+> addressee or authorized employees of the intended organizations is strictly prohibited.
+>  
+> 
+>
+
+Robert G. Brown	                       http://www.phy.duke.edu/~rgb/
+Duke University Dept. of Physics, Box 90305 Durham, N.C. 27708-0305
+Phone: 1-919-660-2567  Fax: 919-660-2525     email:rgb@phy.duke.edu
+
+
+From GEmelko@aclara.com Mon Oct  5 17:27:30 2009
+Date: Mon, 5 Oct 2009 16:27:14 -0500
+From: "Emelko, Glenn" <GEmelko@aclara.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: RE: Dieharder test suite results and a few bug reports
+
+Dr. Brown,
+
+We found it: rptr and rtot in the structure file_input_state_t need to be of type off_t not uint.
+
+Regards,
+Glenn
+
+
+Glenn A. Emelko, PhD
+Executive Director of Technology
+
+Aclara RF Systems Inc.
+30400 Solon Rd.
+Solon, OH 44139
+www.Aclara.com 
+
+440.528.7449
+216.408.6784 mobile
+440.528.7199 fax
+
+ This e-mail is intended for the addressee shown. Should you have received it in error, please delete this message and contact the sender. This e-mail and any attachments thereto may contain information that is privileged, confidential or proprietary. Any review, dissemination or use of this transmission or its contents by persons other than the addressee or authorized employees of the intended organizations is strictly prohibited. 
+
+-----Original Message-----
+From: Robert G. Brown [mailto:rgb@phy.duke.edu] 
+Sent: Monday, October 05, 2009 2:27 PM
+To: Emelko, Glenn
+Subject: Re: Dieharder test suite results and a few bug reports
+
+On Mon, 5 Oct 2009, Emelko, Glenn wrote:
+
+> Dear Dr. Brown,
+>  
+> We've been running the "dieharder suite" against our random number 
+> generator hardware, which is entirely contained within a single 
+> programmable logic device.  We felt good when we got through ENT, 
+> diehard and the NIST suite, however after submitting a sample to 
+> CACert (search for cacert and random and look for the 384MB sample 
+> that we submitted... it is at the end of the
+> list) I then wrote to Philipp Guehring to ask for suggestions, and he 
+> pointed me in your direction.  We're getting some very good results, 
+> however in the process we've found a few cosmetic bugs in dieharder 
+> that we'd like to report.  I'm also interested in "next steps" and 
+> upon reading your "Development Notes" it occurs to me that you might 
+> wish to validate what we've been able to accomplish in fairly short 
+> order.  We're developing our RNG for commercial purposes, however 
+> considering the complexity of this problem, I would hate to try to do it in a vacuum.
+
+Thanks, I'm actually working on dieharder over the next few days so I'll try to get to your reports below.  In my latest 3.28.0beta snapshot, I think I fix at least some of this, but I'll check to make sure.  I haven't tested with files as large as those you are using so you may well have revealed some bugs -- I've added a "stdin" interface that lets one easily run dieharder in a pipe fed by an external RNG to avoid the hassles of working with very large files even when the OS nominally supports them.
+
+I'm also working very hard on the final KS or Kuiper test of the distribution of final p-values per test.  It isn't quite consistent, and another user has submitted corrections for the KS test (at least) that may improve this very soon.  The problem is that dieharder runs at very high levels where it is arguably a test of itself, so that there are two ways to "fail" the null hypothesis -- a bad RNG or pushing a possibly good RNG past the point where a test is reliable.  The latter requires very, very accurate ways of assessing test reliability, and that is hard to come by with RNG testing, given only RNGs to test WITH;-)
+
+In this current version, I'm hoping to make dieharder self-validating with one or more "gold standard" rngs, e.g. AES.  If nothing else, it will make it easier to compare results one gets in terms of a final vector of p-values for the various tests for a given test run to the results of a similar run for a gold standard rng.
+
+If you are interested in trying the new beta, I'll send you a link.  It is tarball only at this point, so you'll have to build it from scratch (which should be easy enough on a gnu system, but may take a bit of programming expertise if you encounter problems).  It has a much nicer, completely user controllable output format that e.g. has ntuple as a controllable (default present) option, and runs sts_serial on a whole range of ntuple values.
+
+    rgb
+
+>  
+> Bug reports:
+>  
+> (severity: cosmetic)
+> The value of filecount for raw input files, when displayed, is 
+> truncated to
+> 32 bits and thus does not reflect files containing more than 
+> 4294967295 32-bit integers.  Change %u to %llu in the format string in 
+> output.c, results.c, and test.c.
+>  
+> (severity: cosmetic)
+> The value of filetype is not set when choosing raw input files.  
+> Either pre-initialize it to 'd' or add an assignment in 
+> rng_file_input_raw.c at the top of the the function file_input_raw_set().
+>  
+> (severity: suggestion)
+> Add a command line option to output the value of "ntuples" to the 
+> report (or always add it).  We found it useful when interpreting 
+> results when the number of times the file was rewound gets large (thus 
+> potentially causing patterns in the data which do not really exist).  
+> If you look at the output that we included, you will find an added line with this information.
+>  
+> (severity: fatal, but may not be a dieharder error) When using a file 
+> larger than 17.2GB we're consistently getting the following error 
+> (which we have not yet traced down... it comes from 
+> rgb_file_input_raw.c on line 55, but that should be just reading the 
+> next 32-bit integer in the file).  Perhaps it is failing because we're 
+> using a remotely mounted filesystem, but it doesn't seem to make sense.
+>     # file_input_raw(): Error.  This cannot happen.
+>  
+> Please feel free to contact me at any time.
+>  
+> Best regards,
+> Glenn
+>  
+>  
+> Glenn A. Emelko, PhD
+> Executive Director of Technology
+> 
+> Aclara RF Systems Inc.
+> 30400 Solon Rd.
+> Solon, OH 44139
+> www.Aclara.com
+> 
+> 440.528.7449
+> 216.408.6784 mobile
+> 440.528.7199 fax
+> 
+> [IMAGE] This e-mail is intended for the addressee shown. Should you 
+> have received it in error, please delete this message and contact the sender.
+> This e-mail and any attachments thereto may contain information that 
+> is privileged, confidential or proprietary. Any review, dissemination 
+> or use of this transmission or its contents by persons other than the 
+> addressee or authorized employees of the intended organizations is strictly prohibited.
+>  
+> 
+>
+
+Robert G. Brown	                       http://www.phy.duke.edu/~rgb/
+Duke University Dept. of Physics, Box 90305 Durham, N.C. 27708-0305
+Phone: 1-919-660-2567  Fax: 919-660-2525     email:rgb@phy.duke.edu
+

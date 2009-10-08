@@ -76,9 +76,11 @@ libdieharder_la_SOURCES = \
 	rngs_gnu_r.c \
 	rng_kiss.c \
 	rng_jenkins.c \
+	rng_threefish.c \
 	rng_stdin_input_raw.c \
 	rng_uvag.c \
 	sample.c \
+	skein_block64.c \
 	std_test.c \
 	sts_monobit.c \
 	sts_runs.c \
