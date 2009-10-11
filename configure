@@ -12362,42 +12362,42 @@ DIEHARDER_LIBS="-L$libdir -ldieharder"
 
 
 #==================================================================
-# Checks for libraries.
-# FIXME: Replace `main' with a function in `-lgsl':
+# Checks for libraries, and headers.  Test for dependency libraries
+# FIRST in reverse order that you need -lwhatever to appear on
+# compile line as it accumulates libraries to build e.g.
+#   -lgsl -lgslcblas
+# for the SECOND test, required (in that order) to succeed.
 #==================================================================
-
-{ $as_echo "$as_me:$LINENO: checking for main in -lgsl" >&5
-$as_echo_n "checking for main in -lgsl... " >&6; }
-if test "${ac_cv_lib_gsl_main+set}" = set; then
+if test "${ac_cv_header_gsl_gsl_sf_gamma_h+set}" = set; then
+  { $as_echo "$as_me:$LINENO: checking for gsl/gsl_sf_gamma.h" >&5
+$as_echo_n "checking for gsl/gsl_sf_gamma.h... " >&6; }
+if test "${ac_cv_header_gsl_gsl_sf_gamma_h+set}" = set; then
   $as_echo_n "(cached) " >&6
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_gsl_gsl_sf_gamma_h" >&5
+$as_echo "$ac_cv_header_gsl_gsl_sf_gamma_h" >&6; }
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lgsl  $LIBS"
+  # Is the header compilable?
+{ $as_echo "$as_me:$LINENO: checking gsl/gsl_sf_gamma.h usability" >&5
+$as_echo_n "checking gsl/gsl_sf_gamma.h usability... " >&6; }
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
+$ac_includes_default
+#include <gsl/gsl_sf_gamma.h>
 _ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
 case "(($ac_try" in
   *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
   *) ac_try_echo=$ac_try;;
 esac
 eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
 $as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
+  (eval "$ac_compile") 2>conftest.er1
   ac_status=$?
   grep -v '^ *+' conftest.er1 >conftest.err
   rm -f conftest.er1
@@ -12406,35 +12406,104 @@ $as_echo "$ac_try_echo") >&5
   (exit $ac_status); } && {
 	 test -z "$ac_c_werror_flag" ||
 	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_gsl_main=yes
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
 else
   $as_echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_gsl_main=no
+	ac_header_compiler=no
 fi
 
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_gsl_main" >&5
-$as_echo "$ac_cv_lib_gsl_main" >&6; }
-if test "x$ac_cv_lib_gsl_main" = x""yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBGSL 1
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+$as_echo "$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ $as_echo "$as_me:$LINENO: checking gsl/gsl_sf_gamma.h presence" >&5
+$as_echo_n "checking gsl/gsl_sf_gamma.h presence... " >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
 _ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <gsl/gsl_sf_gamma.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_c_preproc_warn_flag$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
 
-  LIBS="-lgsl $LIBS"
-
+  ac_header_preproc=no
 fi
 
-# FIXME: Replace `main' with a function in `-lgslcblas':
+rm -f conftest.err conftest.$ac_ext
+{ $as_echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+$as_echo "$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
+  yes:no: )
+    { $as_echo "$as_me:$LINENO: WARNING: gsl/gsl_sf_gamma.h: accepted by the compiler, rejected by the preprocessor!" >&5
+$as_echo "$as_me: WARNING: gsl/gsl_sf_gamma.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: gsl/gsl_sf_gamma.h: proceeding with the compiler's result" >&5
+$as_echo "$as_me: WARNING: gsl/gsl_sf_gamma.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { $as_echo "$as_me:$LINENO: WARNING: gsl/gsl_sf_gamma.h: present but cannot be compiled" >&5
+$as_echo "$as_me: WARNING: gsl/gsl_sf_gamma.h: present but cannot be compiled" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: gsl/gsl_sf_gamma.h:     check for missing prerequisite headers?" >&5
+$as_echo "$as_me: WARNING: gsl/gsl_sf_gamma.h:     check for missing prerequisite headers?" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: gsl/gsl_sf_gamma.h: see the Autoconf documentation" >&5
+$as_echo "$as_me: WARNING: gsl/gsl_sf_gamma.h: see the Autoconf documentation" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: gsl/gsl_sf_gamma.h:     section \"Present But Cannot Be Compiled\"" >&5
+$as_echo "$as_me: WARNING: gsl/gsl_sf_gamma.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: gsl/gsl_sf_gamma.h: proceeding with the preprocessor's result" >&5
+$as_echo "$as_me: WARNING: gsl/gsl_sf_gamma.h: proceeding with the preprocessor's result" >&2;}
+    { $as_echo "$as_me:$LINENO: WARNING: gsl/gsl_sf_gamma.h: in the future, the compiler will take precedence" >&5
+$as_echo "$as_me: WARNING: gsl/gsl_sf_gamma.h: in the future, the compiler will take precedence" >&2;}
+
+    ;;
+esac
+{ $as_echo "$as_me:$LINENO: checking for gsl/gsl_sf_gamma.h" >&5
+$as_echo_n "checking for gsl/gsl_sf_gamma.h... " >&6; }
+if test "${ac_cv_header_gsl_gsl_sf_gamma_h+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_header_gsl_gsl_sf_gamma_h=$ac_header_preproc
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_header_gsl_gsl_sf_gamma_h" >&5
+$as_echo "$ac_cv_header_gsl_gsl_sf_gamma_h" >&6; }
+
+fi
+if test "x$ac_cv_header_gsl_gsl_sf_gamma_h" = x""yes; then
+  :
+else
+  { { $as_echo "$as_me:$LINENO: error: Couldn't find GSL headers.  Please install the gsl-devel package." >&5
+$as_echo "$as_me: error: Couldn't find GSL headers.  Please install the gsl-devel package." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
 
 { $as_echo "$as_me:$LINENO: checking for main in -lgslcblas" >&5
 $as_echo_n "checking for main in -lgslcblas... " >&6; }
@@ -12502,16 +12571,20 @@ _ACEOF
 
   LIBS="-lgslcblas $LIBS"
 
+else
+  { { $as_echo "$as_me:$LINENO: error: Couldn't find libgsl. Please install the gsl package." >&5
+$as_echo "$as_me: error: Couldn't find libgsl. Please install the gsl package." >&2;}
+   { (exit 1); exit 1; }; }
 fi
 
 
-{ $as_echo "$as_me:$LINENO: checking for aes_encrypt in -laes" >&5
-$as_echo_n "checking for aes_encrypt in -laes... " >&6; }
-if test "${ac_cv_lib_aes_aes_encrypt+set}" = set; then
+{ $as_echo "$as_me:$LINENO: checking for gsl_sf_gamma in -lgsl" >&5
+$as_echo_n "checking for gsl_sf_gamma in -lgsl... " >&6; }
+if test "${ac_cv_lib_gsl_gsl_sf_gamma+set}" = set; then
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-laes  $LIBS"
+LIBS="-lgsl  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -12525,11 +12598,11 @@ cat >>conftest.$ac_ext <<_ACEOF
 #ifdef __cplusplus
 extern "C"
 #endif
-char aes_encrypt ();
+char gsl_sf_gamma ();
 int
 main ()
 {
-return aes_encrypt ();
+return gsl_sf_gamma ();
   ;
   return 0;
 }
@@ -12555,12 +12628,12 @@ $as_echo "$ac_try_echo") >&5
 	 test "$cross_compiling" = yes ||
 	 $as_test_x conftest$ac_exeext
        }; then
-  ac_cv_lib_aes_aes_encrypt=yes
+  ac_cv_lib_gsl_gsl_sf_gamma=yes
 else
   $as_echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_aes_aes_encrypt=no
+	ac_cv_lib_gsl_gsl_sf_gamma=no
 fi
 
 rm -rf conftest.dSYM
@@ -12568,14 +12641,14 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_aes_aes_encrypt" >&5
-$as_echo "$ac_cv_lib_aes_aes_encrypt" >&6; }
-if test "x$ac_cv_lib_aes_aes_encrypt" = x""yes; then
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_gsl_gsl_sf_gamma" >&5
+$as_echo "$ac_cv_lib_gsl_gsl_sf_gamma" >&6; }
+if test "x$ac_cv_lib_gsl_gsl_sf_gamma" = x""yes; then
   cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBAES 1
+#define HAVE_LIBGSL 1
 _ACEOF
 
-  LIBS="-laes $LIBS"
+  LIBS="-lgsl $LIBS"
 
 fi
 

@@ -96,8 +96,8 @@ am_libdieharder_la_OBJECTS = bits.lo chisq.lo countx.lo \
 	rng_dev_urandom.lo rng_file_input.lo rng_file_input_raw.lo \
 	rngs_gnu_r.lo rng_kiss.lo rng_jenkins.lo rng_threefish.lo \
 	rng_stdin_input_raw.lo rng_uvag.lo sample.lo skein_block64.lo \
-	std_test.lo sts_monobit.lo sts_runs.lo sts_serial.lo timing.lo \
-	Vtest.lo version.lo Xtest.lo
+	skein_block_ref.lo std_test.lo sts_monobit.lo sts_runs.lo \
+	sts_serial.lo timing.lo Vtest.lo version.lo Xtest.lo
 libdieharder_la_OBJECTS = $(am_libdieharder_la_OBJECTS)
 libdieharder_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -314,6 +314,7 @@ libdieharder_la_SOURCES = \
 	rng_uvag.c \
 	sample.c \
 	skein_block64.c \
+	skein_block_ref.c \
 	std_test.c \
 	sts_monobit.c \
 	sts_runs.c \
@@ -477,6 +478,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rngs_gnu_r.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sample.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skein_block64.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skein_block_ref.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/std_test.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sts_monobit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sts_runs.Plo@am__quote@

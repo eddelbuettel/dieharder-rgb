@@ -102,13 +102,15 @@ AC_SUBST(DIEHARDER_CFLAGS)
 AC_SUBST(DIEHARDER_LIBS)
 
 #==================================================================
-# Checks for libraries.
-# FIXME: Replace `main' with a function in `-lgsl':
+# Checks for libraries, and headers.  Test for dependency libraries
+# FIRST in reverse order that you need -lwhatever to appear on
+# compile line as it accumulates libraries to build e.g.
+#   -lgsl -lgslcblas
+# for the SECOND test, required (in that order) to succeed.
 #==================================================================
-AC_CHECK_LIB([gsl], [main])
-# FIXME: Replace `main' with a function in `-lgslcblas':
-AC_CHECK_LIB([gslcblas], [main])
-AC_CHECK_LIB([aes], [aes_encrypt])
+AC_CHECK_HEADER([gsl/gsl_sf_gamma.h],,[AC_MSG_ERROR([Couldn't find GSL headers.  Please install the gsl-devel package.])])
+AC_CHECK_LIB([gslcblas], [main],,[AC_MSG_ERROR([Couldn't find libgsl. Please install the gsl package.])])
+AC_CHECK_LIB([gsl],[gsl_sf_gamma])
 
 #==================================================================
 # Checks for typedefs, structures, and compiler characteristics.

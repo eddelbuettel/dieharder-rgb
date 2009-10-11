@@ -35,19 +35,6 @@
 #define IS_BIG_ENDIAN      4321 /* byte 0 is most significant (mc68k) */
 #define IS_LITTLE_ENDIAN   1234 /* byte 0 is least significant (i386) */
 
-#define __CRYPTLIB__			/* pcg */
-
-#if defined(__CRYPTLIB__)		/* pcg */
-#  include "crypt.h"
-#  if defined(DATA_LITTLEENDIAN)
-#    define PLATFORM_BYTE_ORDER IS_LITTLE_ENDIAN
-#  else
-#    define PLATFORM_BYTE_ORDER IS_BIG_ENDIAN
-#  endif
-#else
-
-#endif							/* pcg */
-
 #if !defined(PLATFORM_BYTE_ORDER)
 
 /* Include files where endian defines and byteswap functions may reside	*/

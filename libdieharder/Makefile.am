@@ -81,6 +81,7 @@ libdieharder_la_SOURCES = \
 	rng_uvag.c \
 	sample.c \
 	skein_block64.c \
+	skein_block_ref.c \
 	std_test.c \
 	sts_monobit.c \
 	sts_runs.c \

@@ -71,6 +71,9 @@ typedef struct {
 void Threefish_512_Process_Blocks(Threefish_512_Ctxt_t *ctx, const u08b_t *input,
 		void *output, size_t blkCnt);
 
+void Threefish_512_Process_Blocks64(Threefish_512_Ctxt_t *ctx, const u08b_t *input,
+		void *output, size_t blkCnt);
+
 /*   Skein APIs for (incremental) "straight hashing" */
 int  Skein_512_Init  (Skein_512_Ctxt_t *ctx, size_t hashBitLen);
 
