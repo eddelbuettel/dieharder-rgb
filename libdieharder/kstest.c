@@ -19,14 +19,15 @@
 
 
 #include <dieharder/libdieharder.h>
-
+#define KCOUNTMAX 4999
+double p_ks_new(int n,double d);
 
 double kstest(double *pvalue,int count)
 {
 
  int i,j,k;
  double y,d,dmax,csqrt;
- double p,x;
+ double p,pold,x;
 
  /*
   * We start by sorting the list of pvalues.
@@ -63,12 +64,45 @@ double kstest(double *pvalue,int count)
    if(d > dmax) dmax = d;
  }
 
- csqrt = sqrt(count);
- x = (csqrt + 0.12 + 0.11/csqrt)*dmax;
+ /*
+  * This is the old kstest code.  Note that I'm leaving it in, wrapped, so
+  * one can compare the old and the new.  There is definitely going to be
+  * a cutoff in count where it is worthwhile to just execute the old code,
+  * probably somewhere between 5000 and 10000 (where the average error in
+  * p is less than 0.001, and can probably be simply corrected with a
+  * scaled spline or the like).
+  */
  if(verbose == D_KSTEST || verbose == D_ALL){
-   printf("Kolmogorov-Smirnov D = %8.3f, evaluating q_ks(%6.2f)\n",dmax,x);
+   csqrt = sqrt(count);
+   x = (csqrt + 0.12 + 0.11/csqrt)*dmax;
+   /*
+    * The old q_ks(x) was backwards relative to the new
+    * p_ks_new(count,dmax).  Go figure.
+    */
+   pold = 1.0 - q_ks(x);
  }
- p = q_ks(x);
+ /*
+  * For grins we'll use the asymptotic form for large enough count
+  * to save time.
+  */
+  
+ if(count > KCOUNTMAX){
+   csqrt = sqrt(count);
+   x = (csqrt + 0.12 + 0.11/csqrt)*dmax;
+   pold = 1.0 - q_ks(x);
+   return(pold);
+ }
+
+ /*
+  * This uses the new "exact" kolmogorov distribution, which appears to
+  * work!  It's moderately expensive computationally, but I think it will
+  * be in bounds for typical dieharder test ranges, and I also expect that
+  * it can be sped up pretty substantially.
+  */
+ p = p_ks_new(count,dmax);
+ if(verbose == D_KSTEST || verbose == D_ALL){
+   printf("p (new) = %f  p (old) = %f   delta = %f\n",p,pold,pold - p);
+ }
 
  return(p);
 
@@ -222,3 +256,144 @@ double q_ks_kuiper(double x,int count)
 
 }
 
+
+/*
+ * The following routines are from the paper "Evaluating Kolmogorov's
+ * Distribution" by Marsaglia, Tsang and Wang.  They should permit kstest
+ * to return precise pvalues for more or less arbitrary numbers of samples
+ * ranging from n = 10 out to n approaching the asymptotic form where
+ * Kolmogorov's original result is valid.  It contains some cutoffs
+ * intended to prevent excessive runtimes in the rare cases where p being
+ * returned is close to 1 and n is large (at which point the asymptotic
+ * form is generally adequate anyway).
+ *
+ * This is so far a first pass -- I'm guessing that we can improve the
+ * linear algebra using the GSL or otherwise.  The code is therefore
+ * more or less straight from the paper.
+ */
+void mMultiply(double *A,double *B,double *C,int m)
+{
+  int i,j,k;
+  double s;
+  for(i=0; i<m; i++){
+    for(j=0; j<m; j++){
+      s=0.0;
+      for(k=0; k<m; k++){
+        s+=A[i*m+k]*B[k*m+j];
+	C[i*m+j]=s;
+      }
+    }
+  }
+}
+
+void mPower(double *A,int eA,double *V,int *eV,int m,int n)
+{
+  double *B;
+  int eB,i;
+
+  /*
+   * n == 1: first power just returns A.
+   */
+  if(n==1){
+    for(i=0;i<m*m;i++){
+      V[i]=A[i];*eV=eA;
+    }
+    return;
+  }
+
+  /*
+   * This is a recursive call.  Either n/2 will equal 1 (and the line
+   * above will return and the recursion will terminate) or it won't
+   * and we will cumulate the product.
+   */
+  mPower(A,eA,V,eV,m,n/2);
+  B=(double*)malloc((m*m)*sizeof(double));
+  mMultiply(V,V,B,m);
+  eB=2*(*eV);
+  if(n%2==0){
+    for(i=0;i<m*m;i++){
+      V[i]=B[i];
+    }
+    *eV=eB;
+  } else {
+    mMultiply(A,B,V,m);
+    *eV=eA+eB;
+  }
+
+  /*
+   * Rescale as needed to avoid overflow.
+   */
+  if(V[(m/2)*m+(m/2)]>1e140) {
+    for(i=0;i<m*m;i++) {
+      V[i]=V[i]*1e-140;
+    }
+    *eV+=140;
+  }
+
+  free(B);
+
+}
+
+double p_ks_new(int n,double d)
+{
+
+  int k,m,i,j,g,eH,eQ;
+  double h,s,*H,*Q;
+
+  /*
+   * Omit next fragment if you require >7 digit accuracy in the right tail,
+   * but be prepared for occassional long runtimes.
+   */
+  s=d*d*n;
+  if(s>7.24||(s>3.76&&n>99)) {
+    /* printf("Returning the easy way\n"); */
+    return 1-2*exp(-(2.000071+.331/sqrt(n)+1.409/n)*s);
+  }
+
+  k=(int)(n*d)+1;
+  m=2*k-1;
+  h=k-n*d;
+  H=(double*)malloc((m*m)*sizeof(double));
+  Q=(double*)malloc((m*m)*sizeof(double));
+  for(i=0;i<m;i++){
+    for(j=0;j<m;j++){
+      if(i-j+1<0){
+        H[i*m+j]=0;
+      } else {
+        H[i*m+j]=1;
+      }
+    }
+  }
+
+  for(i=0;i<m;i++){
+    H[i*m]-=pow(h,i+1);
+    H[(m-1)*m+i]-=pow(h,(m-i));
+  }
+  H[(m-1)*m]+=(2*h-1>0?pow(2*h-1,m):0);
+  for(i=0;i<m;i++){
+    for(j=0;j<m;j++){
+      if(i-j+1>0){
+        for(g=1;g<=i-j+1;g++){
+	  H[i*m+j]/=g;
+	}
+      }
+    }
+  }
+  eH=0;
+  mPower(H,eH,Q,&eQ,m,n);
+  s=Q[(k-1)*m+k-1];
+  for(i=1;i<=n;i++){
+    s=s*i/n;
+    if(s<1e-140){
+      s*=1e140;
+      eQ-=140;
+    }
+  }
+
+  s*=pow(10.,eQ);
+  free(H);
+  free(Q);
+  return s;
+
+}
+     
