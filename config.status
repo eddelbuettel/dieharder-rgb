@@ -906,6 +906,7 @@ D["LT_OBJDIR"]=" \".libs/\""
 D["RELEASED"]=" 1"
 D["HAVE_LIBGSLCBLAS"]=" 1"
 D["HAVE_LIBGSL"]=" 1"
+D["ENDIAN_LITTLE"]=" 1"
 D["TIME_WITH_SYS_TIME"]=" 1"
   for (key in D) D_is_set[key] = 1
   FS = ""

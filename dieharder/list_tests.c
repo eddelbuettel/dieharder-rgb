@@ -31,7 +31,7 @@ void list_tests()
      if(i == 1){
        fprintf(stdout,"\t%10s\n","Suspect");
      } else if(i == 14){
-       fprintf(stdout,"\t%10s\n","Suspect");
+       fprintf(stdout,"\t%10s\n","Do Not Use");
      } else {
        fprintf(stdout,"\t%10s\n","Good");
      }
