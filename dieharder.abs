@@ -1,13 +1,14 @@
 <center><H1>Dieharder: A Random Number Test Suite</H1></center>
-<center><H2>Version 3.29.2beta</H2></center>
+<center><H2>Version 3.29.3beta</H2></center>
 
 <center><H3>Robert G. Brown (rgb)</H3></center>
 <center><H3>Dirk Eddelbuettel</H3></center>
 
 <p>Welcome to the dieharder distribution website.</p>
 
-<p>Version 2.28.1 is the current snapshot.  Some of the documentation
-below may not quite be caught up to it, but it should be close.</p>
+<p>Version 3.29.3beta is the current snapshot.  Some of the
+documentation below may not quite be caught up to it, but it should be
+close.</p>
 
 <p>Dieharder is a <i>random number generator (rng) testing suite</i>.
 It is intended to test <i>generators</i>, not <i>files of possibly
@@ -394,43 +395,44 @@ Available</h2></center>
 <p>List of GSL and user-defined random number generators that can be
 tested by dieharder:</p>
 <pre>
-==========================================================================|
-         dieharder version 2.27.11 Copyright 2003 Robert G. Brown         |
-==========================================================================|
- Id Test Name           | Id Test Name           | Id Test Name           |
-==========================================================================|
-  0 borosh13            |  1 cmrg                |  2 coveyou             |
-  3 fishman18           |  4 fishman20           |  5 fishman2x           |
-  6 gfsr4               |  7 knuthran            |  8 knuthran2           |
-  9 knuthran2002        | 10 lecuyer21           | 11 minstd              |
- 12 mrg                 | 13 mt19937             | 14 mt19937_1999        |
- 15 mt19937_1998        | 16 r250                | 17 ran0                |
- 18 ran1                | 19 ran2                | 20 ran3                |
- 21 rand                | 22 rand48              | 23 random128-bsd       |
- 24 random128-glibc2    | 25 random128-libc5     | 26 random256-bsd       |
- 27 random256-glibc2    | 28 random256-libc5     | 29 random32-bsd        |
- 30 random32-glibc2     | 31 random32-libc5      | 32 random64-bsd        |
- 33 random64-glibc2     | 34 random64-libc5      | 35 random8-bsd         |
- 36 random8-glibc2      | 37 random8-libc5       | 38 random-bsd          |
- 39 random-glibc2       | 40 random-libc5        | 41 randu               |
- 42 ranf                | 43 ranlux              | 44 ranlux389           |
- 45 ranlxd1             | 46 ranlxd2             | 47 ranlxs0             |
- 48 ranlxs1             | 49 ranlxs2             | 50 ranmar              |
- 51 slatec              | 52 taus                | 53 taus2               |
- 54 taus113             | 55 transputer          | 56 tt800               |
- 57 uni                 | 58 uni32               | 59 vax                 |
- 60 waterman14          | 61 zuf                 |                        |
-==========================================================================|
-200 stdin_input_raw     |201 file_input_raw      |202 file_input          |
-203 ca                  |204 uvag                |                        |
-==========================================================================|
-400 R_wichmann_hill     |401 R_marsaglia_multic. |402 R_super_duper       |
-403 R_mersenne_twister  |404 R_knuth_taocp       |405 R_knuth_taocp2      |
-==========================================================================|
-500 /dev/random         |501 /dev/urandom        |                        |
-==========================================================================|
-600 empty               |                        |                        |
-==========================================================================|
+#=============================================================================#
+#          dieharder version 3.29.3beta Copyright 2003 Robert G. Brown        #
+#=============================================================================#
+#    Id Test Name           | Id Test Name           | Id Test Name           #
+#=============================================================================#
+|   000 borosh13            |001 cmrg                |002 coveyou             |
+|   003 fishman18           |004 fishman20           |005 fishman2x           |
+|   006 gfsr4               |007 knuthran            |008 knuthran2           |
+|   009 knuthran2002        |010 lecuyer21           |011 minstd              |
+|   012 mrg                 |013 mt19937             |014 mt19937_1999        |
+|   015 mt19937_1998        |016 r250                |017 ran0                |
+|   018 ran1                |019 ran2                |020 ran3                |
+|   021 rand                |022 rand48              |023 random128-bsd       |
+|   024 random128-glibc2    |025 random128-libc5     |026 random256-bsd       |
+|   027 random256-glibc2    |028 random256-libc5     |029 random32-bsd        |
+|   030 random32-glibc2     |031 random32-libc5      |032 random64-bsd        |
+|   033 random64-glibc2     |034 random64-libc5      |035 random8-bsd         |
+|   036 random8-glibc2      |037 random8-libc5       |038 random-bsd          |
+|   039 random-glibc2       |040 random-libc5        |041 randu               |
+|   042 ranf                |043 ranlux              |044 ranlux389           |
+|   045 ranlxd1             |046 ranlxd2             |047 ranlxs0             |
+|   048 ranlxs1             |049 ranlxs2             |050 ranmar              |
+|   051 slatec              |052 taus                |053 taus2               |
+|   054 taus113             |055 transputer          |056 tt800               |
+|   057 uni                 |058 uni32               |059 vax                 |
+|   060 waterman14          |061 zuf                 |                        |
+#=============================================================================#
+|   200 stdin_input_raw     |201 file_input_raw      |202 file_input          |
+|   203 ca                  |204 uvag                |205 AES_OFB             |
+|   206 Threefish_OFB       |                        |                        |
+#=============================================================================#
+|   400 R_wichmann_hill     |401 R_marsaglia_multic. |402 R_super_duper       |
+|   403 R_mersenne_twister  |404 R_knuth_taocp       |405 R_knuth_taocp2      |
+#=============================================================================#
+|   500 /dev/random         |501 /dev/urandom        |                        |
+#=============================================================================#
+|   600 empty               |                        |                        |
+#=============================================================================#
 </pre>
 
 <p>Note that the stdin_input_raw interface (-g 200) is a "universal"
@@ -469,60 +471,38 @@ different tests).  <b>Let the user beware!</b></p>
 <p>List of the CURRENT fully implemented tests (as of the 08/18/08
 snapshot):</p>
 <pre>
-========================================================================
-   Dieharder version 2.27.11 Copyright 2003 Robert G. Brown
-========================================================================
-Bug/Development Key (use at your own risk):
-   rft = ready for testing (the test may - or may not - work correctly)
-   sus = suspect test (consistently fails "good" generators)
-   dev = development only (may crash, isn't finished)
-
-Only fully reliable tests will be run when diehard -a is invoked,
-with "reasonable" default parameters.  
-
-PLEASE READ THE MAN PAGE to learn about p-values and the null hypothesis
-in testing BEFORE using this testing tool!
-
-            Diehard Tests
-   -d 1  Diehard Birthdays test
-   [sus: -d 2  Diehard Overlapping Permutations test]
-   -d 3  Diehard 32x32 Binary Rank test
-   -d 4  Diehard 6x8 Binary Rank test
-   -d 5  Diehard Bitstream test
-   -d 6  Diehard OPSO test
-   -d 7  Diehard OQSO test
-   -d 8  Diehard DNA test
-   -d 9  Diehard Count the 1s (stream) test
-   -d 10 Diehard Count the 1s (byte) test
-   -d 11 Diehard Parking Lot test
-   -d 12 Diehard Minimum Distance (2D Spheres) test
-   -d 13 Diehard 3D Spheres (minimum distance) test
-   -d 14 Diehard Squeeze test
-   [sus: -d 15 Diehard Sums test]
-   -d 16 Diehard Runs test
-   -d 17 Diehard Craps test
-   -d 18 Marsaglia and Tsang GCD test
-   [dev: -d 19 Marsaglia and Tsang Gorilla test]
-
-             RGB Tests
-   -r 1 RGB Timing test (times the rng)
-   -r 2 RGB Bit Persistence test
-   -r 3 RGB Ntuple Bit Distribution test suite (-n ntuple)
-   -r 4 RGB Generalized Minimum Distance test
-   -r 5 RGB Permutations test
-   [rft: -r 6 RGB Lagged Sums test (runs over all lags out to 32)]
-         (do not use the following as tests yet)
-   [dev: -r 7 RGB L-M-Ntuple Distribution test suite (quite long)]
-   [dev: -r 8 RGB Overlapping Permutations test]
-
-      Statistical Test Suite (STS)
-   -s 1 STS Monobit test
-   -s 2 STS Runs test
-   -s 3 STS Serial test [for all bit combinations out to 16 bits]
-
-            User Tests
-   -u 1 User Template [Lagged Sum Test, one bit pattern]
-
+#=============================================================================#
+#          dieharder version 3.29.3beta Copyright 2003 Robert G. Brown        #
+#=============================================================================#
+Installed dieharder tests:
+ Test Number                         Test Name                Test Reliability
+===============================================================================
+  -d 0                            Diehard Birthdays Test              Good
+  -d 1                               Diehard OPERM5 Test           Suspect
+  -d 2                    Diehard 32x32 Binary Rank Test              Good
+  -d 3                      Diehard 6x8 Binary Rank Test              Good
+  -d 4                            Diehard Bitstream Test              Good
+  -d 5                                      Diehard OPSO              Good
+  -d 6                                 Diehard OQSO Test              Good
+  -d 7                                  Diehard DNA Test              Good
+  -d 8                Diehard Count the 1s (stream) Test              Good
+  -d 9                  Diehard Count the 1s Test (byte)              Good
+  -d 10                         Diehard Parking Lot Test              Good
+  -d 11         Diehard Minimum Distance (2d Circle) Test             Good
+  -d 12         Diehard 3d Sphere (Minimum Distance) Test             Good
+  -d 13                             Diehard Squeeze Test              Good
+  -d 14                                Diehard Sums Test        Do Not Use
+  -d 15                                Diehard Runs Test              Good
+  -d 16                               Diehard Craps Test              Good
+  -d 17                     Marsaglia and Tsang GCD Test              Good
+  -d 100                                STS Monobit Test              Good
+  -d 101                                   STS Runs Test              Good
+  -d 102                   STS Serial Test (Generalized)              Good
+  -d 200                       RGB Bit Distribution Test              Good
+  -d 201           RGB Generalized Minimum Distance Test              Good
+  -d 202                           RGB Permutations Test              Good
+  -d 203                             RGB Lagged Sum Test              Good
+  -d 204                RGB Kolmogorov-Smirnov Test Test              Good
 </pre>
 
 <p>Full descriptions of the tests are available (as you can see) from
@@ -537,33 +517,51 @@ can <i>fix it</i> if it bothers you and/or I don't fix it first).</p>
 
 <center><h2>Development Notes</h2></center>
 
-<p>Be warned that <i>very few rngs</i> come through dieharder
-flawlessly.  The best ones currently available appear to be <i>a bit too
-uniform</i> (not quite "random enough") for at least certain sampling
-displacements.  This appears as having a p-value that is <i>too
-high</i>, not too low.  Also, as is documented in the list of tests,
-there are both development tests and tests that are "suspect" in the
-full suite of available tests.</p>  
+<p>The most important 3.x announcement is that as of 3.29.3beta, the
+kstest used in dieharder is "fixed" to give exact results for small
+datasets.  This is a single sided test against the uniform distribution
+and can be validated <i>within</i> dieharder itself using the 29th test,
+rgb_kstest_test.  There are a few changes that will be made to dieharder
+in rapid succession as this snapshot (10/12/09) is still somewhat
+unstable and there are more bugfixes in the queue to be added ASAP but
+look for kstest to work and really mean what it says, where before the
+final kstest was clearly high-biased and not really reliable for only
+100 final pvalues per dieharder test in a -a(ll) run.</i>
 
-<p>Don't use the development tests -- they will often crash dieharder
-and don't yet work anyway (and are there to facilitate development so I
-can release snapshots with future tests "in place" but not necessarily
-yet functional).  The suspect tests are tests that consistently fail
-<i>all</i> rngs tested, including hardware tests.  Theoretically this
-could just mean that these are really good tests and very sensitive to
-non-randomness.  Practically it could equally well mean that the
-software implementation of the test contains a subtle bug or flawed
-initialization data.  Use the suspect tests with a grain of salt.  For
-sure don't assume that a generator that fails those tests is "bad" in
-any way.  Be sure to let me know if you encounter a generator that
-<i>consistently passes</i> the suspect tests (and does optimally well
-on the rest of them) because I am eagerly searching for a "gold
-standard" rng to aid me in testing the tests.</p>
+<p>The second announcement is that two "gold standard" rngs have been
+added to dieharder to facilitate testing of dieharder itself and the
+<i>comparative</i> testing of new rngs.  These are rng_aes, based on the
+aes encryption standard and hence presumably very random indeed, and
+rng_threefish, based on threefish (skein) encryption and again
+presumably very random indeed.  These generators fairly reliably "pass
+dieharder" with 0, 1 or 2 "weak" results (the numbers expected, given
+over a hundred test results) and <i>very</i> rarely with a single "fail"
+result (again, about the number expected).  In concert with the
+strongest dieharder GSL based generators, the tool is strongly
+self-validating and permits good comparisons between proposed new
+generators (hardware, software, or otherwise) and existing very strong
+generators.</p>
+
+<p>Special thanks to <b>David Bauer</b> for contributing the greater
+part of both of the fixes and extensions above.  Dieharder is ultimately
+a community supported tool, and this has the capacity to make it very
+strong indeed over time.</p>
+
+<p>It is suggested that one not use any "development" tests that might
+be in any given snapshot of dieharder -- they there to facilitate
+development so I can release snapshots with future tests "in place" but
+not necessarily yet functional.  Tests that are marked suspect or do not
+use consistently fail <i>all</i> rngs tested, including the gold
+standard rngs.  It is almost certain that the software implementation of
+these tests contain some subtle bug or flawed initialization data (and
+volunteers who are experts in statistics who wish to try to fix them are
+always deeply appreciated).</p>
 
 <p>Note that all tests are encapsulated to be as standard as possible in
 the way they compute p-values from single statistics or from vectors of
 statistics, and in the way they implement the underlying KS and chisq
-tests.  Diehard is now complete in dieharder, and attention will turn
+tests.  Diehard is now complete in dieharder (with two definitely broken
+tests that are <I>broken in diehard</i>), and attention will turn
 towards implementing more selected tests from the STS.  I also have my
 eye on the as-yet unimplemented tests from Knuth's <i>The Art of
 Programming</i>, lagged correlation, and more bitwise tests that have
@@ -577,15 +575,12 @@ backwards or indirectly, IMO).</p>
 <li> Tests of GSL random distribution (as opposed to number) generators,
 as indirect tests of the generators that feed them.
 
-<li> Anderson-Darling KS test.  Kuiper works, but AD is more common.  It
-therefore should be a user choice, or should even do both.  Why not?
-The computation for either is trivial compared to the effort required to
-run the tests in the first place.
-
 <li> New tests, compressions of existing ones that are "different" but
-really the same.  Hyperplane tests.  Spectral tests.  Especially the bit
-distribution test with user defineable lag or lag pattern (to look for
-subtle, long period correlations in the bit patterns produced).
+really the same.  Hyperplane tests.  Entropy tests.  Spectral tests.
+Especially the bit distribution test with user defineable lag or lag
+pattern (to look for subtle, long period correlations in the bit
+patterns produced).  I have plans to add a <i>lot</I> of new tests now
+that the kstest issues are resolved.
 
 <li> Collaborators.  Co-developers welcome, as are contributions or
 suggestions from users.  Note well that users have already provided
@@ -598,8 +593,8 @@ random numbers and observe something odd, please help out!
 
 <center><h2>Conclusions</h2></center>
 
-<p>I hope that even during its development, you find dieharder useful.
-Remember, it is fully open source, so you can freely modify and
+<p>I hope that even during its ongoing development, you find dieharder
+useful.  Remember, it is fully open source, so you can freely modify and
 redistribute the code according to the rules laid out in the Gnu Public
 License (version 2b), which might cost you as much as a beer one day.
 In particular, you can easily add random number generators using the

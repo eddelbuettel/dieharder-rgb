@@ -75,11 +75,7 @@ double kstest(double *pvalue,int count)
  if(verbose == D_KSTEST || verbose == D_ALL){
    csqrt = sqrt(count);
    x = (csqrt + 0.12 + 0.11/csqrt)*dmax;
-   /*
-    * The old q_ks(x) was backwards relative to the new
-    * p_ks_new(count,dmax).  Go figure.
-    */
-   pold = 1.0 - q_ks(x);
+   pold = q_ks(x);
  }
  /*
   * For grins we'll use the asymptotic form for large enough count
@@ -89,7 +85,7 @@ double kstest(double *pvalue,int count)
  if(count > KCOUNTMAX){
    csqrt = sqrt(count);
    x = (csqrt + 0.12 + 0.11/csqrt)*dmax;
-   pold = 1.0 - q_ks(x);
+   pold = q_ks(x);
    return(pold);
  }
 
@@ -334,6 +330,10 @@ void mPower(double *A,int eA,double *V,int *eV,int m,int n)
 
 }
 
+/*
+ * Marsaglia's definition is K = 1 - p.  I convert it to p, as p is
+ * what we want in dieharder.
+ */
 double p_ks_new(int n,double d)
 {
 
@@ -347,7 +347,7 @@ double p_ks_new(int n,double d)
   s=d*d*n;
   if(s>7.24||(s>3.76&&n>99)) {
     /* printf("Returning the easy way\n"); */
-    return 1-2*exp(-(2.000071+.331/sqrt(n)+1.409/n)*s);
+    return 2.0*exp(-(2.000071+.331/sqrt(n)+1.409/n)*s);
   }
 
   k=(int)(n*d)+1;
@@ -391,6 +391,7 @@ double p_ks_new(int n,double d)
   }
 
   s*=pow(10.,eQ);
+  s = 1.0 - s;
   free(H);
   free(Q);
   return s;
