@@ -199,7 +199,7 @@
   * file_input_raw.
   */
  uint file_input_get_rewind_cnt(gsl_rng *rng);
- uint file_input_get_rtot(gsl_rng *rng);
+ off_t file_input_get_rtot(gsl_rng *rng);
  void file_input_set_rtot(gsl_rng *rng,uint value);
 
  char filename[K];      /* Input file name */
@@ -226,8 +226,8 @@
  typedef struct {
     FILE *fp;
     off_t flen;
-    uint rptr;
-    uint rtot;
+    off_t rptr;
+    off_t rtot;
     uint rewind_cnt;
   } file_input_state_t;
 

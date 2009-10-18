@@ -33,7 +33,7 @@ static void file_input_set (void *vstate, unsigned long int s);
  *   fp is the file pointer
  *   flen is the number of rands in the file (state->flen)
  *   rptr is a count of rands returned since last rewind
- *   rtot is  * a count of rands returned since the file was opened or it
+ *   rtot is a count of rands returned since the file was opened or it
  *      was deliberately reset.
  *   rewind_cnt is a count of how many times the file was rewound since
  *      its last open.
@@ -52,7 +52,7 @@ uint file_input_get_rewind_cnt(gsl_rng *rng)
   return state->rewind_cnt;
 }
 
-uint
+off_t
 file_input_get_rtot(gsl_rng *rng)
 {
   file_input_state_t *state = (file_input_state_t *) rng->state;
@@ -162,7 +162,7 @@ static unsigned long int file_input_get (void *vstate)
    state->rptr++;
    state->rtot++;
    if(verbose){
-     fprintf(stdout,"# file_input() %u: %u/%u -> %u\n",(uint)state->rtot,(uint)state->rptr,(uint)state->flen,(uint)iret);
+     fprintf(stdout,"# file_input() %llu: %llu/%llu -> %u\n", state->rtot, state->rptr,state->flen,(uint)iret);
    }
 
    /*
@@ -269,7 +269,7 @@ static void file_input_set (void *vstate, unsigned long int s)
      state->rptr = 0;
      state->rewind_cnt++;
      if(verbose == D_FILE_INPUT || verbose == D_ALL){
-       fprintf(stderr,"# file_input(): Rewinding %s at rtot = %u\n", filename,state->rtot);
+       fprintf(stderr,"# file_input(): Rewinding %s at rtot = %u\n", filename,(uint) state->rtot);
        fprintf(stderr,"# file_input(): Rewind count = %u, resetting rptr = %u\n",state->rewind_cnt,state->rptr);
      }
    } else {
@@ -322,7 +322,7 @@ static void file_input_set (void *vstate, unsigned long int s)
        cnt++;
        if(verbose){ 
          fprintf(stdout,"# file_input(): cnt = %d\n",cnt);
-         fprintf(stdout,"# file_input(): state->flen set to %u\n",(uint)state->flen);
+         fprintf(stdout,"# file_input(): state->flen set to %llu\n",state->flen);
        }
      }
      if(strncmp(splitbuf[0],"numbit",6) == 0){
