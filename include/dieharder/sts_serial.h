@@ -57,7 +57,7 @@ static Dtest sts_serial_dtest = {
 #\n",
   100,     /* Default psamples */
   100000,  /* Default tsamples */
-  /* 44,      /* We need to be ABLE to make 1 pvalue from m=1,2, 2 from m=[3,24] */
+  /* 44,    * We need to be ABLE to make 1 pvalue from m=1,2, 2 from m=[3,24] */
   30,      /* We need to be ABLE to make 1 pvalue from m=1,2, 2 from m=[3,16] */
   sts_serial,
   0

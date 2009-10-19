@@ -224,4 +224,35 @@ inline static uint get_bit_ntuple_from_uint (uint bitstr, uint nbits,
    return result & mask;
 }
 
+/*
+ * David Bauer doesn't like using the routine above to "fix" the
+ * problem that some generators don't return 32 bit random uints.  This
+ * version of the routine just ignore rmax_bits.  If a routine returns
+ * 31 or 24 bit uints, tough.  This is harmless enough since nobody cares
+ * about obsolete generators that return signed uints or worse anyway, I
+ * imagine.  It MIGHT affect people writing HW generators that return only
+ * 16 bits at a time or the like -- they need to be advised to wrap their
+ * call routines up to return uints.  It's faster, too -- less checking
+ * of the stream, fewer conditionals.
+ */
+inline static uint get_bit_ntuple_from_whole_uint (uint bitstr, uint nbits, 
+		uint mask, uint boffset)
+{
+ uint result;
+ uint len;
 
+ result = bitstr >> boffset;
+
+ if (boffset + nbits <= 32) return result & mask;
+
+ /* Need to wrap */
+ len = 32 - boffset;
+ while (len < nbits) {
+   result |= (bitstr << len);
+   len += 32;
+ }
+
+ return result & mask;
+
+}
+ 

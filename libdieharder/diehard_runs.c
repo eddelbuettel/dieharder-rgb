@@ -77,8 +77,6 @@ static double b[6] = {
  29.0/5040.0,
  1.0/840.0,};
 
-uint *runs_rand;
-
 int diehard_runs(Test **test, int irun)
 {
 
@@ -87,8 +85,8 @@ int diehard_runs(Test **test, int irun)
  int upruns[RUN_MAX],downruns[RUN_MAX];
  double uv,dv,up_pks,dn_pks;
  double *uv_pvalue,*dv_pvalue;
+ uint first, last, next = 0;
 
- runs_rand = (uint *)malloc(test[0]->tsamples*sizeof(uint));
  /*
   * This is just for display.
   */
@@ -112,17 +110,17 @@ int diehard_runs(Test **test, int irun)
  if(verbose){
    printf("j    rand    ucount  dcount\n");
  }
- runs_rand[0] = gsl_rng_get(rng);
+ first = last = gsl_rng_get(rng);
  for(t=1;t<test[0]->tsamples;t++) {
-   runs_rand[t] = gsl_rng_get(rng);
+   next = gsl_rng_get(rng);
    if(verbose){
-     printf("%d:  %10u   %u    %u\n",t,runs_rand[t],ucount,dcount);
+     printf("%d:  %10u   %u    %u\n",t,next,ucount,dcount);
    }
 
    /*
     * Did we increase?
     */
-   if(runs_rand[t] > runs_rand[t-1]){
+   if(next > last){
      ucount++;
      if(ucount > RUN_MAX) ucount = RUN_MAX;
      downruns[dcount-1]++;
@@ -134,7 +132,7 @@ int diehard_runs(Test **test, int irun)
      ucount = 1;
    }
  }
- if(runs_rand[test[0]->tsamples-1] > runs_rand[0]){
+ if(next > first){
    ucount++;
    if(ucount > RUN_MAX) ucount = RUN_MAX;
    downruns[dcount-1]++;
@@ -183,8 +181,6 @@ int diehard_runs(Test **test, int irun)
    printf("# diehard_runs(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
    printf("# diehard_runs(): test[1]->pvalues[%u] = %10.5f\n",irun,test[1]->pvalues[irun]);
  }
-
- free(runs_rand);
 
  return(0);
 

@@ -151,10 +151,11 @@ int rgb_permutations(Test **test,int irun)
  }
 
  for(i=0;i<nperms;i++){
-   free(lookup[i]);
+   gsl_permutation_free(lookup[i]);
  }
  free(lookup);
  free(testv);
+ Vtest_destroy(&vtest);
 
  return(0);
 

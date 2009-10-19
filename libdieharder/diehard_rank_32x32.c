@@ -59,6 +59,19 @@ int diehard_rank_32x32(Test **test, int irun)
    vtest.x[0] = 0.0;
    vtest.y[0] = 0.0;
  }
+
+ /*
+  * David Bauer contributes -- 
+  * From "On the Rank of Random Matrices":
+  * 0.2887880951, 0.5775761902, 0.1283502645,
+  * 0.0052387863, 0.0000465670, 0.0000000969
+  *
+  * rgb continues -- 
+  * An interesting question is -- should we not bother to pool
+  * and include all six of these terms?  That would in principle
+  * permit the number of tsamples to be cranked up without distorting
+  * the final p distribution from the chisq...
+  */
  vtest.x[29] = 0.0;
  vtest.y[29] = test[0]->tsamples*0.0052854502e+00;
  vtest.x[30] = 0.0;

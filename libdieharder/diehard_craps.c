@@ -156,6 +156,8 @@ int diehard_craps(Test **test, int irun)
    printf("# diehard_runs(): test[1]->pvalues[%u] = %10.5f\n",irun,test[1]->pvalues[irun]);
  }
 
+ Vtest_destroy(&vtest);
+
  return(0);
 
 }

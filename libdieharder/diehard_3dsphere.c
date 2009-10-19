@@ -95,6 +95,8 @@ int diehard_3dsphere(Test **test, int irun)
    printf("# diehard_3dsphere(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
 
+ nullfree(c3);
+
  return(0);
 
 }

@@ -1,7 +1,5 @@
 /*
  * ========================================================================
- * $Id: diehard_oqso.c 228 2006-08-19 05:20:16Z rgb $
- *
  * See copyright in copyright.h and the accompanying file COPYING
  * ========================================================================
  */
@@ -41,7 +39,8 @@ int diehard_oqso(Test **test, int irun)
 
  uint i,j,k,l,i0=0,j0=0,k0=0,l0=0,t,boffset=0;
  Xtest ptest;
- char ****w;
+ char w[32][32][32][32];
+
 
  /*
   * for display only.  0 means "ignored".
@@ -74,18 +73,7 @@ int diehard_oqso(Test **test, int irun)
   * Programming.
   */
 
- w = (char ****)malloc(32*sizeof(char ***));
- for(i=0;i<32;i++){
-   w[i] = (char ***)malloc(32*sizeof(char **));
-   for(j=0;j<32;j++){
-     w[i][j] = (char **)malloc(32*sizeof(char *));
-     for(k=0;k<32;k++){
-       w[i][j][k] = (char *)malloc(32*sizeof(char));
-       /* Zero the column */
-       memset(w[i][j][k],0,32*sizeof(char));
-     }
-   }
- }
+ memset(w,0,sizeof(char)*32*32*32*32);
 
  /*
   * To minimize the number of rng calls, we use each j and k mod 32
@@ -93,17 +81,8 @@ int diehard_oqso(Test **test, int irun)
   * periodic wraparound) to be used for the next iteration.  We
   * therefore have to "seed" the process with a random l
   */
- l = gsl_rng_get(rng);
  for(t=0;t<test[0]->tsamples;t++){
-   /*
-    * Let's do this the cheap/easy way first, sliding a 20 bit
-    * window along each int for the 32 possible starting
-    * positions a la birthdays, before trying to slide it all
-    * the way down the whole random bitstring implicit in a
-    * long sequence of random ints.  That way we can exit
-    * the tsamples loop at tsamples = 2^15...
-    */
-   if(t%32 == 0) {
+   if(t%6 == 0) {
      i0 = gsl_rng_get(rng);
      j0 = gsl_rng_get(rng);
      k0 = gsl_rng_get(rng);
@@ -113,32 +92,34 @@ int diehard_oqso(Test **test, int irun)
    /*
     * Get four "letters" (indices into w)
     */
-   i = get_bit_ntuple(&i0,1,5,boffset);
-   j = get_bit_ntuple(&j0,1,5,boffset);
-   k = get_bit_ntuple(&k0,1,5,boffset);
-   l = get_bit_ntuple(&l0,1,5,boffset);
-   /* printf("%u:   %u  %u  %u  %u  %u\n",t,i,j,k,l,boffset); */
-   w[i][j][k][l]++;
-   boffset++;
+   i = (i0 >> boffset) & 0x01f;
+   j = (j0 >> boffset) & 0x01f;
+   k = (k0 >> boffset) & 0x01f;
+   l = (l0 >> boffset) & 0x01f;
+
+   w[i][j][k][l]=1;
+   boffset+=5;
 
  }
  
  /*
   * Now we count the holes, so to speak
   */
- ptest.x = 0.0;
+ t = 0;
  for(i=0;i<32;i++){
    for(j=0;j<32;j++){
      for(k=0;k<32;k++){
        for(l=0;l<32;l++){
          if(w[i][j][k][l] == 0){
-           ptest.x += 1.0;
-           /* printf("ptest.x = %f  Hole: w[%u][%u][%u][%u] = %u\n",ptest.x,i,j,k,l,w[i][j][k][l]); */
+           t++;
+           /* printf("ptest.x = %f  Hole: w[%u][%u][%u][%u] = %u\n",t,i,j,k,l,w[i][j][k][l]); */
 	 }
        }
      }
    }
  }
+ ptest.x = t;
+
  MYDEBUG(D_DIEHARD_OQSO){
    printf("%f %f %f\n",ptest.y,ptest.x,ptest.x-ptest.y);
  }
@@ -149,20 +130,6 @@ int diehard_oqso(Test **test, int irun)
  MYDEBUG(D_DIEHARD_OQSO) {
    printf("# diehard_oqso(): ks_pvalue[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
-
- /*
-  * Don't forget to free w when done, in reverse order
-  */
- for(i=0;i<32;i++){
-   for(j=0;j<32;j++){
-      for(k=0;k<32;k++){
-         free(w[i][j][k]);
-      }
-      free(w[i][j]);
-   }
-   free(w[i]);
- }
- free(w);
 
  return(0);
 

@@ -1,8 +1,5 @@
 /*
- * $Id: diehard_squeeze.c 231 2006-08-22 16:18:05Z rgb $
- *
  * See copyright in copyright.h and the accompanying file COPYING
- *
  */
 
 /*
@@ -130,6 +127,8 @@ int diehard_squeeze(Test **test, int irun)
  MYDEBUG(D_DIEHARD_SQUEEZE) {
    printf("# diehard_squeeze(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
+
+ Vtest_destroy(&vtest);
 
  return(0);
 

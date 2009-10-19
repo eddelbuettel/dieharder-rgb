@@ -27,7 +27,7 @@ double kstest(double *pvalue,int count)
 
  int i,j,k;
  double y,d,dmax,csqrt;
- double p,pold,x;
+ double p,pold = 0.0,x;
 
  /*
   * We start by sorting the list of pvalues.

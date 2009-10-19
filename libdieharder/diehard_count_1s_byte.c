@@ -1,7 +1,5 @@
 /*
  * ========================================================================
- * $Id: diehard_birthdays.c 250 2006-10-10 05:02:26Z rgb $
- *
  * See copyright in copyright.h and the accompanying file COPYING
  * ========================================================================
  */
@@ -275,8 +273,10 @@ int diehard_count_1s_byte(Test **test, int irun)
      }
      /*
       * get next byte from the last rand we generated.
+      * Bauer fix - 
+      *   Cruft: j = get_bit_ntuple_from_uint(i,8,0x000000FF,boffset);
       */
-     j = get_bit_ntuple_from_uint(i,8,0x000000FF,boffset);
+     j = get_bit_ntuple_from_whole_uint(i,8,0x000000FF,boffset);
      index5 = LSHIFT5(index5,b5b[j]);
      if(verbose == D_DIEHARD_COUNT_1S_STREAM || verbose == D_ALL){
        printf("b5b[%u] = %u, index5 = %u\n",j,b5b[j],index5);
@@ -321,6 +321,9 @@ int diehard_count_1s_byte(Test **test, int irun)
  }
 
  return(0);
+
+ Vtest_destroy(&vtest4);
+ Vtest_destroy(&vtest5);
 
 }
 

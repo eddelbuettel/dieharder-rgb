@@ -264,6 +264,9 @@ int diehard_birthdays(Test **test, int irun)
    printf("# diehard_birthdays(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
 
+ nullfree(intervals);
+ nullfree(js);
+
  return(0);
 
 }

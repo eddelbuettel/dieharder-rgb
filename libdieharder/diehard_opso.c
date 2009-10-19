@@ -25,8 +25,7 @@
  * consecutive bits. It then restarts the file for the next de-  ::
  * signated 10 bits, and so on.                                  ::
  *
- * Note: Overlapping samples must be used to get the right
- * sigma.
+ * Note: Overlapping samples must be used to get the right sigma.
  * The tests BITSTREAM, OPSO, OQSO and DNA are all closely related.
  *
  * This test is now CORRECTED on the basis of a private communication
@@ -43,9 +42,12 @@
 int diehard_opso(Test **test, int irun)
 {
 
- uint i,j0,k0,j,k,boffset = 0,t;
+ uint i,j0=0,k0=0,j,k,boffset = 0,t;
  Xtest ptest;
- char **w;
+ /*
+  * Fixed test size for speed and as per diehard.
+  */
+ char w[1024][1024];
 
  /*
   * for display only.  0 means "ignored".
@@ -58,12 +60,20 @@ int diehard_opso(Test **test, int irun)
   * expected "missing works" count as a function of sample size.  SO:
   *
   * ptest.x = number of "missing words" given 2^21+1 trials
+  * Recalculation by David Bauer, from the original Monkey Tests paper:
+  *    ptest.y = 141909.600361375512162724864.
+  * This shouldn't matter, I don't think, at least at any reasonable scale
+  * dieharder can yet reach (but we'll see!).  If we start getting
+  * unreasonable failures we may have to try switching this number around,
+  * but given sigma and y, we'd need a LOT of rands to result the 0.3 diff.
+  * 
   * ptest.y = 141909.3299550069;
   * ptest.sigma = 290.4622634038;
+  * 
   */
  ptest.y = 141909.3299550069;
  ptest.sigma = 290.4622634038;
-
+ 
  /*
   * We now make test[0]->tsamples measurements, as usual, to generate the
   * missing statistic.  The easiest way to proceed, I think, will
@@ -83,24 +93,9 @@ int diehard_opso(Test **test, int irun)
   * I have some fairly serious doubts about this, though.
   */
 
- w = (char **)malloc(1024*sizeof(char *));
- for(i=0;i<1024;i++){
-   w[i] = (char *)malloc(1024*sizeof(char));
-   /* Zero the column */
-   memset(w[i],0,1024*sizeof(char));
- }
+ memset(w,0,sizeof(char)*1024*1024);
 
-/*
- printf("w is allocated and zero'd\n");
- printf("About to generate %u samples\n",test[0]->tsamples);
- */
- /*
-  * To minimize the number of rng calls, we use each j and k mod 32
-  * to determine the offset of the 10-bit long string (with
-  * periodic wraparound) to be used for the next iteration.  We
-  * therefore have to "seed" the process with a random k.
-  */
- k = gsl_rng_get(rng);
+ k = 0;
  for(t=0;t<test[0]->tsamples;t++){
    /*
     * Let's do this the cheap/easy way first, sliding a 20 bit
@@ -110,19 +105,20 @@ int diehard_opso(Test **test, int irun)
     * long sequence of random ints.  That way we can exit
     * the test[0]->tsamples loop at test[0]->tsamples = 2^15...
     */
-   if(t%32 == 0) {
+   if(t%2 == 0) {
      j0 = gsl_rng_get(rng);
      k0 = gsl_rng_get(rng);
-     boffset = 0;
+     j = j0 & 0x03ff;
+     k = k0 & 0x03ff;
+   } else {
+      j = (j0 >> 10) & 0x03ff;
+      k = (k0 >> 10) & 0x03ff;
    }
    /*
     * Get two "letters" (indices into w)
     */
-   j = get_bit_ntuple(&j0,1,10,boffset);
-   k = get_bit_ntuple(&k0,1,10,boffset);
    /* printf("%u:   %u  %u  %u\n",t,j,k,boffset); */
-   w[j][k]++;
-   boffset++;
+   w[j][k] = 1;
  }
  
  /*
@@ -147,11 +143,6 @@ int diehard_opso(Test **test, int irun)
  MYDEBUG(D_DIEHARD_OPSO) {
    printf("# diehard_opso(): ks_pvalue[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
-
- for(i=0;i<1024;i++){
-   free(w[i]);
- }
- free(w);
 
  return(0);
 
