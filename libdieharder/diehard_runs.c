@@ -1,8 +1,5 @@
 /*
- * $Id: diehard_runs.c 238 2006-09-28 06:28:21Z rgb $
- *
  * See copyright in copyright.h and the accompanying file COPYING
- *
  */
 
 /*
@@ -131,6 +128,7 @@ int diehard_runs(Test **test, int irun)
      upruns[ucount-1]++;
      ucount = 1;
    }
+   last = next;
  }
  if(next > first){
    ucount++;

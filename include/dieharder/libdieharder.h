@@ -151,6 +151,7 @@
  int ks_test;           /* Selects the KS test to be used, 0 = Kuiper 1 = Anderson-Darling */
  int list;              /* List all tests flag */
  int List;              /* List all generators flag */
+ int multiply_p;	/* multiplier for default # of psamples in -a(ll) */
  int ntuple;            /* n-tuple size for n-tuple tests */
  int num_randoms;	/* the number of randoms stored into memory and usable */
  int output_file;	/* equals 1 if you output to file, otherwise 0. */

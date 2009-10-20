@@ -1,0 +1,37 @@
+From lwindschuh@googlemail.com Wed Mar 18 06:35:53 2009
+Date: Wed, 18 Mar 2009 11:35:49 +0100
+From: Lucius Windschuh <lwindschuh@googlemail.com>
+To: rgb@phy.duke.edu
+Subject: dieharder: SEGFAULT in file_input_raw_set
+
+Hi Robert.
+I'm using dieharder 2.28.1 on FreeBSD 8.0-CURRENT as of this week. The
+test suite really useful for the tests of my hardware noise source.
+The malloc debugger is also activated on this FreeBSD development
+version. It initializes allocated memory bytes with the value 0xa5.
+Unfortunately, I run into a SEGFAULT with dieharder -a -g 201 -f
+rndtest (rndtest contains some random values of my homebrew hardware
+RNG).
+An analysis with gdb leads to this: vstate, which goes into
+file_input_raw_set in
+dieharder-2.28.1/libdieharder/rng_file_input_raw.c is used
+unititialized because state->fp has the magical value 0xa5a5a5a5.
+So I propose to initialize state->fp in the "if(first) { ... }" block
+of file_input_raw_set -- as in the attached patch. This solves the
+problem.
+I hope that it is not a compiler issue, but if I remember correctly,
+this special input method is broken for a long time on FreeBSD.
+
+Could you please have a look at it?
+
+Regards,
+
+Lucius
+
+========================================================================
+
+Should be fixed as of 10/19/09.  Doesn't seem to be a problem on linux
+boxes, so it won't be easy to tell until I write him and ask him to test
+the fix.
+
+   rgb

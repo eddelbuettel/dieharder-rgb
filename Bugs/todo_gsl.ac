@@ -1,0 +1,60 @@
+From J.D.Lamb@btinternet.com Sun Oct 11 12:49:44 2009
+Date: Sun, 11 Oct 2009 17:49:32 +0100
+From: John D Lamb <J.D.Lamb@btinternet.com>
+To: GSL Discussion list <gsl-discuss@sources.redhat.com>
+Subject: Re: Stupid question...
+
+On Sun, 2009-10-11 at 09:52 -0400, Robert G. Brown wrote:
+> I'm trying to get gsl to be correctly detected in a configure.ac
+> (something that has never quite worked, for reasons I don't understand).
+
+Here’s the version I use.
+
+use_atlas=yes
+AC_CHECK_LIB([atlas],[main],[],[use_atlas=no])
+if test x$use_atlas = xyes; then
+AC_CHECK_LIB([f77blas],[main],[],[use_atlas=no])
+fi
+if test x$use_atlas = xyes; then
+AC_CHECK_LIB([cblas],[main],[],[use_atlas=no])
+fi
+if test x$use_atlas = xyes; then
+AC_CHECK_LIB([lapack],[main],[],[use_atlas=no])
+fi
+if test x$use_atlas = xno; then
+AC_CHECK_LIB([gslcblas],[main],[],[
+echo \
+"------------------------------------------------------------------------
+ERROR: Could not find a CBLAS implementation.
+Tried both ATLAS cblas and gslcblas.
+------------------------------------------------------------------------"
+exit
+])
+fi
+AC_CHECK_LIB([gsl],[main],[],[
+echo \
+"------------------------------------------------------------------------
+ERROR: libgsl appears to be missing. You cannot sanely try to build
+this code without libgsl, the GNU Scientific Library. It is available
+from
+http://www.gnu.org/ and compiles readily on most systems.
+------------------------------------------------------------------------"
+exit
+],[-lgslcblas])
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([gsl/gsl_version.h],[],[
+echo \
+"------------------------------------------------------------------------
+ERROR: libgsl is present, but the header files appear not to have been
+installed. If the GNU Scientific Library was installed as an RPM or
+similar, make sure you also include the -devel package. Otherwise, you
+can
+obtain the GNU Scientific Library from http://www.gnu.org.
+------------------------------------------------------------------------"
+exit
+])
+
+-- 
+JDL

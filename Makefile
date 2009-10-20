@@ -146,6 +146,7 @@ LIBS = -lgsl -lgslcblas
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBTOOL_DEPS = ./ltmain.sh
 LIPO = 
+LITTLE_ENDIAN = 1
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/rgb/Src/Projects/dieharder/missing --run makeinfo
@@ -281,6 +282,7 @@ WLOGIN = ganesh.phy.duke.edu
 WDIR = General
 ABS = $(PROJECT).abs
 PHP = $(PROJECT).php
+ENDIAN = @ENDIAN@
 
 #========================================================================
 # RPM/tarball target objects.  We need rules for all of these.
@@ -877,6 +879,7 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cd ..; \
 	cp -r $(MANUAL) $(PROJECTDIR); \
 	cp -r include $(PROJECTDIR); \
+	cp -r m4 $(PROJECTDIR); \
 	cp $(ABS) $(PROJECTDIR); \
 	cp $(PHP) $(PROJECTDIR); \
 	cp Makefile $(PROJECTDIR); \

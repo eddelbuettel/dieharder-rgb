@@ -1,5 +1,20 @@
+<table style="background-color: #fff; padding: 5px;" cellspacing=0>
+  <tr><td>
+  <img
+src="http://groups.google.com/intl/en/images/logos/groups_logo_sm.gif"
+         height=30 width=140 alt="Google Groups">
+  </td></tr>
+  <tr><td style="padding-left: 5px;font-size: 125%">
+  <b>dieharder-svn</b>
+  </td></tr>
+  <tr><td style="padding-left: 5px">
+  <a href="http://groups.google.com/group/dieharder-svn?hl=en">Visit
+this group</a>
+  </td></tr>
+</table>
+
 <center><H1>Dieharder: A Random Number Test Suite</H1></center>
-<center><H2>Version 3.29.3beta</H2></center>
+<center><H2>Version 3.29.4beta</H2></center>
 
 <center><H3>Robert G. Brown (rgb)</H3></center>
 <center><H3>Dirk Eddelbuettel</H3></center>
@@ -616,3 +631,19 @@ statistics.  Bug reports or suggestions are also welcome.</p>
 <address>
   rgb at phy dot duke dot edu
 </address>
+
+<table style="background-color: #fff; padding: 5px;" cellspacing=0>
+  <tr><td>
+  <img
+src="http://groups.google.com/intl/en/images/logos/groups_logo_sm.gif"
+         height=30 width=140 alt="Google Groups">
+  </td></tr>
+  <tr><td style="padding-left: 5px;font-size: 125%">
+  <b>dieharder-svn</b>
+  </td></tr>
+  <tr><td style="padding-left: 5px">
+  <a href="http://groups.google.com/group/dieharder-svn?hl=en">Visit
+this group</a>
+  </td></tr>
+</table>
+

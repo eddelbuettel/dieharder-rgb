@@ -35,6 +35,19 @@
 #define IS_BIG_ENDIAN      4321 /* byte 0 is most significant (mc68k) */
 #define IS_LITTLE_ENDIAN   1234 /* byte 0 is least significant (i386) */
 
+/*
+ * This test is very simple, and is derived directly from a test in
+ * configure.ac, which is arguably the right/portable way to determine
+ * byte order on all platforms.  This test (and the derived makefiles)
+ * pass LITTLE_ENDIAN in as 1 (true) or 0 (false).  So we put it first,
+ * and skip all the rest.   rgb
+#ifdef LITTLE_ENDIAN
+#  define PLATFORM_BYTE_ORDER IS_LITTLE_ENDIAN
+#else
+# error This cannot happen, if configure.ac passed in LITTLE_ENDIAN.
+#endif
+ */
+
 #if !defined(PLATFORM_BYTE_ORDER)
 
 /* Include files where endian defines and byteswap functions may reside	*/

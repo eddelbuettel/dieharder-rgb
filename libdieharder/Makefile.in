@@ -164,6 +164,7 @@ LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LIPO = @LIPO@
+LITTLE_ENDIAN = @LITTLE_ENDIAN@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
@@ -244,6 +245,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+# LITTLE_ENDIAN=@LITTLE_ENDIAN@
 # VERSION_MAJOR = $(shell expr $(VERSION) : '\(.*\)\..*\..*' \| $(VERSION))
 # RELEASE=0
 
@@ -330,7 +332,7 @@ libdieharder_la_SOURCES = \
 
 # The program/library may need to know what version it is, define
 # the VERSION macro.
-DEFINES = -DVERSION=$(VERSION)
+DEFINES = -DVERSION=$(VERSION) # -DLITTLE_ENDIAN=$(LITTLE_ENDIAN)
 
 #========================================================================
 # Define parameters and directives needed in compile/link steps.

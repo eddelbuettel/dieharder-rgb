@@ -54,15 +54,20 @@ int rgb_kstest_test(Test **test, int irun)
     */
    testvec[t] = gsl_rng_uniform_pos(rng);
    if(verbose == D_RGB_KSTEST_TEST || verbose == D_ALL){
-       printf("testvec[%u] = ",testvec[t]);
+       printf("testvec[%u] = %f",t,testvec[t]);
    }
  }
 
- if(ks_test == 1){
-   /* This (Kuiper) can be selected with -k 1 from the command line */
+ if(ks_test >= 3){
+   /*
+    * This (Kuiper) can be selected with -k 3 from the command line.
+    * All other values test variants of the regular kstest().
+    */
    test[0]->pvalues[irun] = kstest_kuiper(testvec,tsamples);
  } else {
-   /* This (Symmetrized KS) is -k 0 or default */
+   /*
+    * This (Symmetrized KS) is -k 0,1,2.  Default is 0.
+    */
    test[0]->pvalues[irun] = kstest(testvec,tsamples);
  }
 

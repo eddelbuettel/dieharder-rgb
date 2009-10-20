@@ -146,6 +146,7 @@ LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LIPO = @LIPO@
+LITTLE_ENDIAN = @LITTLE_ENDIAN@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
@@ -281,6 +282,7 @@ WLOGIN = ganesh.phy.duke.edu
 WDIR = General
 ABS = $(PROJECT).abs
 PHP = $(PROJECT).php
+ENDIAN = @ENDIAN@
 
 #========================================================================
 # RPM/tarball target objects.  We need rules for all of these.
@@ -877,6 +879,7 @@ tgz: Makefile COPYING Copyright NOTES README $(SPEC) $(ABS) $(PHP)
 	cd ..; \
 	cp -r $(MANUAL) $(PROJECTDIR); \
 	cp -r include $(PROJECTDIR); \
+	cp -r m4 $(PROJECTDIR); \
 	cp $(ABS) $(PROJECTDIR); \
 	cp $(PHP) $(PROJECTDIR); \
 	cp Makefile $(PROJECTDIR); \

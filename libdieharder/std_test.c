@@ -69,7 +69,9 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
    /*
     * Do a standard test if -a(ll) is selected no matter what people enter
     * for tsamples or psamples.  ALSO use standard values if tsamples or
-    * psamples are 0 (not initialized).
+    * psamples are 0 (not initialized).  HOWEVER, note well the new control
+    * for psamples that permits one to scale the standard number of psamples
+    * in an -a(ll) run by multiply_p.
     */
    if(all == YES || tsamples == 0){
      newtest[i]->tsamples = dtest->tsamples_std;
@@ -77,7 +79,7 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
      newtest[i]->tsamples = tsamples;
    }
    if(all == YES || psamples == 0){
-     newtest[i]->psamples = dtest->psamples_std;
+     newtest[i]->psamples = dtest->psamples_std*multiply_p;
    } else {
      newtest[i]->psamples = psamples;
    }
@@ -158,18 +160,22 @@ void std_test(Dtest *dtest, Test **test)
  }
 
  /*
+  *========================================================================
   * Then evaluate the final test p-values for each individual test
   * statistic computed during the one run of nkps trials.  The default
   * method for generating test pvalues is kstest, not kuiper, since
   * David Bauer's suggested fix (plus verification with rgb_kstest_test)
   * now positively demonstrates that it leads to the correct distribution
-  * of p for sets of 100 uniform deviates.  I'm leaving kstest_kuiper
-  * in as an option but NOT the default pending an attempt to debug it.
-  * If it cannot be fairly easily fixed, though, out it goes.
+  * of p for sets of 100 uniform deviates.
+  *========================================================================
   */
  for(j = 0;j < dtest->nkps;j++){
-   if(ks_test == 1){
-     /* This (Kuiper KS) can be selected with -k 1 from the command line */
+   if(ks_test >= 3){
+     /*
+      * This (Kuiper KS) can be selected with -k 3 from the command line.
+      * Generally it is ignored.  All smaller values of ks_test are passed
+      * through to kstest() and control its precision (and speed!).
+      */
      test[j]->ks_pvalue = kstest_kuiper(test[j]->pvalues,test[j]->psamples);
    } else {
      /* This is (symmetrized Kolmogorov-Smirnov) is the default */

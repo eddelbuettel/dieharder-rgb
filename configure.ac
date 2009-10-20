@@ -115,8 +115,8 @@ AC_CHECK_LIB([gsl],[gsl_sf_gamma])
 
 #==================================================================
 # Check if we're a little-endian or a big-endian system, needed by
-# rng_threefish.  This replaces brg_endian.h and its Evil in the
-# contributed threefish rng.
+# brg_endian.h in the build of rng_threefish.  This is a very
+# certain test, and therefore is checked FIRST in this header file.
 #==================================================================
 AC_DEFUN([AC_C_ENDIAN],
 [AC_CACHE_CHECK(for endianness, ac_cv_c_endian,
@@ -134,13 +134,13 @@ AC_DEFUN([AC_C_ENDIAN],
   ])
 ])
 if test $ac_cv_c_endian = big; then
-  AC_DEFINE(ENDIAN_BIG, 1, [machine is bigendian])
+  AC_SUBST(LITTLE_ENDIAN,0) 
 fi
 if test $ac_cv_c_endian = little; then
-  AC_DEFINE(ENDIAN_LITTLE, 1, [machine is littleendian])
+  AC_SUBST(LITTLE_ENDIAN,1) 
 fi
 ])
- 
+
 AC_C_ENDIAN
  
 

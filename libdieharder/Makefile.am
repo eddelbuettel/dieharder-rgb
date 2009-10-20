@@ -11,6 +11,7 @@
 # This is automagically set in the toplevel build.  Do not edit by
 # hand.
 VERSION=@VERSION@
+# LITTLE_ENDIAN=@LITTLE_ENDIAN@
 # VERSION_MAJOR = $(shell expr $(VERSION) : '\(.*\)\..*\..*' \| $(VERSION))
 # RELEASE=0
 
@@ -96,7 +97,7 @@ libdieharder_la_SOURCES = \
 
 # The program/library may need to know what version it is, define
 # the VERSION macro.
-DEFINES = -DVERSION=$(VERSION)
+DEFINES = -DVERSION=$(VERSION) # -DLITTLE_ENDIAN=$(LITTLE_ENDIAN)
 
 #========================================================================
 # Define parameters and directives needed in compile/link steps.

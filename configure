@@ -788,6 +788,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+LITTLE_ENDIAN
 DIEHARDER_LIBS
 DIEHARDER_CFLAGS
 ACTAR
@@ -4392,13 +4393,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4395: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4396: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4398: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4399: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4401: output\"" >&5)
+  (eval echo "\"\$as_me:4402: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5604,7 +5605,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5607 "configure"' > conftest.$ac_ext
+  echo '#line 5608 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7457,11 +7458,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7460: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7461: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7464: \$? = $ac_status" >&5
+   echo "$as_me:7465: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7796,11 +7797,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7799: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7800: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7803: \$? = $ac_status" >&5
+   echo "$as_me:7804: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7901,11 +7902,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7904: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7905: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7908: \$? = $ac_status" >&5
+   echo "$as_me:7909: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7956,11 +7957,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7959: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7960: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7963: \$? = $ac_status" >&5
+   echo "$as_me:7964: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10759,7 +10760,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10762 "configure"
+#line 10763 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10855,7 +10856,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10858 "configure"
+#line 10859 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12656,8 +12657,8 @@ fi
 
 #==================================================================
 # Check if we're a little-endian or a big-endian system, needed by
-# rng_threefish.  This replaces brg_endian.h and its Evil in the
-# contributed threefish rng.
+# brg_endian.h in the build of rng_threefish.  This is a very
+# certain test, and therefore is checked FIRST in this header file.
 #==================================================================
 
 
@@ -12740,17 +12741,11 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_c_endian" >&5
 $as_echo "$ac_cv_c_endian" >&6; }
 if test $ac_cv_c_endian = big; then
-
-cat >>confdefs.h <<\_ACEOF
-#define ENDIAN_BIG 1
-_ACEOF
+  LITTLE_ENDIAN=0
 
 fi
 if test $ac_cv_c_endian = little; then
-
-cat >>confdefs.h <<\_ACEOF
-#define ENDIAN_LITTLE 1
-_ACEOF
+  LITTLE_ENDIAN=1
 
 fi
 

@@ -120,6 +120,14 @@ static void file_input_raw_set (void *vstate, unsigned long int s)
      fprintf(stdout,"# file_input_raw(): entering file_input_raw_set 1st call.\n");
    }
 
+   /*
+    * This clears an obscure bug in FreeBSD reported by Lucius Windschuh,
+    * lwindschuh@googlemail.com, I think.  Otherwise it should be
+    * harmless.  It just initializes state->fp to 0 so that the file
+    * correctly opens later.
+    */
+   state->fp = NULL;
+
    if(stat(filename, &sbuf)){
      if(errno == EBADF){
        fprintf(stderr,"# file_input_raw(): Error -- file descriptor %s bad.\n",filename);

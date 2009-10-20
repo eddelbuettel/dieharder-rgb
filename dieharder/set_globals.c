@@ -20,6 +20,7 @@ void set_globals()
  ks_test = 0;           /* Default is 0, Symmetrized KS test */
  output_file = 0;       /* No output file */
  overlap = 1;           /* Default is to use overlapping samples */
+ multiply_p = 1;        /* Default is to use default number of psamples */
  generator = 13;        /* Default is mt19937 as a "good" generator */
  generator_name[0] = (char)0; /* empty generator name is default */
  help_flag = NO;        /* No help requested */

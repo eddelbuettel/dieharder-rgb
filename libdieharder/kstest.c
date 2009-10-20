@@ -1,6 +1,4 @@
 /*
- * $Id: kstest.c 223 2006-08-17 06:19:38Z rgb $
- *
  * See copyright in copyright.h and the accompanying file COPYING
  */
 
@@ -16,7 +14,6 @@
  * p-value for the set of tests.
  *========================================================================
  */
-
 
 #include <dieharder/libdieharder.h>
 #define KCOUNTMAX 4999
@@ -65,28 +62,44 @@ double kstest(double *pvalue,int count)
  }
 
  /*
-  * This is the old kstest code.  Note that I'm leaving it in, wrapped, so
-  * one can compare the old and the new.  There is definitely going to be
-  * a cutoff in count where it is worthwhile to just execute the old code,
-  * probably somewhere between 5000 and 10000 (where the average error in
-  * p is less than 0.001, and can probably be simply corrected with a
-  * scaled spline or the like).
+  * Here's where we have to make a few choices:
+  *
+  * ks_test = 0
+  * Use the new algorithm when count is less than KCOUNTMAX, but
+  * for large values of the count use the old q_ks(), valid for
+  * asymptotically large counts and MUCH faster.  This will
+  * will introduce a SMALL error in the distribution of pvalues
+  * for all of the tests together, but it will be negligible for
+  * any given single test.
+  *
+  * ks_test = 1
+  * Use the new (mostly exact) algorithm exactly as is.  This is
+  * QUITE SLOW although it is "sped up" at the expense of some
+  * precision.  By slow I mean 220 seconds at -k 1, 2.5 seconds at
+  * (default) -k 0.
+  *
+  * ks_test = 2
+  * Use the exact (7 digit accurate) version of the new code, but
+  * be prepared for "long" runtimes.  Empirically I only got 230
+  * seconds -- not enough to worry about, really.
+  * 
   */
- if(verbose == D_KSTEST || verbose == D_ALL){
-   csqrt = sqrt(count);
-   x = (csqrt + 0.12 + 0.11/csqrt)*dmax;
-   pold = q_ks(x);
- }
+
  /*
-  * For grins we'll use the asymptotic form for large enough count
-  * to save time.
+  * We only need this test here (and can adjust KCOUNTMAX to play
+  * with accuracy vs speed, although I've verified that 5000 isn't
+  * terrible).  The ks_test = 1 or 2 option are fallthrough, with
+  * 1 being "normal", 2 omitting the speedup step below to get FULL
+  * precision.
   */
-  
- if(count > KCOUNTMAX){
+ if(ks_test == 0 && count > KCOUNTMAX){
    csqrt = sqrt(count);
    x = (csqrt + 0.12 + 0.11/csqrt)*dmax;
-   pold = q_ks(x);
-   return(pold);
+   p = q_ks(x);
+   if(verbose == D_KSTEST || verbose == D_ALL){
+     printf("# kstest: returning p = %f\n",p);
+   }
+   return(p);
  }
 
  /*
@@ -97,9 +110,8 @@ double kstest(double *pvalue,int count)
   */
  p = p_ks_new(count,dmax);
  if(verbose == D_KSTEST || verbose == D_ALL){
-   printf("p (new) = %f  p (old) = %f   delta = %f\n",p,pold,pold - p);
+   printf("# kstest: returning p = %f\n",p);
  }
-
  return(p);
 
 }
@@ -130,8 +142,173 @@ double q_ks(double x)
 
 }
 
+
 /*
- * This is the Kuiper variant of KS, that is a bit more symmetric.
+ *========================================================================
+ * The following routines are from the paper "Evaluating Kolmogorov's
+ * Distribution" by Marsaglia, Tsang and Wang.  They should permit kstest
+ * to return precise pvalues for more or less arbitrary numbers of samples
+ * ranging from n = 10 out to n approaching the asymptotic form where
+ * Kolmogorov's original result is valid.  It contains some cutoffs
+ * intended to prevent excessive runtimes in the rare cases where p being
+ * returned is close to 1 and n is large (at which point the asymptotic
+ * form is generally adequate anyway).
+ *
+ * This is so far a first pass -- I'm guessing that we can improve the
+ * linear algebra using the GSL or otherwise.  The code is therefore
+ * more or less straight from the paper.
+ *========================================================================
+ */
+void mMultiply(double *A,double *B,double *C,int m)
+{
+  int i,j,k;
+  double s;
+  for(i=0; i<m; i++){
+    for(j=0; j<m; j++){
+      s=0.0;
+      for(k=0; k<m; k++){
+        s+=A[i*m+k]*B[k*m+j];
+	C[i*m+j]=s;
+      }
+    }
+  }
+}
+
+void mPower(double *A,int eA,double *V,int *eV,int m,int n)
+{
+  double *B;
+  int eB,i;
+
+  /*
+   * n == 1: first power just returns A.
+   */
+  if(n==1){
+    for(i=0;i<m*m;i++){
+      V[i]=A[i];*eV=eA;
+    }
+    return;
+  }
+
+  /*
+   * This is a recursive call.  Either n/2 will equal 1 (and the line
+   * above will return and the recursion will terminate) or it won't
+   * and we will cumulate the product.
+   */
+  mPower(A,eA,V,eV,m,n/2);
+  B=(double*)malloc((m*m)*sizeof(double));
+  mMultiply(V,V,B,m);
+  eB=2*(*eV);
+  if(n%2==0){
+    for(i=0;i<m*m;i++){
+      V[i]=B[i];
+    }
+    *eV=eB;
+  } else {
+    mMultiply(A,B,V,m);
+    *eV=eA+eB;
+  }
+
+  /*
+   * Rescale as needed to avoid overflow.
+   */
+  if(V[(m/2)*m+(m/2)]>1e140) {
+    for(i=0;i<m*m;i++) {
+      V[i]=V[i]*1e-140;
+    }
+    *eV+=140;
+  }
+
+  free(B);
+
+}
+
+/*
+ * Marsaglia's definition is K = 1 - p.  I convert it to p, as p is
+ * what we want in dieharder.
+ */
+double p_ks_new(int n,double d)
+{
+
+  int k,m,i,j,g,eH,eQ;
+  double h,s,*H,*Q;
+
+  /*
+   * The next fragment is used if ks_test is not 2.  This is faster
+   * than going to convergence, but is still really slow compared to
+   * switching to the asymptotic form.
+   *
+   * If you require >7 digit accuracy in the right tail use ks_test = 2
+   * but be prepared for occasional long runtimes.
+   */
+  s=d*d*n;
+  if(ks_test != 2 && ( s>7.24 || ( s>3.76 && n>99 ))) {
+    /* printf("Returning the easy way\n"); */
+    return 2.0*exp(-(2.000071+.331/sqrt(n)+1.409/n)*s);
+  }
+
+  /*
+   * If ks_test = 2, we always execute the following code and work to
+   * convergence.
+   */
+  k=(int)(n*d)+1;
+  m=2*k-1;
+  h=k-n*d;
+  H=(double*)malloc((m*m)*sizeof(double));
+  Q=(double*)malloc((m*m)*sizeof(double));
+  for(i=0;i<m;i++){
+    for(j=0;j<m;j++){
+      if(i-j+1<0){
+        H[i*m+j]=0;
+      } else {
+        H[i*m+j]=1;
+      }
+    }
+  }
+
+  for(i=0;i<m;i++){
+    H[i*m]-=pow(h,i+1);
+    H[(m-1)*m+i]-=pow(h,(m-i));
+  }
+  H[(m-1)*m]+=(2*h-1>0?pow(2*h-1,m):0);
+  for(i=0;i<m;i++){
+    for(j=0;j<m;j++){
+      if(i-j+1>0){
+        for(g=1;g<=i-j+1;g++){
+	  H[i*m+j]/=g;
+	}
+      }
+    }
+  }
+  eH=0;
+  mPower(H,eH,Q,&eQ,m,n);
+  s=Q[(k-1)*m+k-1];
+  for(i=1;i<=n;i++){
+    s=s*i/n;
+    if(s<1e-140){
+      s*=1e140;
+      eQ-=140;
+    }
+  }
+
+  s*=pow(10.,eQ);
+  s = 1.0 - s;
+  free(H);
+  free(Q);
+  return s;
+
+}
+     
+/*
+ *========================================================================
+ * This is the Kuiper variant of KS.  It is symmetric, that is,
+ * it isn't biased as to where the region tested is started or stopped
+ * on a ring of values.  However, we simply cannot evaluate the
+ * CDF below to the same precision that we can for the KS test above.
+ * For that reason this code is basically obsolete.  We'll leave it
+ * in for now in case somebody figures out how to evaluate the
+ * q_ks_kuiper() to high precision for arbitrary count but we really
+ * don't need it anymore unless it turns out to be faster AND precise.
+ *========================================================================
  */
 double kstest_kuiper(double *pvalue,int count)
 {
@@ -252,149 +429,3 @@ double q_ks_kuiper(double x,int count)
 
 }
 
-
-/*
- * The following routines are from the paper "Evaluating Kolmogorov's
- * Distribution" by Marsaglia, Tsang and Wang.  They should permit kstest
- * to return precise pvalues for more or less arbitrary numbers of samples
- * ranging from n = 10 out to n approaching the asymptotic form where
- * Kolmogorov's original result is valid.  It contains some cutoffs
- * intended to prevent excessive runtimes in the rare cases where p being
- * returned is close to 1 and n is large (at which point the asymptotic
- * form is generally adequate anyway).
- *
- * This is so far a first pass -- I'm guessing that we can improve the
- * linear algebra using the GSL or otherwise.  The code is therefore
- * more or less straight from the paper.
- */
-void mMultiply(double *A,double *B,double *C,int m)
-{
-  int i,j,k;
-  double s;
-  for(i=0; i<m; i++){
-    for(j=0; j<m; j++){
-      s=0.0;
-      for(k=0; k<m; k++){
-        s+=A[i*m+k]*B[k*m+j];
-	C[i*m+j]=s;
-      }
-    }
-  }
-}
-
-void mPower(double *A,int eA,double *V,int *eV,int m,int n)
-{
-  double *B;
-  int eB,i;
-
-  /*
-   * n == 1: first power just returns A.
-   */
-  if(n==1){
-    for(i=0;i<m*m;i++){
-      V[i]=A[i];*eV=eA;
-    }
-    return;
-  }
-
-  /*
-   * This is a recursive call.  Either n/2 will equal 1 (and the line
-   * above will return and the recursion will terminate) or it won't
-   * and we will cumulate the product.
-   */
-  mPower(A,eA,V,eV,m,n/2);
-  B=(double*)malloc((m*m)*sizeof(double));
-  mMultiply(V,V,B,m);
-  eB=2*(*eV);
-  if(n%2==0){
-    for(i=0;i<m*m;i++){
-      V[i]=B[i];
-    }
-    *eV=eB;
-  } else {
-    mMultiply(A,B,V,m);
-    *eV=eA+eB;
-  }
-
-  /*
-   * Rescale as needed to avoid overflow.
-   */
-  if(V[(m/2)*m+(m/2)]>1e140) {
-    for(i=0;i<m*m;i++) {
-      V[i]=V[i]*1e-140;
-    }
-    *eV+=140;
-  }
-
-  free(B);
-
-}
-
-/*
- * Marsaglia's definition is K = 1 - p.  I convert it to p, as p is
- * what we want in dieharder.
- */
-double p_ks_new(int n,double d)
-{
-
-  int k,m,i,j,g,eH,eQ;
-  double h,s,*H,*Q;
-
-  /*
-   * Omit next fragment if you require >7 digit accuracy in the right tail,
-   * but be prepared for occassional long runtimes.
-   */
-  s=d*d*n;
-  if(s>7.24||(s>3.76&&n>99)) {
-    /* printf("Returning the easy way\n"); */
-    return 2.0*exp(-(2.000071+.331/sqrt(n)+1.409/n)*s);
-  }
-
-  k=(int)(n*d)+1;
-  m=2*k-1;
-  h=k-n*d;
-  H=(double*)malloc((m*m)*sizeof(double));
-  Q=(double*)malloc((m*m)*sizeof(double));
-  for(i=0;i<m;i++){
-    for(j=0;j<m;j++){
-      if(i-j+1<0){
-        H[i*m+j]=0;
-      } else {
-        H[i*m+j]=1;
-      }
-    }
-  }
-
-  for(i=0;i<m;i++){
-    H[i*m]-=pow(h,i+1);
-    H[(m-1)*m+i]-=pow(h,(m-i));
-  }
-  H[(m-1)*m]+=(2*h-1>0?pow(2*h-1,m):0);
-  for(i=0;i<m;i++){
-    for(j=0;j<m;j++){
-      if(i-j+1>0){
-        for(g=1;g<=i-j+1;g++){
-	  H[i*m+j]/=g;
-	}
-      }
-    }
-  }
-  eH=0;
-  mPower(H,eH,Q,&eQ,m,n);
-  s=Q[(k-1)*m+k-1];
-  for(i=1;i<=n;i++){
-    s=s*i/n;
-    if(s<1e-140){
-      s*=1e140;
-      eQ-=140;
-    }
-  }
-
-  s*=pow(10.,eQ);
-  s = 1.0 - s;
-  free(H);
-  free(Q);
-  return s;
-
-}
-     

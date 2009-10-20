@@ -1,0 +1,16 @@
+--- dieharder-2.28.1-old/libdieharder/rng_file_input_raw.c	2008-09-08 14:37:19.000000000 +0200
++++ dieharder-2.28.1/libdieharder/rng_file_input_raw.c	2009-03-18 11:09:10.000000000 +0100
+@@ -126,6 +126,13 @@ static void file_input_raw_set (void *vs
+        exit(0);
+      }
+    }
++
++   /*
++    * Reset the file handle as it is not initalized at this point.
++		*/
++   state->fp = NULL;
++
++
+    /*
+     * Is this a regular file?  If so, turn its byte length into a 32 bit uint
+     * length.
