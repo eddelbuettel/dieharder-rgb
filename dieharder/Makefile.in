@@ -238,7 +238,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 man1_MANS = dieharder.1
-dieharder_LDADD = ../libdieharder/libdieharder.la -laes -lgsl -lgslcblas -lm
+dieharder_LDADD = ../libdieharder/libdieharder.la -lgsl -lgslcblas -lm
 dieharder_SOURCES = \
 	add_ui_rngs.c \
 	add_ui_tests.c \
