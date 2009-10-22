@@ -45,6 +45,7 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
 {
 
  int i,j,k;
+ size_t pcutoff;
  Test **newtest;
 
  MYDEBUG(D_STD_TEST){
@@ -62,7 +63,11 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
  }
 
  /*
-  * Initialize the newtests
+  * Initialize the newtests.  The implementation of TTD (test to
+  * destruction) modes makes this inevitably a bit complex.  In
+  * particular, we have to malloc the GREATER of Xoff and psamples in
+  * newtest[i]->pvalues to make room for more pvalues right up to the
+  * Xoff cutoff.
   */
  for(i=0;i<dtest->nkps;i++){
 
@@ -89,10 +94,15 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
     * single (80-column) LINE for labels for the pvalues.  We default
     * the label to a line of #'s.
     */
-   newtest[i]->pvalues = (double *)malloc((size_t)newtest[i]->psamples*sizeof(double));
+   if(Xtrategy != 0 && Xoff > newtest[i]->psamples){
+     pcutoff = Xoff;
+   } else {
+     pcutoff = newtest[i]->psamples;
+   }
+   newtest[i]->pvalues = (double *)malloc((size_t)pcutoff*sizeof(double));
    newtest[i]->pvlabel = (char *)malloc((size_t)LINE*sizeof(char));
    snprintf(newtest[i]->pvlabel,LINE,"##################################################################\n");
-   for(j=0;j<newtest[i]->psamples;j++){
+   for(j=0;j<pcutoff;j++){
      newtest[i]->pvalues[j] = 0.0;
    }
 
@@ -101,11 +111,12 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
     */
    newtest[i]->ks_pvalue = 0.0;
 
-   /*
+ MYDEBUG(D_STD_TEST){
    printf("Allocated and set newtest->tsamples = %d\n",newtest[i]->tsamples);
+   printf("Xtrategy = %u -> pcutoff = %lu\n",Xtrategy,pcutoff);
    printf("Allocated and set newtest->psamples = %d\n",newtest[i]->psamples);
    printf("Allocated a vector of pvalues at %0x\n",newtest[i]->pvalues);
-   */
+ }
 
  }
 
@@ -150,6 +161,11 @@ void std_test(Dtest *dtest, Test **test)
  int i,j;
 
  /*
+  * A standard test is just a bit complex due to the introduction of
+  * Xtrategies.  If Xtrategy = 0, we do the usual/normal thing and
+  * just run the test psamples times.  If it is NONzero, though, we
+  * do some moderately complicated stuff -- either run until Xoff is
+  * reached OR failure occurs
   * This is very simple.  Run the test psamples times, using the value
   * set for psamples when the test was created.
   */

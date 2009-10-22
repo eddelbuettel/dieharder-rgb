@@ -55,7 +55,7 @@ void parsecl(int argc, char **argv)
     exit(1); /* count this as an error */
  }
 
- while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lm:n:op:S:s:t:Vv:x:y:z:")) != EOF){
+ while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lm:n:op:S:s:t:Vv:X:x:Y:y:Z:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
@@ -162,7 +162,14 @@ void parsecl(int argc, char **argv)
        list = YES;
        break;
      case 'm':
-       multiply_p = strtol(optarg,(char **) NULL,10);
+       multiply_p = strtod(optarg,(char **) NULL);
+       /*
+        * No, you can't do less than psamples = 1 or negative psamples.
+        * Don't bother to warn the user, though.  This means that -m 0
+        * should do just one sample per test, a fast way to check that
+        * everything is sort of working.
+        */
+       if(multiply_p < 0.01) multiply_p = 0.01;
        break;
      case 'n':
        ntuple = strtol(optarg,(char **) NULL,10);
@@ -203,11 +210,20 @@ void parsecl(int argc, char **argv)
        verbose = strtol(optarg,(char **) NULL,10);
        printf("# Verbose is now %d\n",verbose);
        break;
+     case 'X':
+       Xtreme = strtod(optarg,(char **) NULL);
+       break;
      case 'x':
        x_user = strtod(optarg,(char **) NULL);
        break;
+     case 'Y':
+       Xtrategy = strtol(optarg,(char **) NULL,10);
+       break;
      case 'y':
        y_user = strtod(optarg,(char **) NULL);
+       break;
+     case 'Z':
+       Xoff = strtol(optarg,(char **) NULL,10);
        break;
      case 'z':
        z_user = strtod(optarg,(char **) NULL);

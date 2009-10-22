@@ -140,32 +140,35 @@
   * The primary control variables, in alphabetical order, with comments.
   *========================================================================
   */
- int all;               /* Flag to do all tests on selected generator */
- int binary;            /* Flag to output rands in binary (with -o -f) */
- int bits;              /* bitstring size (in bits) */
- int diehard;           /* Diehard test number */
- int generator;         /* GSL generator id number to be tested */
- int help_flag;         /* Help flag */
- int hist_flag;         /* Histogram display flag */
- int iterations;	/* For timing loop, set iterations to be timed */
- int ks_test;           /* Selects the KS test to be used, 0 = Kuiper 1 = Anderson-Darling */
- int list;              /* List all tests flag */
- int List;              /* List all generators flag */
- int multiply_p;	/* multiplier for default # of psamples in -a(ll) */
- int ntuple;            /* n-tuple size for n-tuple tests */
- int num_randoms;	/* the number of randoms stored into memory and usable */
- int output_file;	/* equals 1 if you output to file, otherwise 0. */
- int overlap;           /* equals 1 if you really want to use diehard overlap */
- int psamples;          /* Number of test runs in final KS test */
- int quiet;             /* quiet flag -- surpresses full output report */
- int rgb;               /* rgb test number */
- int sts;               /* sts test number */
+ uint all;              /* Flag to do all tests on selected generator */
+ uint binary;           /* Flag to output rands in binary (with -o -f) */
+ uint bits;             /* bitstring size (in bits) */
+ uint diehard;          /* Diehard test number */
+ uint generator;        /* GSL generator id number to be tested */
+ uint help_flag;        /* Help flag */
+ uint hist_flag;        /* Histogram display flag */
+ uint iterations;	/* For timing loop, set iterations to be timed */
+ uint ks_test;          /* Selects the KS test to be used, 0 = Kuiper 1 = Anderson-Darling */
+ uint list;             /* List all tests flag */
+ uint List;             /* List all generators flag */
+ double multiply_p;	/* multiplier for default # of psamples in -a(ll) */
+ uint ntuple;           /* n-tuple size for n-tuple tests */
+ uint num_randoms;      /* the number of randoms stored into memory and usable */
+ uint output_file;      /* equals 1 if you output to file, otherwise 0. */
+ uint overlap;          /* equals 1 if you really want to use diehard overlap */
+ uint psamples;         /* Number of test runs in final KS test */
+ uint quiet;            /* quiet flag -- surpresses full output report */
+ uint rgb;              /* rgb test number */
+ uint sts;              /* sts test number */
  uint Seed;             /* user selected seed.  Surpresses reseeding per sample.*/
- off_t tsamples;         /* Generally should be "a lot".  off_t is u_int64_t. */
- int user;              /* user defined test number */
- int verbose;           /* Default is not to be verbose. */
- double x_user;         /* General purpose command line inputs for use */
- double y_user;         /* in any test. */
+ off_t tsamples;        /* Generally should be "a lot".  off_t is u_int64_t. */
+ uint user;             /* user defined test number */
+ uint verbose;          /* Default is not to be verbose. */
+ double Xtreme;         /* "Failure" cutoff in test-to-destruction mode */
+ uint Xtrategy;         /* Strategy used in TTD mode */
+ uint Xoff;             /* Cutoff used in TTD mode */
+ double x_user;         /* Reserved general purpose command line inputs for */
+ double y_user;         /* use in any new user test. */
  double z_user;
   
  /*

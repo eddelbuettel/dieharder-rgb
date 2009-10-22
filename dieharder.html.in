@@ -593,9 +593,7 @@ suggestions from users.  Note well that users have already provided
 critical help debugging the early code!  Part of the point of a GPL
 project is that you are NOT at the mercy of a black box piece of code.
 If you are using dieharder and are moderately expert at statistics and
-random numbers and observe something odd, please help out!  (See link
-below to dieharder-svn, the google code subversion tree for the
-project.)
+random numbers and observe something odd, please help out!
 
 </ul>
 
@@ -624,24 +622,4 @@ statistics.  Bug reports or suggestions are also welcome.</p>
 <address>
   rgb at phy dot duke dot edu
 </address>
-
-<p>The following is a link for developer-level people who would like
-access to the svn tree.  It is suggested that you contact rgb first via
-email, but you can also just follow this link and request membership
-online if you already have a google account.</p>
-
-<table style="background-color: #fff; padding: 5px;" cellspacing=0>
-  <tr><td>
-  <img
-src="http://groups.google.com/intl/en/images/logos/groups_logo_sm.gif"
-         height=30 width=140 alt="Google Groups">
-  </td></tr>
-  <tr><td style="padding-left: 5px;font-size: 125%">
-  <b>dieharder-svn</b>
-  </td></tr>
-  <tr><td style="padding-left: 5px">
-  <a href="http://groups.google.com/group/dieharder-svn?hl=en">Visit
-this group</a>
-  </td></tr>
-</table>
 

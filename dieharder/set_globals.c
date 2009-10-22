@@ -43,6 +43,29 @@ void set_globals()
 		 TSEED;
  tflag = 0;             /* We START with this zero so we can accumulate */
  verbose = 0;		/* Default is not to be verbose. */
+ /*
+  * The next three are new (3.x) controls for "Test To Destruction" (TTD)
+  * mode(s).  INITIALLY I will probably make Xtreme the p-value considered
+  * "failure of a test" and default it to 0.000001 (one in a million
+  * runs), implement two strategies: 1 for "if test result is weak,
+  * increment psamples until destruction/fail is reached or cumulative p
+  * exceeds the weak threshold or the cutoff in psamples is reached"; and
+  * 2 for "increment psamples until either the cutoff is reached or
+  * failure is reached for all selected tests".  The strategy may be
+  * parsed bitwise the same way D is, though, allowing us to add
+  * variations such as how psamples is stepped (linear, log, exp).
+  * Initially I'm going to just go with linear in steps of 100, doing a
+  * per test alloc of cutoff psamples in the original test creation and
+  * adding 100 at a time from the test default until it or failure are
+  * reached.  This means we need a default cutoff for these strategies,
+  * let's start with a very conservative 1000.
+  *
+  * Note well that the defaults for strategy 1 and 2 are equivalent to
+  * a normal run with -m 10 at the moment.
+  */
+ Xtreme = 0.0;          /* This basically forces Xoff psamples */
+ Xtrategy = 0;          /* 0 means "no strategy, off", the default */
+ Xoff = 1000;           /* This is not too stressful, actually */
  x_user = 0.0;          /* x,y,z_user are for "arbitrary" input controls */
  y_user = 0.0;          /* and can be used by any test without having to */
  z_user = 0.0;          /* rewrite parsecl() or add global variables */
