@@ -155,7 +155,7 @@
  uint ntuple;           /* n-tuple size for n-tuple tests */
  uint num_randoms;      /* the number of randoms stored into memory and usable */
  uint output_file;      /* equals 1 if you output to file, otherwise 0. */
- uint overlap;          /* equals 1 if you really want to use diehard overlap */
+ uint output_format;    /* equals 0 (binary), 1 (uint), 2 (decimal) output */
  uint psamples;         /* Number of test runs in final KS test */
  uint quiet;            /* quiet flag -- surpresses full output report */
  uint rgb;              /* rgb test number */
@@ -164,6 +164,7 @@
  off_t tsamples;        /* Generally should be "a lot".  off_t is u_int64_t. */
  uint user;             /* user defined test number */
  uint verbose;          /* Default is not to be verbose. */
+ double Xweak;          /* "Weak" generator cut-off (one sided) for Xtreme */
  double Xtreme;         /* "Failure" cutoff in test-to-destruction mode */
  uint Xtrategy;         /* Strategy used in TTD mode */
  uint Xoff;             /* Cutoff used in TTD mode */

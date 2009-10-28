@@ -153,6 +153,7 @@ int diehard_count_1s_stream(Test **test, int irun)
  uint count5[3125],count4[625];
  Vtest vtest4,vtest5;
  Xtest ptest;
+ uint overlap = 1; /* leftovers/cruft */
 
  /*
   * Count a Stream of 1's is a very complex way of generating a statistic.

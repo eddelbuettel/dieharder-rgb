@@ -130,26 +130,13 @@ int diehard_birthdays(Test **test, int irun)
     */
    memset(rand_uint,0,nms*sizeof(uint));
    for(m = 0;m<nms;m++){
-     if(overlap){
-       /*
-        * This tests PRECISELY nbits guaranteed sequential bits from the
-        * generator, with no gaps.  We could actually test 32
-        */
-       get_rand_bits(&rand_uint[m],sizeof(uint),nbits,rng);
-     } else {
-       bitstring = get_uint_rand(rng);
-       offset = bitstring%rmax_bits;
-       /*
-        * Fix suggested by Charles Karney.  I'm using new routines from
-	* bits to make this faster.  Note that this gets an nbits-wide
-	* window from 32 guaranteed sequential bits returned from the rng
-	* with a random offset, discarding 64-nbits bits from the generator
-	* per nbits tested.  Not that desireable, really, but as far as I
-	* can tell NONE of this matters.
-        */
-       bitstring = get_uint_rand(rng);
-       rand_uint[m] = b_rotate_right(bitstring,offset)&b_umask(8,31);
-     }
+     /*
+      * This tests PRECISELY nbits guaranteed sequential bits from the
+      * generator, with no gaps.  We could actually test 32.
+      *
+      * Note -- removed all reference to overlap.
+      */
+     get_rand_bits(&rand_uint[m],sizeof(uint),nbits,rng);
      MYDEBUG(D_DIEHARD_BDAY){
        printf("  %d-bit int = ",nbits);
        /* Should count dump from the right, sorry */

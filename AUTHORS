@@ -2,8 +2,12 @@ Robert G. Brown <rgb@phy.duke.edu>
   Primary author and maintainer of RPM versions and original sources.
 
 Dirk Eddelbuettel <edd@debian.org>
-  Maintainer of Debian versions and contributer of the R interface.  We
-hope, eventually, as it materializes...
+  Maintainer of Debian versions and contributor of the R interface.
+
+David Bauer <astgtciv2009@gatech.edu>
+  Debugger and fixer extraordinaire, contributor of the aes and
+threefish "gold standard" rngs and major factor if the fixing of kstest
+so that it is now "exact".
 
 Many other individuals have contributed to dieharder at this point by
 pointing out bugs or probable errors, by contributing improved

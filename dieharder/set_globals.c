@@ -19,7 +19,8 @@ void set_globals()
  fromfile = 0;          /* Not from an input file */
  ks_test = 0;           /* Default is 0, Symmetrized KS test */
  output_file = 0;       /* No output file */
- overlap = 1;           /* Default is to use overlapping samples */
+ output_format = 1;     /* uint output format if you use -o alone */
+ /* Cruft overlap = 1;           /* Default is to use overlapping samples */
  multiply_p = 1;        /* Default is to use default number of psamples */
  generator = 13;        /* Default is mt19937 as a "good" generator */
  generator_name[0] = (char)0; /* empty generator name is default */
@@ -63,9 +64,10 @@ void set_globals()
   * Note well that the defaults for strategy 1 and 2 are equivalent to
   * a normal run with -m 10 at the moment.
   */
- Xtreme = 0.0;          /* This basically forces Xoff psamples */
+ Xweak = 0.005;         /* Should be single sided weak cutoff in output.c */
+ Xtreme = 0.000001;     /* One in a million, single sided */
  Xtrategy = 0;          /* 0 means "no strategy, off", the default */
- Xoff = 1000;           /* This is not too stressful, actually */
+ Xoff = 10000;          /* This is stressful but finite */
  x_user = 0.0;          /* x,y,z_user are for "arbitrary" input controls */
  y_user = 0.0;          /* and can be used by any test without having to */
  z_user = 0.0;          /* rewrite parsecl() or add global variables */

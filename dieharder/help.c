@@ -50,7 +50,7 @@ void Usage()
  fprintf(stdout, "\n\
 Usage:\n\
 \n\
-  dieharder [-a] [-d dieharder test number] [-f filename]\n\
+  dieharder [-a] [-d dieharder test number] [-f filename] [-B]\n\
            [-D output flag [-D output flag] ... ] [-F] [-c separator]\n\
            [-g generator number or -1] [-h] [-k ks_flag] [-l] \n\
            [-m multiply_p] [-n ntuple] [-p number of p samples] \n\
@@ -71,6 +71,7 @@ Usage:\n\
      and then examine the contents of example.input.\n\
      Raw binary input reads 32 bit increments of the specified data stream.\n\
      stdin_input_raw accepts a pipe from a raw binary stream.\n\
+  -B binary output (used with -o)\n\
   -D output flag - permits fields to be selected for inclusion in dieharder\n\
      output.  Each flag can be entered as a binary number that turns\n\
      on a specific output field or header or by flag name; flags are\n\

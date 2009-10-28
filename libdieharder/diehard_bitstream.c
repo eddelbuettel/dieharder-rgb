@@ -49,6 +49,7 @@ int diehard_bitstream(Test **test, int irun)
  char *w;
  uint *bitstream,w20,wscratch,newbyte;
  unsigned char *cbitstream = 0;
+ uint overlap = 1;  /* Leftovers/Cruft */
 
  /*
   * for display only.  0 means "ignored".

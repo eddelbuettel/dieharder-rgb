@@ -481,7 +481,7 @@ void output_table_line(Dtest *dtest,Test **test)
        } else {
          fprintf(stdout,"%10s","FAILED  ");
        }
-     } else if(test[i]->ks_pvalue < 0.005 || test[i]->ks_pvalue > 0.995){
+     } else if(test[i]->ks_pvalue < Xweak || test[i]->ks_pvalue > 1.0 - Xweak){
        if(tflag & TNO_WHITE){
          fprintf(stdout,"%s","WEAK");
        } else {

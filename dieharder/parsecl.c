@@ -55,7 +55,7 @@ void parsecl(int argc, char **argv)
     exit(1); /* count this as an error */
  }
 
- while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lm:n:op:S:s:t:Vv:X:x:Y:y:Z:z:")) != EOF){
+ while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lm:n:oO:p:S:s:t:Vv:X:x:Y:y:Z:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
@@ -176,6 +176,13 @@ void parsecl(int argc, char **argv)
        break;
      case 'o':
        output_file = 1;
+       break;
+     case 'O':
+       output_format = strtol(optarg,(char **) NULL,10);
+       if(output_format > 2){
+         fprintf(stderr,"-O %u format not recognized.\n",output_format);
+	 fprintf(stderr," Choices: 0 (binary), 1 (uint), 2 (decimal)\n");
+       }
        break;
      case 'p':
        psamples = strtol(optarg,(char **) NULL,10);

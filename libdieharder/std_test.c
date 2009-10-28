@@ -111,12 +111,11 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
     */
    newtest[i]->ks_pvalue = 0.0;
 
- MYDEBUG(D_STD_TEST){
-   printf("Allocated and set newtest->tsamples = %d\n",newtest[i]->tsamples);
-   printf("Xtrategy = %u -> pcutoff = %lu\n",Xtrategy,pcutoff);
-   printf("Allocated and set newtest->psamples = %d\n",newtest[i]->psamples);
-   printf("Allocated a vector of pvalues at %0x\n",newtest[i]->pvalues);
- }
+   MYDEBUG(D_STD_TEST){
+     printf("Allocated and set newtest->tsamples = %d\n",newtest[i]->tsamples);
+     printf("Xtrategy = %u -> pcutoff = %lu\n",Xtrategy,pcutoff);
+     printf("Allocated and set newtest->psamples = %d\n",newtest[i]->psamples);
+   }
 
  }
 
@@ -201,3 +200,132 @@ void std_test(Dtest *dtest, Test **test)
 
 }
 
+void ttd_test(Dtest *dtest, Test **test)
+{
+
+ uint i,j,k,need_more_p;
+ double psofar;
+
+ /*
+  * This is the new "test to destruction" mode, which I'm going to write
+  * before, and separate from, the "resolve ambiguity" test.  It has to be
+  * a separate call to make it easy to wrap in an "execute_test" routine
+  * in the CLI or GUI or R.  It basically adds psamples 100 at a time
+  * until the final pvalue is less than the Xtrategy cutoff OR the Xoff
+  * cutoff in number of psamples is reached.  It starts by doing at
+  * least test[0]->psamples runs, though.
+  */
+
+ /*
+  * run the first batch of samples.
+  */
+ for(i=0;i<test[0]->psamples;i++){
+   dtest->test(test,i);
+ }
+
+ /*
+  * Run their pvalues to see if we are done.
+  */
+ need_more_p = YES;
+ for(j = 0;j < dtest->nkps;j++){
+   if(ks_test >= 3){
+     /*
+      * This (Kuiper KS) can be selected with -k 3 from the command line.
+      * Generally it is ignored.  All smaller values of ks_test are passed
+      * through to kstest() and control its precision (and speed!).
+      */
+     test[j]->ks_pvalue = kstest_kuiper(test[j]->pvalues,test[j]->psamples);
+     if(test[j]->ks_pvalue < Xtreme) need_more_p = NO;
+   } else {
+     /* This is (symmetrized Kolmogorov-Smirnov) is the default */
+     test[j]->ks_pvalue = kstest(test[j]->pvalues,test[j]->psamples);
+     if(test[j]->ks_pvalue < Xtreme) need_more_p = NO;
+   }
+ }
+
+ /*
+  * Now we add more p in blocks of 100 until we die or hit the cutoff.
+  */
+ while(need_more_p){
+   /* Another block of 100 */
+   for(k=0;k<100;k++){
+     i++;
+     dtest->test(test,i);
+   }
+   for(j = 0;j < dtest->nkps;j++){
+     /* Don't forget to count them */
+     test[j]->psamples += 100;
+     /* Now BOTH find the ks_pvalue AND test it against the Xtreme cutoff */
+     if(ks_test >= 3){
+       /*
+        * This (Kuiper KS) can be selected with -k 3 from the command line.
+        * Generally it is ignored.  All smaller values of ks_test are passed
+        * through to kstest() and control its precision (and speed!).
+        */
+       test[j]->ks_pvalue = kstest_kuiper(test[j]->pvalues,test[j]->psamples);
+       if(test[j]->ks_pvalue < Xtreme) need_more_p = NO;
+     } else {
+       /* This is (symmetrized Kolmogorov-Smirnov) is the default */
+       test[j]->ks_pvalue = kstest(test[j]->pvalues,test[j]->psamples);
+       if(test[j]->ks_pvalue < Xtreme) need_more_p = NO;
+     }
+   }
+   if(test[0]->psamples >= Xoff) need_more_p = NO;
+ }
+
+ /* When we fall through to here, we are done. */
+
+}
+   
+/*
+ * It looks like I'm going to need to break the test routines down a bit
+ * to make them modular.  This routine JUST adds count samples to the test
+ * and runs a new kstest on them, starting to add at the old
+ * test[0]->psamples value.  It should only be called AFTER std_test
+ * has been called one time.  It makes no decisions about quitting or
+ * continuing -- that has to be handled at the UI level.  It does check
+ * to make sure that we won't overrun Xoff, though, and truncates at Xoff
+ * if we would.
+ */
+void add_2_test(Dtest *dtest, Test **test, int count)
+{
+
+ uint i,j,k,imax;
+
+
+ /*
+  * Will count carry us over Xoff?  If it will, stop at Xoff and
+  * adjust count to match.  test[0]->psamples is the running total
+  * of how many samples we have at the end of it all.
+  */
+ imax = test[0]->psamples + count;
+ if(imax > Xoff) imax = Xoff;
+ count = imax - test[0]->psamples;
+ for(i = test[0]->psamples; i < imax; i++){
+   dtest->test(test,i);
+ }
+
+ for(j = 0;j < dtest->nkps;j++){
+   /*
+    * Don't forget to count the new number of samples and use it in the
+    * new KS test.
+    */
+   test[j]->psamples += count;
+
+   if(ks_test >= 3){
+     /*
+      * This (Kuiper KS) can be selected with -k 3 from the command line.
+      * Generally it is ignored.  All smaller values of ks_test are passed
+      * through to kstest() and control its precision (and speed!).
+      */
+     test[j]->ks_pvalue = kstest_kuiper(test[j]->pvalues,test[j]->psamples);
+   } else {
+     /* This is (symmetrized Kolmogorov-Smirnov) is the default */
+     test[j]->ks_pvalue = kstest(test[j]->pvalues,test[j]->psamples);
+   }
+
+ }
+
+}
+   
+      

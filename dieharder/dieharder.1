@@ -5,7 +5,7 @@
 .B generators.
 
 .SH SYNOPSIS
-dieharder [-a] [-d dieharder test number] [-f filename]
+dieharder [-a] [-d dieharder test number] [-f filename] [-B]
           [-D output flag [-D output flag] ... ] [-F] [-c separator]
           [-g generator number or -1] [-h] [-k ks_flag] [-l]
           [-m multiply_p] [-n ntuple] [-p number of p samples]
@@ -38,6 +38,8 @@ of the (required) header for ASCII formatted input, run
 and then examine the contents of example.input.  Raw binary input reads
 32 bit increments of the specified data stream.  stdin_input_raw accepts
 a pipe from a raw binary stream.
+.TP
+-B binary mode (used with -o below) causes output rands to be written in raw binary, not formatted ascii.
 .TP
 -D output flag - permits fields to be selected for inclusion in
 dieharder output.  Each flag can be entered as a binary number that

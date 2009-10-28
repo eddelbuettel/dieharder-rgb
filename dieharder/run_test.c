@@ -1,7 +1,5 @@
 /*
  *========================================================================
- * $Id$
- *
  * See copyright in copyright.h and the accompanying file COPYING
  *========================================================================
  */
@@ -43,6 +41,8 @@ void run_test()
 int execute_test(int dtest_num)
 {
 
+ int i,j,k;
+ uint need_more_p;
  /*
   * Declare the results struct.
   */
@@ -77,19 +77,65 @@ int execute_test(int dtest_num)
  dieharder_test = create_test(dh_test_types[dtest_num],tsamples,psamples);
 
  /*
-  * Set any GLOBAL data used by the test.  Then call the test itself
-  * This fills in the results in the Test struct.
+  * We now have to implement Xtrategy.  The way it works is that we ALWAYS
+  * execute a single std_test() to initialize the process.  Then we add
+  * more tests with add_2_test().  At the moment we will output at the
+  * end of each add_2_tests() call, but this can be made an output option.
+  * We must do all checking for being done etc HERE; the std_test() routines
+  * do not do it (although you cannot overrun add_2_test(), you can get
+  * in an infinite loop if you try to force going past Xoff psamples).
   */
  std_test(dh_test_types[dtest_num],dieharder_test);
-
- /*
-  * Output standard test results.
-  */
  output(dh_test_types[dtest_num],dieharder_test);
 
  /*
-  * Destroy the test and free all dynamic memory it used.
+  * If Xtrategy is 0 we are done.
   */
+ if(Xtrategy == 0){
+   /*
+    * Destroy the test and free all dynamic memory it used.
+    */
+   destroy_test(dh_test_types[dtest_num],dieharder_test);
+   return;
+ }
+
+ /*
+  * If any test[i]->ks_pvalue is less than Xtreme, we are done.
+  */
+ for(i = 0; i < dh_test_types[dtest_num]->nkps ; i++){
+   if(dieharder_test[i]->ks_pvalue < Xtreme){
+     /*
+      * Destroy the test and free all dynamic memory it used.
+      */
+     destroy_test(dh_test_types[dtest_num],dieharder_test);
+     return;
+   }
+ }
+
+ /*
+  * If we get to here, the test returned a non-Xtreme) value.  Now we have
+  * to act according to the Xtrategy.  So we just do the two cases.  There
+  * is clear room for more Xtrategies (that can just be experimental variants
+  * of these two).
+  */
+ switch(Xtrategy){
+   case 1:
+     break;
+   case 2:
+     need_more_p = YES;
+     while(need_more_p){
+       add_2_test(dh_test_types[dtest_num],dieharder_test,100);
+       output(dh_test_types[dtest_num],dieharder_test);
+       for(i = 0; i < dh_test_types[dtest_num]->nkps ; i++){
+         if(dieharder_test[i]->ks_pvalue < Xtreme) need_more_p = NO;
+       }
+       if(dieharder_test[0]->psamples >= Xoff) need_more_p = NO;
+     }
+     break;
+   default:
+     break;
+ }
+   
  destroy_test(dh_test_types[dtest_num],dieharder_test);
 
 }

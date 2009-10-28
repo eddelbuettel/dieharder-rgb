@@ -3,6 +3,7 @@
 
 <center><H3>Robert G. Brown (rgb)</H3></center>
 <center><H3>Dirk Eddelbuettel</H3></center>
+<center><H3>David Bauer</H3></center>
 
 <p>Welcome to the dieharder distribution website.</p>
 
@@ -182,22 +183,27 @@ function of the number of samples, but a number of the tests have
 pre-computed targets for specific numbers of samples and that number
 cannot be varied because no general function is known relating the
 target value to the number of samples.
- <li> Many of diehard's tests investigated overlapping bit sequences as
-being "independent identically distributed (iid) samples.  This was
-generally done because it used file-based input of random numbers and
-the size of files that could reasonably be generated and tested by in
-the mid-90's contained on the order of a million random deviates.  The
-restriction of testing to small, overlapping samples is neither
-necessary nor desireable in modern testing -- numerical simulation can
-easily consume ten to the eighteenth or more uniform deviates and the
-integration of the test with the built-in generators in the GSL permits
-"most" generators to be tested with essentially no limits on the number
-that can be generated for testing purposes.  Indeed, some tests are
-likely to reveal the short period or limited number of returns by some
-generators <i>because</i> they can consume far more numbers than are
-available within the period, which was not so easy with diehard.
-dieharder therefore permits overlapping sequences to be a
-<i>non</i>-default option selected by the user wherever possible.
+ <li> Many of diehard's tests investigated overlapping bit sequences.
+Overlapping sequences are not independent and one has to account for
+covariance between the samples (or a gradually vanishing degree of
+autocorrelation between sequential samples with gradually decreasing
+overlap). This was generally done at least in part because it used
+file-based input of random numbers and the size of files that could
+reasonably be generated and tested in the mid-90's contained on the
+order of a million random deviates.
+
+<p>Unfortunately, some of the diehard tests that rely on weak inverses
+of the covariance matrices associated with overlapping samples seem to
+have errors in their implementation, whether in the original diehard
+(covariance) data or in dieharder-specific code it is difficult to say.
+Fortunately, it is no longer necessary to limit the number of random
+numbers drawn from a generator when running an integrated test, and
+non-overlapping versions of these same tests do not require any
+treatment of covariance.  For that reason non-overlapping versions of
+the questionable tests have been provided where possible (in particular
+testing permutations and sums) and the overlapping versions of those
+tests are deprecated pending a resolution of the apparent errors.</p>
+
 </ul>
 
 <p>In a few cases other variations are possible for specific tests.
@@ -299,11 +305,11 @@ with different parameters.  A graphical user interface (GUI) is on the
 list of things to do, although it adds little to the practical utility
 of the tool.
 
-<li> To provide lots of <b>lots of knobs and dials</b> and low level
-control for statistical researchers that want to study particular
-generators with particular tests in more detail.  This includes full
-access to test sources -- no parameter or aspect of the test algorithms
-is "hidden" and needs to be taken on faith.
+<li> To provide <b>lots of knobs and dials</b> and low level control for
+statistical researchers that want to study particular generators with
+particular tests in more detail.  This includes full access to test
+sources -- no parameter or aspect of the test algorithms is "hidden" and
+needs to be taken on faith.
 
 <li> To have the entire test code and documentation be fully <b>Gnu
 Public Licensed</b> and hence openly available for adaptation, testing,
@@ -444,16 +450,16 @@ presumably random bits can be tested with dieharder.  The easiest way to
 demonstrate this is by running:</p>
 
 <pre>
-dieharder -S 1 -B -o -t 1000000000 | dieharder -g 75 -r 3 -n 2
+dieharder -S 1 -o -B -t 100000000 | dieharder -g 200 -d 0
 </pre>
 
 <p>where the first invocation of dieharder generates a stream of binary
 bits drawn from the default generator with seed 1 and the second reads
-those bits from stdin and tests them with the rgb bitdist test on two
-bit sequences.  Compare the output to:</p>
+those bits from stdin and tests them with the diehard birthdaytest on
+two bit sequences.  Compare the output to:</p>
 
 <pre>
-dieharder -S 1 -r 3 -n 2
+dieharder -S 1 -d 0
 </pre>
 
 <p>which runs the same test on the same generator with the same seed
