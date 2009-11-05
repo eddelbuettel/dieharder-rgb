@@ -31,6 +31,7 @@ libdieharder_la_SOURCES = \
 	bits.c \
 	chisq.c \
 	countx.c \
+	dab_bytedistrib.c \
 	diehard_2dsphere.c \
 	diehard_3dsphere.c \
 	diehard_birthdays.c \

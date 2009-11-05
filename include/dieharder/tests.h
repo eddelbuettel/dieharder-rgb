@@ -13,6 +13,7 @@
 #include <dieharder/rgb_minimum_distance.h>
 #include <dieharder/rgb_operm.h>
 #include <dieharder/rgb_permutations.h>
+#include <dieharder/dab_bytedistrib.h>
 #include <dieharder/diehard_birthdays.h>
 #include <dieharder/diehard_operm5.h>
 #include <dieharder/diehard_rank_32x32.h>
@@ -76,6 +77,7 @@
    RGB_LAGGED_SUMS,
    RGB_LMN,
    RGB_OPERM,
+   DAB_BYTEDISTRIB,
    N_RGB_TESTS
  } Rgb_Tests;
 
