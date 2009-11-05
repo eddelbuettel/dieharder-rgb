@@ -142,7 +142,7 @@ static void uvag_set (void *vstate, unsigned long int s) {
   * mt19937_1999 generator, basically one of the best in the world -- not
   * that it matters.
   */
- seed_rng = gsl_rng_alloc(types[14]);
+ seed_rng = gsl_rng_alloc(dh_rng_types[14]);
  seed_seed = s;
  gsl_rng_set(seed_rng,seed_seed);
  random_max = gsl_rng_max(seed_rng);
