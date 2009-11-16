@@ -218,7 +218,7 @@ void fDCT2_fft(const uint input[], double output[], size_t len) {
  fft_data = (double *) malloc(sizeof(double) * 4 * len);
  memset(fft_data, 0, sizeof(double) * 4 * len);
 
- for (i = 0; i <= len; i++) fft_data[2*i + 1] = input[i];
+ for (i = 0; i < len; i++) fft_data[2*i + 1] = input[i];
  for (i = 1; i < 2*len; i++) fft_data[4*len - i] = fft_data[i];
 
  gsl_fft_real_radix2_transform(fft_data, 1, 4*len);
