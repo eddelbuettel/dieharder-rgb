@@ -224,6 +224,26 @@ void run_all_tests()
        }
        break;
 
+     /*
+      * Test 205 is dab_bytedistrib.
+      */
+     case 205:
+
+       if(dh_test_types[dtest_num]){
+         execute_test(dtest_num);
+       }
+       break;
+
+     /*
+      * Test 206 is dab_dct.
+      */
+     case 206:
+
+       if(dh_test_types[dtest_num]){
+         execute_test(dtest_num);
+       }
+       break;
+
      default:
        printf("Preparing to run test %d.  ntuple = %d\n",dtest_num,ntuple);
        if(dh_test_types[dtest_num]){   /* This is the fallback to normal tests */

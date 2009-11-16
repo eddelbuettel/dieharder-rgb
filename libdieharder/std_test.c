@@ -85,10 +85,14 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
    }
    if(all == YES || psamples == 0){
      newtest[i]->psamples = dtest->psamples_std*multiply_p;
+	 if (newtest[i]->psamples < 1) newtest[i]->psamples = 1;
    } else {
      newtest[i]->psamples = psamples;
    }
-     
+
+   /* Give ntuple an initial value of zero; most tests will set it. */
+   newtest[i]->ntuple = 0;
+
    /*
     * Now we can malloc space for the pvalues vector, and a
     * single (80-column) LINE for labels for the pvalues.  We default

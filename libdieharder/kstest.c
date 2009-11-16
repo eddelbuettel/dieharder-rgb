@@ -26,6 +26,10 @@ double kstest(double *pvalue,int count)
  double y,d,dmax,csqrt;
  double p,pold = 0.0,x;
 
+ /* First, handle degenerate cases. */
+ if (count < 1) return -1.0;
+ if (count == 1) return *pvalue;
+
  /*
   * We start by sorting the list of pvalues.
   */

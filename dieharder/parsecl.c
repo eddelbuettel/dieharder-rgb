@@ -163,13 +163,10 @@ void parsecl(int argc, char **argv)
        break;
      case 'm':
        multiply_p = strtod(optarg,(char **) NULL);
-       /*
-        * No, you can't do less than psamples = 1 or negative psamples.
-        * Don't bother to warn the user, though.  This means that -m 0
-        * should do just one sample per test, a fast way to check that
-        * everything is sort of working.
-        */
-       if(multiply_p < 0.01) multiply_p = 0.01;
+	   /*
+		* Safety checking on multiply_p is done in std_test, where
+		* more information (the number of p-samples) is available.
+		*/
        break;
      case 'n':
        ntuple = strtol(optarg,(char **) NULL,10);
