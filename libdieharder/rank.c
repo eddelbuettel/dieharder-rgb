@@ -57,8 +57,9 @@ int binary_rank(uint **mtx,int mrows,int ncols)
   * row size in uint columns.  Note that we have to remember
   * which uint ** column we are in and therefore have to
   * convert bit column into uint column regularly.
+  * Subtract 1, because it is zero-basd.
   */
- uint_col_max = ncols/s_uint;
+ uint_col_max = (ncols-1)/s_uint;
 
  if(verbose == D_BRANK || verbose == D_ALL){
    printf("Starting bitmatrix:\n");
