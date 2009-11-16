@@ -123,7 +123,7 @@ void Threefish_512_Process_Blocks(Threefish_512_Ctxt_t *ctx, const u08b_t *input
 
 typedef unsigned long long uint64;
 
-#if 1
+#if 0
 uint64 timingAdjust = 200;
 
 uint64 time() {
