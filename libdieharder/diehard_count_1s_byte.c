@@ -320,10 +320,10 @@ int diehard_count_1s_byte(Test **test, int irun)
    printf("# diehard_count_1s_byte(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
  }
 
- return(0);
 
  Vtest_destroy(&vtest4);
  Vtest_destroy(&vtest5);
 
+ return(0);
 }
 
