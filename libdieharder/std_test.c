@@ -44,8 +44,8 @@
 Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
 {
 
- int i,j,k;
- size_t pcutoff;
+ uint i,j,k;
+ uint pcutoff;
  Test **newtest;
 
  MYDEBUG(D_STD_TEST){
@@ -117,7 +117,7 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
 
    MYDEBUG(D_STD_TEST){
      printf("Allocated and set newtest->tsamples = %d\n",newtest[i]->tsamples);
-     printf("Xtrategy = %u -> pcutoff = %lu\n",Xtrategy,pcutoff);
+     printf("Xtrategy = %u -> pcutoff = %u\n",Xtrategy,pcutoff);
      printf("Allocated and set newtest->psamples = %d\n",newtest[i]->psamples);
    }
 

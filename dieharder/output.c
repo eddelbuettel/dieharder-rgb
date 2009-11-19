@@ -147,9 +147,9 @@ void output_rng_info()
      fprintf(stdout,"0%c",table_separator);
    }
    if(tflag & TNO_WHITE){
-     fprintf(stdout,"%s%c%","rng_name",table_separator);
+     fprintf(stdout,"%s%c","rng_name",table_separator);
    } else {
-     fprintf(stdout,"%15s%c%","rng_name    ",table_separator);
+     fprintf(stdout,"%15s%c","rng_name    ",table_separator);
    }
    if(tflag & TNUM){
      fprintf(stdout,"%3s%c","num",table_separator);
