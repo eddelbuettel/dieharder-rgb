@@ -95,9 +95,10 @@ am_libdieharder_la_OBJECTS = bits.lo chisq.lo countx.lo \
 	rng_ca.lo rng_dev_random.lo rng_dev_arandom.lo \
 	rng_dev_urandom.lo rng_file_input.lo rng_file_input_raw.lo \
 	rngs_gnu_r.lo rng_kiss.lo rng_jenkins.lo rng_threefish.lo \
-	rng_stdin_input_raw.lo rng_uvag.lo sample.lo skein_block64.lo \
-	skein_block_ref.lo std_test.lo sts_monobit.lo sts_runs.lo \
-	sts_serial.lo timing.lo Vtest.lo version.lo Xtest.lo
+	rng_stdin_input_raw.lo rng_uvag.lo rng_XOR.lo sample.lo \
+	skein_block64.lo skein_block_ref.lo std_test.lo sts_monobit.lo \
+	sts_runs.lo sts_serial.lo timing.lo Vtest.lo version.lo \
+	Xtest.lo
 libdieharder_la_OBJECTS = $(am_libdieharder_la_OBJECTS)
 libdieharder_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -314,6 +315,7 @@ libdieharder_la_SOURCES = \
 	rng_threefish.c \
 	rng_stdin_input_raw.c \
 	rng_uvag.c \
+	rng_XOR.c \
 	sample.c \
 	skein_block64.c \
 	skein_block_ref.c \
@@ -464,6 +466,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_persist.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rgb_timing.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rijndael-alg-fst.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_XOR.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_aes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_ca.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rng_dev_arandom.Plo@am__quote@

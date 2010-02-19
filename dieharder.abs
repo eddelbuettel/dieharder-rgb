@@ -1,5 +1,5 @@
 <center><H1>Dieharder: A Random Number Test Suite</H1></center>
-<center><H2>Version 3.29.4beta</H2></center>
+<center><H2>Version 3.29.5beta</H2></center>
 
 <center><H3>Robert G. Brown (rgb)</H3></center>
 <center><H3>Dirk Eddelbuettel</H3></center>
@@ -75,7 +75,7 @@ suite you'll ever ware" for testing random numbers.</p>
 Area</a></h2></center>
 
 <p>Dieharder can be freely downloaded from <a
-href="http:www.phy.duke.edu/~rgb/General/dieharder.php">the Dieharder
+href="http://www.phy.duke.edu/~rgb/General/dieharder.php">the Dieharder
 download site</a>.  On this page there should be a long list of previous
 versions of dieharder, and it should tell you what is the current
 snapshot.  The version numbers have the following <i>specific

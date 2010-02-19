@@ -1,7 +1,5 @@
 /*
  *========================================================================
- * $Id$
- *
  * See copyright in copyright.h and the accompanying file COPYING
  *========================================================================
  */
@@ -55,9 +53,12 @@ void choose_rng()
   * we must complain, list the available rngs, and exit.  In an
   * interactive UI, I imagine that one would get an error message
   * and a chance to try again.
-  */
+  *
+  * MUST FIX THIS for the new combo multigenerator.  All broken.  At least
+  * this should force the output of generator names as usual, though.
  if(select_rng(generator,generator_name,Seed)){
-   fprintf(stderr,"Error: generator %d not found.\n",generator);
+  */
+ if(gnumbs[0] == -1){
    list_rngs();
    Exit(0);
  }
@@ -247,6 +248,188 @@ int select_rng(int gennum,char *genname,uint initial_seed)
   * complicates things because I stupidly didn't make this data into
   * components of the rng object (difficult to do given that the latter is
   * actually already defined in the GSL, admittedly).
+  */
+ random_max = gsl_rng_max(rng);
+ rmax = random_max;
+ rmax_bits = 0;
+ rmax_mask = 0;
+ while(rmax){
+   rmax >>= 1;
+   rmax_mask = rmax_mask << 1;
+   rmax_mask++;
+   rmax_bits++;
+ }
+
+ /*
+  * If we get here, we are all happy, and return false (no error).
+  */
+ return(0);
+
+}
+
+
+/*
+ * ========================================================================
+ * select_XOR()
+ *
+ * It is our profound wish to leave the code above mostly unmolested as we
+ * add the "special" XOR supergenerator.  We therefore make this a
+ * separate routine altogether and add a call to this on a simple
+ * conditional up above.
+ * ========================================================================
+ */
+
+int select_XOR()
+{
+
+ int i,j,k;
+ int one_file;
+
+ /*
+  * See if a gennum name has been set (genname not null).  If
+  * so, loop through all the gennums in dh_rng_types looking for a
+  * match and return a hit if there is one.  Note that this
+  * routine just sets gennum and passes a (presumed valid)
+  * gennum on for further processing, hence it has to be first.
+  */
+ for(j = 0;j < gvcount;j++){
+   if(gnames[j][0] != 0){
+     gnumbs[j] = -1;
+     for(i=0;i<1000;i++){
+       if(dh_rng_types[i]){
+         if(strncmp(dh_rng_types[i]->name,gnames[j],20) == 0){
+           gnumbs[j] = i;
+           break;
+         }
+       }
+     }
+     if(gnumbs[j] == -1) return(-1);
+   }
+
+ }
+
+ /*
+  * If we get here, then gnumbs[j] contains only numbers.  We check to be
+  * sure all the values are valid and the number CAN be used and
+  * return an error if any of them can't.
+  */
+ one_file = 0;
+ for(j = 0;j < gvcount;j++){
+
+   if(dh_rng_types[gnumbs[j]] == 0){
+     return(-1);
+   }
+
+   /*
+    * We need a sanity check for file input.  File input is permitted
+    * iff we have a file name AND if gnumbs[j] is either file_input or
+    * file_input_raw.
+    */
+   if(strncmp("file_input",dh_rng_types[gnumbs[j]]->name,10) == 0){
+     one_file++;
+     if(fromfile != 1 || one_file > 1){
+       fprintf(stderr,"Error: generator %s uses file input but no filename has been specified",dh_rng_types[gnumbs[j]]->name);
+       return(-1);
+     }
+   }
+
+ }
+
+ /*
+  * If we get here, in principle the gnumbs vector is filled with valid
+  * rngs and the right inputs are defined to run them (in the case of a
+  * SINGLE file_input). We therefore allocate the selected rng.  However,
+  * we FIRST check to see if rng is not 0, and if it isn't 0 we assume
+  * that we're in a UI, that the user has just changed rngs, and that we
+  * need to free the previous rng and reset the bits buffers so they are
+  * empty.
+  */
+ if(rng){
+   MYDEBUG(D_SEED){
+     fprintf(stdout,"# choose_rng(): freeing old gennum %s\n",gsl_rng_name(rng));
+   }
+   gsl_rng_free(rng);
+   reset_bit_buffers();
+ }
+
+ /*
+  * We should now be "certain" that it is safe to allocate the XOR rng
+  * without leaking memory and with a list of legitimate rngs.
+  */
+ MYDEBUG(D_SEED){
+ }
+ for(j = 0;j < gvcount;j++){
+   fprintf(stdout,"# choose_XOR(): generator[%i] = %s\n",j,dh_rng_types[gnumbs[j]]->name);
+ }
+ /*
+  * Change 14 to the actual number
+  */
+ rng = gsl_rng_alloc(dh_rng_types[14]);
+
+ /*
+  * OK, here's the deal on seeds.  If strategy = 0, we set the seed
+  * ONE TIME right HERE to either a randomly selected seed or whatever
+  * has been entered for Seed, if nonzero.
+  *
+  * If strategy is not 0 (1 is fine) then no matter what we do below,
+  * we will RESET the seed to either a NEW random seed or the value of
+  * Seed at the beginning of each test.
+  *
+  * The default behavior for actual testing should obviously be
+  * -s(trategy)=0 or 1 and -S(eed)=0, a random seed from /dev/random
+  * used for the whole test or reseeded per test (with a new seed each
+  * time).  -S(eed)=anything else can be used to fix a seed/strategy to
+  * match a previous run to reproduce it, or it can be used to set a seed
+  * to be used for each test individually, probably for a validation (of
+  * the test, not the rng) run.  DO NOT USE THE LATTER FOR TESTING!  The
+  * pvalues generated by test SERIES that e.g test ntuples over a range
+  * are obviously not independent if they all are started with the same
+  * seed (and hence test largely the same series).
+  *
+  * Regardless, the CURRENT seed is stored in the global seed variable,
+  * which we may need to move from libdieharder to the UI as I don't think
+  * we'll need to share a seed variable with any test.
+  *
+  * Note that for file input (not stdin) "reseed per test" is interpreted
+  * as "rewind per test".  Otherwise dieharder will rewind the file (and
+  * complain) only if one hits EOF before all testing is done, and usually
+  * that means that at least the test where the rewind occurs is useless.
+  */
+
+ /*
+  * We really don't need to worry about the value of strategy here, just
+  * Seed.  If it is is 0 we reseed randomly, otherwise we PROceed.  We
+  * actually seed from the variable seed, not Seed (which then remembers
+  * the value as long as it remains valid).
+  */
+ if(Seed == 0){
+   seed = random_seed();
+   MYDEBUG(D_SEED){
+     fprintf(stdout,"# choose_rng(): Generating random seed %u\n",seed);
+   }
+ } else {
+   seed = Seed;
+   MYDEBUG(D_SEED){
+     fprintf(stdout,"# choose_rng(): Setting fixed seed %u\n",seed);
+   }
+ }
+
+ /*
+  * Set the seed.  We do this here just so it is set for the timing
+  * test.  It may or may not ever be reset.
+  */
+ gsl_rng_set(rng,seed);
+
+ /*
+  * Here we evaluate the speed of the generator if the rate flag is set.
+  */
+ if(tflag & TRATE){
+   time_rng();
+ }
+
+ /*
+  * We don't really need this anymore, I don't think.  But we'll leave it
+  * for now.
   */
  random_max = gsl_rng_max(rng);
  rmax = random_max;

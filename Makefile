@@ -123,8 +123,8 @@ DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DIEHARDER_CFLAGS = -I${prefix}/include
 DIEHARDER_LIBS = -L${exec_prefix}/lib -ldieharder
-DIEHARDER_LIB_VERSION = 3.29.4
-DIEHARDER_LT_VERSION = 3:29:4
+DIEHARDER_LIB_VERSION = 3.29.5
+DIEHARDER_LT_VERSION = 3:29:5
 DSYMUTIL = 
 DUMPBIN = 
 ECHO_C = 
@@ -160,9 +160,9 @@ OTOOL64 =
 PACKAGE = dieharder
 PACKAGE_BUGREPORT = 
 PACKAGE_NAME = dieharder
-PACKAGE_STRING = dieharder 3.29.4beta
+PACKAGE_STRING = dieharder 3.29.5beta
 PACKAGE_TARNAME = dieharder
-PACKAGE_VERSION = 3.29.4beta
+PACKAGE_VERSION = 3.29.5beta
 PATH_SEPARATOR = :
 RANLIB = ranlib
 RELEASE = 1
@@ -176,7 +176,7 @@ STRIP = strip
 # This is revision information, automagically set from autoconf.  The
 # actual version information is set ONLY in configure.ac
 #========================================================================
-VERSION = 3.29.4beta
+VERSION = 3.29.5beta
 abs_builddir = /home/rgb/Src/Projects/dieharder
 abs_srcdir = /home/rgb/Src/Projects/dieharder
 abs_top_builddir = /home/rgb/Src/Projects/dieharder
@@ -325,8 +325,8 @@ REPOPATH = /var/www/html/fc/6/local/
 #========================================================================
 # This target takes the dieharder sources and "magically" transforms
 # them into RDieHarder sources.
-RDHTAR = RDieHarder_3.29.4beta.tar
-RDHPKG = RDieHarder_3.29.4beta.tar.gz
+RDHTAR = RDieHarder_3.29.5beta.tar
+RDHPKG = RDieHarder_3.29.5beta.tar.gz
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 

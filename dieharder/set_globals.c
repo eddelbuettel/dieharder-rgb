@@ -24,6 +24,8 @@ void set_globals()
  multiply_p = 1;        /* Default is to use default number of psamples */
  generator = 13;        /* Default is mt19937 as a "good" generator */
  generator_name[0] = (char)0; /* empty generator name is default */
+ gvcount = 0;           /* Count of generators so far */
+ gscount = 0;           /* Count of seeds so far */
  help_flag = NO;        /* No help requested */
  iterations = -1;	/* For timing loop, set iterations to be timed */
  list = NO;             /* List all generators */
@@ -45,29 +47,18 @@ void set_globals()
  tflag = 0;             /* We START with this zero so we can accumulate */
  verbose = 0;		/* Default is not to be verbose. */
  /*
-  * The next three are new (3.x) controls for "Test To Destruction" (TTD)
-  * mode(s).  INITIALLY I will probably make Xtreme the p-value considered
-  * "failure of a test" and default it to 0.000001 (one in a million
-  * runs), implement two strategies: 1 for "if test result is weak,
-  * increment psamples until destruction/fail is reached or cumulative p
-  * exceeds the weak threshold or the cutoff in psamples is reached"; and
-  * 2 for "increment psamples until either the cutoff is reached or
-  * failure is reached for all selected tests".  The strategy may be
-  * parsed bitwise the same way D is, though, allowing us to add
-  * variations such as how psamples is stepped (linear, log, exp).
-  * Initially I'm going to just go with linear in steps of 100, doing a
-  * per test alloc of cutoff psamples in the original test creation and
-  * adding 100 at a time from the test default until it or failure are
-  * reached.  This means we need a default cutoff for these strategies,
-  * let's start with a very conservative 1000.
-  *
-  * Note well that the defaults for strategy 1 and 2 are equivalent to
-  * a normal run with -m 10 at the moment.
+  * These are controls for Test To Destruction (TTD) and Resolve Ambiguity
+  * (RA) modes (as well as normal test reporting).  They arguably should
+  * not be globals, as they all are used only in the UI.  I'm going to
+  * leave them in libdieharder.h for the moment, though, until all of
+  * these changes settle down because they ARE likely to be used by any UI
+  * that seeks to implement similar search strategy control.
   */
- Xweak = 0.005;         /* Should be single sided weak cutoff in output.c */
- Xtreme = 0.000001;     /* One in a million, single sided */
  Xtrategy = 0;          /* 0 means "no strategy, off", the default */
- Xoff = 10000;          /* This is stressful but finite */
+ Xweak = 0.005;         /* Point where generator is flagged as "weak" */
+ Xfail = 0.000001;      /* Point where generator unambiguously fails dieharder */
+ Xstep = 100;           /* Number of pvalues to add when iterating in TTD/RA */
+ Xoff = 100000;         /* This is quite stressful and may run a long time */
  x_user = 0.0;          /* x,y,z_user are for "arbitrary" input controls */
  y_user = 0.0;          /* and can be used by any test without having to */
  z_user = 0.0;          /* rewrite parsecl() or add global variables */

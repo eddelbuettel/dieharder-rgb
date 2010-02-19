@@ -1,7 +1,5 @@
 /*
  *========================================================================
- * $Id: libdieharder.h 248 2006-10-09 17:59:54Z rgb $
- *
  * See copyright in copyright.h and the accompanying file COPYING
  *========================================================================
  */
@@ -146,6 +144,27 @@
  uint bits;             /* bitstring size (in bits) */
  uint diehard;          /* Diehard test number */
  uint generator;        /* GSL generator id number to be tested */
+ /*
+  * We will still need generator above, if only to select the XOR
+  * generator.  I need to make its number something that will pretty much
+  * never collide, e.g. -1 cast to a uint.  I'm making an arbitrary
+  * decision to set the upper bound of the number of generators that can
+  * be XOR'd together to 100, but of course as a macro you can increase or
+  * decrease it and recompile.  Ordinarily, users will not select XOR --
+  * they will just select multiple generators and XOR will automatically
+  * become the generator.
+  *
+  * Note well that at the moment one will NOT be able to XOR multiple
+  * instances of the file or stdin generators, in the latter case for
+  * obvious reasons.  One SHOULD be able to XOR a file stream with any
+  * of the built in generators.
+  */
+#define GVECMAX 100
+ char gnames[GVECMAX][128];  /* VECTOR of names to be XOR'd into a "super" generator */
+ uint gseeds[GVECMAX];       /* VECTOR of uint seeds used for the "super" generators */
+ uint gnumbs[GVECMAX];       /* VECTOR of GSL generators to be XOR'd into a "super" generator */
+ uint gvcount;               /* Number of generators to be XOR'd into a "super" generator */
+ uint gscount;               /* Number of seeds entered on the CL in XOR mode */
  uint help_flag;        /* Help flag */
  uint hist_flag;        /* Histogram display flag */
  uint iterations;	/* For timing loop, set iterations to be timed */
@@ -165,10 +184,11 @@
  off_t tsamples;        /* Generally should be "a lot".  off_t is u_int64_t. */
  uint user;             /* user defined test number */
  uint verbose;          /* Default is not to be verbose. */
- double Xweak;          /* "Weak" generator cut-off (one sided) for Xtreme */
- double Xtreme;         /* "Failure" cutoff in test-to-destruction mode */
+ double Xweak;          /* "Weak" generator cut-off (one sided) */
+ double Xfail;          /* "Unambiguous Fail" generator cut-off (one sided) */
  uint Xtrategy;         /* Strategy used in TTD mode */
- uint Xoff;             /* Cutoff used in TTD mode */
+ uint Xstep;            /* Number of additional psamples in TTD/RA mode */
+ uint Xoff;             /* Max number of psamples in TTD/RA mode */
  double x_user;         /* Reserved general purpose command line inputs for */
  double y_user;         /* use in any new user test. */
  double z_user;

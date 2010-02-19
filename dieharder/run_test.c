@@ -43,6 +43,7 @@ int execute_test(int dtest_num)
 
  int i,j,k;
  uint need_more_p;
+ double smallest_p;
  /*
   * Declare the results struct.
   */
@@ -77,65 +78,65 @@ int execute_test(int dtest_num)
  dieharder_test = create_test(dh_test_types[dtest_num],tsamples,psamples);
 
  /*
-  * We now have to implement Xtrategy.  The way it works is that we ALWAYS
-  * execute a single std_test() to initialize the process.  Then we add
-  * more tests with add_2_test().  At the moment we will output at the
-  * end of each add_2_tests() call, but this can be made an output option.
-  * We must do all checking for being done etc HERE; the std_test() routines
-  * do not do it (although you cannot overrun add_2_test(), you can get
-  * in an infinite loop if you try to force going past Xoff psamples).
+  * We now have to implement Xtrategy.  Since std_test is now smart enough
+  * to be able to differentiate a first call after creation or clear from
+  * subsequent calls (where the latter adds Xstep more psamples) all we
+  * need is a simple case switch on -Y Xtrategy to decide what to do.
+  * Note well that we can reset Xstep here (hard code) or add additional
+  * cases below quite easily to e.g. exponentially grow Xstep as we proceed.
+  * If you do this, please preserve Xstep and put it back when you are done.
   */
- std_test(dh_test_types[dtest_num],dieharder_test);
- output(dh_test_types[dtest_num],dieharder_test);
-
- /*
-  * If Xtrategy is 0 we are done.
-  */
- if(Xtrategy == 0){
-   /*
-    * Destroy the test and free all dynamic memory it used.
-    */
-   destroy_test(dh_test_types[dtest_num],dieharder_test);
-   return;
- }
-
- /*
-  * If any test[i]->ks_pvalue is less than Xtreme, we are done.
-  */
- for(i = 0; i < dh_test_types[dtest_num]->nkps ; i++){
-   if(dieharder_test[i]->ks_pvalue < Xtreme){
+ /* Xstep = whatever; */
+ need_more_p = YES;
+ while(need_more_p){
+   std_test(dh_test_types[dtest_num],dieharder_test);
+   output(dh_test_types[dtest_num],dieharder_test);
+   smallest_p = 1.0;
+   for(i = 0; i < dh_test_types[dtest_num]->nkps ; i++){
+     if(dieharder_test[i]->ks_pvalue < smallest_p) smallest_p = dieharder_test[i]->ks_pvalue;
+   }
+   switch(Xtrategy){
      /*
-      * Destroy the test and free all dynamic memory it used.
+      * This just runs std_test a single time, period, for good or ill.
       */
-     destroy_test(dh_test_types[dtest_num],dieharder_test);
-     return;
+     default:
+     case 0:
+       need_more_p = NO;
+       break;
+     /*
+      *             Resolve Ambiguity (RA) mode
+      *
+      * If any test has a p that is less than Xfail, we are done.
+      * If the entire test has pvalues that are bigger than Xweak,
+      * we are done (we really need this to happen e.g. 3x consecutively
+      * or exceed a much larger threshold, but that is more work to code
+      * and I want to be certain of the algorithm first).  If the test
+      * has accumulated Xoff psamples, we are done.
+      */
+     case 1:
+       if(smallest_p < Xfail) need_more_p = NO;
+       if(smallest_p >= Xweak) need_more_p = NO;
+       if(dieharder_test[0]->psamples >= Xoff) need_more_p = NO;
+       break;
+     /*
+      *             Test To Destruction (TTD) mode
+      *
+      * If any test has a p that is less than Xfail, we are done.
+      * If the test has accumulated Xoff psamples, we are done.
+      */
+     case 2:
+       if(smallest_p < Xfail) need_more_p = NO;
+       if(dieharder_test[0]->psamples >= Xoff) need_more_p = NO;
+       break;
    }
  }
 
- /*
-  * If we get to here, the test returned a non-Xtreme) value.  Now we have
-  * to act according to the Xtrategy.  So we just do the two cases.  There
-  * is clear room for more Xtrategies (that can just be experimental variants
-  * of these two).
-  */
- switch(Xtrategy){
-   case 1:
-     break;
-   case 2:
-     need_more_p = YES;
-     while(need_more_p){
-       add_2_test(dh_test_types[dtest_num],dieharder_test,100);
-       output(dh_test_types[dtest_num],dieharder_test);
-       for(i = 0; i < dh_test_types[dtest_num]->nkps ; i++){
-         if(dieharder_test[i]->ks_pvalue < Xtreme) need_more_p = NO;
-       }
-       if(dieharder_test[0]->psamples >= Xoff) need_more_p = NO;
-     }
-     break;
-   default:
-     break;
- }
-   
  destroy_test(dh_test_types[dtest_num],dieharder_test);
 
 }
+
+
+
+
+
+

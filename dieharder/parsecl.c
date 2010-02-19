@@ -55,7 +55,7 @@ void parsecl(int argc, char **argv)
     exit(1); /* count this as an error */
  }
 
- while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lm:n:oO:p:S:s:t:Vv:X:x:Y:y:Z:z:")) != EOF){
+ while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lm:n:oO:p:S:s:t:Vv:W:X:x:Y:y:Z:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
@@ -140,14 +140,25 @@ void parsecl(int argc, char **argv)
        strncpy(filename,optarg,128);
        fromfile = 1;
        break;
+     /*
+      * The dieharder CLI supports a "super" XOR generator.  Multiple
+      * instances (up to GVECMAX = 100) of generators and associated seeds
+      * on the command line cause this generator to automagically be used.
+      * It simply XOR's together the sequential output of all the
+      * generators, (uint) word by word, and returns that as a standard
+      * uint/udev gsl generator.  The parsing code below thus simply moves
+      * the CLI entries into the appropriate global vectors, to be handled
+      * by the choose_rng function later.
+      */
      case 'g':
        gen_tmp =  strtol(optarg,&endptr,10);
        /* printf("optarg = %s, dtest_tmp = %d endptr = %s\n",optarg,dtest_tmp,endptr); */
        if(strncmp(optarg,endptr,1) == 0){
-         strncpy(generator_name,optarg,128);
+         strncpy(gnames[gvcount],optarg,128);
        } else {
-         generator = gen_tmp;
+         gnumbs[gvcount] = gen_tmp;
        }
+       gvcount++;
        break;
      case 'h':
        help_flag = YES;
@@ -181,11 +192,16 @@ void parsecl(int argc, char **argv)
 	 fprintf(stderr," Choices: 0 (binary), 1 (uint), 2 (decimal)\n");
        }
        break;
+     case 'P':
+       Xoff = strtol(optarg,(char **) NULL,10);
+       break;
      case 'p':
        psamples = strtol(optarg,(char **) NULL,10);
        break;
      case 'S':
        Seed = strtol(optarg,(char **) NULL,10);
+       gseeds[gscount] = gen_tmp;
+       gscount++;
        break;
      case 's':
        strategy = strtol(optarg,(char **) NULL,10);
@@ -214,8 +230,11 @@ void parsecl(int argc, char **argv)
        verbose = strtol(optarg,(char **) NULL,10);
        printf("# Verbose is now %d\n",verbose);
        break;
+     case 'W':
+       Xweak = strtod(optarg,(char **) NULL);
+       break;
      case 'X':
-       Xtreme = strtod(optarg,(char **) NULL);
+       Xfail = strtod(optarg,(char **) NULL);
        break;
      case 'x':
        x_user = strtod(optarg,(char **) NULL);
@@ -225,9 +244,6 @@ void parsecl(int argc, char **argv)
        break;
      case 'y':
        y_user = strtod(optarg,(char **) NULL);
-       break;
-     case 'Z':
-       Xoff = strtol(optarg,(char **) NULL,10);
        break;
      case 'z':
        z_user = strtod(optarg,(char **) NULL);

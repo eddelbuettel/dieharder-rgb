@@ -35,6 +35,8 @@
  * maximal reuse of code in the UI or elsewhere.
  */
 
+static uint save_psamples;
+
 /*
  * Create a new test that will return nkps p-values per single pass,
  * for psamples passes.  dtest is a pointer to a struct containing
@@ -111,7 +113,8 @@ Test **create_test(Dtest *dtest, uint tsamples,uint psamples)
    }
 
    /*
-    * Finally, we initialize ks_pvalue "just because".
+    * Finally, we initialize ks_pvalue so that std_test() knows the next
+    * call is the first call.  It will be nonzero after the first call.
     */
    newtest[i]->ks_pvalue = 0.0;
 
@@ -158,138 +161,56 @@ void destroy_test(Dtest *dtest, Test **test)
 
 }
 
-void std_test(Dtest *dtest, Test **test)
-{
-
- int i,j;
-
- /*
-  * A standard test is just a bit complex due to the introduction of
-  * Xtrategies.  If Xtrategy = 0, we do the usual/normal thing and
-  * just run the test psamples times.  If it is NONzero, though, we
-  * do some moderately complicated stuff -- either run until Xoff is
-  * reached OR failure occurs
-  * This is very simple.  Run the test psamples times, using the value
-  * set for psamples when the test was created.
-  */
- for(i=0;i<test[0]->psamples;i++){
-
-   dtest->test(test,i);
-
- }
-
- /*
-  *========================================================================
-  * Then evaluate the final test p-values for each individual test
-  * statistic computed during the one run of nkps trials.  The default
-  * method for generating test pvalues is kstest, not kuiper, since
-  * David Bauer's suggested fix (plus verification with rgb_kstest_test)
-  * now positively demonstrates that it leads to the correct distribution
-  * of p for sets of 100 uniform deviates.
-  *========================================================================
-  */
- for(j = 0;j < dtest->nkps;j++){
-   if(ks_test >= 3){
-     /*
-      * This (Kuiper KS) can be selected with -k 3 from the command line.
-      * Generally it is ignored.  All smaller values of ks_test are passed
-      * through to kstest() and control its precision (and speed!).
-      */
-     test[j]->ks_pvalue = kstest_kuiper(test[j]->pvalues,test[j]->psamples);
-   } else {
-     /* This is (symmetrized Kolmogorov-Smirnov) is the default */
-     test[j]->ks_pvalue = kstest(test[j]->pvalues,test[j]->psamples);
-   }
- }
-
-}
-
-void ttd_test(Dtest *dtest, Test **test)
-{
-
- uint i,j,k,need_more_p;
- double psofar;
-
- /*
-  * This is the new "test to destruction" mode, which I'm going to write
-  * before, and separate from, the "resolve ambiguity" test.  It has to be
-  * a separate call to make it easy to wrap in an "execute_test" routine
-  * in the CLI or GUI or R.  It basically adds psamples 100 at a time
-  * until the final pvalue is less than the Xtrategy cutoff OR the Xoff
-  * cutoff in number of psamples is reached.  It starts by doing at
-  * least test[0]->psamples runs, though.
-  */
-
- /*
-  * run the first batch of samples.
-  */
- for(i=0;i<test[0]->psamples;i++){
-   dtest->test(test,i);
- }
-
- /*
-  * Run their pvalues to see if we are done.
-  */
- need_more_p = YES;
- for(j = 0;j < dtest->nkps;j++){
-   if(ks_test >= 3){
-     /*
-      * This (Kuiper KS) can be selected with -k 3 from the command line.
-      * Generally it is ignored.  All smaller values of ks_test are passed
-      * through to kstest() and control its precision (and speed!).
-      */
-     test[j]->ks_pvalue = kstest_kuiper(test[j]->pvalues,test[j]->psamples);
-     if(test[j]->ks_pvalue < Xtreme) need_more_p = NO;
-   } else {
-     /* This is (symmetrized Kolmogorov-Smirnov) is the default */
-     test[j]->ks_pvalue = kstest(test[j]->pvalues,test[j]->psamples);
-     if(test[j]->ks_pvalue < Xtreme) need_more_p = NO;
-   }
- }
-
- /*
-  * Now we add more p in blocks of 100 until we die or hit the cutoff.
-  */
- while(need_more_p){
-   /* Another block of 100 */
-   for(k=0;k<100;k++){
-     i++;
-     dtest->test(test,i);
-   }
-   for(j = 0;j < dtest->nkps;j++){
-     /* Don't forget to count them */
-     test[j]->psamples += 100;
-     /* Now BOTH find the ks_pvalue AND test it against the Xtreme cutoff */
-     if(ks_test >= 3){
-       /*
-        * This (Kuiper KS) can be selected with -k 3 from the command line.
-        * Generally it is ignored.  All smaller values of ks_test are passed
-        * through to kstest() and control its precision (and speed!).
-        */
-       test[j]->ks_pvalue = kstest_kuiper(test[j]->pvalues,test[j]->psamples);
-       if(test[j]->ks_pvalue < Xtreme) need_more_p = NO;
-     } else {
-       /* This is (symmetrized Kolmogorov-Smirnov) is the default */
-       test[j]->ks_pvalue = kstest(test[j]->pvalues,test[j]->psamples);
-       if(test[j]->ks_pvalue < Xtreme) need_more_p = NO;
-     }
-   }
-   if(test[0]->psamples >= Xoff) need_more_p = NO;
- }
-
- /* When we fall through to here, we are done. */
-
-}
-   
 /*
- * It looks like I'm going to need to break the test routines down a bit
- * to make them modular.  This routine JUST adds count samples to the test
- * and runs a new kstest on them, starting to add at the old
- * test[0]->psamples value.  It should only be called AFTER std_test
- * has been called one time.  It makes no decisions about quitting or
- * continuing -- that has to be handled at the UI level.  It does check
- * to make sure that we won't overrun Xoff, though, and truncates at Xoff
- * if we would.
+ * Clear a test.  This must be called if one wants to call std_test()
+ * twice after creating it and have the second call just add samples to
+ * the previous call.  std_test needs the vector of ks_psamples
+ * accumulated so far to be clear, and for test[i]->psamples to be
+ * reset to its original/default value.  I'm not sure that one cannot
+ * screw this up by creating multiple tests and running interleaved
+ * std_tests and clear_tests, but at least it makes it challenging to
+ * do so.
+ */
+void clear_test(Dtest *dtest, Test **test)
+{
+
+ int i;
+
+ /*
+  * reset psamples and clear the ks_pvalues
+  */
+ for(i=0;i<dtest->nkps;i++){
+   if(all == YES || psamples == 0){
+     test[i]->psamples = dtest->psamples_std*multiply_p;
+   } else {
+     test[i]->psamples = psamples;
+   }
+   test[i]->ks_pvalue = 0.0;
+ }
+
+ /*
+  * At this point you can call std_test() and it will start over, instead
+  * of just adding more samples to a run for this particular test.
+  */
+   
+}
+
+/*
+ * Test To Destruction (TTD) or Resolve Ambiguity (RA) modes require one
+ * to iterate, adding psamples until:
+ *
+ *    TTD -- a test either fails or completes Xoff psamples without
+ *           completely failing.
+ *     RA -- a test that is initially "weak" (compared to Xweak) either
+ *           fails or gets back up over 0.05 or completes Xoff psamples
+ *           without completely failing.
+ *
+ * This routine just adds count (usually Xstep) psamples to a test.  It
+ * is called by std_test() in two modes -- first call and TTD/RA (add more
+ * samples) mode.  This is completely automagic, though.
+ *
+ * Note that Xoff MUST remain global, if nothing else.  Otherwise we
+ * can run out of allocated headroom in the pvalues vector.
  */
 void add_2_test(Dtest *dtest, Test **test, int count)
 {
@@ -332,4 +253,43 @@ void add_2_test(Dtest *dtest, Test **test, int count)
 
 }
    
-      
+/*
+ * std_test() checks to see if this is the first call by looking at
+ * all the ks_pvalues.  If they are zero, it assumes first call (in
+ * general they will be clear only right after create_test or clear_test
+ * have been called).  If it is first call, it calls add_2_test() in just
+ * the right way to create test[0]->psamples, starting with 0.  If it is
+ * the second or beyond call, it just adds Xstep more psamples to the
+ * vector, up to the cutoff Xoff.
+ */
+void std_test(Dtest *dtest, Test **test)
+{
+
+ int i,j,count;
+ double pmax = 0.0;
+
+ /*
+  * First we see if this is the first call.  If it is, we save
+  * test[0]->psamples as count, then call add_2_test().  We determine
+  * first call by checking the vector of pvalues and seeing if they
+  * are all still zero (something that should pretty much never happen
+  * except on first call).
+  */
+ for(j = 0;j < dtest->nkps;j++){
+   if(test[j]->ks_pvalue > pmax) pmax = test[j]->ks_pvalue;
+ }
+ if(pmax == 0.0){
+   /* First call */
+   count = test[0]->psamples;
+   for(j = 0;j < dtest->nkps;j++){
+     test[j]->psamples = 0;
+   }
+ } else {
+   /* Add Xstep more samples */
+   count = Xstep;
+ }
+
+ add_2_test(dtest,test,count);
+
+}
+

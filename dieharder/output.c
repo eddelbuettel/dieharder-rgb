@@ -475,13 +475,26 @@ void output_table_line(Dtest *dtest,Test **test)
      if(field != 0){
        fprintf(stdout,"%c",table_separator);
      }
-     if(test[i]->ks_pvalue < 0.0005 || test[i]->ks_pvalue > 0.9995){
+     /*
+      * I'm doing two sided testing, but not really anymore.  At
+      * least, if I'm going to do two sided testing I need to make
+      * the Xtrategy code in run_test.c do matching two sided
+      * testing as well.  But for the moment, I think I'll just
+      * leave in the high side weak/fail without kicking into
+      * TTD/RA mode because it should be rare compared to normal
+      * low-side failure in second order (at the kstest level) but
+      * I could be wrong so why not flag it?
+      *
+      * I may change the WEAK call on the high side, though.  That
+      * will be triggered too often for comfort.
+      */
+     if(test[i]->ks_pvalue < Xfail){
        if(tflag & TNO_WHITE){
          fprintf(stdout,"%s","FAILED");
        } else {
          fprintf(stdout,"%10s","FAILED  ");
        }
-     } else if(test[i]->ks_pvalue < Xweak || test[i]->ks_pvalue > 1.0 - Xweak){
+     } else if(test[i]->ks_pvalue < Xweak){
        if(tflag & TNO_WHITE){
          fprintf(stdout,"%s","WEAK");
        } else {
