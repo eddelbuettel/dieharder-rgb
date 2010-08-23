@@ -1,0 +1,34 @@
+From van.saanen@aon.at Sat Aug 21 06:50:12 2010
+Date: Sat, 21 Aug 2010 12:51:23 +0200
+From: Heinz van Saanen <van.saanen@aon.at>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Subject: dieharder cosmetics et al
+
+hello robert,
+
+still in active dieharder development?
+
+1) than maybe you want to add the missing -B option to dieharder --help
+in the next version.
+
+2) processing from stdin in something like this e.g.
+
+   cat foo_rng | dieharder -g 200 -d 0
+
+shows "seeds" in the textual output. thats a bit unsound to me.
+
+
+playing around with rng's again i found my new personal speed king for
+x86_64. lightning fast, tiny, thread save and a convincing performance
+with dieharder. when interested in details, look in the attachment.
+
+
+kind regards from vienna, heinz van saanen
+
+
+    [ Part 2, Text/PLAIN (Name: "dieharder.txt") 118 lines. ]
+    [ Unable to print this part. ]
+
+
+    [ Part 3, Text/X-CSRC (Name: "main.c") 64 lines. ]
+    [ Unable to print this part. ]
