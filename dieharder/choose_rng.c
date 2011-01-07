@@ -21,7 +21,7 @@ void choose_rng()
 
  /*
   * The way CLI dieharder seeding works is:  a) If Seed is set (e.g.
-  * dieharder -S 1... ) then its value will be used for to reseed the
+  * dieharder -S 1... ) then its value will be used to reseed the
   * selected rng at the BEGINNING of each test, or test series for tests
   * such as rgb_bitdist that work their way through a set of ntuples.  If
   * Seed is set for file-based random number generators, it forces a
@@ -56,9 +56,8 @@ void choose_rng()
   *
   * MUST FIX THIS for the new combo multigenerator.  All broken.  At least
   * this should force the output of generator names as usual, though.
- if(select_rng(generator,generator_name,Seed)){
   */
- if(gnumbs[0] == -1){
+ if(select_rng(generator,generator_name,Seed) < 0){
    list_rngs();
    Exit(0);
  }
@@ -105,36 +104,48 @@ int select_rng(int gennum,char *genname,uint initial_seed)
  /*
   * REALLY out of bounds we can just test for and return an error.
   */
- if(gennum < 0 || gennum >= MAXRNGS){
+ if((int) gnumbs[0] < 0 || (int) gnumbs[0] >= MAXRNGS){
    return(-1);
  }
 
  /*
+  * We are FINALLY ready, I think, to implement the super/vector generator
+  * as soon as we get the talk all together and ready to go...
+  *     (start here)  
   * See if a gennum name has been set (genname not null).  If
   * so, loop through all the gennums in dh_rng_types looking for a
   * match and return a hit if there is one.  Note that this
   * routine just sets gennum and passes a (presumed valid)
   * gennum on for further processing, hence it has to be first.
   */
- if(genname[0] != 0){
+ if(gnames[0][0] != 0){
    gennum = -1;
    for(i=0;i<1000;i++){
      if(dh_rng_types[i]){
-       if(strncmp(dh_rng_types[i]->name,genname,20) == 0){
+       if(strncmp(dh_rng_types[i]->name,gnames[0],20) == 0){
          gennum = i;
          break;
        }
      }
    }
    if(gennum == -1) return(-1);
- }
-
- /*
-  * If we get here, then we are entering a gennum type by number.
-  * We check to be sure there is a gennum with the given
-  * number that CAN be used and return an error if there isn't.
-  */
- if(dh_rng_types[gennum] == 0){
+ } else if(dh_rng_types[gnumbs[0]] != 0){
+   /*
+    * If we get here, then we are entering a gennum type by number.
+    * We check to be sure there is a gennum with the given
+    * number that CAN be used and return an error if there isn't.
+    */
+   gennum = gnumbs[0];
+   if(dh_rng_types[gennum]->name[0] == 0){
+     /*
+      * No generator with this name.
+      */
+     return(-1);
+   }
+ } else {
+   /*
+    * Couldn't find a generator at all.  Should really never get here.
+    */
    return(-1);
  }
 

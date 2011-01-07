@@ -22,7 +22,7 @@ void set_globals()
  output_format = 1;     /* uint output format if you use -o alone */
  /* Cruft overlap = 1;           /* Default is to use overlapping samples */
  multiply_p = 1;        /* Default is to use default number of psamples */
- generator = 13;        /* Default is mt19937 as a "good" generator */
+ gnumbs[0] = 13;        /* Default is mt19937 as a "good" generator */
  generator_name[0] = (char)0; /* empty generator name is default */
  gvcount = 0;           /* Count of generators so far */
  gscount = 0;           /* Count of seeds so far */

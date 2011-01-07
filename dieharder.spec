@@ -4,7 +4,7 @@
 
 Name: dieharder-src
 Summary: Dieharder is a random number generator tester and timer
-%define version 3.29.5beta
+%define version 3.29.6beta
 %define release 1
 Version: %{version}
 Release: %{release}
@@ -127,7 +127,7 @@ rm -rf $RPM_BUILD_ROOT
 # versioned library -- ldconfig and ln are used to finish off
 # later.
 # %{_libdir}/libdieharder.so.%{version}
-%{_libdir}/libdieharder.so.3.29.5
+%{_libdir}/libdieharder.so.3.29.6
 %{_libdir}/libdieharder.so
 
 # The libdieharder include files are under here

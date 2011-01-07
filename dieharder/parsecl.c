@@ -55,7 +55,7 @@ void parsecl(int argc, char **argv)
     exit(1); /* count this as an error */
  }
 
- while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lm:n:oO:p:S:s:t:Vv:W:X:x:Y:y:Z:z:")) != EOF){
+ while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lm:n:oO:p:P:S:s:t:Vv:W:X:x:Y:y:Z:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;

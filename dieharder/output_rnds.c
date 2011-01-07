@@ -22,14 +22,24 @@ double output_rnds()
  double d;
  FILE *fp;
 
+ if(verbose) {
+   fprintf(stderr,"# output_rnds: Dumping %u rands\n",tsamples);
+ }
+
  /*
   * If Seed is set, use it.  Otherwise reseed from /dev/random
   */
  if(Seed){
    seed = Seed;
+   if(verbose) {
+     fprintf(stderr,"# output_rnds: seeding rng %d with %ul\n",rng,seed);
+   }
    gsl_rng_set(rng,seed);
  } else {
    seed = random_seed();
+   if(verbose) {
+     fprintf(stderr,"# output_rnds: seeding rng %d with %ul\n",rng,seed);
+   }
    gsl_rng_set(rng,seed);
  }
 
@@ -37,6 +47,9 @@ double output_rnds()
   * Open the output file.  If no filename is specified, or if
   * filename is "-", use stdout.
   */
+ if(verbose) {
+   fprintf(stderr,"# output_rnds: Opening file %s\n",filename);
+ }
  if( (filename[0] == 0) || (strncmp("-",filename,1)==0) ){
    fp = stdout;
  } else {
@@ -46,6 +59,9 @@ double output_rnds()
    }
  }
 
+ if(verbose) {
+   fprintf(stderr,"# output_rnds: Opened %s as fp = %u\n",filename,fp);
+ }
  /*
   * We completely change the way we control output.
   *

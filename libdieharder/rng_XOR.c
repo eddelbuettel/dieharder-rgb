@@ -12,26 +12,39 @@
 /*
  * This is a special XOR generator that takes a list of GSL
  * wrapped rngs and XOR's their uint output together to produce
- * each new random number.
+ * each new random number.  Note that it SKIPS THE FIRST ONE which
+ * MUST be the XOR rng itself.  So there have to be at least two -g X
+ * stanzas on the command line to use XOR, and if there aren't three
+ * or more it doesn't "do" anything but use the second one.
  */
 static unsigned long int XOR_get (void *vstate);
 static double XOR_get_double (void *vstate);
 static void XOR_set (void *vstate, unsigned long int s);
 
-/*
- * internal gsl random number generator vector
- */
-gsl_rng *grngs[GVECMAX];
-
-typedef struct
-  {
-  }
-XOR_state_t;
+typedef struct {
+  /*
+   * internal gsl random number generator vector
+   */
+  gsl_rng *grngs[GVECMAX];
+  unsigned int XOR_rnd;
+} XOR_state_t;
 
 static inline unsigned long int
 XOR_get (void *vstate)
 {
+ XOR_state_t *state = (XOR_state_t *) vstate;
+ int i;
 
+ /*
+  * There is always this one, or we are in deep trouble.  I am going
+  * to have to decorate this code with error checks...
+  */
+ state->XOR_rnd = gsl_rng_get(state->grngs[1]);
+ for(i=1;i<gvcount;i++){
+   state->XOR_rnd ^= gsl_rng_get(state->grngs[i]);
+ }
+ return state->XOR_rnd;
+ 
 }
 
 static double
@@ -40,54 +53,36 @@ XOR_get_double (void *vstate)
   return XOR_get (vstate) / (double) UINT_MAX;
 }
 
-static void
-XOR_set (void *vstate, unsigned long int s) {
+static void XOR_set (void *vstate, unsigned long int s) {
 
  XOR_state_t *state = (XOR_state_t *) vstate;
  int i;
+ uint seed_seed;
 
  /*
-  * Basically, we need to go through the list and seed each generator.
-  * If the list of seeds is empty (a single seed is all that was
-  * read in) we use that seed to seed all the generators on the list.
-  * Otherwise we use the vector of seeds.  This isn't necessarily the
-  * "best" way to do things -- we'll have to see once we get the whole
-  * thing working.
+  * OK, here's how it works.  grngs[0] is set to mt19937_1999, seeded
+  * as per usual, and used (ONLY) to see the remaining generators.
+  * The remaining generators.
   */
- for(i=0;i<gvcount;i++){
-
-   grngs[i] = gsl_rng_alloc(dh_rng_types[gnumbs[i]]);
-
-   /*
-    * We really don't need to worry about the value of strategy here, just
-    * Seed.  If it is is 0 we reseed randomly, otherwise we PROceed.  We
-    * actually seed from the variable seed, not Seed (which then remembers
-    * the value as long as it remains valid).
-    */
-   if(Seed == 0){
-     seed = random_seed();
-     MYDEBUG(D_SEED){
-       fprintf(stdout,"# choose_rng(): Generating random seed %u\n",seed);
-     }
-   } else {
-     seed = gseeds[i];
-     MYDEBUG(D_SEED){
-       fprintf(stdout,"# choose_rng(): Setting fixed seed %u\n",seed);
-     }
-   }
+ state->grngs[0] = gsl_rng_alloc(dh_rng_types[14]);
+ seed_seed = s;
+ gsl_rng_set(state->grngs[0],seed_seed);
+ for(i=1;i<gvcount;i++){
 
    /*
-    * Set the seed.  We do this here just so it is set for the timing
-    * test.  It may or may not ever be reset.
+    * I may need to (and probably should) add a sanity check
+    * here or in choose_rng() to be sure that all of the rngs
+    * exist.
     */
-   gsl_rng_set(grngs[i],seed);
+   state->grngs[i] = gsl_rng_alloc(dh_rng_types[gnumbs[i]]);
+   gsl_rng_set(state->grngs[i],gsl_rng_get(state->grngs[0]));
 
  }
 
 }
 
 static const gsl_rng_type XOR_type =
-{"XOR",                         /* name */
+{"XOR (supergenerator)",        /* name */
  UINT_MAX,			/* RAND_MAX */
  0,				/* RAND_MIN */
  sizeof (XOR_state_t),
