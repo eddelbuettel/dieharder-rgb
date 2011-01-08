@@ -1,3 +1,8 @@
+2011-01-07  Dirk Eddelbuettel  <edd@debian.org>
+
+	* autotoolsRerunMeIfTroubles.sh: Needed to reset autotools on Ubuntu
+	10.10
+
 2008-08-18 19:50  rgb
 
 	* .: This might be ready for a production snapshot, or a testing
