@@ -91,9 +91,11 @@ int execute_test(int dtest_num)
  while(need_more_p){
    std_test(dh_test_types[dtest_num],dieharder_test);
    output(dh_test_types[dtest_num],dieharder_test);
-   smallest_p = 1.0;
+   smallest_p = 0.5;
    for(i = 0; i < dh_test_types[dtest_num]->nkps ; i++){
-     if(dieharder_test[i]->ks_pvalue < smallest_p) smallest_p = dieharder_test[i]->ks_pvalue;
+     if(0.5 - fabs(dieharder_test[i]->ks_pvalue - 0.5) < smallest_p) {
+	   smallest_p = 0.5 - fabs(dieharder_test[i]->ks_pvalue - 0.5);
+	 }
    }
    switch(Xtrategy){
      /*

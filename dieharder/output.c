@@ -488,13 +488,13 @@ void output_table_line(Dtest *dtest,Test **test)
       * I may change the WEAK call on the high side, though.  That
       * will be triggered too often for comfort.
       */
-     if(test[i]->ks_pvalue < Xfail){
+     if(test[i]->ks_pvalue < Xfail || test[i]->ks_pvalue > 1.0 - Xfail){
        if(tflag & TNO_WHITE){
          fprintf(stdout,"%s","FAILED");
        } else {
          fprintf(stdout,"%10s","FAILED  ");
        }
-     } else if(test[i]->ks_pvalue < Xweak){
+     } else if(test[i]->ks_pvalue < Xweak || test[i]->ks_pvalue > 1.0 - Xweak){
        if(tflag & TNO_WHITE){
          fprintf(stdout,"%s","WEAK");
        } else {
