@@ -144,6 +144,9 @@ void dieharder_test_types()
  ADD_TEST(&dab_filltree_dtest);
  dh_num_other_tests++;
 
+ ADD_TEST(&dab_filltree2_dtest);
+ dh_num_other_tests++;
+
  ADD_TEST(&dab_monobit2_dtest);
  dh_num_other_tests++;
 

@@ -1,4 +1,7 @@
 2011-01-09 dab <david.astgtciv@gmail.com>
+	* .:Added dab_filltree2 test
+
+2011-01-09 dab <david.astgtciv@gmail.com>
 	* .:Added dab_filltree test
 	  -- This isn't a great test, but it does better than many of the original
 	  Diehard tests, and it acts as an introduction to dab_filltree2, which

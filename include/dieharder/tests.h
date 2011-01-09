@@ -16,6 +16,7 @@
 #include <dieharder/dab_bytedistrib.h>
 #include <dieharder/dab_dct.h>
 #include <dieharder/dab_filltree.h>
+#include <dieharder/dab_filltree2.h>
 #include <dieharder/dab_monobit2.h>
 #include <dieharder/diehard_birthdays.h>
 #include <dieharder/diehard_operm5.h>
@@ -83,6 +84,7 @@
    DAB_BYTEDISTRIB,
    DAB_DCT,
    DAB_FILLTREE,
+   DAB_FILLTREE2,
    DAB_MONOBIT2,
    N_RGB_TESTS
  } Rgb_Tests;
