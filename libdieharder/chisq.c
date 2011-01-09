@@ -164,7 +164,7 @@ double chisq_binomial(double *observed,double prob,uint kmax,uint nsamp)
  }
  for(n = 0;n <= nmax;n++){
    if(observed[n] > 10.0){
-     expected = nsamp*binomial(nmax,n,prob);
+     expected = nsamp*gsl_ran_binomial_pdf(n,prob,nmax);
      obstotal += observed[n];
      exptotal += expected;
      delchisq = (observed[n] - expected)*(observed[n] - expected)/expected;

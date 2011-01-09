@@ -1,4 +1,9 @@
 2011-01-09 dab <david.astgtciv@gmail.com>
+	* .:Added dab_monobit2 test
+	* libdieharder/chisq.c:Modified chisq_binomial to use GSL's binomial function
+	  -- Fixed an error with prob.c's binomial function
+
+2011-01-09 dab <david.astgtciv@gmail.com>
 	* Fixed output.c to be two-tailed again.
 	* Matching fix to run_test.c to use a two-tailed test.
 

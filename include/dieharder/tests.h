@@ -15,6 +15,7 @@
 #include <dieharder/rgb_permutations.h>
 #include <dieharder/dab_bytedistrib.h>
 #include <dieharder/dab_dct.h>
+#include <dieharder/dab_monobit2.h>
 #include <dieharder/diehard_birthdays.h>
 #include <dieharder/diehard_operm5.h>
 #include <dieharder/diehard_rank_32x32.h>
@@ -80,6 +81,7 @@
    RGB_OPERM,
    DAB_BYTEDISTRIB,
    DAB_DCT,
+   DAB_MONOBIT2,
    N_RGB_TESTS
  } Rgb_Tests;
 
