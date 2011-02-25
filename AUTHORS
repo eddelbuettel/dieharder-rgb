@@ -6,7 +6,7 @@ Dirk Eddelbuettel <edd@debian.org>
 
 David Bauer <astgtciv2009@gatech.edu>
   Debugger and fixer extraordinaire, contributor of the aes and
-threefish "gold standard" rngs and major factor if the fixing of kstest
+threefish "gold standard" rngs and major factor in the fixing of kstest
 so that it is now "exact".
 
 Many other individuals have contributed to dieharder at this point by

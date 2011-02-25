@@ -1,0 +1,90 @@
+From rgb@phy.duke.edu Fri Feb 25 05:05:09 2011
+Date: Fri, 25 Feb 2011 05:07:17 -0500 (EST)
+From: Robert G. Brown <rgb@phy.duke.edu>
+To: Allyn Shell <ashell2@jhu.edu>
+Cc: Robert G. Brown <rgb@phy.duke.edu>
+Subject: Re: New Dieharder Test
+
+On Thu, 24 Feb 2011, Allyn Shell wrote:
+
+> Here is the trap: A PRNG that passes all the tests perfectly for any
+> seed that it is given can have correlations between RN sequences for
+> sequential seeds. There needs to be a test in the battery that looks for
+> correlations between sequences produces from sequences of seeds. For
+> instance, use PRNG_A to produce 1000 sequences for seeds 1001 to 2000.
+> After skiping the startup numbers in each run the next 1000 numbers
+> should be appended to lists in 1000 different files. Then each of these
+> files represents the set of pseudo-random numbers from the same position
+> in all the runs. The first value in every file is from seed 1001. The
+> second value is from seed 1002. The third is from 1003, etc.
+>
+> When tested this way, some otherwise good PRNGs fail miserably. Most
+> serious is that this is how many simulators are actually being used.
+
+Hi Allyn,
+
+That's actually a really excellent idea.  It has long been known that
+starting e.g. a list of MC simulations with sequential seeds is a bad
+idea for this very reason, as is starting a list of simulations using
+"only" the clock as the seed (as most of the bits of the clock don't
+change).  For that reason I seed within dieharder with a call to the
+(linux, entropy based) system random number generator as a general rule,
+but of course now that you mention it, it DOES seem as though in a test
+of randomness you would want to pick the least favorable scenario for
+seeding, not the most.  The usual dogma is that this is primarily
+important for relatively short-run correlations at the beginning of
+sequences -- the iterated maps maintain some degree of locality in a
+generalized high dimensional hyperspace for a while, but then the
+trajectories diverge and supposedly start filling the hypervolume of
+phase space in a decorrelated way; many generators have an initial
+"warmup" series of (hidden) calls intended to lose this initial
+correlation and reach the "relatively random" state before returning
+numbers after seeding.
+
+I actually build NNs as well, and I can see how this would be a
+particular problem there, because the initialization step typically
+would occur right after seeding and only involves a very small number of
+calls (10^3-10^5, small compared to "big" numbers in a MC computation
+that might involved 10^16-10^18 rng calls).  Correlations in the weights
+would certainly bias many algorithms towards the same volume of phase
+space and (more likely) the same optimum where one would really like to
+actually SAMPLE the space to SEARCH for better optima.  Hmmm, I say,
+Hmmm.
+
+Well, the solution for the NN building per se is obvious enough, and is
+what I do (from my MC experience) -- use e.g. /dev/random or
+/dev/urandom for seeding and maintain a lookup table of used seeds if
+you plan to do enough runs where seed collisions in a space of 2^32
+might matter so be able to avoid them.  In MC, I just saved results
+tagged with their seeds so if a seed happened to recur, it would just
+rewrite the result instead of appearing as a second "independent"
+result.  That does, however, leave the problem of testing as you are
+dead right, a perfect RNG would not exhibit this problem.
+
+Fortuitously, I just finished a modification of dieharder that should
+really help with this.  I've now got a "supergenerator" built in that
+can basically combine up to 100 generators.  I think I currently feed
+them into a shuffle table (which is bad -- it would break up the
+correlation we would be looking for) but if I tweak so that it uses (up
+to) 256 instances of the same generator with 256 seeds that are
+sequential in some sliding window of otherwise fixed or "random" bits in
+the seed (not just the least significant ones) and then returns numbers
+in strict round robin from the generators, I can apply the generator to
+the short-range bitlevel tests in the suite.  (Well one can obviously
+apply it to ANY test, but some of the tests are unlikely to be sensitive
+to the kinds of correlations that might ensue).
+
+I've got a whole list of chores today (I'm actively teaching and
+midterms are due, sigh) but let me see if I can implement this (and
+document it) in the next week or two.
+
+     rgb
+
+> Allyn Shell
+>
+
+Robert G. Brown	                       http://www.phy.duke.edu/~rgb/
+Duke University Dept. of Physics, Box 90305
+Durham, N.C. 27708-0305
+Phone: 1-919-660-2567  Fax: 919-660-2525     email:rgb@phy.duke.edu
+

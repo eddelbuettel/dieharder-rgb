@@ -71,6 +71,32 @@ suite you'll ever ware" for testing random numbers.</p>
 
 <hr>
 
+<center><h2><a href="./dieharder">Dieharder Related Talks or Papers</a></h2></center>
+
+<ul>
+
+ <li> <a href="../dieharder_techexpo_2011.odp">TechExpo 2011 Talk
+(Duke).</a> A short talk given at a Duke's Tech Expo in 2011 as an
+overview of random number generator testing.  Good for beginners.
+
+ <li> <a
+href="http://www.cs.ucl.ac.uk/staff/d.jones/GoodPracticeRNG.pdf">Good
+Practice in (Pseudo) Random Number Generation for
+Bioinformatics Applications</a> by David Jones, UCL Bioinformatics Group
+(E-mail: d dot jones@cs dot ucl dot ac dot uk).  A really excellent
+"must read" guideline for anyone thinking of using random number
+generators in an actual application.  My own advice differs only in that
+I endorse using (well tested) Gnu Scientific Library random number 
+generators as they are generally portable and open source, hence well
+tested.  Several of Jones' implementation of Marsaglia's KISS-family rngs 
+have been added to dieharder and will shortly be added to the GSL under 
+the GPL for general use.
+
+</ul>
+
+
+<hr>
+
 <center><h2><a href="./dieharder">Dieharder Download
 Area</a></h2></center>
 

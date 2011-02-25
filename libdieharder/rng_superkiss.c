@@ -64,7 +64,8 @@ static unsigned long int superkiss_refill(void *vstate){
 
 }
 
-static unsigned long int superkiss_get (void *vstate)
+static unsigned long int
+superkiss_get (void *vstate)
 {
 
  superkiss_state_t *state = vstate;
@@ -80,12 +81,9 @@ static unsigned long int superkiss_get (void *vstate)
 
 static double superkiss_get_double (void *vstate)
 {
-  /*
-  unsigned intui  = superkiss_get (vttate);
-  double dr = ui/(double) UINT_MAX;
-  printf("ui = %u  dr = %f\n",ui,dr);
-  return dr;*/
-  return (double) superkiss_get (vstate) / (double) (UINT_MAX >> 0);
+
+  return (unsigned int) superkiss_get (vstate) / (double) UINT_MAX;
+
 }
 
 static void superkiss_set (void *vstate, unsigned long int s)

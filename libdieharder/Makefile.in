@@ -80,8 +80,9 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(man3dir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libdieharder_la_DEPENDENCIES =
 am_libdieharder_la_OBJECTS = bits.lo chisq.lo countx.lo \
-	dab_bytedistrib.lo dab_dct.lo diehard_2dsphere.lo \
-	diehard_3dsphere.lo diehard_birthdays.lo diehard_bitstream.lo \
+	dab_bytedistrib.lo dab_dct.lo dab_filltree.lo dab_filltree2.lo \
+	dab_monobit2.lo diehard_2dsphere.lo diehard_3dsphere.lo \
+	diehard_birthdays.lo diehard_bitstream.lo \
 	diehard_count_1s_byte.lo diehard_count_1s_stream.lo \
 	diehard_craps.lo diehard_dna.lo diehard_operm5.lo \
 	diehard_opso.lo diehard_oqso.lo diehard_parking_lot.lo \
@@ -268,6 +269,9 @@ libdieharder_la_SOURCES = \
 	countx.c \
 	dab_bytedistrib.c \
 	dab_dct.c \
+	dab_filltree.c \
+	dab_filltree2.c \
+	dab_monobit2.c \
 	diehard_2dsphere.c \
 	diehard_3dsphere.c \
 	diehard_birthdays.c \
@@ -436,6 +440,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/countx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dab_bytedistrib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dab_dct.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dab_filltree.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dab_filltree2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dab_monobit2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diehard_2dsphere.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diehard_3dsphere.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diehard_birthdays.Plo@am__quote@
