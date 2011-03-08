@@ -4,7 +4,7 @@ Robert G. Brown <rgb@phy.duke.edu>
 Dirk Eddelbuettel <edd@debian.org>
   Maintainer of Debian versions and contributor of the R interface.
 
-David Bauer <astgtciv2009@gatech.edu>
+David Bauer <astgtciv@gatech.edu>
   Debugger and fixer extraordinaire, contributor of the aes and
 threefish "gold standard" rngs and major factor in the fixing of kstest
 so that it is now "exact".
