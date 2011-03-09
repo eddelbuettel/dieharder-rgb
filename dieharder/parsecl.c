@@ -55,7 +55,7 @@ void parsecl(int argc, char **argv)
     exit(1); /* count this as an error */
  }
 
- while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lm:n:oO:p:P:S:s:t:Vv:W:X:x:Y:y:Z:z:")) != EOF){
+ while ((c = getopt(argc,argv,"aBc:D:d:Ff:g:hi:k:lL:m:n:oO:p:P:S:s:t:Vv:W:X:x:Y:y:Z:z:")) != EOF){
    switch (c){
      case 'a':
        all = YES;
@@ -172,12 +172,15 @@ void parsecl(int argc, char **argv)
      case 'l':
        list = YES;
        break;
+     case 'L':
+       overlap = strtol(optarg,(char **) NULL,10);
+       break;
      case 'm':
        multiply_p = strtod(optarg,(char **) NULL);
-	   /*
-		* Safety checking on multiply_p is done in std_test, where
-		* more information (the number of p-samples) is available.
-		*/
+       /*
+        * Safety checking on multiply_p is done in std_test, where
+        * more information (the number of p-samples) is available.
+        */
        break;
      case 'n':
        ntuple = strtol(optarg,(char **) NULL,10);

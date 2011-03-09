@@ -30,6 +30,7 @@ void set_globals()
  iterations = -1;	/* For timing loop, set iterations to be timed */
  list = NO;             /* List all generators */
  ntuple = 0;            /* n-tuple size for n-tuple tests (0 means all) */
+ overlap = 1;           /* Default is to use overlapping samples in tests that support a choice */
  psamples = 0;          /* This value precipitates use of test defaults */
  seed = 0;              /* saves the current (possibly randomly selected) seed */
  strategy = 0;          /* Means use seed (random or otherwise) from beginning of run */

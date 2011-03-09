@@ -176,6 +176,7 @@
  uint num_randoms;      /* the number of randoms stored into memory and usable */
  uint output_file;      /* equals 1 if you output to file, otherwise 0. */
  uint output_format;    /* equals 0 (binary), 1 (uint), 2 (decimal) output */
+ uint overlap;          /* 1 use overlapping samples, 0 don't (for tests with the option) */
  uint psamples;         /* Number of test runs in final KS test */
  uint quiet;            /* quiet flag -- surpresses full output report */
  uint rgb;              /* rgb test number */

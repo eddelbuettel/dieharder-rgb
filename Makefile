@@ -106,6 +106,7 @@ GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
 ACLOCAL = /bin/sh ./missing --run aclocal
+ACLOCAL_AMFLAGS = -I m4
 ACTAR = /bin/sh ./missing --run tar
 AMTAR = ${SHELL} /home/rgb/Src/Projects/dieharder/missing --run tar
 AR = ar

@@ -15,7 +15,7 @@ rm -f Makefile Makefile.in dieharder/Makefile dieharder/Makefile.in \
 echo "Running automake..."
 automake --add-missing --copy --gnu
 echo "Running autoconf..."
-autoconf
+autoreconf
 
 #
 # Might as well run this -- then we are ready to run make.

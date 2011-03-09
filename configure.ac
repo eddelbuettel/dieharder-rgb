@@ -97,9 +97,11 @@ AC_C_INLINE
 
 DIEHARDER_CFLAGS="-I$includedir"
 DIEHARDER_LIBS="-L$libdir -ldieharder"
+ACLOCAL_AMFLAGS="-I m4"
 
 AC_SUBST(DIEHARDER_CFLAGS)
 AC_SUBST(DIEHARDER_LIBS)
+AC_SUBST(ACLOCAL_AMFLAGS)
 
 #==================================================================
 # Checks for libraries, and headers.  Test for dependency libraries

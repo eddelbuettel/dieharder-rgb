@@ -1,0 +1,283 @@
+From moenkehues@googlemail.com Tue Mar  8 20:18:06 2011
+Date: Wed, 9 Mar 2011 02:20:18 +0100
+From: Stephan Mönkehues <moenkehues@googlemail.com>
+To: Robert G. Brown <rgb@phy.duke.edu>
+Cc: rlindner@cdc.informatik.tu-darmstadt.de, David Bauer <astgtciv2009@gatech.edu>, Dirk Eddelbuettel <edd@debian.org>
+Subject: Re: OPERM5 -> new covariance matrix and its pseudoinverse computed, test is running with and without overlaps
+
+So here you have my Mathematica file. It contains everything I used to compute
+the Covariancematrix and some tests. You can use your favourite program to
+compute the Pseudoinverse of the Covariancematrix. I wanted to use Mathematica,
+but aborted after 12 hours and used Matlab instead. It took Matlab maybe two
+seconds to calculate it...
+
+So about the Covariancematrix:
+
+I am sorry, this is not really trivial (for me), and so is the explanation for
+it... I added some comments in the code, this is now a try to give an overview
+and to help to understand the code.
+
+First there is a vector called "Sortierungen", it contains all 120 possible
+sorts. I calculated by hand which sort is represented by which kperm-number. Now
+kperm of the first entry of Sortierungen returns 0, of the second 1 and so on. I
+implemented kperm in Mathematica too, so that you can check, that they are in
+the correct order.
+Next, I did NOT use Marsaglias confusing mirror method. I get ONE
+covariancematrix with size 120x120, not two of size 60x60. So i don't need a map
+vector.
+
+How to compute the covariance matrix C? In every entry of the matrix is the
+covariance of two sorts, let's call them a and b. I haven't written everything
+down in Tex so I attached a pdf file of Tsang and Pang. Just check it until page
+six. But you have to skip independency stuff, cause our sorts overlap. Best is
+just to look at page six. There you can derive the formular for the i,j entry of
+C. It is
+
+n * [ Sum{for overlapping cases, there are nine} [E(Z_t W_(t+k) ]-  9*P(a)P(b) ]
+
+with P(a) = P(b) = 1/120 and k from -4 to +4
+
+So the problem is to compute E(Z_t W_(t+k))
+
+
+Say I let a and b overlap two-time (this is for k = -3 or k = +3). Now I have to
+compute how many possibilities are there that a and b overlap two-time. Then I
+divided this by the total number . So in our case, the maximal number is M =
+2^32 - 1. We have eight numbers involved, since every sort depends on five
+numbers and they overlap two-time.
+
+Here comes my only assumption I made during my calculation: The (in this case)
+eight consecutive numbers are different from each other. We have M+1 = 2^32
+possibilities for one number (including the zero). So we divide by
+(M+1)*M*(M-1)*...*(M-6).
+
+I made this assumption to simplify. I did this, to get "clear" sorts to work
+with, so that you don't have to decide which number is "smaller" if they are the
+same. As you can see there is for big M not a big difference to M^8.
+You can skip this part: :-) But I am a mathematician, so of course i want to be
+correct here and at least state a probability. Even for the one-time overlap: If
+you divide the cases with at least two same numbers by M^9 you get for M = 2^32
+- 1 a value smaller than 10^(-7). Even if we use 1 000 000 numbers we are fine.
+Also kperm won't in these cases map always to the same number.
+If you really wanted to be better or correct, there are some solutions: Choose a
+bigger M, do a test before and exclude this cases (this is a good option making
+everything correct), or you could use a complicated random function, mapping in
+that cases to a sort with a certain probability.
+
+
+So the remaining problem was how to count the possibilities that sort a and sort
+b overlap. I used in every overlap function sort a as the "main sort". The
+possibilities for the number of the sort a are in my code represented by the
+"sum"-structures. That means, that I always have five nested sums. And sort b
+has to "fit in".
+
+An example:
+sort a = (0,1,2,3,4)    (representing increasing numbers)
+sort b = (0,1,4,2,3)
+
+the sorts should overlap two-time, and sort b is on the left. Meaning that 0 of
+sort a and 2 of sort b are the same and 1 of sort a and 3 of sort b are the
+same. As I said, I handle sort a with sums. Now I can just insert in the inner
+sum binomial coefficients. We have in this case two numbers, that are smaller
+than the common (overlapping) part, and one that is bigger. If 0 of sort a is
+represented by the index k and 1 of sort a is represented by the index l (as in
+my code) from the nested sums, we can fill in the inner sum
+
+Binomial(k,2) * Binomial(M-l-3 ,1)
+
+I have to subtract 3 in the second Binomial, because there are three numbers in
+sort a that are bigger than l. And remember my assumption that no number appears
+twice. So there are "only" M-l-3 numbers left for the sort-b-number. (This is a
+very small difference, but we want M to be canceled out and a nice, correct
+result)
+
+It is tricky to handle how many numbers are bigger, smaller, or between numbers
+in the common part. And you have to do this for sort a and sort b. It some cases
+it is easy to see. You would imediately agree, that it is more likely that
+
+a = (0,1,2,3,4) and b = (2,3,4,0,1) overlap two time, than a = (0,1,2,3,4) and
+b=(0,1,2,3,4).
+
+In other cases you don't see it. But this is also helpfull, because if you make
+a mistake here, you don't get a nice result. If everything is correct, the M
+cancels out, leading to a beautiful simple result :-)
+
+Doing this for every entry we get the precovariance matrix. We subtract a
+constant, get the final covariance matrix and are happy.
+
+
+The code also contains some tests. For example a simple test, that just sums up
+all the entries. The result is zero. This is excatly what we want: We have nine
+different overlaps so we want the sum of all the sort-combinations to be 9. We
+subtract from every entry 9/(120*120). This leads to the zero!
+
+
+Check it when you have time. Again: questions are welcome! And I will have a
+look at your improvements...
+
+
+Greetings,
+Stephan Mönkehues
+
+
+
+2011/3/8 Robert G. Brown <rgb@phy.duke.edu>
+      On Tue, 8 Mar 2011, Stephan Mönkehues wrote:
+
+
+            Dear Mr. Brown,
+
+
+      Oh, bless you bless you bless you.  I worked on this until I got a
+      headache -- I actually got to where I understood in principle how to
+      compute the covariance matrix, but unless you index the permutations
+      exactly the same way that he did (which I didn't, as I wanted to use
+      the
+      GSL permutation routines wherever possible) you don't get exactly
+      the
+      same numbers, and of course his numbers are WRONG somewhere so even
+      when
+      I did index the perms the same way I didn't get the same numbers.  I
+      finally got a huge headache and gave up (for the time being) in
+      disgust,
+      and just haven't had time to spend another week or so fixing it the
+      rest
+      of the way.  In the meantime it has just been a thorn in the side of
+      dieharder; a test that should clearly be there that just doesn't
+      work
+      (motivating me to write the relatively straightfoward
+      NON-overlapping
+      permutations test...
+
+      BTW, I hope you are tracking the other improvements made to
+      dieharder,
+      including the fixing (thanks to David Bauer) of the kstest code so
+      that
+      it is much closer to being exact -- it now works for very large
+      numbers
+      of pvalues (if you use the options to generate the inverse
+      distribution
+      "exactly", which is fairly time consuming).  There are still a
+      couple of
+      "bad" diehard tests (tests like diehard_dna and diehard_sums that
+      fail
+      "early" when one runs with large numbers of psamples even for things
+      like AES or a list of xor'd "good" generators including AES) but
+      operm5
+      is the worst as it failed or marginally failed even for the old
+      default
+      run.
+
+      I would absolutely like to have the code/algorithm for generating
+      the
+      covariance matrix and map vector, if you don't mind.  I have a
+      "documents" directory in the dieharder sources where I put stuff
+      like
+      this (if nowhere else) so that every algorithm used is open to
+      public
+      criticism to the extent possible (in the best spirit of both open
+      source
+      software AND good science).  Your name, of course, will still be
+      attached to and identified with your contribution in the source
+      comments.
+
+            If you have questions please ask me!
+
+
+I will.  I'll try to look at this at least briefly now/today, but as
+always I have a stack of tasks a mile deep and it might take a few days
+before I can really check it all out.  But no matter what, thanks again!
+Enormously!
+
+  rgb
+
+
+      in my diploma thesis I modified SWIFFTX, a SHA3-candidate. So
+      it came, that
+      I used first Marsaglia’s diehard and then your test suite
+      dieharder to test
+      SWIFFTX. I don’t remember why, but somehow I decided to fix
+      OPERM5.
+
+       
+
+      It is sad that Marsaglia only sparely commented his diehard
+      code. You did a
+      better job! Since Marsaglia doesn’t give his covariance matrix
+      or a way to
+      compute it, there is no easy testing if his data is correct.
+
+      What I could verify is his “map” vector. It maps a sort to a
+      number in a
+      way, that its “mirror sort” has a number with difference 60.
+      So for example
+      the kperm-function computes for the sort  A = (0,1,2,3,4),
+      representing
+      increasing  numbers, the number 119. For B = (4,3,2,1,0) kperm
+      computes the
+      number 11. Now “map” maps the 11 to 59.
+
+      His idea was then to calculate X(transposed)*R*X +
+      Y(transposed)*S*Y =
+      [(x_0+x_60)^2+(x_1+x_61)^2+….+(x_59+x_119)] + [(x_0-x_60)^2 +
+      (x_1-x_61)^2+…+(x_59-x_119)^2] = 2*(x_0)^2 + 2*(x_60) +
+      2*(x_1)^2 +
+      2*(x_61)^2 + …. + 2*(x_59)^2 + 2*(x_119)^2. And then do the
+      chi square test.
+
+      But I agree with you, his pseudoinverses R and S seem wrong.
+
+       
+
+      So I wrote some code to compute the covariance matrix. It has
+      rank 96,
+      exactly what you suggested! Then I computed its pseudoinverse
+      and integrated
+      it in dieharder. Furthermore I corrected the code concerning
+      the
+      non-overlapping version.
+
+       
+
+      It seems as if both, the overlapping and non-overlapping
+      version are now
+      working correctly. (Using the overlap-version) The rngs with
+      numbers
+      41,47,48,49,51,57 and 58 fail OPERM5, the rest pass.
+
+       
+
+      I attached the new diehard_operm5.c and diehard_operm5.h
+      files. I can send
+      you the covariance matrix and how I computed it too.
+
+       
+
+      If you have questions please ask me!
+
+       
+
+      Greetings from Germany,
+
+      Stephan Mönkehues – Technische Universität Darmstadt
+
+
+
+
+Robert G. Brown                        http://www.phy.duke.edu/~rgb/
+Duke University Dept. of Physics, Box 90305
+Durham, N.C. 27708-0305
+Phone: 1-919-660-2567  Fax: 919-660-2525     email:rgb@phy.duke.edu
+
+
+
+
+
+    [ Part 2, Application/OCTET-STREAM (Name: "Covariance_engl.nb") 4.1 ]
+    [ MB. ]
+    [ Unable to print this part. ]
+
+
+    [ Part 3, Application/PDF (Name: "Wai Wan Tsang 10.1.1.63.7355.pdf") ]
+    [ 843 KB. ]
+    [ Unable to print this part. ]
