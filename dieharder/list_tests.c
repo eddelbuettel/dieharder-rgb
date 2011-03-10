@@ -28,7 +28,7 @@ void list_tests()
  for(i=0;i<900;i++){
    if(dh_test_types[i]){
      fprintf(stdout,"  -d %d  \t%40s",i,dh_test_types[i]->name);
-     if(i == 7){
+     if( i == 5 || i == 6 || i == 7 ){
        fprintf(stdout,"\t%10s\n","Suspect");
      } else if(i == 14){
        fprintf(stdout,"\t%10s\n","Do Not Use");
