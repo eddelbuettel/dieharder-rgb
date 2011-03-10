@@ -13,4 +13,5 @@ trap 'rm $Tmpfile > /dev/null 2>&1; exit 0' 0 1 2 3 15
 echo "Validating against standard validate.dat"
 diff validate.dat $Tmpfile
 echo "Done!"
+mv validate.dat validate.dat.old
 cp $Tmpfile validate.dat

@@ -7,12 +7,14 @@
 .SH SYNOPSIS
 dieharder [-a] [-d dieharder test number] [-f filename] [-B]
           [-D output flag [-D output flag] ... ] [-F] [-c separator]
-          [-g generator number or -1] [-h] [-k ks_flag] [-l] [-L overlap] 
-          [-m multiply_p] [-n ntuple] [-p number of p samples]
+          [-g generator number or -1] [-h] [-k ks_flag] [-l] 
+          [-L overlap] [-m multiply_p] [-n ntuple] 
+          [-p number of p samples] [-P Xoff]
           [-o filename] [-s seed strategy] [-S random number seed]
           [-n ntuple] [-p number of p samples] [-o filename]
           [-s seed strategy] [-S random number seed]
-          [-t number of test samples] [-v verbose flag] 
+          [-t number of test samples] [-v verbose flag]
+          [-W weak] [-X fail] [-Y Xtrategy]
           [-x xvalue] [-y yvalue] [-z zvalue]
 
 .SH dieharder OPTIONS
@@ -57,12 +59,27 @@ aggregated.  To see all currently known flags use the -F command.
 test synopsis if entered as e.g. dieharder -d 3 -h.
 .TP
 -k ks_flag - ks_flag
-  0 is fast but slightly sloppy for psamples > 4999 (default).
-  1 is MUCH slower but more accurate for larger numbers of psamples.
-  2 is very slow and accurate to machine precision.
-  3 is kuiper ks, fast, quite inaccurate for small samples, deprecated.
+
+0 is fast but slightly sloppy for psamples > 4999 (default).
+
+1 is MUCH slower but more accurate for larger numbers of psamples.
+
+2 is slower still, but (we hope) accurate to machine precision for
+any number of psamples up to some as yet unknown numerical upper
+limit (it has been tested out to at least hundreds of thousands).
+
+3 is kuiper ks, fast, quite inaccurate for small samples, deprecated.
 .TP
 -l list all known tests.
+.TP
+-L overlap 
+
+1 (use overlap, default) 
+
+0 (don't use overlap) 
+
+in operm5 or other tests that support overlapping and non-overlapping sample
+modes.
 .TP
 -m multiply_p - multiply default # of psamples in -a(ll) runs to crank
 up the resolution of failure.
@@ -72,6 +89,13 @@ the length to be varied (e.g. rgb bitdist).
 -o filename - output -t count random numbers from current generator to file.
 .TP
 -p count - sets the number of p-value samples per test (default 100).
+.TP
+-P Xoff - sets the number of psamples that will cumulate before deciding
+that a generator is "good" and really, truly passes even a -Y 2 T2D run.
+Currently the default is 100000; eventually it will be set from
+AES-derived T2D test failure thresholds for fully automated reliable
+operation, but for now it is more a "boredom" threshold set by how long
+one might reasonably want to wait on any given test run.
 .TP
 -S seed - where seed is a uint.  Overrides the default random seed
 selection.  Ignored for file or stdin input.
@@ -91,6 +115,64 @@ variable but have practical minimum sizes.  It is suggested you begin
 with the values used in -a and experiment carefully on a test by test
 basis.
 .TP
+-W weak - sets the "weak" threshold to make the test(s) more or less
+forgiving during e.g. a test-to-destruction run.  Default is currently
+0.005.
+.TP
+-X fail - sets the "fail" threshold to make the test(s) more or less
+forgiving during e.g. a test-to-destruction run.  Default is currently
+0.000001, which is basically "certain failure of the null hypothesis",
+the desired mode of reproducible generator failure.
+.TP
+-Y Xtrategy - the Xtrategy flag controls the new "test to failure" (T2F)
+modes.  These flags and their modes act as follows:
+
+  0 - just run dieharder with the specified number of tsamples and
+psamples, do not dynamically modify a run based on results.  This is the
+way it has always run, and is the default.
+
+  1 - "resolve ambiguity" (RA) mode.  If a test returns "weak", this is an
+undesired result.  What does that mean, after all?  If you run a long
+test series, you will see occasional weak returns for a perfect
+generators because p is uniformly distributed and will appear in any
+finite interval from time to time.  Even if a test run returns more than
+one weak result, you cannot be certain that the generator is failing.
+RA mode adds psamples (usually in blocks of 100) until the
+test result ends up solidly not weak or proceeds to unambiguous failure.
+This is morally equivalent to running the test several times to see if a
+weak result is reproducible, but eliminates the bias of personal
+judgement in the process since the default failure threshold is very
+small and very unlikely to be reached by random chance even in many
+runs.
+
+.B This option should only be used with -k 2.
+
+  2 - "test to destruction" mode.  Sometimes you just want to know where
+or if a generator will .I ever fail a test (or test series).  -Y 2
+causes psamples to be added 100 at a time until a test returns an
+overall pvalue lower than the failure threshold or a specified maximum
+number of psamples (see -P) is reached.  
+
+Note well!  In this mode one may well fail due to the
+.I alternate
+null hypothesis -- the test itself is a bad test and fails!  Many
+dieharder tests, despite our best efforts, are numerically unstable or
+have only approximately known target statistics or are straight up
+asymptotic results, and will eventually return a failing result even for
+a gold-standard generator (such as AES), or for the hypercautious the
+XOR generator with AES, threefish, kiss, all loaded at once and xor'd
+together.  It is therefore safest to use this mode .I comparatively,
+executing a T2D run on AES to get an idea of the test failure
+threshold(s) (something I will eventually do and publish on the web so
+everybody doesn't have to do it independently) and then running it on
+your target generator.  Failure with numbers of psamples within an order
+of magnitude of the AES thresholds should probably be considered
+possible test failures, not generator failures.  Failures at levels
+significantly less than the known gold standard generator failure
+thresholds are, of course, probably failures of the generator.
+
+.B This option should only be used with -k 2.
+.TP
 -v verbose flag -- controls the verbosity of the output for debugging
 only.  Probably of little use to non-developers, and developers can
 read the enum(s) in dieharder.h and the test sources to see which
@@ -101,13 +183,21 @@ result in a highly detailed trace of program activity.
 from their default value.  For example, in the diehard birthdays test,
 one can vary the number of \"dates\" drawn from the \"year\" of some
 length, which can also be varied.  -x 2048 -y 30 alters these two values
-but should still run fine.
+but should still run fine.  These parameters should be documented
+internally (where they exist) in the e.g. -d 0 -h visible notes.
 
 .B NOTE WELL:  
 The assessment(s) for the rngs may, in fact, be completely incorrect or
-misleading.  In particular, 'Weak' pvalues should occur one test in a
-hundred, and 'Failed' pvalues should occur one test in a thousand -
-that's what p MEANS.  Use them at your Own Risk!  Be Warned!
+misleading.  There are still "bad tests" in dieharder, although we are
+working to fix and improve them (and try to document them in the test
+descriptions visible with -g testnumber -h).  In particular, 'Weak'
+pvalues should occur one test in two hundred, and 'Failed' pvalues
+should occur one test in a million with the default thresholds - that's
+what p MEANS.  Use them at your Own Risk!  Be Warned!
+
+Or better yet, use the new -Y 1 and -Y 2 resolve ambiguity or test to
+destruction modes above, comparing to similar runs on one of the
+as-good-as-it-gets cryptographic generators, AES or threefish.
 
 .SH DESCRIPTION
 .B dieharder
