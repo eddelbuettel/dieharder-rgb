@@ -250,6 +250,7 @@ void add_2_test(Dtest *dtest, Test **test, int count)
    }
 
  }
+ /* printf("test[0]->ks_pvalue = %f\n",test[0]->ks_pvalue); */
 
 }
    

@@ -73,170 +73,178 @@ static double tcount[120];
 int kperm(uint v[],uint voffset)
 {
 
-	int i,j,k,max;
-	int w[5];
-	int pindex,uret,tmp;
+ int i,j,k,max;
+ int w[5];
+ int pindex,uret,tmp;
 
-	/*
-* work on a copy of v, not v itself in case we are using overlapping
-* 5-patterns.
-*/
-	for(i=0;i<5;i++){
-		j = (i+voffset)%5;
-		w[i] = v[j];
-	}
+ /*
+  * work on a copy of v, not v itself in case we are using
+  * overlapping 5-patterns.
+  */
+ for(i=0;i<5;i++){
+   j = (i+voffset)%5;
+   w[i] = v[j];
+ }
 
-	if(verbose == -1){
-		printf("==================================================================\n");
-		printf("%10u %10u %10u %10u %10u\n",w[0],w[1],w[2],w[3],w[4]);
-		printf(" Permutations = \n");
-	}
-	pindex = 0;
-	for(i=4;i>0;i--){
-		max = w[0];
-		k = 0;
-		for(j=1;j<=i;j++){
-			if(max <= w[j]){
-				max = w[j];
-				k = j;
-			}
-		}
-		pindex = (i+1)*pindex + k;
-		tmp = w[i];
-		w[i] = w[k];
-		w[k] = tmp;
-		if(verbose == -1){
-			printf("%10u %10u %10u %10u %10u\n",w[0],w[1],w[2],w[3],w[4]);
-		}
-	}
-	uret = pindex;
+ if(verbose == -1){
+   printf("==================================================================\n");
+   printf("%10u %10u %10u %10u %10u\n",w[0],w[1],w[2],w[3],w[4]);
+   printf(" Permutations = \n");
+ }
 
-	if(verbose == -1){
-		printf(" => %u\n",pindex);
-	}
+ pindex = 0;
+ for(i=4;i>0;i--){
+   max = w[0];
+   k = 0;
+   for(j=1;j<=i;j++){
+     if(max <= w[j]){
+       max = w[j];
+       k = j;
+     }
+   }
+   pindex = (i+1)*pindex + k;
+   tmp = w[i];
+   w[i] = w[k];
+   w[k] = tmp;
+   if(verbose == -1){
+     printf("%10u %10u %10u %10u %10u\n",w[0],w[1],w[2],w[3],w[4]);
+   }
+ }
 
-	return uret;
+ uret = pindex;
+
+ if(verbose == -1){
+   printf(" => %u\n",pindex);
+ }
+
+ return uret;
 
 }
 
 int diehard_operm5(Test **test, int irun)
 {
 
-	int i,j,k,kp,t,vind;
-	uint v[5];
-	double count[120];
-	double av,norm,x[120],chisq,ndof,pvalue;
+ int i,j,k,kp,t,vind;
+ uint v[5];
+ double count[120];
+ double av,norm,x[120],chisq,ndof,pvalue;
 
-	/*
-* Zero count vector, was t(120) in diehard.f90.
-*/
-	for(i=0;i<120;i++) {
-		count[i] = 0.0;
-		if(tflag == 0){
-			tcount[i] = 0.0;
-			tflag = 1;
-		}
-	}
+ /*
+  * Zero count vector, was t(120) in diehard.f90.
+  */
+ for(i=0;i<120;i++) {
+   count[i] = 0.0;
+   if(tflag == 0){
+     tcount[i] = 0.0;
+     tflag = 1;
+   }
+ }
 
-	if(overlap){
-		for(i=0;i<5;i++){
-			v[i] = gsl_rng_get(rng);
-		}
-		vind = 0;
-	} else {
-		for(i=0;i<5;i++){
-			v[i] = gsl_rng_get(rng);
-		}
-	}
-	for(t=0;t<test[0]->tsamples;t++){
+ if(overlap){
+   for(i=0;i<5;i++){
+     v[i] = gsl_rng_get(rng);
+   }
+   vind = 0;
+ } else {
+   for(i=0;i<5;i++){
+     v[i] = gsl_rng_get(rng);
+   }
+ }
 
-		/*
-	* OK, now we are ready to generate a list of permutation indices.
-	* Basically, we take a vector of 5 integers and transform it into a
-	* number with the kperm function.  We will use the overlap flag to
-	* determine whether or not to refill the entire v vector or just
-	* rotate bytes.
-	*/
-		if(overlap){
-			kp = kperm(v,vind);
-			count[kp] += 1;
-			v[vind] = gsl_rng_get(rng);
-			vind = (vind+1)%5;
-		} else {
-			for(i=0;i<5;i++){
-				v[i] = gsl_rng_get(rng);
-			}
-			kp = kperm(v,0);
-			count[kp] += 1;
-		}
-	}
+ for(t=0;t<test[0]->tsamples;t++){
 
-	for(i=0;i<120;i++){
-		tcount[i] += count[i];
-		/* printf("%u: %f\n",i,tcount[i]); */
-	}
+   /*
+    * OK, now we are ready to generate a list of permutation indices.
+    * Basically, we take a vector of 5 integers and transform it into a
+    * number with the kperm function.  We will use the overlap flag to
+    * determine whether or not to refill the entire v vector or just
+    * rotate bytes.
+    */
+  if(overlap){
+    kp = kperm(v,vind);
+    count[kp] += 1;
+    v[vind] = gsl_rng_get(rng);
+    vind = (vind+1)%5;
+  } else {
+    for(i=0;i<5;i++){
+      v[i] = gsl_rng_get(rng);
+    }
+    kp = kperm(v,0);
+    count[kp] += 1;
+  }
+ }
 
-	chisq = 0.0;
-	av = test[0]->tsamples/120.0;
-	norm = test[0]->tsamples; // this belongs to the pseudoinverse
-	/*
-The pseudoinverse P of the covariancematrix C is computed for n = 1.
-If n = 100 the new covariancematrix is C_100 = 100*C. Therefore the
-new pseudoinverse is P_100 = (1/100)*P.
-You can see this from the equation   C*P*C = C
-	*/
+ for(i=0;i<120;i++){
+   tcount[i] += count[i];
+   /* printf("%u: %f\n",i,tcount[i]); */
+ }
+
+ chisq = 0.0;
+ av = test[0]->tsamples/120.0;
+ norm = test[0]->tsamples; // this belongs to the pseudoinverse
+ /*
+  * The pseudoinverse P of the covariancematrix C is computed for n = 1.
+  * If n = 100 the new covariancematrix is C_100 = 100*C. Therefore the
+  * new pseudoinverse is P_100 = (1/100)*P.  You can see this from the
+  * equation C*P*C = C
+  */
 	
-	if(overlap==0){ norm = av; }
+ if(overlap==0){
+   norm = av;
+ }
+ for(i=0;i<120;i++){
+   x[i] = count[i] - av;
+ }
 
-	for(i=0;i<120;i++){
-		x[i] = count[i] - av;
-	}
+ if(overlap){
+   for(i=0;i<120;i++){
+     for(j=0;j<120;j++){
+       chisq = chisq + x[i]*pseudoInv[i][j]*x[j];
+     }
+   }
+ }
 
-	if(overlap){
-		for(i=0;i<120;i++){
-			for(j=0;j<120;j++){
-				chisq = chisq + x[i]*pseudoInv[i][j]*x[j];
-			}
-		}
-	}
+ if(overlap==0){
+   for(i=0;i<120;i++){
+     chisq = chisq + x[i]*x[i];
+   }
+ }
 
-	if(overlap==0){
-		for(i=0;i<120;i++){
-			chisq = chisq + x[i]*x[i];
-		}
-	}
-
-if(verbose == -2){
-	printf("norm = %10.2f, av = %10.2f",norm,av);
-	for(i=0;i<120;i++){
-		printf("count[%u] = %4.0f; x[%u] = %3.2f ",i,count[i],i,x[i]);
-		if((i%2)==0){printf("\n");}
-	}
-	if((chisq/norm) >= 0){
-		printf("\n\nchisq/norm: %10.5f :-) and chisq: %10.5f\n",(chisq/norm), chisq);
-	}
-}
+ if(verbose == -2){
+   printf("norm = %10.2f, av = %10.2f",norm,av);
+   for(i=0;i<120;i++){
+     printf("count[%u] = %4.0f; x[%u] = %3.2f ",i,count[i],i,x[i]);
+     if((i%2)==0){printf("\n");}
+   }
+   if((chisq/norm) >= 0){
+     printf("\n\nchisq/norm: %10.5f :-) and chisq: %10.5f\n",(chisq/norm), chisq);
+   }
+ }
 	
-	if((chisq/norm) < 0){
-		printf("\n\nCHISQ NEG.! chisq/norm: %10.5f and chisq: %10.5f",(chisq/norm), chisq);
-	}
+ if((chisq/norm) < 0){
+   printf("\n\nCHISQ NEG.! chisq/norm: %10.5f and chisq: %10.5f",(chisq/norm), chisq);
+ }
 	
-	chisq = fabs(chisq / norm);
+ chisq = fabs(chisq / norm);
 
-	ndof = 96; // the rank of the covariancematrix and the pseudoinverse
-	if(overlap == 0){ ndof = 120-1; }
+ ndof = 96; /* the rank of the covariancematrix and the pseudoinverse */
+ if(overlap == 0){
+   ndof = 120-1;
+ }
 
-	MYDEBUG(D_DIEHARD_OPERM5){
-		printf("# diehard_operm5(): chisq[%u] = %10.5f\n",kspi,chisq);
-	}
+ MYDEBUG(D_DIEHARD_OPERM5){
+   printf("# diehard_operm5(): chisq[%u] = %10.5f\n",kspi,chisq);
+ }
 
-	test[0]->pvalues[irun] = gsl_sf_gamma_inc_Q((double)(ndof)/2.0,chisq/2.0);
+ test[0]->pvalues[irun] = gsl_sf_gamma_inc_Q((double)(ndof)/2.0,chisq/2.0);
 
-	MYDEBUG(D_DIEHARD_OPERM5){
-		printf("# diehard_operm5(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
-	}
+ MYDEBUG(D_DIEHARD_OPERM5){
+   printf("# diehard_operm5(): test[0]->pvalues[%u] = %10.5f\n",irun,test[0]->pvalues[irun]);
+ }
 
-	kspi++;
+ kspi++;
+
+ return(0);
 
 }
 

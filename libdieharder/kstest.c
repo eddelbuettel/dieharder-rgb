@@ -17,13 +17,14 @@
 
 #include <dieharder/libdieharder.h>
 #define KCOUNTMAX 4999
+
 double p_ks_new(int n,double d);
 
 double kstest(double *pvalue,int count)
 {
 
  int i,j,k;
- double y,d,dmax,csqrt;
+ double y,d,d1,d2,dmax,csqrt;
  double p,pold = 0.0,x;
 
  /* First, handle degenerate cases. */
@@ -44,10 +45,10 @@ double kstest(double *pvalue,int count)
   */
  dmax = 0.0;
  if(verbose == D_KSTEST || verbose == D_ALL){
-   printf("    p       y       d       dmax\n");
+   printf("       p             y              d             d1           d2         dmax\n");
  }
- for(i=0;i<count;i++){
-   y = (double) i/count;
+ for(i=1;i<=count;i++){
+   y = (double) i/(count+1.0);
    /*
     * d = fabs(pvalue[i] - y);
     *
@@ -56,13 +57,24 @@ double kstest(double *pvalue,int count)
     * handles the position more symmetrically.   This fix is
     * CRUCIAL for small sample sizes, and can be validated with:
     *   dieharder -d 204 -t 100 -p 10000 -D default -D histogram
+    *
+    * Note:  Without the fabs, pvalue could be LESS than y
+    * and be ignored by fmax.  Also, I don't really like the end
+    * points -- y[0] shouldn't be zero, y[count] shouldn't be one.  This
+    * sort of thing seems as thought it might matter at very high
+    * precision.  Let's try running from 1 to count and dividing by count
+    * plus 1.
     */
-   d = fmax(pvalue[i] - y, (1.0/count) - (pvalue[i] - y));
+   d1 = pvalue[i-1] - y;
+   d2 = fabs(1.0/(count+1.0) - d1);
+   d1 = fabs(d1);
+   d = fmax(d1,d2);
 
+   if(d1 > dmax) dmax = d1;
    if(verbose == D_KSTEST || verbose == D_ALL){
-     printf("%8.3f   %8.3f    %8.3f   %8.3f\n",pvalue[i],y,d,dmax);
+     printf("%11.6f   %11.6f    %11.6f   %11.6f  %11.6f  %11.6f\n",pvalue[i-1],y,d,d1,d2,dmax);
    }
-   if(d > dmax) dmax = d;
+
  }
 
  /*
@@ -112,10 +124,15 @@ double kstest(double *pvalue,int count)
   * be in bounds for typical dieharder test ranges, and I also expect that
   * it can be sped up pretty substantially.
   */
+ 
+ if(verbose == D_KSTEST || verbose == D_ALL){
+   printf("# kstest: calling p_ks_new(count = %d,dmax = %f)\n",count,dmax);
+ }
  p = p_ks_new(count,dmax);
  if(verbose == D_KSTEST || verbose == D_ALL){
    printf("# kstest: returning p = %f\n",p);
  }
+
  return(p);
 
 }
@@ -181,12 +198,12 @@ void mMultiply(double *A,double *B,double *C,int m)
 void mPower(double *A,int eA,double *V,int *eV,int m,int n)
 {
   double *B;
-  int eB,i;
+  int eB,i,j;
 
   /*
    * n == 1: first power just returns A.
    */
-  if(n==1){
+  if(n == 1){
     for(i=0;i<m*m;i++){
       V[i]=A[i];*eV=eA;
     }
@@ -199,6 +216,7 @@ void mPower(double *A,int eA,double *V,int *eV,int m,int n)
    * and we will cumulate the product.
    */
   mPower(A,eA,V,eV,m,n/2);
+  /* printf("n = %d  mP eV = %d\n",n/2,*eV); */
   B=(double*)malloc((m*m)*sizeof(double));
   mMultiply(V,V,B,m);
   eB=2*(*eV);
@@ -207,19 +225,26 @@ void mPower(double *A,int eA,double *V,int *eV,int m,int n)
       V[i]=B[i];
     }
     *eV=eB;
+    /* printf("n = %d (even) eV = %d\n",n,*eV); */
   } else {
     mMultiply(A,B,V,m);
     *eV=eA+eB;
+    /* printf("n = %d (odd) eV = %d\n",n,*eV); */
   }
 
   /*
-   * Rescale as needed to avoid overflow.
+   * Rescale as needed to avoid overflow.  Note that we check
+   * EVERY element of V to make sure NONE of them exceed the
+   * threshold (and if any do, rescale the whole thing).
    */
-  if(V[(m/2)*m+(m/2)]>1e140) {
-    for(i=0;i<m*m;i++) {
-      V[i]=V[i]*1e-140;
+  for(i=0;i<m*m;i++) {
+    if( V[i] > 1.0e140 ) {
+      for(j=0;j<m*m;j++) {
+        V[j]=V[j]*1.0e-140;
+      }
+      *eV+=140;
+      /* printf("rescale eV = %d\n",*eV); */
     }
-    *eV+=140;
   }
 
   free(B);
@@ -246,7 +271,7 @@ double p_ks_new(int n,double d)
    */
   s=d*d*n;
   if(ks_test != 2 && ( s>7.24 || ( s>3.76 && n>99 ))) {
-    /* printf("Returning the easy way\n"); */
+    if(n == 10400) printf("Returning the easy way\n");
     return 2.0*exp(-(2.000071+.331/sqrt(n)+1.409/n)*s);
   }
 
@@ -257,6 +282,7 @@ double p_ks_new(int n,double d)
   k=(int)(n*d)+1;
   m=2*k-1;
   h=k-n*d;
+  /* printf("p_ks_new:  n = %d  k = %d  m = %d  h = %f\n",n,k,m,h); */
   H=(double*)malloc((m*m)*sizeof(double));
   Q=(double*)malloc((m*m)*sizeof(double));
   for(i=0;i<m;i++){
@@ -273,6 +299,7 @@ double p_ks_new(int n,double d)
     H[i*m]-=pow(h,i+1);
     H[(m-1)*m+i]-=pow(h,(m-i));
   }
+
   H[(m-1)*m]+=(2*h-1>0?pow(2*h-1,m):0);
   for(i=0;i<m;i++){
     for(j=0;j<m;j++){
@@ -283,17 +310,23 @@ double p_ks_new(int n,double d)
       }
     }
   }
+
   eH=0;
   mPower(H,eH,Q,&eQ,m,n);
+  /* printf("p_ks_new eQ = %d\n",eQ); */
   s=Q[(k-1)*m+k-1];
+  /* printf("s = %16.8e\n",s); */
   for(i=1;i<=n;i++){
     s=s*i/n;
+    /* printf("i = %d: s = %16.8e\n",i,s); */
     if(s<1e-140){
+      /* printf("Oops, starting to have underflow problems: s = %16.8e\n",s); */
       s*=1e140;
       eQ-=140;
     }
   }
 
+  /* printf("I'll bet this is it: s = %16.8e  eQ = %d\n",s,eQ); */
   s*=pow(10.,eQ);
   s = 1.0 - s;
   free(H);
