@@ -68,8 +68,11 @@ void aes_set (void *vstate, unsigned long int s) {
 
 	memset(state, 0, sizeof(*state));	// Zero pos and block
 
+	/* Make sure to use all bits of s in the key:
+	 * (5 * i) % 26 => {0,5,10,15,20,25,4,9,14,19,24,3,8,13,18,23}
+	 * */
 	for (i = 0; i < 16; i++) {
-		key[i] = (u8) (112 + i + (s >> i));
+		key[i] = (u8) (112 + i + (s >> ((5 * i) % 26)));
 	}
 	rijndaelKeySetupEnc(state->rk, key, 128);
 	rijndaelEncrypt(state->rk, NR, state->block, state->block);
