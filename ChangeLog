@@ -1,6 +1,8 @@
 2011-03-23  Dirk Eddelbuettel  <edd@debian.org>
 
-	* libdieharder/rngs_gnu_r.c: Correct a define for Int32 to be integer
+	* libdieharder/rngs_gnu_r.c: Correct a define for Int32 to be integer,
+	  and sync'ed with current R sources in svn leading to a small
+	  cosmetic update in the older Knuth generator
 
 2011-01-09 dab <david.astgtciv@gmail.com>
 	* .:Added dab_filltree2 test

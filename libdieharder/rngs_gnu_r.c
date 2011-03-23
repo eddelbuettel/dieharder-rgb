@@ -326,7 +326,7 @@ static void RNG_Init(RNGtype kind, Int32 seed)
 	FixupSeeds(kind, 1);
 	break;
     case KNUTH_TAOCP:
-	RNG_Init_KT(seed);
+	RNG_Init_R_KT(seed);
 	break;
     case KNUTH_TAOCP2:
 	RNG_Init_KT2(seed);
@@ -381,12 +381,12 @@ r_rng_get (void *vstate)
 
 static double
 r_rng_get_double (void *vstate)
-{
+    {
   r_rng_tab_t *state = (r_rng_tab_t *) vstate;
   RNG_kind = state->kind;
   double u = unif_rand();
   return(u);
-}
+    }
 
 /* -------------------------------------- GNU R generator 1: wichmann_hill */
 static void
@@ -803,7 +803,7 @@ MT_sgenrand(Int32 seed)
     (seed_array[0]&UPPER_MASK), seed_array[1], ..., seed_array[N-1]
    can take any values except all zeros.                             */
 
-static double MT_genrand()
+static double MT_genrand(void)
 {
     Int32 y;
     static Int32 mag01[2]={0x0, MATRIX_A};
@@ -849,44 +849,19 @@ static double MT_genrand()
 
 
 #define long Int32
-#define Void void
-#define void static void
 #define ran_arr_buf       R_KT_ran_arr_buf
 #define ran_arr_cycle     R_KT_ran_arr_cycle
 #define ran_arr_ptr       R_KT_ran_arr_ptr
 #define ran_arr_sentinel  R_KT_ran_arr_sentinel
 #define ran_x             dummyvec
 
-/* ===================  Knuth TAOCP ========================== */
-
-         /* Please do NOT alter this part of the code */
-
-/*    This program by D E Knuth is in the public domain and freely copyable
- *    AS LONG AS YOU MAKE ABSOLUTELY NO CHANGES!
- *    It is explained in Seminumerical Algorithms, 3rd edition, Section 3.6
- *    (or in the errata to the 2nd edition --- see
- *        http://www-cs-faculty.stanford.edu/~knuth/taocp.html
- *    in the changes to pages 171 and following of Volume 2).              */
-
-/*    If you find any bugs, please report them immediately to
- *                 taocp@cs.stanford.edu
- *    (and you will be rewarded if the bug is genuine). Thanks!            */
-
-/************ see the book for explanations and caveats! *******************/
-
-/* the old C calling conventions are used here, for reasons of portability */
-
 #define KK 100                     /* the long lag */
 #define LL  37                     /* the short lag */
 #define MM (1L<<30)                 /* the modulus */
+#define TT  70   /* guaranteed separation between streams */
 #define mod_diff(x,y) (((x)-(y))&(MM-1)) /* subtraction mod MM */
-
-/*long ran_x[KK]; */                   /* the generator state */
-
-/* void ran_array(long aa[],int n) */
-void ran_array(aa,n)    /* put n new random numbers in aa */
-  long *aa;   /* destination */
-  int n;      /* array length (must be at least KK) */
+#define is_odd(x)  ((x)&1)          /* units bit of x */
+static void ran_array(long aa[],int n)    /* put n new random numbers in aa */
 {
   register int i,j;
   for (j=0;j<KK;j++) aa[j]=ran_x[j];
@@ -894,80 +869,26 @@ void ran_array(aa,n)    /* put n new random numbers in aa */
   for (i=0;i<LL;i++,j++) ran_x[i]=mod_diff(aa[j-KK],aa[j-LL]);
   for (;i<KK;i++,j++) ran_x[i]=mod_diff(aa[j-KK],ran_x[i-LL]);
 }
-
-#define TT  70   /* guaranteed separation between streams */
-#define is_odd(x)  ((x)&1)          /* units bit of x */
-#define evenize(x) ((x)&(MM-2))   /* make x even */
-
-/* void ran_start(long seed) */
-void ran_start(seed)    /* do this before using ran_array */
-  long seed;            /* selector for different streams */
-{
-  register int t,j;
-  long x[KK+KK-1];              /* the preparation buffer */
-  register long ss=evenize(seed+2);
-  for (j=0;j<KK;j++) {
-    x[j]=ss;                      /* bootstrap the buffer */
-    ss<<=1; if (ss>=MM) ss-=MM-2; /* cyclic shift 29 bits */
-  }
-  for (;j<KK+KK-1;j++) x[j]=0;
-  x[1]++;              /* make x[1] (and only x[1]) odd */
-  ss=seed&(MM-1);
-  t=TT-1; while (t) {
-    for (j=KK-1;j>0;j--) x[j+j]=x[j];  /* "square" */
-    for (j=KK+KK-2;j>KK-LL;j-=2) x[KK+KK-1-j]=evenize(x[j]);
-    for (j=KK+KK-2;j>=KK;j--) if(is_odd(x[j])) {
-      x[j-(KK-LL)]=mod_diff(x[j-(KK-LL)],x[j]);
-      x[j-KK]=mod_diff(x[j-KK],x[j]);
-    }
-    if (is_odd(ss)) {              /* "multiply by z" */
-      for (j=KK;j>0;j--)  x[j]=x[j-1];
-      x[0]=x[KK];            /* shift the buffer cyclically */
-      if (is_odd(x[KK])) x[LL]=mod_diff(x[LL],x[KK]);
-    }
-    if (ss) ss>>=1; else t--;
-  }
-  for (j=0;j<LL;j++) ran_x[j+KK-LL]=x[j];
-  for (;j<KK;j++) ran_x[j-LL]=x[j];
-}
-
-/* the following routines are from exercise 3.6--15 */
-/* after calling ran_start, get new randoms by, e.g., "x=ran_arr_next()" */
-
 #define QUALITY 1009 /* recommended quality level for high-res use */
 static long ran_arr_buf[QUALITY];
 static long ran_arr_sentinel=(long)-1;
 static long *ran_arr_ptr=&ran_arr_sentinel; /* the next random number, or -1 */
 
-#define ran_arr_next() (*ran_arr_ptr>=0? *ran_arr_ptr++: ran_arr_cycle())
-static long ran_arr_cycle()
+static long ran_arr_cycle(void)
 {
   ran_array(ran_arr_buf,QUALITY);
-  ran_arr_buf[100]=-1;
+  ran_arr_buf[KK]=-1;
   ran_arr_ptr=ran_arr_buf+1;
   return ran_arr_buf[0];
 }
 
-/* ===================== end of Knuth's code ====================== */
-
-static Int32 KT_next()
-{
-    if(KT_pos >= 100) {
-	ran_arr_cycle();
-	KT_pos = 0;
-    }
-    return ran_x[(KT_pos)++];
-}
-
-Void RNG_Init_KT(Int32 seed)
-{
-    ran_start(seed % 1073741821);
-    KT_pos = 100;
-}
-
-#define ran_start ran_start2002
-
 /* ===================  Knuth TAOCP  2002 ========================== */
+
+/*    This program by D E Knuth is in the public domain and freely copyable.
+ *    It is explained in Seminumerical Algorithms, 3rd edition, Section 3.6
+ *    (or in the errata to the 2nd edition --- see
+ *        http://www-cs-faculty.stanford.edu/~knuth/taocp.html
+ *    in the changes to Volume 2 on pages 171 and following).              */
 
 /*    N.B. The MODIFICATIONS introduced in the 9th printing (2002) are
       included here; there's no backwards compatibility with the original. */
@@ -1007,8 +928,22 @@ void ran_start(seed)    /* do this before using ran_array */
 }
 /* ===================== end of Knuth's code ====================== */
 
+static void RNG_Init_KT2(Int32 seed)
+{
+    ran_start(seed % 1073741821);
+    KT_pos = 100;
+}
 
-Void RNG_Init_KT2(Int32 seed)
+static Int32 KT_next(void)
+{
+    if(KT_pos >= 100) {
+	ran_arr_cycle();
+	KT_pos = 0;
+    }
+    return ran_x[(KT_pos)++];
+}
+
+static void RNG_Init_R_KT(Int32 seed)
 {
     ran_start(seed % 1073741821);
     KT_pos = 100;
