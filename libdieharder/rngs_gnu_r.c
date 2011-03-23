@@ -4,7 +4,7 @@
  *  Copyright (C) 1997--2003  Robert Gentleman, Ross Ihaka and the
  *                            R Development Core Team
  *
- *  Copyright (C) 2006 Dirk Eddelbuettel		dieharder adaptation
+ *  Copyright (C) 2006 - 2011 Dirk Eddelbuettel		(dieharder adaptation)
  * 
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ static void r_mersenne_twister_set (void *vstate, unsigned long int s);
 static void r_knuth_taocp_set (void *vstate, unsigned long int s);
 static void r_knuth_taocp2_set (void *vstate, unsigned long int s);
 
-typedef unsigned long int Int32;
+typedef unsigned int Int32;
 
 typedef void * (*DL_FUNC)();
 
