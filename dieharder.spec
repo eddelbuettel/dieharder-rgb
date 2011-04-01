@@ -4,7 +4,7 @@
 
 Name: dieharder-src
 Summary: Dieharder is a random number generator tester and timer
-%define version 3.31.0
+%define version 3.31.1
 %define release 1
 Version: %{version}
 Release: %{release}
@@ -127,7 +127,7 @@ rm -rf $RPM_BUILD_ROOT
 # versioned library -- ldconfig and ln are used to finish off
 # later.
 # %{_libdir}/libdieharder.so.%{version}
-%{_libdir}/libdieharder.so.3.31.0
+%{_libdir}/libdieharder.so.3.31.1
 %{_libdir}/libdieharder.so
 
 # The libdieharder include files are under here
@@ -147,6 +147,9 @@ rm -rf $RPM_BUILD_ROOT
 
 # The dieharder binary
 %attr(755,root,root) /usr/bin/dieharder
+
+# This is supposed to be installed by/for the GBT?
+%attr(755,root,root) /usr/bin/dieharder-config
 
 # The dieharder man page
 %attr(644,root,root) /usr/share/man/man1/dieharder.1.gz

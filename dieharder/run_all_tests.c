@@ -22,8 +22,7 @@ void run_all_tests()
  /*
   * The nt variables control ntuple loops for the -a(ll) display only.
   */
- int i,ntmin,ntmax,ntsave;
- int error = 0;
+ int ntmin,ntmax,ntsave;
 
  /*
   * This isn't QUITE a simple loop because -a is a dieharder-only function,

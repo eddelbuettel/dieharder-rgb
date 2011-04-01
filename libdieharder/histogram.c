@@ -19,7 +19,7 @@
 void histogram(double *input,char *pvlabel,int inum,double min,double max,int nbins,char *label)
 {
 
- int i,j,k,hindex;
+ int i,j,hindex;
  uint *bin,binmax;
  double binscale;
  uint vscale;
