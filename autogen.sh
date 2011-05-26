@@ -15,7 +15,7 @@
 # echo "Running automake..."
 # automake --add-missing --copy --gnu
 
-echo "Running autoconf..."
+echo "Running autoreconf..."
 autoreconf
 
 #

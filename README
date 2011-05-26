@@ -150,7 +150,7 @@ been kept under revision control (first CVS, more recently Subversion)
 since the inception of the process in 2003 and all incremental changes
 to the code as it was developed are carefully documented.
 
-Dieharder was deliberately developed to by a GPL project, since
+Dieharder was deliberately developed to be a GPL project, since
 alternative random number test suites were either incomplete with regard
 to the span of test possibilities of interest to the author, restricted
 or unclear about their licensing restrictions, or both.  In addition, by

@@ -404,7 +404,7 @@ on `(hostname || uname -n) 2>/dev/null | sed 1q`
 "
 
 # Files that config.status was made for.
-config_files=" dieharder_version.h dieharder.spec dieharder.html dieharder-config dieharder/Makefile include/Makefile libdieharder/Makefile Makefile"
+config_files=" dieharder_version.h dieharder.spec dieharder.html dieharder-config dieharder/Makefile include/Makefile libdieharder/Makefile manual/Makefile manual/macros.tex Makefile"
 config_headers=" config.h"
 config_commands=" depfiles libtool"
 
@@ -749,6 +749,8 @@ do
     "dieharder/Makefile") CONFIG_FILES="$CONFIG_FILES dieharder/Makefile" ;;
     "include/Makefile") CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
     "libdieharder/Makefile") CONFIG_FILES="$CONFIG_FILES libdieharder/Makefile" ;;
+    "manual/Makefile") CONFIG_FILES="$CONFIG_FILES manual/Makefile" ;;
+    "manual/macros.tex") CONFIG_FILES="$CONFIG_FILES manual/macros.tex" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
