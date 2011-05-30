@@ -1,0 +1,26 @@
+From spyqqqdia@yahoo.com Mon May 30 14:49:19 2011
+Date: Tue, 31 May 2011 02:52:14 +0800 (SGT)
+From: Michael Meyer <spyqqqdia@yahoo.com>
+To: rgb@phy.duke.edu
+Subject: die-harder
+
+Hello Professor Brown,
+
+Thank you for developing the die-hard suite further.
+I have downloaded your code and look forward to using it.
+
+In looking through the original die-hard code I noticed that the overlapping sums test seems to be mathematically incorrect (in your distribution this is file libdieharder/diehard_sums.c.
+
+The argument assumes that the sums S(j) are jointly normal (otherwise it is unclear how a linear transformation will transform them to independent
+standard normals).
+
+It is easy to see that there cannot be an invertible linear transformation T transforming the S(j) to independent standard normals Z(j). The existence of such T implies that the S(j) are jointly normal. For this we only have to note that independent standard normals are also jointly normal, apply the inverse linear transformation T^{-1} to the Z(j) and recall that any linear image of the multinormal vector Z is again multinormal.
+
+But it is clear that the S(j) are not jointly normal since for example
+S(2)-S(1) = U(101)-U(1) is not normal. 
+
+I noticed in your comments that you are already discouraging the use of this test. Maybe it should be removed altogether.
+
+Sincerely yours,
+
+Michael J. Meyer
