@@ -148,7 +148,6 @@
   *========================================================================
   */
  unsigned int all;              /* Flag to do all tests on selected generator */
- unsigned int binary;           /* Flag to output rands in binary (with -o -f) */
  unsigned int bits;             /* bitstring size (in bits) */
  unsigned int diehard;          /* Diehard test number */
  unsigned int generator;        /* GSL generator id number to be tested */
